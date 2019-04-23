@@ -7,10 +7,10 @@
     <a href="https://codeclimate.com/github/phplrt/phplrt/maintainability"><img src="https://api.codeclimate.com/v1/badges/90ee68ef959f72fe7bf6/maintainability" /></a>
 </p>
 <p align="center">
-    <a href="https://packagist.org/packages/phplrt"><img src="https://img.shields.io/badge/PHP-7.1+-ff0140.svg" alt="PHP 7.1+"></a>
-    <a href="https://packagist.org/packages/phplrt"><img src="https://poser.pugx.org/phplrt/version" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/phplrt"><img src="https://poser.pugx.org/phplrt/downloads" alt="Total Downloads"></a>
-    <a href="https://raw.githubusercontent.com/phplrt/1.4.x/LICENSE.md"><img src="https://poser.pugx.org/phplrt/license" alt="License MIT"></a>
+    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://img.shields.io/badge/PHP-7.1+-ff0140.svg" alt="PHP 7.1+"></a>
+    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrtversion" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrtdownloads" alt="Total Downloads"></a>
+    <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
 </p>
 
 ## Introduction
