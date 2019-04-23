@@ -7,15 +7,14 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Parser;
+namespace Phplrt\Tests\Ast;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
- * Interface BuilderInterface
+ * Class TestCase
  */
-interface BuilderInterface
+abstract class TestCase extends BaseTestCase
 {
-    /**
-     * @return mixed
-     */
-    public function build();
+
 }
