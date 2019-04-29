@@ -9,39 +9,22 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
+use Phplrt\Io\Readable;
+
 /**
  * Interface MutableExceptionInterface
  */
-interface MutableExceptionInterface
+interface MutableExceptionInterface extends
+    MutableCodeInterface,
+    MutableFileInterface,
+    MutableMessageInterface,
+    MutablePositionInterface
 {
     /**
-     * @param string $name
-     * @return ExternalExceptionInterface|$this
+     * @param Readable $file
+     * @param int $offsetOrLine
+     * @param int|null $column
+     * @return MutableExceptionInterface|$this
      */
-    public function withFile(string $name): self;
-
-    /**
-     * @param int $line
-     * @return ExternalExceptionInterface|$this
-     */
-    public function withLine(int $line): self;
-
-    /**
-     * @param int $column
-     * @return ExternalExceptionInterface|$this
-     */
-    public function withColumn(int $column): self;
-
-    /**
-     * @param int $code
-     * @return ExternalExceptionInterface|$this
-     */
-    public function withCode(int $code = 0): self;
-
-    /**
-     * @param string $message
-     * @param array $args
-     * @return ExternalExceptionInterface|$this
-     */
-    public function withMessage(string $message, ...$args): self;
+    public function throwsIn(Readable $file, int $offsetOrLine = 0, int $column = null): self;
 }

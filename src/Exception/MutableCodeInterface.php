@@ -9,11 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Exception\Trace\Renderable;
-
 /**
- * Interface RepositoryInterface
+ * Interface MutableCodeInterface
  */
-interface TraceInterface extends \IteratorAggregate, Renderable
+interface MutableCodeInterface
 {
+    /**
+     * @param int $code
+     * @return MutableCodeInterface|$this
+     */
+    public function withCode(int $code = 0): self;
 }

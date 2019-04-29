@@ -7,20 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Trace;
+namespace Phplrt\Exception;
 
 /**
- * Interface Renderable
+ * Interface MutableFileInterface
  */
-interface Renderable
+interface MutableFileInterface
 {
     /**
-     * @return array
+     * @param string $pathname
+     * @return MutableFileInterface|$this
      */
-    public function toArray(): array;
-
-    /**
-     * @return string
-     */
-    public function toString(): string;
+    public function withFile(string $pathname): self;
 }

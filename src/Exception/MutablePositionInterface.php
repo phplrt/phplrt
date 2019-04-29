@@ -7,28 +7,22 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Trace;
+namespace Phplrt\Exception;
 
 /**
- * Interface MutableItemInterface
+ * Interface MutablePositionInterface
  */
-interface MutableItemInterface
+interface MutablePositionInterface
 {
     /**
-     * @param string $file
-     * @return ItemInterface|$this
-     */
-    public function withFile(string $file): self;
-
-    /**
      * @param int $line
-     * @return ItemInterface|$this
+     * @return MutablePositionInterface|$this
      */
     public function withLine(int $line): self;
 
     /**
      * @param int $column
-     * @return ItemInterface|$this
+     * @return MutablePositionInterface|$this
      */
     public function withColumn(int $column): self;
 }

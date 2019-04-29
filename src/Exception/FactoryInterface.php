@@ -9,18 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Position\PositionInterface;
-
 /**
- * Interface ExternalExceptionInterface
+ * Interface FactoryInterface
  */
-interface ExternalExceptionInterface extends
-    \Throwable,
-    PositionInterface
+interface FactoryInterface
 {
     /**
-     * @param \Throwable $exception
+     * @param string $message
+     * @param mixed ...$args
      * @return ExternalExceptionInterface|$this
      */
-    public function from(\Throwable $exception): self;
+    public static function new(string $message, ...$args): ExternalExceptionInterface;
 }
