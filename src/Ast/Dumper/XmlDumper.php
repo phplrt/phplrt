@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Dumper;
+namespace Phplrt\Ast\Dumper;
 
 use Phplrt\Ast\LeafInterface;
 use Phplrt\Ast\NodeInterface;

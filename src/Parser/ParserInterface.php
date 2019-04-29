@@ -22,11 +22,4 @@ interface ParserInterface
      * @return RuleInterface|mixed
      */
     public function parse(Readable $input);
-
-    /**
-     * @param string $rule
-     * @param \Closure $then
-     * @return ParserInterface|$this
-     */
-    public function extend(string $rule, \Closure $then): self;
 }

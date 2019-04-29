@@ -9,23 +9,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Parser\Dumper\NodeDumperInterface;
-use Phplrt\Parser\Dumper\XmlDumper;
+use Phplrt\Ast\Dumper\RenderableTrait;
 
 /**
  * Class Node
  */
 abstract class Node implements NodeInterface
 {
+    use NameTrait;
+    use RenderableTrait;
+
     /**
      * @var int
      */
     protected $offset;
-
-    /**
-     * @var string
-     */
-    private $name;
 
     /**
      * Node constructor.
@@ -40,51 +37,10 @@ abstract class Node implements NodeInterface
     }
 
     /**
-     * @param string $name
-     * @return bool
-     */
-    public function is(string $name): bool
-    {
-        return $this->name === $name;
-    }
-
-    /**
      * @return int
      */
     public function getOffset(): int
     {
         return $this->offset;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        try {
-            return $this->dump();
-        } catch (\Throwable $e) {
-            return $this->getName() . ': ' . $e->getMessage();
-        }
-    }
-
-    /**
-     * @param NodeDumperInterface|string $dumper
-     * @return string
-     */
-    public function dump(string $dumper = XmlDumper::class): string
-    {
-        /** @var string|NodeDumperInterface $dumper */
-        $dumper = new $dumper($this);
-
-        return $dumper->toString();
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
     }
 }

@@ -18,15 +18,11 @@ use Phplrt\Lexer\Definition\TokenDefinition;
 interface LexerInterface
 {
     /**
-     * Compiling the current state of the lexer and returning stream tokens from the source file
+     * Compiling the current state of the lexer and returning
+     * stream tokens from the source file.
      *
      * @param Readable $input
      * @return \Traversable|TokenInterface[]
      */
     public function lex(Readable $input): \Traversable;
-
-    /**
-     * @return iterable|TokenDefinition[]
-     */
-    public function getTokenDefinitions(): iterable;
 }

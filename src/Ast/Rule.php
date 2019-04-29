@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
+use http\Exception\UnexpectedValueException;
+
 /**
  * Class Rule
  */
@@ -55,33 +57,6 @@ class Rule extends Node implements RuleInterface, \ArrayAccess
     public function getIterator(): \Traversable
     {
         yield from $this->getChildren();
-    }
-
-    /**
-     * @param int $group
-     * @return null|string
-     */
-    public function getValue(int $group = 0): ?string
-    {
-        $result = '';
-
-        foreach ($this->getChildren() as $child) {
-            if (\method_exists($child, 'getValue')) {
-                $result .= $child->getValue($group);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return iterable|string[]|\Generator
-     */
-    public function getValues(): iterable
-    {
-        foreach ($this->getChildren() as $child) {
-            yield from $child->getValues();
-        }
     }
 
     /**

@@ -7,17 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Ast;
-
-use Phplrt\Ast\Dumper\RenderableInterface;
+namespace Phplrt\Ast\Dumper;
 
 /**
- * Interface NodeInterface
+ * Interface NodeDumperInterface
  */
-interface NodeInterface extends ProvidesNameInterface, RenderableInterface
+interface NodeDumperInterface
 {
     /**
-     * @return int
+     * @return string
      */
-    public function getOffset(): int;
+    public function toString(): string;
 }

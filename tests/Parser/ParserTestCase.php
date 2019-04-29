@@ -13,7 +13,7 @@ use Phplrt\Io\File;
 use Phplrt\Io\Readable;
 use PHPUnit\Framework\Exception;
 use Phplrt\Parser\ParserInterface;
-use Phplrt\Parser\Dumper\HoaDumper;
+use Phplrt\Ast\Dumper\HoaDumper;
 use Phplrt\Io\Exception\NotReadableException;
 
 /**

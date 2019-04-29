@@ -7,15 +7,21 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Dumper;
+namespace Phplrt\Ast;
 
 /**
- * Interface Dumper
+ * Interface ProvidesNameInterface
  */
-interface NodeDumperInterface
+interface ProvidesNameInterface
 {
     /**
      * @return string
      */
-    public function toString(): string;
+    public function getName(): string;
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function is(string $name): bool;
 }
