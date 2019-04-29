@@ -21,10 +21,10 @@ interface MutableExceptionInterface extends
     MutablePositionInterface
 {
     /**
-     * @param Readable $file
+     * @param Readable|string $file
      * @param int $offsetOrLine
      * @param int|null $column
      * @return MutableExceptionInterface|$this
      */
-    public function throwsIn(Readable $file, int $offsetOrLine = 0, int $column = null): self;
+    public function throwsIn($file, int $offsetOrLine = 0, int $column = null): self;
 }
