@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Io\Readable;
-use Phplrt\Position\PositionInterface;
+use Phplrt\Exception\MutableException\MutableExceptionTrait;
 
 /**
  * Class ExternalException
@@ -23,6 +22,15 @@ class ExternalException extends \Exception implements
     use MutableExceptionTrait;
 
     /**
+     * @param \Throwable $e
+     * @return ExternalExceptionInterface|$this
+     */
+    public static function from(\Throwable $e): ExternalExceptionInterface
+    {
+        return static::new($e->getMessage())->throwsFrom($e);
+    }
+
+    /**
      * @param string $message
      * @param mixed ...$args
      * @return ExternalExceptionInterface|$this
@@ -30,24 +38,5 @@ class ExternalException extends \Exception implements
     public static function new(string $message, ...$args): ExternalExceptionInterface
     {
         return new static(\vsprintf($message, ...$args));
-    }
-
-    /**
-     * @param \Throwable $exception
-     * @return ExternalExceptionInterface|$this
-     */
-    public function from(\Throwable $exception): ExternalExceptionInterface
-    {
-        $this->code = $exception->getCode();
-        $this->message = $exception->getMessage();
-
-        $this->file = $exception->getFile();
-        $this->line = $exception->getLine();
-
-        if ($exception instanceof PositionInterface) {
-            $this->column = $exception->getColumn();
-        }
-
-        return $this;
     }
 }

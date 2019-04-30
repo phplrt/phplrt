@@ -10,6 +10,10 @@ declare(strict_types=1);
 namespace Phplrt\Exception;
 
 use Phplrt\Io\Readable;
+use Phplrt\Exception\MutableException\MutableFileInterface;
+use Phplrt\Exception\MutableException\MutableCodeInterface;
+use Phplrt\Exception\MutableException\MutableMessageInterface;
+use Phplrt\Exception\MutableException\MutablePositionInterface;
 
 /**
  * Interface MutableExceptionInterface
@@ -27,4 +31,10 @@ interface MutableExceptionInterface extends
      * @return MutableExceptionInterface|$this
      */
     public function throwsIn($file, int $offsetOrLine = 0, int $column = null): self;
+
+    /**
+     * @param \Throwable $e
+     * @return MutableExceptionInterface|$this
+     */
+    public function throwsFrom(\Throwable $e): self;
 }

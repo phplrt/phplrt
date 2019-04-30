@@ -7,23 +7,23 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Exception;
+namespace Phplrt\Exception\MutableException;
 
 /**
- * Trait MutableFileTrait
+ * Trait MutableCodeTrait
  *
- * @mixin MutableFileInterface
+ * @mixin MutableCodeInterface
  * @mixin \Exception
  */
-trait MutableFileTrait
+trait MutableCodeTrait
 {
     /**
-     * @param string $name
-     * @return MutableFileInterface|$this
+     * @param int $code
+     * @return MutableCodeInterface|$this
      */
-    public function withFile(string $name): MutableFileInterface
+    public function withCode(int $code = 0): MutableCodeInterface
     {
-        $this->file = $name;
+        $this->code = $code;
 
         return $this;
     }

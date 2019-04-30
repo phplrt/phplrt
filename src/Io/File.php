@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Io;
 
+use Phplrt\Io\File\Virtual;
+use Phplrt\Io\File\Physical;
 use Phplrt\Io\Exception\NotFoundException;
 use Phplrt\Io\Exception\NotReadableException;
-use Phplrt\Io\File\Physical;
-use Phplrt\Io\File\Virtual;
 
 /**
  * Class File

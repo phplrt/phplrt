@@ -14,13 +14,6 @@ use Phplrt\Position\PositionInterface;
 /**
  * Interface ExternalExceptionInterface
  */
-interface ExternalExceptionInterface extends
-    \Throwable,
-    PositionInterface
+interface ExternalExceptionInterface extends \Throwable, PositionInterface
 {
-    /**
-     * @param \Throwable $exception
-     * @return ExternalExceptionInterface|$this
-     */
-    public function from(\Throwable $exception): self;
 }

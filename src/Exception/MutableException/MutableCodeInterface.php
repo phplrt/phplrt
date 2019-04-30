@@ -7,15 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Ast\Dumper;
+namespace Phplrt\Exception\MutableException;
 
 /**
- * Interface NodeDumperInterface
+ * Interface MutableCodeInterface
  */
-interface NodeDumperInterface
+interface MutableCodeInterface
 {
     /**
-     * @return string
+     * @param int $code
+     * @return MutableCodeInterface|$this
      */
-    public function toString(): string;
+    public function withCode(int $code = 0): self;
 }

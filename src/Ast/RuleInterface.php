@@ -24,18 +24,4 @@ interface RuleInterface extends NodeInterface, \Countable, \IteratorAggregate
      * @return NodeInterface|RuleInterface|LeafInterface|mixed
      */
     public function getChild(int $index);
-
-    /**
-     * @param string $name
-     * @param int|null $depth
-     * @return mixed
-     */
-    public function first(string $name, int $depth = null);
-
-    /**
-     * @param string $name
-     * @param int|null $depth
-     * @return iterable
-     */
-    public function find(string $name, int $depth = null): iterable;
 }

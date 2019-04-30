@@ -7,11 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Exception;
+namespace Phplrt\Exception\MutableException;
 
 use Phplrt\Io\Readable;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionInterface;
+use Phplrt\Exception\MutableExceptionInterface;
 
 /**
  * Trait MutableExceptionTrait
@@ -37,19 +38,46 @@ trait MutableExceptionTrait
 
         [$line, $column] = $this->resolveLineAndColumn($file, $offsetOrLine, $column);
 
-        return $this
+        return (clone $this)
             ->withFile($this->resolveFilename($file))
             ->withLine($line)
             ->withColumn($column);
     }
 
     /**
-     * @param Readable|string $file
-     * @return string
+     * @param \Throwable $e
+     * @return MutableExceptionInterface
      */
-    private function resolveFilename($file): string
+    public function throwsFrom(\Throwable $e): MutableExceptionInterface
     {
-        return $file instanceof Readable ? $file->getPathname() : $file;
+        ($self = clone $this)
+            ->withMessage($e->getMessage())
+            ->withCode($e->getCode())
+            ->withFile($e->getFile())
+            ->withLine($e->getLine());
+
+        if ($e instanceof PositionInterface) {
+            $self->withColumn($e->getColumn());
+        }
+
+        return $self;
+    }
+
+    /**
+     * @param Readable|string $file
+     * @param int $offsetOrLine
+     * @param int|null $column
+     * @return int[]
+     */
+    private function resolveLineAndColumn($file, int $offsetOrLine = 0, int $column = null): array
+    {
+        if ($column === null) {
+            $position = $this->resolvePosition($file, $offsetOrLine);
+
+            return [$position->getLine(), $position->getColumn()];
+        }
+
+        return [$offsetOrLine, $column];
     }
 
     /**
@@ -68,18 +96,10 @@ trait MutableExceptionTrait
 
     /**
      * @param Readable|string $file
-     * @param int $offsetOrLine
-     * @param int|null $column
-     * @return int[]
+     * @return string
      */
-    private function resolveLineAndColumn($file, int $offsetOrLine = 0, int $column = null): array
+    private function resolveFilename($file): string
     {
-        if ($column === null) {
-            $position = $this->resolvePosition($file, $offsetOrLine);
-
-            return [$position->getLine(), $position->getColumn()];
-        }
-
-        return [$offsetOrLine, $column];
+        return $file instanceof Readable ? $file->getPathname() : $file;
     }
 }

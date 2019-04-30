@@ -7,7 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Exception;
+namespace Phplrt\Exception\MutableException;
+
+use Phplrt\Exception\ColumnPositionTrait;
 
 /**
  * Trait MutablePositionTrait

@@ -9,15 +9,23 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Ast\Dumper\RenderableInterface;
-
 /**
  * Interface NodeInterface
  */
-interface NodeInterface extends ProvidesNameInterface, RenderableInterface
+interface NodeInterface
 {
+    /**
+     * @return string
+     */
+    public function getName(): string;
+
     /**
      * @return int
      */
     public function getOffset(): int;
+
+    /**
+     * @return string
+     */
+    public function __toString(): string;
 }

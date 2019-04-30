@@ -7,21 +7,18 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Ast;
+namespace Phplrt\Ast\Dumper;
+
+use Phplrt\Ast\NodeInterface;
 
 /**
- * Interface ProvidesNameInterface
+ * Interface DumperInterface
  */
-interface ProvidesNameInterface
+interface DumperInterface
 {
     /**
+     * @param mixed|NodeInterface $node
      * @return string
      */
-    public function getName(): string;
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function is(string $name): bool;
+    public function dump($node): string;
 }

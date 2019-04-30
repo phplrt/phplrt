@@ -16,7 +16,7 @@ use Phplrt\Ast\RuleInterface;
 /**
  * Class XmlDumper
  */
-class XmlDumper implements NodeDumperInterface
+class XmlDumper implements DumperInterface
 {
     /**
      * @var string
@@ -39,40 +39,24 @@ class XmlDumper implements NodeDumperInterface
     protected $indention = 4;
 
     /**
-     * @var NodeInterface|mixed
-     */
-    private $ast;
-
-    /**
      * XmlDumper constructor.
-     * @param mixed|NodeInterface $ast
      */
-    public function __construct($ast)
+    public function __construct()
     {
         \assert(\class_exists(\DOMDocument::class));
-
-        $this->ast = $ast;
     }
 
     /**
+     * @param mixed|NodeInterface $node
      * @return string
      */
-    public function __toString(): string
-    {
-        return $this->toString();
-    }
-
-    /**
-     * @return string
-     */
-    public function toString(): string
+    public function dump($node): string
     {
         $dom = new \DOMDocument(self::OUTPUT_XML_VERSION, self::OUTPUT_CHARSET);
-
         $dom->formatOutput = true;
 
-        $root = $dom->createElement($this->getRootNodeName());
-        $root->appendChild($this->renderAsXml($dom, $this->ast));
+        $root = $dom->createElement($this->getRootNodeName($node));
+        $root->appendChild($this->renderAsXml($dom, $node));
 
         if (\count($root->childNodes) === 1) {
             return $dom->saveXML($root->firstChild);
@@ -82,11 +66,36 @@ class XmlDumper implements NodeDumperInterface
     }
 
     /**
+     * @param mixed|NodeInterface $node
      * @return string
      */
-    private function getRootNodeName(): string
+    private function getRootNodeName($node): string
     {
-        return $this->getName($this->ast);
+        return $this->getName($node);
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return string
+     */
+    private function getName($node): string
+    {
+        $name = \basename(\str_replace('\\', '/', \get_class($node)));
+
+        $result = $node instanceof NodeInterface
+            ? \preg_replace('/\W+/u', '', $node->getName())
+            : $name;
+
+        return $this->escape($result);
+    }
+
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function escape(string $value): string
+    {
+        return \htmlspecialchars($value);
     }
 
     /**
@@ -144,32 +153,9 @@ class XmlDumper implements NodeDumperInterface
             default:
                 $result = $root->createElement($name);
                 $result->appendChild($root->createCDATASection($value));
+
                 return $result;
         }
-    }
-
-    /**
-     * @param NodeInterface $node
-     * @return string
-     */
-    private function getName($node): string
-    {
-        $name = \basename(\str_replace('\\', '/', \get_class($node)));
-
-        $result = $node instanceof NodeInterface
-            ? \preg_replace('/\W+/u', '', $node->getName())
-            : $name;
-
-        return $this->escape($result);
-    }
-
-    /**
-     * @param string $value
-     * @return string
-     */
-    private function escape(string $value): string
-    {
-        return \htmlspecialchars($value);
     }
 
     /**
@@ -217,6 +203,16 @@ class XmlDumper implements NodeDumperInterface
     }
 
     /**
+     * @param \DOMElement $node
+     * @param string $name
+     * @param string $value
+     */
+    private function renderAttribute(\DOMElement $node, string $name, string $value): void
+    {
+        $node->setAttribute($this->escape($name), $this->escape($value));
+    }
+
+    /**
      * @param mixed $value
      * @return string
      */
@@ -235,25 +231,6 @@ class XmlDumper implements NodeDumperInterface
             default:
                 return $this->inline(\print_r($value, true));
         }
-    }
-
-    /**
-     * @param \DOMElement $node
-     * @param string $name
-     * @param string $value
-     */
-    private function renderAttribute(\DOMElement $node, string $name, string $value): void
-    {
-        $node->setAttribute($this->escape($name), $this->escape($value));
-    }
-
-    /**
-     * @return string
-     * @deprecated Use toString method instead
-     */
-    public function toXml(): string
-    {
-        return $this->toString();
     }
 
     /**

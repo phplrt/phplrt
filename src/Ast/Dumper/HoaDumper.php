@@ -16,23 +16,8 @@ use Phplrt\Ast\RuleInterface;
 /**
  * Class HoaDumper
  */
-class HoaDumper implements NodeDumperInterface
+class HoaDumper implements DumperInterface
 {
-    /**
-     * @var RuleInterface
-     */
-    private $ast;
-
-    /**
-     * HoaDumper constructor.
-     *
-     * @param RuleInterface $ast
-     */
-    public function __construct(RuleInterface $ast)
-    {
-        $this->ast = $ast;
-    }
-
     /**
      * @param NodeInterface|RuleInterface|LeafInterface $node
      * @param int $depth
@@ -50,18 +35,22 @@ class HoaDumper implements NodeDumperInterface
 
         $result = [$prefix . $node->getName()];
 
-        foreach ($node->getChildren() as $child) {
-            $result = \array_merge($result, $this->render($child, $depth + 1));
+        if ($node instanceof RuleInterface) {
+            foreach ($node->getChildren() as $child) {
+                /** @noinspection SlowArrayOperationsInLoopInspection */
+                $result = \array_merge($result, $this->render($child, $depth + 1));
+            }
         }
 
         return $result;
     }
 
     /**
+     * @param mixed|NodeInterface $node
      * @return string
      */
-    public function toString(): string
+    public function dump($node): string
     {
-        return \implode("\n", $this->render($this->ast));
+        return \implode("\n", $this->render($node));
     }
 }

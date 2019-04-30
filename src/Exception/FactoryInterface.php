@@ -20,4 +20,10 @@ interface FactoryInterface
      * @return ExternalExceptionInterface|$this
      */
     public static function new(string $message, ...$args): ExternalExceptionInterface;
+
+    /**
+     * @param \Throwable $exception
+     * @return ExternalExceptionInterface|$this
+     */
+    public static function from(\Throwable $exception): ExternalExceptionInterface;
 }

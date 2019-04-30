@@ -10,19 +10,16 @@ declare(strict_types=1);
 namespace Phplrt\Ast;
 
 use Phplrt\Lexer\TokenInterface;
-use Phplrt\Ast\Dumper\RenderableTrait;
 
 /**
  * Class Leaf
  */
-class Leaf implements LeafInterface
+class Leaf extends Node implements LeafInterface
 {
-    use RenderableTrait;
-
     /**
-     * @var TokenInterface
+     * @var string[]
      */
-    private $token;
+    private $value;
 
     /**
      * Leaf constructor.
@@ -31,7 +28,9 @@ class Leaf implements LeafInterface
      */
     public function __construct(TokenInterface $token)
     {
-        $this->token = $token;
+        parent::__construct($token->getName(), $token->getOffset());
+
+        $this->value = $token->getGroups();
     }
 
     /**
@@ -40,31 +39,6 @@ class Leaf implements LeafInterface
      */
     public function getValue(int $group = 0): ?string
     {
-        return $this->token->getValue($group);
-    }
-
-    /**
-     * @return int
-     */
-    public function getOffset(): int
-    {
-        return $this->token->getOffset();
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->token->getName();
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function is(string $name): bool
-    {
-        return $this->token->getName() === $name;
+        return $this->value[$group] ?? null;
     }
 }
