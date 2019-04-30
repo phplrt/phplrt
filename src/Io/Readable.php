@@ -55,12 +55,6 @@ interface Readable
     public function getPosition(int $offset): PositionInterface;
 
     /**
-     * @deprecated Use method "exists()" instead.
-     * @return bool
-     */
-    public function isFile(): bool;
-
-    /**
      * Returns information whether the file actually exists on the file system.
      *
      * @return bool
