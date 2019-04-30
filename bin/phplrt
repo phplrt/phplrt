@@ -8,7 +8,10 @@
  */
 declare(strict_types=1);
 
+use Composer\Autoload\ClassLoader;
 use Symfony\Component\Console\Application;
+use Phplrt\Compiler\Console\CompileCommand;
+use Phplrt\Compiler\Console\GrammarCompileCommand;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +37,7 @@ $autoloadPaths = [
 
 foreach ($autoloadPaths as $path) {
     if (\is_file($path) && \is_readable($path)) {
-        /** @var \Composer\Autoload\ClassLoader $classLoader */
+        /** @var ClassLoader $classLoader */
         $classLoader = require_once $path;
         break;
     }
@@ -64,17 +67,17 @@ if (! isset($classLoader) || ! $classLoader) {
 */
 
 try {
-
     $app = new Application();
 
-    $app->add(new \Phplrt\Compiler\Console\CompileCommand());
-    $app->add(new \Phplrt\Compiler\Console\GrammarCompileCommand());
+    $app->add(new CompileCommand());
+    $app->add(new GrammarCompileCommand());
 
     $code = $app->run();
 
 } catch (\Throwable $e) {
     \fwrite(\STDERR, $e->getMessage());
     $code = $e->getCode() ?: 1;
+
 } finally {
     exit($code);
 }
