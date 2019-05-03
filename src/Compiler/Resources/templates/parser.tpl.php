@@ -35,7 +35,7 @@ use Phplrt\Parser\GrammarInterface;
  */
 class <?=$this->class; ?> extends \Phplrt\Parser\Parser
 {
-<?php foreach ($this->getLexer()->getTokenDefinitions() as $token): ?>
+<?php foreach ($this->getLexer()->getTokenDefinitions() as $token) : ?>
     public const <?=$token->getName(); ?> = <?=$this->render($token->getName()); ?>;
 <?php endforeach; ?>
 
@@ -45,7 +45,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser
      * @var string[]
      */
     protected const LEXER_TOKENS = [
-<?php foreach ($this->getLexer()->getTokenDefinitions() as $token): ?>
+<?php foreach ($this->getLexer()->getTokenDefinitions() as $token) : ?>
         self::<?=$token->getName(); ?> => <?=$this->render($token->getPcre()); ?>,
 <?php endforeach; ?>
     ];
@@ -56,11 +56,11 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser
      * @var string[]
      */
     protected const LEXER_SKIPPED_TOKENS = [
-<?php foreach ($this->getLexer()->getTokenDefinitions() as $token):
+<?php foreach ($this->getLexer()->getTokenDefinitions() as $token) :
     if ($token->isKeep()) {
         continue;
     }
-?>
+    ?>
         <?=$this->render($token->getName()); ?>,
 <?php endforeach; ?>
     ];
@@ -71,7 +71,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser
      * @var string[]
      */
     protected const PARSER_DELEGATES = [
-<?php foreach ($this->getGrammar()->getDelegates() as $rule => $delegate): ?>
+<?php foreach ($this->getGrammar()->getDelegates() as $rule => $delegate) : ?>
         <?=$this->render($rule); ?> => \<?=$delegate; ?>::class,
 <?php endforeach; ?>
     ];

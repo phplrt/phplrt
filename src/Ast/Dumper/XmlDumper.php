@@ -262,10 +262,10 @@ class XmlDumper implements DumperInterface
     private function format(string $xml): string
     {
         return \preg_replace_callback('/^(\h*)(.*?)$/isum', function (array $matches) {
-                [, $prefix, $code] = $matches;
+            [, $prefix, $code] = $matches;
 
-                return $this->initialIndent() . $this->indent($prefix) . $code;
-            }, $xml) ?? $xml;
+            return $this->initialIndent() . $this->indent($prefix) . $code;
+        }, $xml) ?? $xml;
     }
 
     /**
