@@ -353,7 +353,7 @@ class Analyzer
      */
     protected function token(LookaheadIterator $tokens, bool $kept = true)
     {
-        $tokenName = $tokens->current()->getValue(1);
+        $tokenName = \trim($tokens->current()->getValue(), '<>:');
 
         $name = $this->transitionalRuleCounter++;
 
@@ -370,7 +370,7 @@ class Analyzer
      */
     protected function invoke(LookaheadIterator $tokens)
     {
-        $tokenName = $tokens->current()->getValue(1);
+        $tokenName = \trim($tokens->current()->getValue(), '()');
 
         if (! \array_key_exists($tokenName, $this->rules)) {
             $error = \vsprintf('Cannot call rule %s() in rule %s because it does not exist.', [
