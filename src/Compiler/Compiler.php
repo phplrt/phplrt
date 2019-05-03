@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Ast\RuleInterface;
 use Phplrt\Io\Readable;
-use Phplrt\Parser\Driver\Proxy;
 use Phplrt\Parser\ParserInterface;
 use Phplrt\Compiler\Grammar\Reader;
 use Phplrt\Exception\ExternalException;
@@ -22,7 +22,7 @@ use Zend\Code\Generator\Exception\RuntimeException;
 /**
  * Class Compiler
  */
-class Compiler extends Proxy
+class Compiler implements ParserInterface
 {
     /**
      * @var string|null
@@ -33,6 +33,40 @@ class Compiler extends Proxy
      * @var string
      */
     private $class = 'Parser';
+
+    /**
+     * @var ParserInterface
+     */
+    private $parser;
+
+    /**
+     * Compiler constructor.
+     *
+     * @param ParserInterface $parser
+     */
+    public function __construct(ParserInterface $parser)
+    {
+        $this->parser = $parser;
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public function __call(string $name, array $arguments = [])
+    {
+        return $this->parser->$name(...$arguments);
+    }
+
+    /**
+     * @param Readable $input
+     * @return mixed|RuleInterface
+     */
+    public function parse(Readable $input)
+    {
+        return $this->parser->parse($input);
+    }
 
     /**
      * @param Readable $grammar
