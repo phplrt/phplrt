@@ -62,11 +62,8 @@
         "sort-packages": true
     },
     "scripts": {
-        "post-autoload-dump": [
-            "@phpcbf -p --standard=PSR12 src"
-        ],
         "phpcbf": [
-            "@php vendor/squizlabs/php_codesniffer/bin/phpcbf"
+            "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src"
         ]
     },
     "minimum-stability": "dev",
