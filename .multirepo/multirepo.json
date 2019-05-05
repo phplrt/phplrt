@@ -1,5 +1,5 @@
 {
-    "branch": "1.0.x",
+    "branch": "master",
     "files": {
         "../.editorconfig": ".editorconfig",
         "../.gitattributes": ".gitattributes",
