@@ -42,6 +42,15 @@
             "Phplrt\\": "src/"
         }
     },
+    "replace": {
+        "phplrt/ast": "*",
+        "phplrt/compiler": "*",
+        "phplrt/exception": "*",
+        "phplrt/io": "*",
+        "phplrt/lexer": "*",
+        "phplrt/parser": "*",
+        "phplrt/position": "*"
+    },
     "require-dev": {
         "phpunit/phpunit": "^7.5",
         "brianium/paratest": "^2.1",
