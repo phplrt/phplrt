@@ -1,0 +1,43 @@
+{
+    "name": "phplrt/ast",
+    "type": "library",
+    "description": "The PHPLRT Ast package.",
+    "license": "MIT",
+    "keywords": [
+        "ast",
+        "dump",
+        "tree"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/ast"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Ast\\": ""
+        }
+    },
+    "suggest": {
+        "ext-dom": "Dumping abstract syntax tree as XML"
+    },
+    "extra": {
+        "branch-alias": {
+            "master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

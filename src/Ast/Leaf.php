@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Lexer\TokenInterface;
-
 /**
  * Class Leaf
  */
