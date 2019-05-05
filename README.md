@@ -15,4 +15,5 @@
 
 ## Introduction
 
-TODO
+This is a package that provides basic implementation tools for 
+developing PHP-based programming languages.
