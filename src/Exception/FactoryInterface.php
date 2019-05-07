@@ -23,7 +23,8 @@ interface FactoryInterface
 
     /**
      * @param \Throwable $exception
+     * @param \Throwable|null $previous
      * @return ExternalExceptionInterface|$this
      */
-    public static function from(\Throwable $exception): ExternalExceptionInterface;
+    public static function from(\Throwable $exception, \Throwable $previous = null): ExternalExceptionInterface;
 }
