@@ -23,11 +23,14 @@ class ExternalException extends \Exception implements
 
     /**
      * @param \Throwable $e
-     * @return ExternalExceptionInterface|$this
+     * @param \Throwable|null $previous
+     * @return ExternalExceptionInterface|MutableExceptionInterface|$this
      */
-    public static function from(\Throwable $e): ExternalExceptionInterface
+    public static function from(\Throwable $e, \Throwable $previous = null): ExternalExceptionInterface
     {
-        return static::new($e->getMessage())->throwsFrom($e);
+        $previous = $previous ?? $e->getPrevious();
+
+        return (new static($e->getMessage(), $e->getCode(), $previous))->throwsFrom($e);
     }
 
     /**
