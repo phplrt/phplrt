@@ -50,17 +50,17 @@ trait MutableExceptionTrait
      */
     public function throwsFrom(\Throwable $e): MutableExceptionInterface
     {
-        ($self = clone $this)
+        $this
             ->withMessage($e->getMessage())
             ->withCode($e->getCode())
             ->withFile($e->getFile())
             ->withLine($e->getLine());
 
         if ($e instanceof PositionInterface) {
-            $self->withColumn($e->getColumn());
+            $this->withColumn($e->getColumn());
         }
 
-        return $self;
+        return $this;
     }
 
     /**
