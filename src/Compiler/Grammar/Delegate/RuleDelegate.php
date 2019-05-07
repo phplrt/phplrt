@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar\Delegate;
 
-use Phplrt\Compiler\Grammar\LookaheadIterator;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\TokenInterface;
+use Phplrt\Ast\Rule;
 use Phplrt\Ast\LeafInterface;
 use Phplrt\Ast\NodeInterface;
-use Phplrt\Ast\Rule;
+use Phplrt\Lexer\Token\Token;
 use Phplrt\Ast\RuleInterface;
+use Phplrt\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Compiler\Grammar\LookaheadIterator;
 
 /**
  * Class RuleDelegate
@@ -45,9 +45,24 @@ class RuleDelegate extends Rule
             if ($child instanceof RuleInterface) {
                 yield from $this->getTokens($child);
             } else {
-                yield new Token($child->getName(), $child->getValues(), $child->getOffset());
+                yield new Token($child->getName(), $child->getValue(), $child->getOffset());
             }
         }
+    }
+
+    /**
+     * @param string $name
+     * @return LeafInterface|NodeInterface|RuleInterface|null
+     */
+    private function first(string $name)
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($child->getName() === $name) {
+                return $child;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -55,7 +70,11 @@ class RuleDelegate extends Rule
      */
     public function getRuleName(): string
     {
-        return $this->first('RuleName')->first('T_NAME')->getValue();
+        if ($name = $this->first('RuleName')) {
+            return $name->getChild(0)->getValue();
+        }
+
+        return $this->getName();
     }
 
     /**
@@ -63,7 +82,7 @@ class RuleDelegate extends Rule
      */
     public function isKept(): bool
     {
-        return (bool)$this->first('ShouldKeep');
+        return $this->first('ShouldKeep') !== null;
     }
 
     /**
@@ -74,7 +93,7 @@ class RuleDelegate extends Rule
         $delegate = $this->first('RuleDelegate');
 
         if ($delegate instanceof RuleInterface) {
-            return $delegate->first('T_NAME')->getValue();
+            return $delegate->getChild(0)->getValue();
         }
 
         return null;

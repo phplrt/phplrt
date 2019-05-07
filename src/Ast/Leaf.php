@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Lexer\TokenInterface;
-
 /**
  * Class Leaf
  */
@@ -24,13 +22,15 @@ class Leaf extends Node implements LeafInterface
     /**
      * Leaf constructor.
      *
-     * @param TokenInterface $token
+     * @param string $name
+     * @param string|string[] $value
+     * @param int $offset
      */
-    public function __construct(TokenInterface $token)
+    public function __construct(string $name, $value, int $offset = 0)
     {
-        parent::__construct($token->getName(), $token->getOffset());
+        parent::__construct($name, $offset);
 
-        $this->value = $token->getGroups();
+        $this->value = (array)$value;
     }
 
     /**

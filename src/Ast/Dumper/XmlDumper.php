@@ -21,12 +21,32 @@ class XmlDumper implements DumperInterface
     /**
      * @var string
      */
-    private const OUTPUT_CHARSET = 'UTF-8';
+    private const DEFAULT_DOM_INDENT_CHARS = '  ';
 
     /**
      * @var string
      */
-    private const OUTPUT_XML_VERSION = '1.1';
+    private const DEFAULT_CHARSET = 'UTF-8';
+
+    /**
+     * @var string
+     */
+    private const DEFAULT_XML_VERSION = '1.1';
+
+    /**
+     * @var string
+     */
+    protected $charset = self::DEFAULT_CHARSET;
+
+    /**
+     * @var string
+     */
+    protected $version = self::DEFAULT_XML_VERSION;
+
+    /**
+     * @var bool
+     */
+    protected $format = true;
 
     /**
      * @var int
@@ -52,41 +72,74 @@ class XmlDumper implements DumperInterface
      */
     public function dump($node): string
     {
-        $dom = new \DOMDocument(self::OUTPUT_XML_VERSION, self::OUTPUT_CHARSET);
-        $dom->formatOutput = true;
+        $root = $this->document();
 
-        $root = $dom->createElement($this->getRootNodeName($node));
-        $root->appendChild($this->renderAsXml($dom, $node));
+        $result = $root->saveXML($this->render($root, $node));
 
-        if (\count($root->childNodes) === 1) {
-            return $dom->saveXML($root->firstChild);
+        return $this->format($result);
+    }
+
+    /**
+     * @return \DOMDocument
+     */
+    private function document(): \DOMDocument
+    {
+        $dom = new \DOMDocument($this->version, $this->charset);
+        $dom->formatOutput = $this->format;
+
+        return $dom;
+    }
+
+    /**
+     * @param \DOMDocument $root
+     * @param mixed $node
+     * @return \DOMElement
+     */
+    private function render(\DOMDocument $root, $node): \DOMElement
+    {
+        switch (true) {
+            case $node instanceof RuleInterface:
+                return $this->rule($root, $node);
+
+            case $node instanceof LeafInterface:
+                return $this->leaf($root, $node);
+
+            default:
+                return $this->custom($root, $node);
+        }
+    }
+
+    /**
+     * @param \DOMDocument $root
+     * @param RuleInterface $node
+     * @return \DOMElement
+     */
+    private function rule(\DOMDocument $root, RuleInterface $node): \DOMElement
+    {
+        $rule = $root->createElement($this->name($node));
+
+        $this->withAttributes($rule, $node);
+
+        foreach ($node->getChildren() as $child) {
+            $rule->appendChild($this->render($root, $child));
         }
 
-        return $dom->saveXML($root);
+        return $rule;
     }
 
     /**
-     * @param mixed|NodeInterface $node
+     * @param mixed $node
      * @return string
      */
-    private function getRootNodeName($node): string
+    private function name($node): string
     {
-        return $this->getName($node);
-    }
+        if ($node instanceof NodeInterface) {
+            return $this->escape(\preg_replace('/\W+/u', '', $node->getName()));
+        }
 
-    /**
-     * @param NodeInterface $node
-     * @return string
-     */
-    private function getName($node): string
-    {
-        $name = \basename(\str_replace('\\', '/', \get_class($node)));
+        $chunks = \explode('\\', \get_class($node));
 
-        $result = $node instanceof NodeInterface
-            ? \preg_replace('/\W+/u', '', $node->getName())
-            : $name;
-
-        return $this->escape($result);
+        return $this->escape(\array_pop($chunks));
     }
 
     /**
@@ -99,117 +152,35 @@ class XmlDumper implements DumperInterface
     }
 
     /**
-     * @param \DOMDocument $root
-     * @param NodeInterface|LeafInterface|RuleInterface|mixed $ast
-     * @return \DOMElement
+     * @param \DOMElement $ctx
+     * @param $node
+     * @return void
      */
-    private function renderAsXml(\DOMDocument $root, $ast): \DOMElement
+    private function withAttributes(\DOMElement $ctx, $node): void
     {
-        if ($ast instanceof LeafInterface) {
-            $token = $this->createElement($root, $this->getName($ast), $ast->getValue());
-            $this->renderAttributes($root, $token, $ast);
+        if ($node instanceof NodeInterface) {
+            $this->withAttribute($ctx, 'offset', $node->getOffset());
 
-            if (\count($ast->getValues()) > 1) {
-                foreach ($ast->getValues() as $i => $value) {
-                    if ($i === 0) {
-                        continue;
-                    }
-
-                    $this->renderAttribute($token, 'value:' . $i, $value);
-                }
-            }
-
-            return $token;
+            return;
         }
 
-        $node = $this->createElement($root, $this->getName($ast));
-        $this->renderAttributes($root, $node, $ast);
+        $modifiers = $this->getPropertyModifiers();
 
-        if ($ast instanceof RuleInterface) {
-            /** @var NodeInterface $child */
-            foreach ($ast->getChildren() as $child) {
-                $node->appendChild($this->renderAsXml($root, $child));
-            }
-        }
-
-        return $node;
-    }
-
-    /**
-     * @param \DOMDocument $root
-     * @param string $name
-     * @param string|null $value
-     * @return \DOMElement
-     */
-    private function createElement(\DOMDocument $root, string $name, string $value = null): \DOMElement
-    {
-        switch (true) {
-            case $value === null:
-                return $root->createElement($name);
-
-            case $value === $this->escape($value):
-                return $root->createElement($name, $value);
-
-            default:
-                $result = $root->createElement($name);
-                $result->appendChild($root->createCDATASection($value));
-
-                return $result;
-        }
-    }
-
-    /**
-     * @param \DOMDocument $root
-     * @param \DOMElement $node
-     * @param NodeInterface|mixed $ast
-     */
-    private function renderAttributes(\DOMDocument $root, \DOMElement $node, $ast): void
-    {
-        $reflection = new \ReflectionObject($ast);
-
-        /** @var \ReflectionProperty[] $properties */
-        $properties = \array_merge(
-            $reflection->getProperties(\ReflectionProperty::IS_PROTECTED),
-            $reflection->getProperties(\ReflectionProperty::IS_PUBLIC)
-        );
-
-        foreach ($properties as $property) {
+        foreach ((new \ReflectionObject($node))->getProperties($modifiers) as $property) {
             $property->setAccessible(true);
 
-            if ($property->isStatic()) {
-                continue;
-            }
-
-            $value = $property->getValue($ast);
-
-            if (\is_array($value)) {
-                foreach ($value as $key => $child) {
-                    if (\is_object($child)) {
-                        $node->appendChild($this->renderAsXml($root, $child));
-                    } else {
-                        $this->renderAttribute($node, $property->getName() . ':' . $key, $this->value($child));
-                    }
-                }
-                continue;
-            }
-
-            if (\is_object($value)) {
-                $node->appendChild($this->renderAsXml($root, $value));
-                continue;
-            }
-
-            $this->renderAttribute($node, $property->getName(), $this->value($value));
+            $this->withAttribute($ctx, $property->getName(), $property->getValue($node));
         }
     }
 
     /**
-     * @param \DOMElement $node
+     * @param \DOMElement $element
      * @param string $name
-     * @param string $value
+     * @param $value
      */
-    private function renderAttribute(\DOMElement $node, string $name, string $value): void
+    private function withAttribute(\DOMElement $element, string $name, $value): void
     {
-        $node->setAttribute($this->escape($name), $this->escape($value));
+        $element->setAttribute($name, $this->value($value));
     }
 
     /**
@@ -243,27 +214,82 @@ class XmlDumper implements DumperInterface
     }
 
     /**
-     * @param int $depth
-     * @param int $initial
-     * @return $this
+     * @return int
      */
-    protected function setIndention(int $depth = 4, int $initial = 0): self
+    private function getPropertyModifiers(): int
     {
-        $this->indention = $depth;
-        $this->initialIndention = $initial;
-
-        return $this;
+        return \ReflectionProperty::IS_PUBLIC;
     }
 
     /**
-     * @param string $line
-     * @param int $depth
+     * @param \DOMDocument $root
+     * @param LeafInterface $node
+     * @return \DOMElement
+     */
+    private function leaf(\DOMDocument $root, LeafInterface $node): \DOMElement
+    {
+        $leaf = $root->createElement($this->name($node), $node->getValue());
+
+        $this->withAttributes($leaf, $node);
+
+        return $leaf;
+    }
+
+    /**
+     * @param \DOMDocument $root
+     * @param mixed $node
+     * @return \DOMElement
+     */
+    private function custom(\DOMDocument $root, $node): \DOMElement
+    {
+        $element = $root->createElement($this->name($node));
+
+        $this->withAttributes($element, $node);
+
+        if (\is_iterable($node)) {
+            foreach ($node as $child) {
+                $element->appendChild($this->render($root, $child));
+            }
+        }
+
+        return $element;
+    }
+
+    /**
+     * @param string $xml
      * @return string
      */
-    protected function depth(string $line, int $depth = 0): string
+    private function format(string $xml): string
     {
-        $prefix = \str_repeat(' ', $depth * ($this->initialIndention + $this->indention));
+        return \preg_replace_callback('/^(\h*)(.*?)$/isum', function (array $matches) {
+            [, $prefix, $code] = $matches;
 
-        return $prefix . $line . \PHP_EOL;
+            return $this->initialIndent() . $this->indent($prefix) . $code;
+        }, $xml) ?? $xml;
+    }
+
+    /**
+     * @return string
+     */
+    private function initialIndent(): string
+    {
+        return \str_repeat($this->prefix(), $this->initialIndention);
+    }
+
+    /**
+     * @return string
+     */
+    private function prefix(): string
+    {
+        return \str_repeat(' ', $this->indention);
+    }
+
+    /**
+     * @param string $indent
+     * @return string
+     */
+    private function indent(string $indent): string
+    {
+        return \str_replace(self::DEFAULT_DOM_INDENT_CHARS, $this->prefix(), $indent);
     }
 }

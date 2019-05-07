@@ -44,9 +44,7 @@ class CompileCommand extends Command
             $compiler->setClassName($in->getOption('class'));
         }
 
-        $cwd = \getcwd() ?: __DIR__ . '/..';
-
-        $compiler->saveTo($in->getOption('dir') ?: $cwd);
+        $compiler->saveTo($in->getOption('dir') ?: \getcwd());
     }
 
     /**

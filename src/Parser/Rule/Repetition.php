@@ -42,8 +42,10 @@ class Repetition extends Rule
 
         parent::__construct($name, $children, $nodeId);
 
-        \assert($min <= $max || $max === -1,
-            \sprintf('Cannot repeat with a min (%d) greater than max (%d).', $min, $max));
+        \assert(
+            $min <= $max || $max === -1,
+            \sprintf('Cannot repeat with a min (%d) greater than max (%d).', $min, $max)
+        );
     }
 
     /**

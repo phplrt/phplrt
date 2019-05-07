@@ -1,0 +1,44 @@
+{
+    "name": "phplrt/io",
+    "type": "library",
+    "description": "The PHPLRT Io package.",
+    "license": "MIT",
+    "keywords": [
+        "file",
+        "directory",
+        "reader",
+        "abstraction",
+        "fs",
+        "file system"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/io"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "phplrt/position": "~1.0|1.0.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Io\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

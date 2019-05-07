@@ -98,9 +98,7 @@ class Position implements ProvidesOffset, PositionInterface
     {
         [$line, $column] = [\max(1, $line), \max(1, $column)];
 
-        // TODO Extract offset
-
-        return new static(0, $line, $column);
+        throw new \LogicException(__METHOD__ . ' not implemented yet');
     }
 
     /**

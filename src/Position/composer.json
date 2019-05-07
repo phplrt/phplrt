@@ -1,0 +1,45 @@
+{
+    "name": "phplrt/position",
+    "type": "library",
+    "description": "The PHPLRT Position package.",
+    "license": "MIT",
+    "keywords": [
+        "analyzing",
+        "visualization",
+        "input",
+        "position",
+        "line",
+        "column",
+        "offset",
+        "utils"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/position"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Position\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

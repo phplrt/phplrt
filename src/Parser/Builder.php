@@ -10,9 +10,11 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Ast\Leaf;
+use Phplrt\Ast\LeafInterface;
 use Phplrt\Ast\Node;
 use Phplrt\Ast\RuleInterface;
 use Phplrt\Ast\Rule;
+use Phplrt\Lexer\TokenInterface;
 use Phplrt\Parser\Trace\Entry;
 use Phplrt\Parser\Trace\Escape;
 use Phplrt\Parser\Exception\GrammarException;
@@ -126,11 +128,9 @@ class Builder implements BuilderInterface
                     continue;
                 }
 
-                $children[] = $this->getRule(
-                    (string)($id ?: $childId),
-                    \array_reverse($handle),
-                    $trace->getOffset()
-                );
+                $name = $id ?: $childId;
+
+                $children[] = $this->getRule($name, \array_reverse($handle), $trace->getOffset());
             } elseif ($trace instanceof Escape) {
                 return $i + 1;
             } else {
@@ -139,12 +139,21 @@ class Builder implements BuilderInterface
                     continue;
                 }
 
-                $children[] = new Leaf($trace->getToken());
+                $children[] = $this->getLeaf($trace->getToken());
                 ++$i;
             }
         }
 
         return $children[0];
+    }
+
+    /**
+     * @param TokenInterface $token
+     * @return Leaf
+     */
+    protected function getLeaf(TokenInterface $token): LeafInterface
+    {
+        return new Leaf($token->getName(), $token->getGroups(), $token->getOffset());
     }
 
     /**

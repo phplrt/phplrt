@@ -8,7 +8,6 @@
 #
 # Multi Repo Ignore
 #
-multirepo.json export-ignore
 /.multirepo export-ignore
 
 #

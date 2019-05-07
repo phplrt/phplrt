@@ -60,15 +60,10 @@ abstract class Node implements NodeInterface
      */
     public function __toString(): string
     {
-        switch (true) {
-            case \class_exists(XmlDumper::class) &&
-                 \class_exists(\DOMDocument::class):
-                return (new XmlDumper())->dump($this);
+        $dumper = \class_exists(\DOMDocument::class)
+            ? new XmlDumper()
+            : new HoaDumper();
 
-            case \class_exists(HoaDumper::class):
-                return (new HoaDumper())->dump($this);
-        }
-
-        return $this->getName();
+        return $dumper->dump($this);
     }
 }
