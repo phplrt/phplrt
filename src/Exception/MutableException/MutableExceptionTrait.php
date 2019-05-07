@@ -38,7 +38,7 @@ trait MutableExceptionTrait
 
         [$line, $column] = $this->resolveLineAndColumn($file, $offsetOrLine, $column);
 
-        return (clone $this)
+        return $this
             ->withFile($this->resolveFilename($file))
             ->withLine($line)
             ->withColumn($column);
