@@ -14,7 +14,7 @@ use Phplrt\Ast\RuleInterface;
 use Phplrt\Parser\ParserInterface;
 
 /**
- * @deprecated since Railt 1.4, use Phplrt\Parser\Parser instead.
+ * @deprecated use Phplrt\Parser\Parser instead.
  */
 class Proxy implements ParserInterface
 {

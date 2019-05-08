@@ -12,7 +12,7 @@ namespace Phplrt\Parser\Driver;
 use Phplrt\Parser\ParserInterface;
 
 /**
- * @deprecated since Railt 1.4, use Phplrt\Parser\Parser instead.
+ * @deprecated use Phplrt\Parser\Parser instead.
  */
 abstract class Stateful extends Proxy
 {

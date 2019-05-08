@@ -12,7 +12,7 @@ namespace Phplrt\Parser\Driver;
 use Phplrt\Parser\Parser;
 
 /**
- * @deprecated since Railt 1.4, use Phplrt\Parser\Parser instead.
+ * @deprecated use Phplrt\Parser\Parser instead.
  */
 class Llk extends Parser
 {
