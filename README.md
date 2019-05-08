@@ -64,6 +64,7 @@ $compiler = Compiler::load(File::fromSources(<<<EBNF
     #Expression
       : <T_DIGIT> (::T_PLUS:: | ::T_MINUS:: | ::T_POW:: | ::T_DIV::) <T_DIGIT> 
       ;
+
 EBNF));
 
 //
