@@ -66,12 +66,13 @@ $compiler = Compiler::load(File::fromSources(<<<EBNF
       ;
 
 EBNF));
+```
 
-//
-// Execution:
-//
+**Execution:**
 
+```php
 echo $compiler->parse(File::fromSources('2 + 2'));
+
 //
 // Output:
 //
@@ -80,10 +81,11 @@ echo $compiler->parse(File::fromSources('2 + 2'));
 //   <T_DIGIT offset="2">2</T_DIGIT>
 // </Expression>
 //
+```
 
-//
-// Compilation:
-//
+**Compilation:**
+
+```php
 $compiler
     ->setNamespace('App')
     ->setClassName('ExpressionParser')
