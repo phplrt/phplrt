@@ -7,13 +7,6 @@ For the beginning it is necessary to familiarize with parsing algorithms. This i
 although it allows you to switch between runtime, but provides out of the box two 
 implementations: [LL(1) - Simple and LL(k) - Lookahead](https://en.wikipedia.org/wiki/LL_parser).
 
-In order to create your own parser we need:
-1) Create [lexer](#lexer)
-2) Create [grammar](#grammar)
-3) Create [parser](#parser)
-
-## Lexer
-
 Let's create a primitive lexer that can handle spaces, 
 numbers and the addition character.
 
@@ -26,8 +19,6 @@ $lexer = (new Lexer())
     ->add('T_PLUS', '\\+')
     ->skip('T_WHITESPACE'); 
 ```
-
-## Grammar
 
 Grammar will be a little more complicated. We need to determine in what order 
 the tokens in the source text can be located, which we will parse.
@@ -65,8 +56,6 @@ $grammar = new Grammar([
     new Terminal(2, 'T_PLUS', true),
 ]);
 ```
-
-## Parsing
 
 In order to test the grammar, we can simply parse the source.
 

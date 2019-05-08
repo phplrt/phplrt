@@ -15,5 +15,31 @@
 
 ## Introduction
 
-This is a package that provides basic implementation tools for 
-developing PHP-based programming languages.
+The phplrt is a set of tools for programming languages recognition. The library 
+provides lexer, parser, grammar compiler, library for working with errors, 
+text analysis and so on.
+
+## Documentation
+
+- [Installation](docs/installation.md)
+- [Grammar](docs/grammar.md)
+    - [Definitions](docs/grammar.md#definitions)
+    - [Comments](docs/grammar.md#comments)
+    - [Output Control](docs/grammar.md#output-control)
+    - [Declaring Rules](docs/grammar.md#declaring-rules)
+    - [Delegates](docs/grammar.md#delegation)
+- [Compiler](docs/compiler.md)
+    - [Compilation](docs/compiler.md#parser-compilation)
+- [Lexer](docs/lexer.md)
+- [Parser](docs/parser.md#parser)
+- [Drivers](docs/drivers.md)
+    - [PCRE](docs/drivers.md#pcre)
+    - [Lexrtl](docs/drivers.md#lexertl)
+- [Rules](docs/rules.md#rules)
+    - [Alternation](docs/rules.md#alternation)
+    - [Concatenation](docs/rules.md#concatenation)
+    - [Repetition](docs/rules.md#repetition)
+    - [Terminal](docs/rules.md#terminal)
+- [Examples](docs/examples.md#examples)
+- [Abstract Syntax Tree](docs/ast.md#abstract-syntax-tree)
+- [Delegates](docs/delegates.md#delegates)

@@ -27,5 +27,5 @@ $compiler->setNamespace('Example')
 
 This code example will create a parser class in the current directory 
 with the required class and namespace names. An example of the result of generation 
-can be found [in an existing project here](https://github.com/railt/compiler/blob/master/src/Grammar/Parser.php).
-As a source, [this grammar file](https://github.com/railt/compiler/blob/master/resources/grammar.pp2). 
+can be found [in an existing project here](https://github.com/phplrt/phplrt/blob/master/src/Compiler/Grammar/Parser.php).
+As a source, [this grammar file](https://github.com/phplrt/phplrt/blob/master/src/Compiler/Resources/pp2/grammar.pp2). 

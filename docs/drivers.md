@@ -2,9 +2,7 @@
 
 The factory returns one of the available implementations, however you can create it yourself.
 
-## Basic
-
-### NativeRegex
+## PCRE
 
 `NativeRegex` implementation is based on the built-in php PCRE functions.
 
@@ -23,7 +21,7 @@ foreach ($lexer->lex(File::fromSources('23 42')) as $token) {
 // T_DIGIT -> 42 at 3
 ```
 
-### Lexertl
+## Lexertl
 
 Experimental lexer based on the 
 [C++ lexertl library](https://github.com/BenHanson/lexertl). To use it, you 
@@ -46,8 +44,3 @@ foreach ($lexer->lex(File::fromSources('23 42')) as $token) {
 
 > Be careful: The library is not fully compatible with the PCRE regex 
 syntax. See the [official documentation](http://www.benhanson.net/lexertl.html).
-
-
-## Multistate
-
-This functionality is not yet implemented.

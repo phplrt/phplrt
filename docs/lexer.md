@@ -25,14 +25,6 @@ by adding an array of the second argument of `Factory` class.
 
 ...and now let's try to understand more!
 
-The lexer contains two types of runtime:
-  * [`Basic`](#basic) - Set of algorithms with one state.
-  * [`Multistate`](#multistate) - Set of algorithms with the possibility of state transition between tokens.
-
-> In connection with the fact that there were almost no differences in 
-speed between several implementations (Stateful vs Stateless) of the same algorithm, 
-it was decided to abandon the immutable stateful lexers.
-
 ```php
 use Phplrt\Lexer\Factory;
 
