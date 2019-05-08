@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Io\Readable;
-use Phplrt\Lexer\Definition\TokenDefinition;
 
 /**
  * Interface LexerInterface
