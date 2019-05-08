@@ -57,16 +57,19 @@ class Stream implements StreamInterface, StreamFactoryInterface
      */
     public function readLine(): string
     {
-        throw new \LogicException(\sprintf('%s not implemented yet', __METHOD__));
+        $this->assertResourceIsAvailable();
+        $this->assertResourceIsReadable();
+
+        return \fgets($this->resource) ?: '';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function lock(): void
+    public function lock(int $mode = \LOCK_SH): void
     {
-        ErrorWrapper::wrap(function () {
-            \flock($this->resource, \LOCK_SH);
+        ErrorWrapper::wrap(function () use ($mode) {
+            \flock($this->resource, $mode);
         });
     }
 

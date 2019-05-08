@@ -110,7 +110,7 @@ class Physical extends AbstractFile
         $stream = Stream::fromPathname($this->getPathname());
 
         if ($exclusive) {
-            $stream->lock();
+            $stream->lock(\LOCK_SH);
         }
 
         return $stream->getResource();

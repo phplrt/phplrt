@@ -28,10 +28,10 @@ interface StreamInterface extends PsrStreamInterface
     /**
      * Acquire a shared lock for reading.
      *
-     * @throws \RuntimeException if an error occurs.
+     * @param int $mode
      * @return void
      */
-    public function lock(): void;
+    public function lock(int $mode = \LOCK_SH): void;
 
     /**
      * Unlock resource.
