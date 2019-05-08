@@ -9,7 +9,28 @@ during the parsing itself, this is only required for development.
 Before you begin to work with custom implementations of parsers, it is 
 recommended that you review the [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)
 
-## Parser compilation
+## Loading
+
+You can immediately load the grammar into memory and execute it 
+using method `$compiler->parse(...)`:
+
+```php
+<?php
+use Phplrt\Io\File;
+use Phplrt\Compiler\Compiler;
+
+$compiler = Compiler::load(
+    $grammar = File::fromPatname(__DIR__ . '/path/to/file.pp2')
+);
+
+$ast = $compiler->parse(
+    $sources = File::fromSources('example text')
+);
+
+echo $ast;
+```
+
+## Compilation
 
 Reading a grammar is quite simple operation, but it still takes time 
 to execute. After the grammar rules have been formulated, you can "fix" the version 
