@@ -14,7 +14,7 @@ recommended that you review the [EBNF](https://en.wikipedia.org/wiki/Extended_Ba
 Reading a grammar is quite simple operation, but it still takes time 
 to execute. After the grammar rules have been formulated, you can "fix" the version 
 in a separate parser class that will contain all the logic and no longer require 
-reading the source code. After you compile it into a class, this package (railt/compiler) 
+reading the source code. After you compile it into a class, this package (phplrt/compiler) 
 can be excluded from composer dependencies.
 
 ```php
