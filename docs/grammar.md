@@ -133,7 +133,7 @@ The constructions of the PP2 language are the following:
 - `#rule` to create a rule node in the resulting tree.
 
 Finally, the grammar of the PP2 language 
-is [written with the PP2 language](https://github.com/railt/compiler/blob/master/resources/grammar.pp2). 
+is [written with the PP2 language](https://github.com/phplrt/phplrt/blob/master/src/Compiler/Resources/pp2/grammar.pp2). 
 
 Let's try to add support for the remaining symbols of the 
 calculator: Moderation, Division and Subtraction; and at the same time slightly 
@@ -218,4 +218,4 @@ create an instance of target class.
   ;
 ```
 
-For more information about delegates, use [documentation](delegates.md).
+More about delegates you can [find here](delegates.md)
