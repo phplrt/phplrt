@@ -11,8 +11,8 @@ namespace Phplrt\Io\Exception;
 
 /**
  * The exception that occurs in case of errors when
- * working with the file system.
+ * working with the stream resource.
  */
-class FileException extends \RuntimeException
+class StreamException extends \RuntimeException
 {
 }

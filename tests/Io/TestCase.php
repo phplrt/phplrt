@@ -32,15 +32,6 @@ abstract class TestCase extends BaseTestCase
             'File'       => [function () {
                 return File::fromPathname($this->getPathname());
             }],
-            'Clone file from sources'        => [function () {
-                return File::fromReadable(File::fromSources($this->getSources(), $this->getPathname()));
-            }],
-            'Clone sources'        => [function () {
-                return File::fromReadable(File::fromSources($this->getSources()));
-            }],
-            'Clone file'       => [function () {
-                return File::fromReadable(File::fromPathname($this->getPathname()));
-            }],
             'SplFileInfo'    => [function () {
                 return File::fromSplFileInfo(new \SplFileInfo($this->getPathname()));
             }],

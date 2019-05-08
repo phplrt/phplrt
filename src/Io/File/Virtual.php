@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
+use Phplrt\Io\Stream;
+use Phplrt\Io\StreamInterface;
+
 /**
  * Class Virtual
  */
@@ -43,7 +46,7 @@ class Virtual extends AbstractFile
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function exists(): bool
     {
@@ -62,7 +65,16 @@ class Virtual extends AbstractFile
     }
 
     /**
-     * @return string
+     * @param array $options
+     * @return StreamInterface
+     */
+    public function getStream(array $options = []): StreamInterface
+    {
+        return Stream::fromContent($this->getContents());
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getContents(): string
     {
@@ -70,21 +82,15 @@ class Virtual extends AbstractFile
     }
 
     /**
-     * @param bool $exclusive
-     * @return resource
+     * {@inheritDoc}
      */
     public function getStreamContents(bool $exclusive = false)
     {
-        $stream = \fopen('php://memory', 'rb+');
-
-        \fwrite($stream, $this->getContents());
-        \rewind($stream);
-
-        return $stream;
+        return Stream::fromContent($this->getContents())->getResource();
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getHash(): string
     {

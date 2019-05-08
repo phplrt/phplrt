@@ -11,8 +11,7 @@ namespace Phplrt\Io;
 
 use Phplrt\Io\File\Virtual;
 use Phplrt\Io\File\Physical;
-use Phplrt\Io\Exception\NotFoundException;
-use Phplrt\Io\Exception\NotReadableException;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class File
@@ -28,9 +27,7 @@ final class File implements FactoryInterface
     }
 
     /**
-     * @param \SplFileInfo $info
-     * @return Readable
-     * @throws NotReadableException
+     * {@inheritDoc}
      */
     public static function fromSplFileInfo(\SplFileInfo $info): Readable
     {
@@ -38,10 +35,7 @@ final class File implements FactoryInterface
     }
 
     /**
-     * @param string $path
-     * @return Readable
-     * @throws NotFoundException
-     * @throws NotReadableException
+     * {@inheritDoc}
      */
     public static function fromPathname(string $path): Readable
     {
@@ -49,9 +43,7 @@ final class File implements FactoryInterface
     }
 
     /**
-     * @param string $sources
-     * @param string|null $name
-     * @return Readable
+     * {@inheritDoc}
      */
     public static function fromSources(string $sources = '', string $name = null): Readable
     {
@@ -59,8 +51,7 @@ final class File implements FactoryInterface
     }
 
     /**
-     * @param string|null $name
-     * @return Readable
+     * {@inheritDoc}
      */
     public static function empty(string $name = null): Readable
     {
@@ -68,11 +59,10 @@ final class File implements FactoryInterface
     }
 
     /**
-     * @param Readable $readable
-     * @return Readable|$this
+     * {@inheritDoc}
      */
-    public static function fromReadable(Readable $readable): Readable
+    public static function fromUri(UriInterface $uri): Readable
     {
-        return clone $readable;
+        throw new \LogicException('TODO');
     }
 }

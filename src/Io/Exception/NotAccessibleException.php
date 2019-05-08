@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Io\Exception;
 
 /**
- * Class NotAccessibleException
+ * The exception that occurs in case of file access
+ * errors, like "Permission Denied".
  */
 class NotAccessibleException extends FileException
 {

@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Io\Exception;
 
 /**
- * Class NotFoundException
+ * The exception that occurs in the absence
+ * of a file in the file system.
  */
 class NotFoundException extends NotReadableException
 {

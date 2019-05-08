@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Io\Exception;
 
 /**
- * Class NotReadableException
+ * An exception that occurs when there is no
+ * read access to the file, such as "Access Denied".
  */
 class NotReadableException extends NotAccessibleException
 {

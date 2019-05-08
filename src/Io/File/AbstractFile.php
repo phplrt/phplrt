@@ -11,7 +11,9 @@ namespace Phplrt\Io\File;
 
 use Phplrt\Io\Readable;
 use Phplrt\Position\Position;
+use Phplrt\Exception\ErrorWrapper;
 use Phplrt\Position\PositionInterface;
+use Phplrt\Io\Exception\NotReadableException;
 
 /**
  * Class AbstractFile
@@ -34,17 +36,7 @@ abstract class AbstractFile implements Readable
     }
 
     /**
-     * @return bool
-     * @deprecated Use method "exists()" instead.
-     */
-    public function isFile(): bool
-    {
-        return $this->exists();
-    }
-
-    /**
-     * @param int $offset
-     * @return PositionInterface
+     * {@inheritDoc}
      */
     public function getPosition(int $offset): PositionInterface
     {
@@ -76,11 +68,7 @@ abstract class AbstractFile implements Readable
     }
 
     /**
-     * @return array|string[]
-     */
-
-    /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getPathname(): string
     {

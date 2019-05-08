@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
+use Phplrt\Exception\ErrorWrapper;
 use Phplrt\Io\Exception\NotFoundException;
 use Phplrt\Io\Exception\NotReadableException;
+use Phplrt\Io\Stream;
+use Phplrt\Io\StreamInterface;
 
 /**
  * Class Physical
@@ -79,45 +82,38 @@ class Physical extends AbstractFile
      */
     public function getContents(): string
     {
-        return $this->wrap(static function (string $pathname) {
-            return @\file_get_contents($pathname);
-        });
+        try {
+            return ErrorWrapper::wrap(function (): string {
+                return @\file_get_contents($this->getPathname());
+            });
+        } catch (\RuntimeException $e) {
+            throw new NotReadableException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
-     * @param \Closure $operation
-     * @return mixed
+     * @param array $options
+     * @return StreamInterface
      * @throws NotReadableException
      */
-    private function wrap(\Closure $operation)
+    public function getStream(array $options = []): StreamInterface
     {
-        $level = \error_reporting(0);
-        $result = $operation($this->getPathname());
-        \error_reporting($level);
-
-        if ($result === false) {
-            throw new NotReadableException(\error_get_last()['message']);
-        }
-
-        return $result;
+        return Stream::fromPathname($this->getPathname(), $options);
     }
 
     /**
      * @param bool $exclusive
      * @return resource
-     * @throws NotReadableException
      */
     public function getStreamContents(bool $exclusive = false)
     {
-        $stream = $this->wrap(static function (string $pathname) {
-            return @\fopen($pathname, 'rb');
-        });
+        $stream = Stream::fromPathname($this->getPathname());
 
         if ($exclusive) {
-            \flock($stream, \LOCK_SH);
+            $stream->lock();
         }
 
-        return $stream;
+        return $stream->getResource();
     }
 
     /**
