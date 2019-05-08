@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Ast\Delegate;
 use Phplrt\Parser\Exception\GrammarException;
 use Phplrt\Parser\Rule\Rule;
 
@@ -143,7 +142,7 @@ class Grammar implements GrammarInterface
     }
 
     /**
-     * @return iterable|string[]|Delegate[]
+     * @return iterable|string[]
      */
     public function getDelegates(): iterable
     {
