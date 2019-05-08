@@ -44,3 +44,47 @@ text analysis and so on.
 - [Examples](docs/examples.md#examples)
 - [Abstract Syntax Tree](docs/ast.md#abstract-syntax-tree)
 - [Delegates](docs/delegates.md#delegates)
+
+## Quickstart
+
+```php
+<?php
+use Phplrt\Io\File;
+use Phplrt\Compiler\Compiler;
+
+$compiler = Compiler::load(File::fromSources(<<<EBNF
+   
+    %token T_DIGIT      \d
+    %token T_PLUS       \+
+    %token T_MINUS      \-
+    %token T_POW        \*
+    %token T_DIV        \/
+    %skip  T_WHITESPACE \s+
+    
+    #Expression
+      : <T_DIGIT> (::T_PLUS:: | ::T_MINUS:: | ::T_POW:: | ::T_DIV::) <T_DIGIT> 
+      ;
+EBNF));
+
+//
+// Execution:
+//
+
+echo $compiler->parse(File::fromSources('2 + 2'));
+//
+// Output:
+//
+// <Expression offset="0">
+//   <T_DIGIT offset="0">2</T_DIGIT>
+//   <T_DIGIT offset="2">2</T_DIGIT>
+// </Expression>
+//
+
+//
+// Compilation:
+//
+$compiler
+    ->setNamespace('App')
+    ->setClassName('ExpressionParser')
+    ->saveTo(__DIR__);
+```
