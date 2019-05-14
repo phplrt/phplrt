@@ -24,9 +24,9 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/position": "~1.0|1.0.x-dev",
-        "phplrt/stream": "~1.0|1.0.x-dev",
-        "phplrt/exception": "~1.0|1.0.x-dev"
+        "phplrt/position": "1.1.*|1.1.x-dev",
+        "phplrt/stream": "1.1.*|1.1.x-dev",
+        "phplrt/exception": "1.1.*|1.1.x-dev"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +35,7 @@
     },
     "extra": {
         "branch-alias": {
-            "master": "1.0.x-dev"
+            "master": "1.1.x-dev"
         }
     },
     "config": {

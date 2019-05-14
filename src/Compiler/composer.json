@@ -24,11 +24,11 @@
         "php": ">=7.1.3",
         "zendframework/zend-code": "~3.0",
         "symfony/console": "~3.4|~4.0",
-        "phplrt/ast": "~1.0|1.0.x-dev",
-        "phplrt/exception": "~1.0|1.0.x-dev",
-        "phplrt/io": "~1.0|1.0.x-dev",
-        "phplrt/lexer": "~1.0|1.0.x-dev",
-        "phplrt/parser": "~1.0|1.0.x-dev"
+        "phplrt/ast": "1.1.*|1.1.x-dev",
+        "phplrt/exception": "1.1.*|1.1.x-dev",
+        "phplrt/io": "1.1.*|1.1.x-dev",
+        "phplrt/lexer": "1.1.*|1.1.x-dev",
+        "phplrt/parser": "1.1.*|1.1.x-dev"
     },
     "autoload": {
         "psr-4": {
@@ -37,7 +37,7 @@
     },
     "extra": {
         "branch-alias": {
-            "master": "1.0.x-dev"
+            "master": "1.1.x-dev"
         }
     },
     "config": {
