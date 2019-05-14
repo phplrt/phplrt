@@ -48,6 +48,12 @@
             "dirs": {
                 "../src/Position": "."
             }
+        },
+        "phplrt/stream": {
+            "remote": "git@github.com:phplrt/stream.git",
+            "dirs": {
+                "../src/Stream": "."
+            }
         }
     }
 }

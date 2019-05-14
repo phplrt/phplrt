@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Io;
 
+use Phplrt\Stream\StreamProviderInterface;
+
 /**
  * Interface ContentProviderInterface
  */
-interface ContentProviderInterface
+interface ContentProviderInterface extends StreamProviderInterface
 {
     /**
      * Returns the full contents of the source.
@@ -20,14 +22,6 @@ interface ContentProviderInterface
      * @return string
      */
     public function getContents(): string;
-
-    /**
-     * Returns content stream
-     *
-     * @param array $options Stream context options.
-     * @return StreamInterface
-     */
-    public function getStream(array $options = []): StreamInterface;
 
     /**
      * Returns content stream

@@ -7,29 +7,29 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io;
+namespace Phplrt\Stream;
 
 /**
- * Interface StreamFactoryInterface
+ * Interface FactoryInterface
  */
-interface StreamFactoryInterface
+interface FactoryInterface
 {
     /**
      * @param string $content
-     * @return StreamInterface|static
+     * @return StreamInterface
      */
     public static function fromContent(string $content): StreamInterface;
 
     /**
      * @param string $pathname
      * @param array $options
-     * @return StreamInterface|static
+     * @return StreamInterface
      */
     public static function fromPathname(string $pathname, array $options = []): StreamInterface;
 
     /**
      * @param resource $resource
-     * @return StreamInterface|static
+     * @return StreamInterface
      */
     public static function fromResource($resource): StreamInterface;
 }

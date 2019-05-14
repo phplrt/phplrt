@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Io;
 
-use Psr\Http\Message\UriInterface;
-
 /**
  * Interface FactoryInterface
  */
@@ -49,12 +47,4 @@ interface FactoryInterface
      * @return Readable
      */
     public static function empty(string $name = null): Readable;
-
-    /**
-     * Creates a new Readable instance using PSR-7 Uri object.
-     *
-     * @param UriInterface $uri
-     * @return Readable
-     */
-    public static function fromUri(UriInterface $uri): Readable;
 }

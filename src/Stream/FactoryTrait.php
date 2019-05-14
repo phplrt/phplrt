@@ -7,23 +7,24 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io;
+namespace Phplrt\Stream;
 
-use Phplrt\Exception\ErrorWrapper;
+use Phplrt\Exception\Wrapper;
 
 /**
  * Trait StreamFactoryTrait
  * @mixin Stream
  */
-trait StreamFactoryTrait
+trait FactoryTrait
 {
     /**
      * @param string $content
      * @return StreamInterface|static
+     * @throws \Throwable
      */
     public static function fromContent(string $content): StreamInterface
     {
-        $resource = ErrorWrapper::wrapMany(static function () use ($content) {
+        $resource = Wrapper::exec(static function () use ($content) {
             $stream = yield @\fopen('php://memory', 'rb+');
 
             yield @\fwrite($stream, $content);
@@ -42,7 +43,7 @@ trait StreamFactoryTrait
      */
     public static function fromPathname(string $pathname, array $options = []): StreamInterface
     {
-        $resource = ErrorWrapper::wrap(static function () use ($pathname, $options) {
+        $resource = Wrapper::exec(static function () use ($pathname, $options) {
             return @\fopen($pathname, 'rb+', false, \stream_context_create($options));
         });
 
@@ -55,6 +56,6 @@ trait StreamFactoryTrait
      */
     public static function fromResource($resource): StreamInterface
     {
-        return new static($resource);
+        return new Stream($resource);
     }
 }

@@ -11,9 +11,7 @@ namespace Phplrt\Io\File;
 
 use Phplrt\Io\Readable;
 use Phplrt\Position\Position;
-use Phplrt\Exception\ErrorWrapper;
 use Phplrt\Position\PositionInterface;
-use Phplrt\Io\Exception\NotReadableException;
 
 /**
  * Class AbstractFile

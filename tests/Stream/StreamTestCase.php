@@ -7,9 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Tests\Io;
+namespace Phplrt\Tests\Stream;
 
-use Phplrt\Io\Stream;
+use Phplrt\Stream\Factory;
+use Phplrt\Stream\Stream;
+use Phplrt\Stream\StreamInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -33,7 +35,7 @@ class StreamTestCase extends TestCase
     public function setUp(): void
     {
         $this->tmpnam = null;
-        $this->stream = Stream::fromResource(\fopen('php://memory', 'wb+'));
+        $this->stream = Factory::fromResource(\fopen('php://memory', 'wb+'));
     }
 
     /**
@@ -51,7 +53,8 @@ class StreamTestCase extends TestCase
      */
     public function testCanInstantiateWithStreamIdentifier(): void
     {
-        $this->assertInstanceOf(Stream::class, $this->stream);
+        $this->assertInstanceOf(StreamInterface::class, $this->stream);
+        $this->assertInstanceOf(\Psr\Http\Message\StreamInterface::class, $this->stream);
     }
 
     /**
@@ -60,7 +63,9 @@ class StreamTestCase extends TestCase
     public function testCanInstantiateWithStreamResource(): void
     {
         $resource = \fopen('php://memory', 'wb+');
-        $this->assertInstanceOf(Stream::class, Stream::fromResource($resource));
+
+        $this->assertInstanceOf(StreamInterface::class, Factory::fromResource($resource));
+        $this->assertInstanceOf(\Psr\Http\Message\StreamInterface::class, Factory::fromResource($resource));
     }
 
     /**
@@ -69,7 +74,7 @@ class StreamTestCase extends TestCase
     public function testIsReadableReturnsFalseIfStreamIsNotReadable(): void
     {
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
-        $stream = Stream::fromResource(\fopen($this->tmpnam, 'wb'));
+        $stream = Factory::fromResource(\fopen($this->tmpnam, 'wb'));
         $this->assertFalse($stream->isReadable());
     }
 
@@ -78,7 +83,7 @@ class StreamTestCase extends TestCase
      */
     public function testIsWritableReturnsFalseIfStreamIsNotWritable(): void
     {
-        $stream = Stream::fromResource(\fopen('php://memory', 'rb'));
+        $stream = Factory::fromResource(\fopen('php://memory', 'rb'));
 
         $this->assertFalse($stream->isWritable());
     }
@@ -100,7 +105,7 @@ class StreamTestCase extends TestCase
     public function testDetachReturnsResource(): void
     {
         $resource = \fopen('php://memory', 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $this->assertSame($resource, $stream->detach());
     }
 
@@ -111,7 +116,7 @@ class StreamTestCase extends TestCase
     {
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
-        $stream = Stream::fromResource(\fopen($this->tmpnam, 'wb'));
+        $stream = Factory::fromResource(\fopen($this->tmpnam, 'wb'));
 
         $this->assertSame('', $stream->__toString());
     }
@@ -125,7 +130,7 @@ class StreamTestCase extends TestCase
 
         $type = \get_resource_type($resource);
 
-        Stream::fromResource($resource)->close();
+        Factory::fromResource($resource)->close();
 
         $this->assertNotSame($type, \get_resource_type($resource));
         //
@@ -141,7 +146,7 @@ class StreamTestCase extends TestCase
     {
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->close();
 
         $this->assertNull($stream->detach());
@@ -154,7 +159,7 @@ class StreamTestCase extends TestCase
     {
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $detached = $stream->detach();
 
         $stream->close();
@@ -179,7 +184,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         fseek($resource, 2);
 
@@ -194,7 +199,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         \fseek($resource, 2);
         $stream->detach();
@@ -213,7 +218,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         fseek($resource, 2);
         $this->assertFalse($stream->eof());
@@ -227,7 +232,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         while (! \feof($resource)) {
             \fread($resource, 4096);
@@ -244,7 +249,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         \fseek($resource, 2);
         $stream->detach();
@@ -256,7 +261,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         $this->assertTrue($stream->isSeekable());
     }
@@ -266,7 +271,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
         $this->assertFalse($stream->isSeekable());
     }
@@ -276,7 +281,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         $this->assertNull($stream->seek(2));
         $this->assertSame(2, $stream->tell());
@@ -290,7 +295,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         $this->assertNull($stream->seek(2));
         $stream->rewind();
@@ -305,7 +310,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
 
         $this->expectException(\RuntimeException::class);
@@ -322,7 +327,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
         $this->assertFalse($stream->isWritable());
     }
@@ -332,7 +337,7 @@ class StreamTestCase extends TestCase
      */
     public function testIsWritableReturnsTrueForWritableMemoryStream(): void
     {
-        $stream = Stream::fromResource(\fopen('php://temp', 'rb+'));
+        $stream = Factory::fromResource(\fopen('php://temp', 'rb+'));
 
         $this->assertTrue($stream->isWritable());
     }
@@ -384,7 +389,7 @@ class StreamTestCase extends TestCase
         }
 
         $resource = \fopen($this->tmpnam, $mode);
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $this->assertSame($flag, $stream->isWritable());
     }
 
@@ -453,7 +458,7 @@ class StreamTestCase extends TestCase
         }
 
         $resource = \fopen($this->tmpnam, $mode);
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $this->assertSame($flag, $stream->isReadable());
     }
 
@@ -465,7 +470,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
 
         $this->expectException(\RuntimeException::class);
@@ -479,7 +484,7 @@ class StreamTestCase extends TestCase
      */
     public function testWriteRaisesExceptionWhenStreamIsNotWritable(): void
     {
-        $stream = Stream::fromResource(\fopen('php://memory', 'rb'));
+        $stream = Factory::fromResource(\fopen('php://memory', 'rb'));
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Stream is not writable');
@@ -495,7 +500,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb+');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
 
         $this->assertFalse($stream->isReadable());
@@ -509,7 +514,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'rb');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $stream->detach();
 
         $this->expectException(\RuntimeException::class);
@@ -526,7 +531,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'rb');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         while (! feof($resource)) {
             fread($resource, 4096);
@@ -543,7 +548,7 @@ class StreamTestCase extends TestCase
         $this->tmpnam = \tempnam(\sys_get_temp_dir(), 'phplrt');
         \file_put_contents($this->tmpnam, 'FOO BAR');
         $resource = \fopen($this->tmpnam, 'wb');
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
 
         $this->expectException(\RuntimeException::class);
 
@@ -584,7 +589,7 @@ class StreamTestCase extends TestCase
     {
         $resource = \fopen(__FILE__, 'rb');
         $expected = fstat($resource);
-        $stream = Stream::fromResource($resource);
+        $stream = Factory::fromResource($resource);
         $this->assertSame($expected['size'], $stream->getSize());
     }
 
@@ -598,7 +603,7 @@ class StreamTestCase extends TestCase
         $memory = \fopen('php://memory', 'rb');
         \fclose($memory);
 
-        Stream::fromResource($memory);
+        Factory::fromResource($memory);
     }
 
     /**
@@ -627,7 +632,7 @@ class StreamTestCase extends TestCase
      */
     public function testSizeReportsNullForPhpInputStreams(): void
     {
-        $stream = Stream::fromResource(\fopen('php://input', 'rb'));
+        $stream = Factory::fromResource(\fopen('php://input', 'rb'));
 
         $this->assertNull($stream->getSize());
     }

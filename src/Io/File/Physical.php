@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
-use Phplrt\Exception\ErrorWrapper;
+use Phplrt\Exception\Wrapper;
+use Phplrt\Stream\Factory;
+use Phplrt\Stream\StreamInterface;
 use Phplrt\Io\Exception\NotFoundException;
 use Phplrt\Io\Exception\NotReadableException;
-use Phplrt\Io\Stream;
-use Phplrt\Io\StreamInterface;
 
 /**
  * Class Physical
@@ -78,17 +78,14 @@ class Physical extends AbstractFile
 
     /**
      * @return string
-     * @throws NotReadableException
      */
     public function getContents(): string
     {
-        try {
-            return ErrorWrapper::wrap(function (): string {
-                return @\file_get_contents($this->getPathname());
-            });
-        } catch (\RuntimeException $e) {
+        return Wrapper::exec(function (): string {
+            return @\file_get_contents($this->getPathname());
+        }, static function (\ErrorException $e) {
             throw new NotReadableException($e->getMessage(), $e->getCode(), $e);
-        }
+        });
     }
 
     /**
@@ -98,16 +95,17 @@ class Physical extends AbstractFile
      */
     public function getStream(array $options = []): StreamInterface
     {
-        return Stream::fromPathname($this->getPathname(), $options);
+        return Factory::fromPathname($this->getPathname(), $options);
     }
 
     /**
      * @param bool $exclusive
      * @return resource
+     * @throws \ErrorException
      */
     public function getStreamContents(bool $exclusive = false)
     {
-        $stream = Stream::fromPathname($this->getPathname());
+        $stream = Factory::fromPathname($this->getPathname());
 
         if ($exclusive) {
             $stream->lock(\LOCK_SH);

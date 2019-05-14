@@ -7,27 +7,25 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io;
+namespace Phplrt\Stream;
 
-use Phplrt\Exception\ErrorWrapper;
-use Phplrt\Io\Exception\StreamException;
+use Phplrt\Exception\Wrapper;
+use Phplrt\Stream\Exception\StreamException;
 
 /**
  * Class Stream
  */
-class Stream implements StreamInterface, StreamFactoryInterface
+class Stream implements StreamInterface
 {
-    use StreamFactoryTrait;
-
-    /**
-     * @var string
-     */
-    private const CLOSED_RESOURCE_TYPE = 'unknown type';
-
     /**
      * @var resource
      */
     private $resource;
+
+    /**
+     * @var Wrapper
+     */
+    private $expr;
 
     /**
      * Stream constructor.
@@ -36,12 +34,32 @@ class Stream implements StreamInterface, StreamFactoryInterface
      */
     public function __construct($resource)
     {
-        //
-        // Determine that $resource is valid "resource" or "closed resource" type
-        //
-        \assert(\is_resource($resource) || \gettype($resource) === self::CLOSED_RESOURCE_TYPE);
+        \assert($this->assertIsResource($resource), 'Assertion "' . \gettype($resource) . '" is resource');
 
         $this->resource = $resource;
+        $this->expr = new Wrapper(\RuntimeException::class);
+    }
+
+    /**
+     * Determine that $resource is valid "resource" or "closed resource" type
+     *
+     * @param resource $resource
+     * @return bool
+     */
+    private function assertIsResource($resource): bool
+    {
+        switch (true) {
+            case \is_resource($resource):
+                return true;
+
+            // PHP 7.2 or greater
+            case \version_compare(\PHP_VERSION, '7.2') >= 1:
+                return \gettype($resource) === 'resource (closed)';
+
+            // PHP 7.1 or lower
+            default:
+                return \gettype($resource) === 'unknown type';
+        }
     }
 
     /**
@@ -65,20 +83,22 @@ class Stream implements StreamInterface, StreamFactoryInterface
 
     /**
      * {@inheritDoc}
+     * @throws \ErrorException
      */
     public function lock(int $mode = \LOCK_SH): void
     {
-        ErrorWrapper::wrap(function () use ($mode) {
+        $this->expr->wrap(function () use ($mode) {
             \flock($this->resource, $mode);
         });
     }
 
     /**
      * {@inheritDoc}
+     * @throws \ErrorException
      */
     public function unlock(): void
     {
-        ErrorWrapper::wrap(function () {
+        $this->expr->wrap(function () {
             \flock($this->resource, \LOCK_UN);
         });
     }
@@ -159,7 +179,7 @@ class Stream implements StreamInterface, StreamFactoryInterface
     {
         $this->assertResourceIsReadable();
 
-        return ErrorWrapper::wrap(function () {
+        return $this->expr->wrap(function () {
             return \stream_get_contents($this->resource);
         });
     }
@@ -173,7 +193,7 @@ class Stream implements StreamInterface, StreamFactoryInterface
             return;
         }
 
-        ErrorWrapper::wrap(function () {
+        $this->expr->wrap(function () {
             $resource = $this->detach();
 
             \fclose($resource);
@@ -216,7 +236,7 @@ class Stream implements StreamInterface, StreamFactoryInterface
     {
         $this->assertResourceIsAvailable();
 
-        return ErrorWrapper::wrap(function (): int {
+        return $this->expr->wrap(function (): int {
             return \ftell($this->resource);
         });
     }
@@ -314,7 +334,7 @@ class Stream implements StreamInterface, StreamFactoryInterface
         $this->assertResourceIsAvailable();
         $this->assertResourceIsWritable();
 
-        return ErrorWrapper::wrap(function () use ($string): int {
+        return $this->expr->wrap(function () use ($string): int {
             return \fwrite($this->resource, $string);
         });
     }
@@ -329,7 +349,7 @@ class Stream implements StreamInterface, StreamFactoryInterface
         $this->assertResourceIsAvailable();
         $this->assertResourceIsReadable();
 
-        return ErrorWrapper::wrap(function () use ($length) {
+        return $this->expr->wrap(function () use ($length) {
             return \fread($this->resource, $length);
         });
     }

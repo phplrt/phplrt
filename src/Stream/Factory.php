@@ -7,12 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io\Exception;
+namespace Phplrt\Stream;
 
 /**
- * The exception that occurs in case of errors when
- * working with the stream resource.
+ * Class Factory
  */
-class StreamException extends \RuntimeException
+final class Factory implements FactoryInterface
 {
+    use FactoryTrait;
 }
