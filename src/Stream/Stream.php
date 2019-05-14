@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Stream;
 
-use Phplrt\Exception\Wrapper;
 use Phplrt\Stream\Exception\StreamException;
 
 /**
@@ -23,11 +22,6 @@ class Stream implements StreamInterface
     private $resource;
 
     /**
-     * @var Wrapper
-     */
-    private $expr;
-
-    /**
      * Stream constructor.
      *
      * @param $resource
@@ -37,7 +31,6 @@ class Stream implements StreamInterface
         \assert($this->assertIsResource($resource), 'Assertion "' . \gettype($resource) . '" is resource');
 
         $this->resource = $resource;
-        $this->expr = new Wrapper(\RuntimeException::class);
     }
 
     /**
@@ -82,44 +75,24 @@ class Stream implements StreamInterface
     }
 
     /**
-     * {@inheritDoc}
-     * @throws \ErrorException
+     * @return void
+     * @throws StreamException
      */
-    public function lock(int $mode = \LOCK_SH): void
+    private function assertResourceIsAvailable(): void
     {
-        $this->expr->wrap(function () use ($mode) {
-            \flock($this->resource, $mode);
-        });
+        if (! $this->resource) {
+            throw new StreamException('Stream was previously closed or detached');
+        }
     }
 
     /**
-     * {@inheritDoc}
-     * @throws \ErrorException
+     * @return void
+     * @throws StreamException
      */
-    public function unlock(): void
-    {
-        $this->expr->wrap(function () {
-            \flock($this->resource, \LOCK_UN);
-        });
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
+    private function assertResourceIsReadable(): void
     {
         if (! $this->isReadable()) {
-            return '';
-        }
-
-        try {
-            if ($this->isSeekable()) {
-                $this->rewind();
-            }
-
-            return $this->getContents();
-        } catch (\RuntimeException $e) {
-            return '';
+            throw new StreamException('Stream is not readable');
         }
     }
 
@@ -159,6 +132,70 @@ class Stream implements StreamInterface
     /**
      * {@inheritDoc}
      */
+    public function getMetadata($key = null)
+    {
+        if ($this->resource === null) {
+            return null;
+        }
+
+        $metadata = \stream_get_meta_data($this->resource);
+
+        if ($key === null) {
+            return $metadata;
+        }
+
+        return $metadata[$key] ?? null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws \ErrorException
+     */
+    public function lock(int $mode = \LOCK_SH): void
+    {
+        $status = @\flock($this->resource, $mode);
+
+        if ($status === false) {
+            throw new StreamException('Unable to lock stream resource');
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws \ErrorException
+     */
+    public function unlock(): void
+    {
+        $status = @\flock($this->resource, \LOCK_UN);
+
+        if ($status === false) {
+            throw new StreamException('Unable to unlock stream resource');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        if (! $this->isReadable()) {
+            return '';
+        }
+
+        try {
+            if ($this->isSeekable()) {
+                $this->rewind();
+            }
+
+            return $this->getContents();
+        } catch (\RuntimeException $e) {
+            return '';
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function isSeekable(): bool
     {
         return $this->getMetadata('seekable') === true;
@@ -175,13 +212,43 @@ class Stream implements StreamInterface
     /**
      * {@inheritDoc}
      */
+    public function seek($offset, $whence = \SEEK_SET): void
+    {
+        $this->assertResourceIsAvailable();
+        $this->assertResourceIsSeekable();
+
+        $bytes = \fseek($this->resource, $offset, $whence);
+
+        if ($bytes !== 0) {
+            throw new StreamException('There was an internal error while stream seeking');
+        }
+    }
+
+    /**
+     * @return void
+     * @throws StreamException
+     */
+    private function assertResourceIsSeekable(): void
+    {
+        if (! $this->isSeekable()) {
+            throw new StreamException('Stream is not seekable');
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getContents(): string
     {
         $this->assertResourceIsReadable();
 
-        return $this->expr->wrap(function () {
-            return \stream_get_contents($this->resource);
-        });
+        $result = \stream_get_contents($this->resource);
+
+        if ($result === false) {
+            throw new StreamException('Error while reading the stream');
+        }
+
+        return $result;
     }
 
     /**
@@ -193,11 +260,11 @@ class Stream implements StreamInterface
             return;
         }
 
-        $this->expr->wrap(function () {
-            $resource = $this->detach();
+        $resource = $this->detach();
 
-            \fclose($resource);
-        });
+        if (@\fclose($resource) === false) {
+            throw new StreamException('Unable to close stream resource');
+        }
     }
 
     /**
@@ -236,53 +303,13 @@ class Stream implements StreamInterface
     {
         $this->assertResourceIsAvailable();
 
-        return $this->expr->wrap(function (): int {
-            return \ftell($this->resource);
-        });
-    }
+        $position = @\ftell($this->resource);
 
-    /**
-     * @return void
-     * @throws StreamException
-     */
-    private function assertResourceIsAvailable(): void
-    {
-        if (! $this->resource) {
-            throw new StreamException('Stream was previously closed or detached');
+        if ($position === false) {
+            throw new StreamException('Unable to read position of streamed resource');
         }
-    }
 
-    /**
-     * @return void
-     * @throws StreamException
-     */
-    private function assertResourceIsWritable(): void
-    {
-        if (! $this->isWritable()) {
-            throw new StreamException('Stream is not writable');
-        }
-    }
-
-    /**
-     * @return void
-     * @throws StreamException
-     */
-    private function assertResourceIsReadable(): void
-    {
-        if (! $this->isReadable()) {
-            throw new StreamException('Stream is not readable');
-        }
-    }
-
-    /**
-     * @return void
-     * @throws StreamException
-     */
-    private function assertResourceIsSeekable(): void
-    {
-        if (! $this->isSeekable()) {
-            throw new StreamException('Stream is not seekable');
-        }
+        return $position;
     }
 
     /**
@@ -300,15 +327,30 @@ class Stream implements StreamInterface
     /**
      * {@inheritDoc}
      */
-    public function seek($offset, $whence = \SEEK_SET): void
+    public function write($string): int
     {
+        \assert(\is_string($string));
+
         $this->assertResourceIsAvailable();
-        $this->assertResourceIsSeekable();
+        $this->assertResourceIsWritable();
 
-        $bytes = \fseek($this->resource, $offset, $whence);
+        $status = @\fwrite($this->resource, $string);
 
-        if ($bytes !== 0) {
-            throw new StreamException('There was an internal error while stream seeking');
+        if ($status === false) {
+            throw new StreamException('An internal error occurred while writing data into the stream');
+        }
+
+        return $status;
+    }
+
+    /**
+     * @return void
+     * @throws StreamException
+     */
+    private function assertResourceIsWritable(): void
+    {
+        if (! $this->isWritable()) {
+            throw new StreamException('Stream is not writable');
         }
     }
 
@@ -327,48 +369,23 @@ class Stream implements StreamInterface
     /**
      * {@inheritDoc}
      */
-    public function write($string): int
-    {
-        \assert(\is_string($string));
-
-        $this->assertResourceIsAvailable();
-        $this->assertResourceIsWritable();
-
-        return $this->expr->wrap(function () use ($string): int {
-            return \fwrite($this->resource, $string);
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function read($length): string
     {
+        \assert(\is_int($length), \vsprintf('Length should be an integer, but %s given', [
+            \gettype($length),
+        ]));
+
         \assert(\is_int($length));
 
         $this->assertResourceIsAvailable();
         $this->assertResourceIsReadable();
 
-        return $this->expr->wrap(function () use ($length) {
-            return \fread($this->resource, $length);
-        });
-    }
+        $status = @\fread($this->resource, $length);
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getMetadata($key = null)
-    {
-        if ($this->resource === null) {
-            return null;
+        if ($status === false) {
+            throw new StreamException('An internal error occurred while reading data from the stream');
         }
 
-        $metadata = \stream_get_meta_data($this->resource);
-
-        if ($key === null) {
-            return $metadata;
-        }
-
-        return $metadata[$key] ?? null;
+        return $status;
     }
 }

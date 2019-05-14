@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
-use Phplrt\Exception\Wrapper;
 use Phplrt\Stream\Factory;
 use Phplrt\Stream\StreamInterface;
 use Phplrt\Io\Exception\NotFoundException;
@@ -81,11 +80,7 @@ class Physical extends AbstractFile
      */
     public function getContents(): string
     {
-        return Wrapper::exec(function (): string {
-            return @\file_get_contents($this->getPathname());
-        }, static function (\ErrorException $e) {
-            throw new NotReadableException($e->getMessage(), $e->getCode(), $e);
-        });
+        return $this->getStream()->getContents();
     }
 
     /**
