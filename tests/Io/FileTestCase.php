@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Io;
 
-use PHPUnit\Framework\ExpectationFailedException;
 use Phplrt\Io\Exception\NotReadableException;
 use Phplrt\Io\File;
 use Phplrt\Io\Readable;
+use PHPUnit\Framework\ExpectationFailedException;
 
 /**
  * Class FactoryTestCase

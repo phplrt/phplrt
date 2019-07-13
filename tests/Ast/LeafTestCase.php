@@ -27,7 +27,7 @@ class LeafTestCase extends TestCase
     {
         $leaf = new Leaf('name', 'value', 42);
 
-        $this->assertEquals('name', $leaf->getName());
+        $this->assertSame('name', $leaf->getName());
     }
 
     /**
@@ -37,7 +37,7 @@ class LeafTestCase extends TestCase
     {
         $leaf = new Leaf('name', 'value', 42);
 
-        $this->assertEquals('value', $leaf->getValue());
+        $this->assertSame('value', $leaf->getValue());
     }
 
     /**
@@ -47,7 +47,7 @@ class LeafTestCase extends TestCase
     {
         $leaf = new Leaf('name', 'value', 42);
 
-        $this->assertEquals(42, $leaf->getOffset());
+        $this->assertSame(42, $leaf->getOffset());
     }
 
     /**

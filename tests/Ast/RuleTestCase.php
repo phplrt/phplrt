@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Ast;
 
 use Phplrt\Ast\Leaf;
+use Phplrt\Ast\Rule;
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Ast\Rule;
 use Phplrt\Contracts\Ast\RuleInterface;
 use Phplrt\Tests\Ast\Helper\AstAssertionTrait;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -33,8 +33,8 @@ class RuleTestCase extends TestCase
             new Leaf('b', 'b', 42),
             new Leaf('c', 'c', 42),
             new Rule('d', [
-                new Leaf('e', 'e', 42)
-            ])
+                new Leaf('e', 'e', 42),
+            ]),
         ], 42);
     }
 

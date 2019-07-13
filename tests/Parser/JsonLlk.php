@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
-use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Parser\Driver\Llk;
 use Phplrt\Parser\Driver\Stateful;
 use Phplrt\Parser\Grammar;
-use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\Repetition;

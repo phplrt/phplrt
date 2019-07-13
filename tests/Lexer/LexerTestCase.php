@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Lexer;
 
-use Phplrt\Io\File;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Io\File;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Unknown;
 
@@ -62,7 +62,7 @@ abstract class LexerTestCase extends BaseTestCase
      */
     public function testUnknownLookahead(LexerInterface $lexer): void
     {
-        $file = File::fromSources("23 \nunknown \n42");
+        $file   = File::fromSources("23 \nunknown \n42");
         $result = \iterator_to_array($lexer->lex($file));
 
         $this->assertCount(4, $result);

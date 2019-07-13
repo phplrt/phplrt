@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Io;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
 use Phplrt\Io\File;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
  * Class TestCase

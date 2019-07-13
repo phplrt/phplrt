@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use Phplrt\Lexer\Driver\ParleLexer;
-use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Lexer\Driver\NativeRegex;
+use Phplrt\Lexer\Driver\ParleLexer;
 
 /**
  * Class Lexer
