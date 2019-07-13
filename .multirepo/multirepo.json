@@ -19,6 +19,12 @@
                 "../src/Compiler": "."
             }
         },
+        "phplrt/dumper": {
+            "remote": "git@github.com:phplrt/dumper.git",
+            "dirs": {
+                "../src/Dumper": "."
+            }
+        },
         "phplrt/exception": {
             "remote": "git@github.com:phplrt/exception.git",
             "dirs": {
@@ -49,10 +55,47 @@
                 "../src/Position": "."
             }
         },
-        "phplrt/stream": {
-            "remote": "git@github.com:phplrt/stream.git",
+
+        "phplrt/ast-contracts": {
+            "remote": "git@github.com:phplrt/ast-contracts.git",
             "dirs": {
-                "../src/Stream": "."
+                "../src/Contracts/Ast": "."
+            }
+        },
+        "phplrt/dumper-contracts": {
+            "remote": "git@github.com:phplrt/dumper-contracts.git",
+            "dirs": {
+                "../src/Contracts/Dumper": "."
+            }
+        },
+        "phplrt/exception-contracts": {
+            "remote": "git@github.com:phplrt/exception-contracts.git",
+            "dirs": {
+                "../src/Contracts/Exception": "."
+            }
+        },
+        "phplrt/io-contracts": {
+            "remote": "git@github.com:phplrt/io-contracts.git",
+            "dirs": {
+                "../src/Contracts/Io": "."
+            }
+        },
+        "phplrt/lexer-contracts": {
+            "remote": "git@github.com:phplrt/lexer-contracts.git",
+            "dirs": {
+                "../src/Contracts/Lexer": "."
+            }
+        },
+        "phplrt/parser-contracts": {
+            "remote": "git@github.com:phplrt/parser-contracts.git",
+            "dirs": {
+                "../src/Contracts/Parser": "."
+            }
+        },
+        "phplrt/position-contracts": {
+            "remote": "git@github.com:phplrt/position-contracts.git",
+            "dirs": {
+                "../src/Contracts/Position": "."
             }
         }
     }

@@ -153,7 +153,7 @@ class Builder implements BuilderInterface
      */
     protected function getLeaf(TokenInterface $token): LeafInterface
     {
-        return new Leaf($token->getName(), $token->getGroups(), $token->getOffset());
+        return new Leaf($token->getName(), $token->getValue(), $token->getOffset());
     }
 
     /**

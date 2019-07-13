@@ -15,8 +15,7 @@ namespace Phplrt\Contracts\Ast;
 interface LeafInterface extends NodeInterface
 {
     /**
-     * @param int $group
-     * @return string|null
+     * @return string
      */
-    public function getValue(int $group = 0): ?string;
+    public function getValue(): string;
 }

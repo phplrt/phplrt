@@ -16,7 +16,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Ast\RuleInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\TokenInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class RuleDelegate

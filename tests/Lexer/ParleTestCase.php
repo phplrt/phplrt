@@ -24,6 +24,10 @@ class ParleTestCase extends LexerTestCase
      */
     public function provider(): array
     {
+        if (! \class_exists(\Parle\Lexer::class, false)) {
+            $this->markTestSkipped('Parle extension not installed');
+        }
+
         return [
             [new ParleLexer(['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'], ['T_WHITESPACE'])],
         ];

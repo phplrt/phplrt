@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Parser;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use Phplrt\Ast\NodeInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
  * Class TestCase

@@ -17,7 +17,7 @@ use Phplrt\Contracts\Ast\LeafInterface;
 class Leaf extends Node implements LeafInterface
 {
     /**
-     * @var string[]
+     * @var string
      */
     private $value;
 
@@ -25,22 +25,21 @@ class Leaf extends Node implements LeafInterface
      * Leaf constructor.
      *
      * @param string $name
-     * @param string|string[] $value
+     * @param string $value
      * @param int $offset
      */
-    public function __construct(string $name, $value, int $offset = 0)
+    public function __construct(string $name, string $value, int $offset = 0)
     {
         parent::__construct($name, $offset);
 
-        $this->value = (array)$value;
+        $this->value = $value;
     }
 
     /**
-     * @param int $group
      * @return string|null
      */
-    public function getValue(int $group = 0): ?string
+    public function getValue(): string
     {
-        return $this->value[$group] ?? null;
+        return $this->value;
     }
 }

@@ -17,6 +17,32 @@ use Phplrt\Ast\Rule;
 class TokenDelegate extends Rule
 {
     /**
+     * @var string
+     */
+    private $tokenName;
+
+    /**
+     * @var string
+     */
+    private $pattern;
+
+    /**
+     * TokenDelegate constructor.
+     *
+     * @param string $name
+     * @param array $children
+     * @param int $offset
+     */
+    public function __construct(string $name, array $children = [], int $offset = 0)
+    {
+        parent::__construct($name, $children, $offset);
+
+        $value = $this->getChild(0)->getValue();
+
+        [$this->tokenName, $this->pattern] = \preg_split('/\s+/', \substr($value, 7));
+    }
+
+    /**
      * @return bool
      */
     public function isKept(): bool
@@ -29,7 +55,7 @@ class TokenDelegate extends Rule
      */
     public function getTokenName(): string
     {
-        return $this->getChild(0)->getValue(1);
+        return $this->tokenName;
     }
 
     /**
@@ -37,6 +63,6 @@ class TokenDelegate extends Rule
      */
     public function getTokenPattern(): string
     {
-        return $this->getChild(0)->getValue(2);
+        return $this->pattern;
     }
 }
