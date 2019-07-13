@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-use Phplrt\Lexer\Token\Common\Renderable;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Common\Renderable;
 
 /**
  * Class BaseToken

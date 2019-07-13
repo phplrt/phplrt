@@ -14,9 +14,9 @@ use Phplrt\Compiler\Grammar\LookaheadIterator;
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
-use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class RuleDelegate

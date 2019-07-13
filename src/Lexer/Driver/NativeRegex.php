@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
+use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
+use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Unknown;
-use Phplrt\Contracts\Io\Readable;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;
-use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
 
 /**
  * Class NativeRegex
@@ -30,7 +30,7 @@ class NativeRegex extends SimpleLexer
      */
     public function __construct(array $tokens = [], array $skip = [])
     {
-        $this->tokens = $tokens;
+        $this->tokens  = $tokens;
         $this->skipped = $skip;
     }
 
@@ -43,7 +43,7 @@ class NativeRegex extends SimpleLexer
     protected function exec(Readable $file): \Traversable
     {
         $offset = 0;
-        $regex = new RegexNamedGroupsIterator($this->getPattern(), $file->getContents());
+        $regex  = new RegexNamedGroupsIterator($this->getPattern(), $file->getContents());
 
         $iterator = $regex->getIterator();
 

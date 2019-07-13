@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Compiler;
 
-use Phplrt\Compiler\Grammar\Parser;
 use Phplrt\Compiler\Console\CompileCommand;
 use Phplrt\Compiler\Console\GrammarCompileCommand;
+use Phplrt\Compiler\Grammar\Parser;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -28,11 +28,11 @@ class CommandsTestCase extends TestCase
         $tester = new CommandTester($cmd = new GrammarCompileCommand());
 
         $file = (new \ReflectionClass(Parser::class))->getFileName();
-        $src = \file_get_contents($file);
+        $src  = \file_get_contents($file);
 
         $tester->execute([]);
 
-        $this->assertNotEquals($src, \file_get_contents($file));
+        $this->assertNotSame($src, \file_get_contents($file));
     }
 
     /**

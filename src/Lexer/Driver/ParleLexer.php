@@ -11,15 +11,15 @@ namespace Phplrt\Lexer\Driver;
 
 use Parle\Lexer as Parle;
 use Parle\LexerException;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\Token\Unknown;
 use Parle\Token as InternalToken;
 use Phplrt\Contracts\Io\Readable;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Definition\TokenDefinition;
 use Phplrt\Lexer\Exception\BadLexemeException;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\Unknown;
 
 /**
  * Class ParleStateless
@@ -52,7 +52,7 @@ class ParleLexer extends SimpleLexer
     {
         \assert(\class_exists(Parle::class, false));
 
-        $this->lexer = new Parle();
+        $this->lexer   = new Parle();
         $this->skipped = $skip;
 
         foreach ($tokens as $name => $pcre) {
@@ -71,7 +71,7 @@ class ParleLexer extends SimpleLexer
         try {
             $this->lexer->push($pcre, $this->id);
 
-            $this->map[$this->id] = $name;
+            $this->map[$this->id]    = $name;
             $this->tokens[$this->id] = $pcre;
         } catch (LexerException $e) {
             $message = \preg_replace('/rule\h+id\h+\d+/iu', 'token ' . $name, $e->getMessage());
@@ -145,8 +145,8 @@ class ParleLexer extends SimpleLexer
     {
         /** @var InternalToken $current */
         $current = $iterator->current();
-        $offset = $this->lexer->marker;
-        $body = '';
+        $offset  = $this->lexer->marker;
+        $body    = '';
 
         while ($current->id === InternalToken::UNKNOWN) {
             $body .= $current->value;
