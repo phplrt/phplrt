@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
-use Phplrt\Parser\Parser;
-use Phplrt\Parser\Grammar;
-use Phplrt\Parser\Rule\Terminal;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Lexer\Driver\NativeRegex;
-use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Lexer\Driver\NativeRegex;
+use Phplrt\Parser\Grammar;
+use Phplrt\Parser\Parser;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Terminal;
 
 /**
  * Class JsonLlk
