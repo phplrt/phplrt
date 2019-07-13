@@ -14,14 +14,14 @@ that can be represented in one of two ways:
 
 The leaves is an terminal structures, which are represented inside the grammar as tokens.
  
-- `Phplrt\Ast\LeafInterface`
+- `Phplrt\Contracts\Ast\LeafInterface`
 
 ## Rule (production)
 
 Ast rules is an non-terminal structures that are part of 
 the production of grammar.
 
-- `Phplrt\Ast\RuleInterface` 
+- `Phplrt\Contracts\Ast\RuleInterface` 
 
 ## Examples
 
