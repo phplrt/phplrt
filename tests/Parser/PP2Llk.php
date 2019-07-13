@@ -9,12 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
+use Phplrt\Parser\Parser;
 use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Parser\Driver\Llk;
-use Phplrt\Parser\Driver\Stateful;
 use Phplrt\Parser\Grammar;
-use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\Repetition;
@@ -25,15 +23,14 @@ use Phplrt\Parser\Rule\Terminal;
  * Do not update it manually.
  * Generated at 06-07-2018 13:57:25
  */
-class PP2Llk extends Stateful
+class PP2Llk extends Parser
 {
     /**
-     * @return ParserInterface
-     * @throws \Phplrt\Parser\Exception\GrammarException
+     * PP2Llk constructor.
      */
-    protected function boot(): ParserInterface
+    public function __construct()
     {
-        return new Llk($this->getLexer(), new Grammar([
+        parent::__construct($this->getLexer(), new Grammar([
             new Repetition(0, 0, -1, '__definition', null),
             new Concatenation('Grammar', [0], 'Grammar'),
             new Alternation('__definition', ['TokenDefinition', 'PragmaDefinition', 'IncludeDefinition', 'RuleDefinition'], null),

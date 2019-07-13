@@ -18,7 +18,6 @@ use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Exception\ExternalException;
 use Phplrt\Io\Exception\NotReadableException;
 use Phplrt\Lexer\Driver\NativeRegex;
-use Phplrt\Parser\Driver\Llk;
 use Phplrt\Parser\Grammar;
 use Phplrt\Parser\GrammarInterface;
 
@@ -79,7 +78,7 @@ class Reader
             $this->grammar->addRule($rule);
         }
 
-        return new Llk($this->lexer, $this->grammar);
+        return new \Phplrt\Parser\Parser($this->lexer, $this->grammar);
     }
 
     /**

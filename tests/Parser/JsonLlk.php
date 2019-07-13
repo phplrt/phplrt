@@ -9,29 +9,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
-use Phplrt\Lexer\Driver\NativeRegex;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Parser\Driver\Llk;
-use Phplrt\Parser\Driver\Stateful;
+use Phplrt\Parser\Parser;
 use Phplrt\Parser\Grammar;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Repetition;
 use Phplrt\Parser\Rule\Terminal;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Lexer\Driver\NativeRegex;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**
  * Class JsonLlk
  */
-class JsonLlk extends Stateful
+class JsonLlk extends Parser
 {
     /**
-     * @return ParserInterface
-     * @throws \Phplrt\Parser\Exception\GrammarException
+     * JsonLlk constructor.
      */
-    protected function boot(): ParserInterface
+    public function __construct()
     {
-        return new Llk($this->getLexer(), new Grammar([
+        parent::__construct($this->getLexer(), new Grammar([
             new Terminal(0, 'true', true),
             new Terminal(1, 'false', true),
             new Terminal(2, 'null', true),
