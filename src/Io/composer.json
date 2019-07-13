@@ -1,7 +1,7 @@
 {
     "name": "phplrt/io",
     "type": "library",
-    "description": "The PHPLRT Io package.",
+    "description": "The phplrt Io package.",
     "license": "MIT",
     "keywords": [
         "file",
@@ -24,18 +24,21 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/position": "1.1.*|1.1.x-dev",
-        "phplrt/stream": "1.1.*|1.1.x-dev",
-        "phplrt/exception": "1.1.*|1.1.x-dev"
+        "phplrt/io-contracts": "2.0.*|2.0.x-dev",
+        "phplrt/position": "2.0.*|2.0.x-dev",
+        "phplrt/exception": "2.0.*|2.0.x-dev"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Io\\": ""
         }
     },
+    "provide": {
+        "phplrt/io-implementation": "2.0.0"
+    },
     "extra": {
         "branch-alias": {
-            "master": "1.1.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     },
     "config": {

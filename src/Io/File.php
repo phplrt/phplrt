@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Io;
 
+use Phplrt\Contracts\Io\FactoryInterface;
+
 /**
  * Class File
  */

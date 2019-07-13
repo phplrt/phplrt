@@ -11,15 +11,15 @@ namespace Phplrt\Lexer\Driver;
 
 use Parle\Lexer as Parle;
 use Parle\LexerException;
-use Parle\Token as InternalToken;
-use Phplrt\Io\Readable;
-use Phplrt\Lexer\Definition\TokenDefinition;
-use Phplrt\Lexer\Exception\BadLexemeException;
-use Phplrt\Lexer\LexerInterface;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Unknown;
-use Phplrt\Lexer\TokenInterface;
+use Parle\Token as InternalToken;
+use Phplrt\Contracts\Io\Readable;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Definition\TokenDefinition;
+use Phplrt\Lexer\Exception\BadLexemeException;
 
 /**
  * Class ParleStateless
@@ -82,6 +82,18 @@ class ParleLexer extends SimpleLexer
         ++$this->id;
 
         return $this;
+    }
+
+    /**
+     * @return iterable|TokenDefinition[]
+     */
+    public function getTokenDefinitions(): iterable
+    {
+        foreach ($this->tokens as $id => $pcre) {
+            $name = $this->map[$id];
+
+            yield new TokenDefinition($name, $pcre, ! \in_array($name, $this->skipped, true));
+        }
     }
 
     /**
@@ -157,17 +169,5 @@ class ParleLexer extends SimpleLexer
         $iterator->next();
 
         return new Token($this->map[$current->id], $current->value, $this->lexer->marker);
-    }
-
-    /**
-     * @return iterable|TokenDefinition[]
-     */
-    public function getTokenDefinitions(): iterable
-    {
-        foreach ($this->tokens as $id => $pcre) {
-            $name = $this->map[$id];
-
-            yield new TokenDefinition($name, $pcre, ! \in_array($name, $this->skipped, true));
-        }
     }
 }

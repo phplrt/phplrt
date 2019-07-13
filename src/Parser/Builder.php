@@ -10,14 +10,14 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Ast\Leaf;
-use Phplrt\Ast\LeafInterface;
 use Phplrt\Ast\Node;
-use Phplrt\Ast\RuleInterface;
 use Phplrt\Ast\Rule;
-use Phplrt\Lexer\TokenInterface;
+use Phplrt\Contracts\Ast\LeafInterface;
+use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Exception\GrammarException;
 use Phplrt\Parser\Trace\Entry;
 use Phplrt\Parser\Trace\Escape;
-use Phplrt\Parser\Exception\GrammarException;
 
 /**
  * Class Builder
@@ -42,7 +42,7 @@ class Builder implements BuilderInterface
      */
     public function __construct(array $trace, GrammarInterface $grammar)
     {
-        $this->trace = $trace;
+        $this->trace   = $trace;
         $this->grammar = $grammar;
     }
 
@@ -74,11 +74,11 @@ class Builder implements BuilderInterface
             $trace = $this->trace[$i];
 
             if ($trace instanceof Entry) {
-                $ruleName = $trace->getRule();
-                $rule = $this->grammar->fetch($ruleName);
-                $isRule = $trace->isTransitional() === false;
+                $ruleName  = $trace->getRule();
+                $rule      = $this->grammar->fetch($ruleName);
+                $isRule    = $trace->isTransitional() === false;
                 $nextTrace = $this->trace[$i + 1];
-                $id = $rule->getNodeId();
+                $id        = $rule->getNodeId();
 
                 // Optimization: Skip empty trace sequence.
                 if ($nextTrace instanceof Escape && $ruleName === $nextTrace->getRule()) {
@@ -101,7 +101,7 @@ class Builder implements BuilderInterface
                     continue;
                 }
 
-                $handle = [];
+                $handle  = [];
                 $childId = null;
 
                 do {

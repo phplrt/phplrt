@@ -9,18 +9,17 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
-use Phplrt\Stream\Factory;
-use Phplrt\Stream\StreamInterface;
+use Phplrt\Io\Exception\NotAccessibleException;
 
 /**
- * Class Virtual
+ * Class Content
  */
 class Virtual extends AbstractFile
 {
     /**
      * @var string A default file name which created from sources
      */
-    public const DEFAULT_FILE_NAME = 'php://input';
+    public const DEFAULT_FILE_NAME = 'php://memory';
 
     /**
      * @var string
@@ -33,7 +32,7 @@ class Virtual extends AbstractFile
     protected $hash;
 
     /**
-     * Virtual constructor.
+     * Content constructor.
      *
      * @param string $content
      * @param string|null $name
@@ -65,12 +64,25 @@ class Virtual extends AbstractFile
     }
 
     /**
-     * @param array $options
-     * @return StreamInterface
+     * @return resource
      */
-    public function getStream(array $options = []): StreamInterface
+    public function getStream()
     {
-        return Factory::fromContent($this->getContents());
+        $memory = @\fopen('php://memory', 'rb+');
+
+        if ($memory === false) {
+            throw new NotAccessibleException('Can not open php://memory');
+        }
+
+        if (@\fwrite($memory, $this->getContents()) === false) {
+            throw new NotAccessibleException('Can not write content data');
+        }
+
+        if (@\rewind($memory) === false) {
+            throw new NotAccessibleException('Memory data is not rewindable');
+        }
+
+        return $memory;
     }
 
     /**
@@ -79,14 +91,6 @@ class Virtual extends AbstractFile
     public function getContents(): string
     {
         return $this->content;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getStreamContents(bool $exclusive = false)
-    {
-        return Factory::fromContent($this->getContents())->getResource();
     }
 
     /**

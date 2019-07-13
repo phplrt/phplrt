@@ -77,13 +77,13 @@ class LookaheadIterator extends \IteratorIterator
     public function next(): void
     {
         $innerIterator = $this->getInnerIterator();
-        $this->valid = $innerIterator->valid();
+        $this->valid   = $innerIterator->valid();
 
         if ($this->valid === false) {
             return;
         }
 
-        $this->key = $innerIterator->key();
+        $this->key     = $innerIterator->key();
         $this->current = $innerIterator->current();
 
         $innerIterator->next();

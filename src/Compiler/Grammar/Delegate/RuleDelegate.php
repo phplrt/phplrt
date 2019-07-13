@@ -10,13 +10,13 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Grammar\Delegate;
 
 use Phplrt\Ast\Rule;
-use Phplrt\Ast\LeafInterface;
-use Phplrt\Ast\NodeInterface;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Ast\RuleInterface;
-use Phplrt\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Compiler\Grammar\LookaheadIterator;
+use Phplrt\Contracts\Ast\LeafInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\TokenInterface;
 
 /**
  * Class RuleDelegate

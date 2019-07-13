@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Io\File;
 
-use Phplrt\Io\Readable;
+use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Position\Position;
-use Phplrt\Position\PositionInterface;
 
 /**
  * Class AbstractFile

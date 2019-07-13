@@ -52,12 +52,11 @@ class Token extends BaseToken
     }
 
     /**
-     * @param int|null $offset
      * @return string|null
      */
-    public function getValue(int $offset = 0): ?string
+    public function getValue(): string
     {
-        return $this->value[$offset] ?? null;
+        return $this->value[0];
     }
 
     /**

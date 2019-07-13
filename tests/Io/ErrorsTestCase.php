@@ -33,6 +33,7 @@ class ErrorsTestCase extends TestCase
     }
 
     /**
+     * @requires OSFAMILY Linux|BSD|Darwin
      * @return void
      * @throws NotReadableException
      * @throws \PHPUnit\Framework\Exception
@@ -40,10 +41,6 @@ class ErrorsTestCase extends TestCase
      */
     public function testNotReadable(): void
     {
-        if (\strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-            $this->markTestSkipped('Windows OS does not support the chmod options');
-        }
-
         $file = __DIR__ . '/resources/locked';
 
         $this->expectException(NotReadableException::class);

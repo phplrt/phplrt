@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar\Delegate;
 
+use Phplrt\Ast\Rule;
 use Phplrt\Compiler\Exception\IncludeNotFoundException;
+use Phplrt\Contracts\Io\Readable;
 use Phplrt\Exception\ExternalException;
 use Phplrt\Io\Exception\NotReadableException;
 use Phplrt\Io\File;
-use Phplrt\Io\Readable;
-use Phplrt\Ast\Rule;
 
 /**
  * Class IncludeDelegate
@@ -30,7 +30,7 @@ class IncludeDelegate extends Rule
     public function getPathname(Readable $from): Readable
     {
         $name = $this->getChild(0)->getValue(1);
-        $dir = \dirname($from->getPathname());
+        $dir  = \dirname($from->getPathname());
 
         foreach (['', '.pp', '.pp2'] as $ext) {
             $path = $dir . '/' . $name . $ext;

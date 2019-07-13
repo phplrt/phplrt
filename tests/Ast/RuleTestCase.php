@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Ast;
 
 use Phplrt\Ast\Leaf;
-use Phplrt\Ast\LeafInterface;
-use Phplrt\Ast\NodeInterface;
+use Phplrt\Contracts\Ast\LeafInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Ast\Rule;
-use Phplrt\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\RuleInterface;
 use Phplrt\Tests\Ast\Helper\AstAssertionTrait;
 use PHPUnit\Framework\ExpectationFailedException;
 

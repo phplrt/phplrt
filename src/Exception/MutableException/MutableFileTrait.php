@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\MutableException;
 
+use Phplrt\Contracts\Exception\MutableException\MutableFileInterface;
+
 /**
  * Trait MutableFileTrait
  *

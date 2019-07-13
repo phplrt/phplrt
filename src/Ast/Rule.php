@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
+use Phplrt\Contracts\Ast\LeafInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Ast\RuleInterface;
+
 /**
  * Class Rule
  */

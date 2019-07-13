@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
-use Phplrt\Ast\Dumper\HoaDumper;
+use Phplrt\Dumper\HoaDumper;
 use Phplrt\Io\File;
-use Phplrt\Io\Readable;
+use Phplrt\Contracts\Io\Readable;
 use PHPUnit\Framework\Exception;
-use Phplrt\Parser\ParserInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Io\Exception\NotReadableException;
 
 /**
@@ -55,8 +55,11 @@ class ParserTestCase extends TestCase
     {
         $ast = $parser->parse($file);
 
-        $actual = (new HoaDumper())->dump($ast) . "\n";
+        $content = \file_get_contents($file->getPathname() . '.txt');
 
-        $this->assertStringEqualsFile($file->getPathname() . '.txt', $actual);
+        $this->assertSame(
+            \trim(\str_replace("\r\n", "\n", $content)),
+            \trim(\str_replace("\r\n", "\n", (new HoaDumper())->dump($ast)))
+        );
     }
 }

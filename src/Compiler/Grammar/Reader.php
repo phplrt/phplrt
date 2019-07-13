@@ -9,18 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Io\Readable;
-use Phplrt\Parser\Grammar;
-use Phplrt\Parser\Driver\Llk;
-use Phplrt\Lexer\LexerInterface;
-use Phplrt\Parser\ParserInterface;
-use Phplrt\Parser\GrammarInterface;
-use Phplrt\Lexer\Driver\NativeRegex;
-use Phplrt\Exception\ExternalException;
-use Phplrt\Io\Exception\NotReadableException;
+use Phplrt\Compiler\Grammar\Delegate\IncludeDelegate;
 use Phplrt\Compiler\Grammar\Delegate\RuleDelegate;
 use Phplrt\Compiler\Grammar\Delegate\TokenDelegate;
-use Phplrt\Compiler\Grammar\Delegate\IncludeDelegate;
+use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Exception\ExternalException;
+use Phplrt\Io\Exception\NotReadableException;
+use Phplrt\Lexer\Driver\NativeRegex;
+use Phplrt\Parser\Driver\Llk;
+use Phplrt\Parser\Grammar;
+use Phplrt\Parser\GrammarInterface;
 
 /**
  * Class Reader
@@ -59,10 +59,10 @@ class Reader
      */
     public function __construct(Readable $file)
     {
-        $this->file = $file;
-        $this->pp = new Parser();
-        $this->lexer = new NativeRegex();
-        $this->grammar = new Grammar();
+        $this->file     = $file;
+        $this->pp       = new Parser();
+        $this->lexer    = new NativeRegex();
+        $this->grammar  = new Grammar();
         $this->analyzer = new Analyzer();
     }
 

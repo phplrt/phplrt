@@ -9,18 +9,27 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
+use Phplrt\Contracts\Exception\ExternalExceptionInterface;
+use Phplrt\Contracts\Exception\FactoryInterface;
+use Phplrt\Contracts\Exception\MutableExceptionInterface;
+use Phplrt\Contracts\Io\Readable;
 use Phplrt\Exception\MutableException\MutableExceptionTrait;
+use Phplrt\Io\File;
 
 /**
  * Class ExternalException
  */
 class ExternalException extends \Exception implements
     FactoryInterface,
-    MutableExceptionInterface,
-    ExternalExceptionInterface
+    MutableExceptionInterface
 {
     use FactoryTrait;
     use MutableExceptionTrait;
+
+    /**
+     * @var \Phplrt\Contracts\Io\Readable|null
+     */
+    protected $readable;
 
     /**
      * @param string $msg
@@ -31,5 +40,17 @@ class ExternalException extends \Exception implements
     protected static function create(string $msg, int $code = 0, \Throwable $prev = null): MutableExceptionInterface
     {
         return new static($msg, $code, $prev);
+    }
+
+    /**
+     * @return \Phplrt\Contracts\Io\Readable|null
+     */
+    public function getReadable(): ?Readable
+    {
+        if ($this->readable === null) {
+            return \is_file($this->getFile()) ? File::fromPathname($this->getFile()) : null;
+        }
+
+        return $this->readable;
     }
 }

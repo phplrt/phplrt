@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Io\Readable;
+use Phplrt\Io\File;
+use Phplrt\Contracts\Io\Readable;
 use Phplrt\Lexer\Definition\TokenDefinition;
-use Phplrt\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\SimpleLexerInterface;
-use Phplrt\Lexer\TokenInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class BaseLexer
@@ -31,12 +32,15 @@ abstract class SimpleLexer implements SimpleLexerInterface
     protected $tokens = [];
 
     /**
-     * @param Readable $input
+     * Compiling the current state of the lexer and returning
+     * stream tokens from the source file.
+     *
+     * @param Readable|string|resource|\SplFileInfo $input
      * @return \Traversable|TokenInterface[]
      */
-    public function lex(Readable $input): \Traversable
+    public function lex($input): \Traversable
     {
-        foreach ($this->exec($input) as $token) {
+        foreach ($this->exec(File::new($input)) as $token) {
             if (! \in_array($token->getName(), $this->skipped, true)) {
                 yield $token;
             }

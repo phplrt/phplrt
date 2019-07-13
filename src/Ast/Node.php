@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Ast\Dumper\HoaDumper;
-use Phplrt\Ast\Dumper\XmlDumper;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Dumper\Dumper;
 
 /**
  * Class Node
@@ -35,7 +35,7 @@ abstract class Node implements NodeInterface
      */
     public function __construct(string $name, int $offset = 0)
     {
-        $this->name = $name;
+        $this->name   = $name;
         $this->offset = $offset;
     }
 
@@ -60,10 +60,6 @@ abstract class Node implements NodeInterface
      */
     public function __toString(): string
     {
-        $dumper = \class_exists(\DOMDocument::class)
-            ? new XmlDumper()
-            : new HoaDumper();
-
-        return $dumper->dump($this);
+        return Dumper::dump($this);
     }
 }

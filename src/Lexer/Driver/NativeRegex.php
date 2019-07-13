@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Io\Readable;
-use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
-use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Unknown;
-use Phplrt\Lexer\TokenInterface;
+use Phplrt\Contracts\Io\Readable;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;
+use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
 
 /**
  * Class NativeRegex
