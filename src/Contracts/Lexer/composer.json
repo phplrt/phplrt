@@ -20,7 +20,7 @@
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/lexer-contract"
+        "source": "https://github.com/phplrt/lexer-contracts"
     },
     "authors": [
         {
