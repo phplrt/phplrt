@@ -21,14 +21,13 @@ interface LexerInterface
      * Compiles the current state (if required) and returns a set
      * of tokens from the passed source.
      *
-     * Note that the method allows for throwing an exceptions
-     * (e.g. UnrecognizedTokenException) However, the final implementation
-     * may vary.
-     *
      * @param mixed $source Source for analysis. May be of arbitrary type,
      *                      including SplFileInfo object or text.
      *
      * @return iterable|TokenInterface[] Returns a set of tokens.
+     *
+     * @throws LexerExceptionInterface If an error happens while processing
+     *                                 the source text.
      */
     public function lex($source): iterable;
 }
