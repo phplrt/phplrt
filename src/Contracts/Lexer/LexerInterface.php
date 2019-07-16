@@ -25,8 +25,8 @@ interface LexerInterface
      * (e.g. UnrecognizedTokenException) However, the final implementation
      * may vary.
      *
-     * @param mixed $source   Source for analysis. May be of arbitrary type,
-     *                        including SplFileInfo object or text.
+     * @param mixed $source Source for analysis. May be of arbitrary type,
+     *                      including SplFileInfo object or text.
      *
      * @return iterable|TokenInterface[] Returns a set of tokens.
      */
