@@ -15,39 +15,36 @@ namespace Phplrt\Contracts\Lexer;
 interface TokenInterface
 {
     /**
-     * Returns the ID or name of the token.
-     *
-     * Please note that the token can be anonymous. In this case, the name
-     * should return the same as the contents of the token, index or null.
+     * Returns a token type if he is known.
      *
      * For example, to implement tokens of php "token_get_all()" function:
      *
      * <code>
-     *  // Source: "<?php if (false) { return true; }"
+     *  >>> "<?php if (false) { return true; }"
      *
-     *  ------------------------------
-     *    Name          | Value
-     *  ------------------------------
-     *    T_OPEN_TAG    | "<?php "
-     *    T_IF          | "if"
-     *    T_WHITESPACE  | " "
-     *    null          | "("
-     *    T_STRING      | "false"
-     *    null          | ")"
-     *    T_WHITESPACE  | " "
-     *    null          | "{"
-     *    T_RETURN      | "return"
-     *    T_WHITESPACE  | " "
-     *    T_STRING      | "true"
-     *    null          | ";"
-     *    T_WHITESPACE  | " "
-     *    null          | "}"
-     *  ------------------------------
+     *  --------------------------
+     *    Type      | Value
+     *  --------------------------
+     *    379       | "<?php "
+     *    327       | "if"
+     *    382       | " "
+     *    null      | "("
+     *    319       | "false"
+     *    null      | ")"
+     *    382       | " "
+     *    null      | "{"
+     *    348       | "return"
+     *    382       | " "
+     *    319       | "true"
+     *    null      | ";"
+     *    382       | " "
+     *    null      | "}"
+     *  --------------------------
      * </code>
      *
-     * @return string|int|null
+     * @return int|null
      */
-    public function getName();
+    public function getType(): ?int;
 
     /**
      * Token position in bytes
