@@ -14,5 +14,4 @@ namespace Phplrt\Assembler\Exception;
  */
 class ParsingException extends AssemblerException
 {
-
 }

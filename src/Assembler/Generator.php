@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler;
 
-use PhpParser\Node;
-use Phplrt\Assembler\Generator\Renderer;
-use Phplrt\Assembler\Generator\RendererInterface;
 use Phplrt\Assembler\Generator\CodePurifierVisitor;
 use Phplrt\Assembler\Generator\DependencyCleanupVisitor;
+use Phplrt\Assembler\Generator\Renderer;
+use Phplrt\Assembler\Generator\RendererInterface;
+use PhpParser\Node;
 
 /**
  * Class Generator
@@ -94,9 +94,9 @@ class Generator implements GeneratorInterface
      */
     public function __construct(ParserInterface $parser, string $class, iterable $sources)
     {
-        $this->class = $class;
-        $this->parser = $parser;
-        $this->sources = $sources;
+        $this->class    = $class;
+        $this->parser   = $parser;
+        $this->sources  = $sources;
         $this->renderer = new Renderer();
     }
 
@@ -106,7 +106,7 @@ class Generator implements GeneratorInterface
      */
     public function withDescription(string ...$description): GeneratorInterface
     {
-        return $this->immutable(function () use ($description) {
+        return $this->immutable(function () use ($description): void {
             $this->description = \count($description)
                 ? \implode(\PHP_EOL . \PHP_EOL, $description)
                 : null;
@@ -157,7 +157,7 @@ class Generator implements GeneratorInterface
             $this->assertNamespace($namespace);
         }
 
-        return $this->immutable(function () use ($namespace) {
+        return $this->immutable(function () use ($namespace): void {
             $this->namespace = $namespace;
         });
     }
@@ -180,7 +180,7 @@ class Generator implements GeneratorInterface
      */
     public function strict(bool $enabled = true): GeneratorInterface
     {
-        return $this->immutable(function () use ($enabled) {
+        return $this->immutable(function () use ($enabled): void {
             $this->strict = $enabled;
         });
     }
@@ -193,7 +193,7 @@ class Generator implements GeneratorInterface
      */
     public function save(string $directory = null, string $filename = null): string
     {
-        $pathname = $this->getOutputPathName($filename, $directory);
+        $pathname  = $this->getOutputPathName($filename, $directory);
         $directory = \dirname($pathname);
 
         if (! @\mkdir($directory, 0777, true) && ! \is_dir($directory)) {
@@ -260,7 +260,7 @@ class Generator implements GeneratorInterface
         return $this->renderer->render(
             $this->parser->modify($ast, [
                 new DependencyCleanupVisitor(),
-                new CodePurifierVisitor()
+                new CodePurifierVisitor(),
             ])
         );
     }

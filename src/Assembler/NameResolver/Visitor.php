@@ -9,20 +9,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\NameResolver;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\NodeVisitorAbstract;
-use PhpParser\Node\Stmt\Function_;
-use PhpParser\Node\Stmt\ClassLike;
-use Phplrt\Assembler\Context\ContextVisitor;
 use Phplrt\Assembler\Context\ContextInterface;
-use Phplrt\Assembler\NameResolver\Resolver\Nulls;
-use Phplrt\Assembler\NameResolver\Resolver\Classes;
+use Phplrt\Assembler\Context\ContextVisitor;
 use Phplrt\Assembler\NameResolver\Resolver\Booleans;
+use Phplrt\Assembler\NameResolver\Resolver\Classes;
 use Phplrt\Assembler\NameResolver\Resolver\Constants;
 use Phplrt\Assembler\NameResolver\Resolver\Functions;
-use Phplrt\Assembler\NameResolver\Resolver\SpecialNames;
+use Phplrt\Assembler\NameResolver\Resolver\Nulls;
 use Phplrt\Assembler\NameResolver\Resolver\ResolverInterface;
+use Phplrt\Assembler\NameResolver\Resolver\SpecialNames;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\NodeVisitorAbstract;
 
 /**
  * Class DependenciesResolver
@@ -51,7 +51,7 @@ class Visitor extends NodeVisitorAbstract
      */
     public function __construct(\Closure $lookup)
     {
-        $this->lookup = $lookup;
+        $this->lookup  = $lookup;
         $this->context = new ContextVisitor();
 
         $this->resolvers = [

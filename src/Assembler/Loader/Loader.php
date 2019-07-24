@@ -41,9 +41,9 @@ class Loader
      */
     public function __construct(AssemblerInterface $assembler, Registry $registry, MatcherInterface $matcher)
     {
-        $this->registry = $registry;
+        $this->registry  = $registry;
         $this->assembler = $assembler;
-        $this->matcher = $matcher;
+        $this->matcher   = $matcher;
     }
 
     /**

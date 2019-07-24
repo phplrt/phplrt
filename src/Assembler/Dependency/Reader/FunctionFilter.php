@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Dependency\Reader;
 
+use Phplrt\Assembler\Context\ContextInterface;
+use Phplrt\Assembler\Context\ContextVisitor;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use PhpParser\Node\Stmt\Function_;
-use Phplrt\Assembler\Context\ContextVisitor;
-use Phplrt\Assembler\Context\ContextInterface;
 
 /**
  * Class FunctionFilter
@@ -36,7 +36,7 @@ class FunctionFilter extends NodeVisitorAbstract
      */
     public function __construct(\ReflectionFunction $reflection)
     {
-        $this->context = new ContextVisitor();
+        $this->context    = new ContextVisitor();
         $this->reflection = $reflection;
     }
 

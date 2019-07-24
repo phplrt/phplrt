@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\NameResolver\Resolver;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\Node\Scalar\LNumber;
-use PhpParser\Node\Scalar\DNumber;
-use PhpParser\Node\Scalar\String_;
 use Phplrt\Assembler\Context\Aliases;
 use Phplrt\Assembler\Context\ContextInterface;
 use Phplrt\Assembler\Exception\DependencyException;
+use PhpParser\Node;
+use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\DNumber;
+use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Scalar\String_;
 
 /**
  * Class Constants

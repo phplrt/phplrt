@@ -9,19 +9,19 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
+use Phplrt\Assembler\Dependency\ClassDependency;
+use Phplrt\Assembler\Dependency\DependencyInterface;
+use Phplrt\Assembler\Dependency\FunctionDependency;
+use Phplrt\Assembler\Dependency\InterfaceDependency;
+use Phplrt\Assembler\Dependency\TraitDependency;
+use Phplrt\Assembler\Dependency\UserDependencyInterface;
+use Phplrt\Assembler\Exception\DependencyException;
 use Phplrt\Assembler\Loader\Loader;
 use Phplrt\Assembler\Loader\Matcher;
 use Phplrt\Assembler\Loader\Registry;
+use PhpParser\Node;
+use PhpParser\Node\Name;
 use PhpParser\Node\Name\FullyQualified;
-use Phplrt\Assembler\Dependency\ClassDependency;
-use Phplrt\Assembler\Dependency\TraitDependency;
-use Phplrt\Assembler\Exception\DependencyException;
-use Phplrt\Assembler\Dependency\FunctionDependency;
-use Phplrt\Assembler\Dependency\DependencyInterface;
-use Phplrt\Assembler\Dependency\InterfaceDependency;
-use Phplrt\Assembler\Dependency\UserDependencyInterface;
 
 /**
  * Class Assembler
@@ -43,7 +43,7 @@ class Assembler implements AssemblerInterface
      */
     public function __construct()
     {
-        $this->parser = new Parser();
+        $this->parser       = new Parser();
         $this->dependencies = new Registry();
     }
 
