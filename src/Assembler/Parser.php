@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler;
 
-use PhpParser\Node;
+use Phplrt\Assembler\Exception\ParsingException;
 use PhpParser\Error;
-use PhpParser\ParserFactory;
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use Phplrt\Assembler\Exception\ParsingException;
+use PhpParser\ParserFactory;
 
 /**
  * Class Parser

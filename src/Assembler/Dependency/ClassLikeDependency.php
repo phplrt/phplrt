@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Dependency;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use Phplrt\Assembler\ParserInterface;
 use Phplrt\Assembler\Dependency\Reader\ClassFilter;
 use Phplrt\Assembler\Dependency\Reader\EntryAnalyzer;
+use Phplrt\Assembler\ParserInterface;
+use PhpParser\Node;
+use PhpParser\Node\Name;
 
 /**
  * Class ClassLikeDependency
@@ -58,4 +58,3 @@ abstract class ClassLikeDependency extends UserDependency
         return $this->reflection->getFileName();
     }
 }
-

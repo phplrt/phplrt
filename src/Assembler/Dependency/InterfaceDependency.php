@@ -14,6 +14,4 @@ namespace Phplrt\Assembler\Dependency;
  */
 class InterfaceDependency extends ClassLikeDependency
 {
-
 }
-

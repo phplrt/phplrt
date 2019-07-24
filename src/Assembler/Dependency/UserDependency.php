@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Dependency;
 
-use PhpParser\Node\Name;
-use Phplrt\Assembler\ParserInterface;
 use Phplrt\Assembler\NameResolver\Visitor;
+use Phplrt\Assembler\ParserInterface;
+use PhpParser\Node\Name;
 
 /**
  * Class UserDependency

@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Phplrt\Assembler\Dependency;
 
 use PhpParser\Node\Name;
-use Phplrt\Assembler\Parser;
 
 /**
  * Class Dependency

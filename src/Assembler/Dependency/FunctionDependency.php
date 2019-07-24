@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Dependency;
 
-use PhpParser\Node;
-use PhpParser\Node\Name;
-use Phplrt\Assembler\Parser;
-use Phplrt\Assembler\ParserInterface;
 use Phplrt\Assembler\Dependency\Reader\EntryAnalyzer;
 use Phplrt\Assembler\Dependency\Reader\FunctionFilter;
+use Phplrt\Assembler\Parser;
+use Phplrt\Assembler\ParserInterface;
+use PhpParser\Node;
+use PhpParser\Node\Name;
 
 /**
  * Class FunctionDependency
@@ -59,4 +59,3 @@ class FunctionDependency extends UserDependency
         return $this->reflection->getFileName();
     }
 }
-

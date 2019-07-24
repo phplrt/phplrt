@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\NameResolver\Resolver;
 
-use PhpParser\Node\Name;
 use Phplrt\Assembler\Context\ContextInterface;
+use PhpParser\Node\Name;
 
 /**
  * Class Resolver

@@ -10,11 +10,11 @@ declare(strict_types=1);
 namespace Phplrt\Assembler\Generator;
 
 use PhpParser\Node;
-use PhpParser\NodeTraverser;
-use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\Stmt\GroupUse;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\Use_;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
 
 /**
  * Class DependencyCleanupVisitor

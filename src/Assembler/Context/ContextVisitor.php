@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Context;
 
+use Phplrt\Assembler\Exception\DependencyException;
 use PhpParser\Node;
-use PhpParser\Node\Name;
-use PhpParser\NodeTraverser;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\GroupUse;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Use_ as UseExpression;
-use Phplrt\Assembler\Exception\DependencyException;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitorAbstract;
 
 /**
  * Class ContextVisitor
@@ -42,7 +42,7 @@ class ContextVisitor extends NodeVisitorAbstract implements ContextInterface
     {
         if ($node instanceof Namespace_) {
             $this->namespace = $node->name;
-            $this->aliases = null;
+            $this->aliases   = null;
         }
 
         if ($node instanceof GroupUse) {

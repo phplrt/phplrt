@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Assembler\Dependency\Reader;
 
+use Phplrt\Assembler\Exception\AssemblerException;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
-use Phplrt\Assembler\Exception\AssemblerException;
 
 /**
  * Class EntryAnalyzer

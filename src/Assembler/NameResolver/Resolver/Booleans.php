@@ -21,7 +21,7 @@ class Booleans implements ResolverInterface
      */
     private const VALUES = [
         'true',
-        'false'
+        'false',
     ];
 
     /**
