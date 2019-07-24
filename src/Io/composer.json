@@ -34,7 +34,7 @@
         }
     },
     "provide": {
-        "phplrt/io-implementation": "2.0.0"
+        "phplrt/io-contracts-implementation": "2.0.0"
     },
     "extra": {
         "branch-alias": {

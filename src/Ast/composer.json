@@ -29,7 +29,7 @@
         }
     },
     "provide": {
-        "phplrt/ast-implementation": "2.0.0"
+        "phplrt/ast-contracts-implementation": "2.0.0"
     },
     "extra": {
         "branch-alias": {

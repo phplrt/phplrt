@@ -1,17 +1,16 @@
 {
-    "name": "phplrt/dumper",
+    "name": "phplrt/assembler",
     "type": "library",
-    "description": "The phplrt abstract syntax tree dumper package",
+    "description": "The phplrt assembler package.",
     "license": "MIT",
     "keywords": [
-        "dump",
-        "dumper",
-        "debug"
+        "assembler",
+        "compiler"
     ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/dumper"
+        "source": "https://github.com/phplrt/assembler"
     },
     "authors": [
         {
@@ -21,18 +20,13 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/dumper-contracts": "2.0.*|2.0.x-dev"
+        "ext-mbstring": "*",
+        "nikic/php-parser": "~4.2"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Dumper\\": ""
+            "Phplrt\\Assembler\\": ""
         }
-    },
-    "provide": {
-        "phplrt/dumper-contracts-implementation": "2.0.0",
-    },
-    "suggest": {
-        "ext-dom": "Dumping abstract syntax tree as XML"
     },
     "extra": {
         "branch-alias": {

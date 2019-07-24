@@ -30,7 +30,7 @@
         }
     },
     "provide": {
-        "phplrt/exception-implementation": "2.0.0"
+        "phplrt/exception-contracts-implementation": "2.0.0"
     },
     "extra": {
         "branch-alias": {

@@ -45,6 +45,7 @@ text analysis and so on.
 - [Examples](docs/examples.md#examples)
 - [Abstract Syntax Tree](docs/ast.md#abstract-syntax-tree)
 - [Delegates](docs/delegates.md#delegates)
+- [Assembler](docs/assembler.md)
 
 ## Quickstart
 
