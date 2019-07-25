@@ -9,28 +9,32 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
-use Phplrt\Contracts\Position\PositionInterface;
-use Phplrt\Contracts\Position\ProvidesOffset;
-
 /**
  * Class Position
  */
-class Position implements ProvidesOffset, PositionInterface
+class Position
 {
+    use FactoryTrait;
+
+    /**
+     * @var int
+     */
+    public const MIN_LINE = 1;
+
+    /**
+     * @var int
+     */
+    public const MIN_COLUMN = 1;
+
+    /**
+     * @var int
+     */
+    public const MIN_OFFSET = 0;
+
     /**
      * @var string
      */
-    protected const NEW_LINE_DELIMITER = "\n";
-
-    /**
-     * @var int
-     */
-    protected const MIN_CODE_LINE = 1;
-
-    /**
-     * @var int
-     */
-    protected const MIN_CODE_COLUMN = 1;
+    protected const LINE_DELIMITER = "\n";
 
     /**
      * @var int
@@ -54,54 +58,14 @@ class Position implements ProvidesOffset, PositionInterface
      * @param int $line
      * @param int $column
      */
-    public function __construct(int $offset = 0, int $line = 1, int $column = 1)
-    {
+    public function __construct(
+        int $offset = self::MIN_OFFSET,
+        int $line = self::MIN_LINE,
+        int $column = self::MIN_COLUMN
+    ) {
         $this->offset = $offset;
-        $this->line   = \max($line, static::MIN_CODE_LINE);
-        $this->column = \max($column, static::MIN_CODE_COLUMN);
-    }
-
-    /**
-     * @param string $sources
-     * @param int $offset
-     * @return Position|$this
-     */
-    public static function fromOffset(string $sources, int $offset = 0): self
-    {
-        //
-        // Format the offset so that it does not exceed the allowable text
-        // size and is not less than zero.
-        //
-        $offset = \max(0, \min(\strlen($sources), $offset + 1));
-
-        //
-        // The number of occurrences of line breaks found in the
-        // desired text slice.
-        //
-        $lines = \substr_count($sources, static::NEW_LINE_DELIMITER, 0, $offset);
-
-        //
-        // Go through the last line before the first occurrence
-        // of line break. This value will be a column.
-        //
-        for ($i = $offset - 1, $column = 0; $i > 0 && $sources[$i] !== static::NEW_LINE_DELIMITER; --$i) {
-            ++$column;
-        }
-
-        return new static($offset, $lines + 1, $column + 1);
-    }
-
-    /**
-     * @param string $sources
-     * @param int $line
-     * @param int $column
-     * @return Position|$this
-     */
-    public static function fromPosition(string $sources, int $line = 1, int $column = 1): self
-    {
-        [$line, $column] = [\max(1, $line), \max(1, $column)];
-
-        throw new \LogicException(__METHOD__ . ' not implemented yet');
+        $this->line = \max($line, static::MIN_LINE);
+        $this->column = \max($column, static::MIN_COLUMN);
     }
 
     /**

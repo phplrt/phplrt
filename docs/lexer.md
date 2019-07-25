@@ -9,7 +9,7 @@ In order to quickly understand how it works - just write ~4 lines of code:
 ```php
 $lexer = Phplrt\Lexer\Factory::create(['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'], ['T_WHITESPACE']);
 
-foreach ($lexer->lex(Phplrt\Io\File::fromSources('23 42')) as $token) {
+foreach ($lexer->lex(Phplrt\Source\File::fromSources('23 42')) as $token) {
     echo $token . "\n";
 }
 ```

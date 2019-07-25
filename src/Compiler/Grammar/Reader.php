@@ -16,7 +16,7 @@ use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Exception\ExternalException;
-use Phplrt\Io\Exception\NotReadableException;
+use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Parser\Grammar;
 use Phplrt\Parser\GrammarInterface;

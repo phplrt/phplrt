@@ -60,7 +60,7 @@ $grammar = new Grammar([
 In order to test the grammar, we can simply parse the source.
 
 ```php
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use Phplrt\Parser\Driver\Llk as Parser;
 
 $parser = new Parser($lexer, $grammar);

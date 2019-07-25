@@ -51,7 +51,7 @@ text analysis and so on.
 
 ```php
 <?php
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use Phplrt\Compiler\Compiler;
 
 $compiler = Compiler::load(File::fromSources(<<<EBNF

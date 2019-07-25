@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3fc8f0ade056b196720940525a006943",
+    "content-hash": "daf30d3aa212b4c7a4c205e2ef79601b",
     "packages": [
         {
             "name": "nikic/php-parser",
@@ -58,17 +58,241 @@
             "time": "2019-05-25T20:07:01+00:00"
         },
         {
-            "name": "phplrt/source-contracts",
-            "version": "2.0.0",
+            "name": "phplrt/ast-contracts",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/phplrt/source-contracts.git",
-                "reference": "cf668ec26e3d0627ca2d3091ed1272e17ff7276a"
+                "url": "https://github.com/phplrt/ast-contracts.git",
+                "reference": "b7db4a4837609eb32133cc3a8562b0a1d43eeb2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/source-contracts/zipball/cf668ec26e3d0627ca2d3091ed1272e17ff7276a",
-                "reference": "cf668ec26e3d0627ca2d3091ed1272e17ff7276a",
+                "url": "https://api.github.com/repos/phplrt/ast-contracts/zipball/b7db4a4837609eb32133cc3a8562b0a1d43eeb2b",
+                "reference": "b7db4a4837609eb32133cc3a8562b0a1d43eeb2b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.3",
+                "phplrt/source-contracts": "2.0.*"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Phplrt\\Contracts\\Ast\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Nesmeyanov",
+                    "email": "nesk@xakep.ru"
+                }
+            ],
+            "description": "A set of phplrt ast abstractions",
+            "homepage": "https://github.com/phplrt",
+            "keywords": [
+                "abstractions",
+                "ast",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "standards",
+                "tree"
+            ],
+            "time": "2019-07-25T13:01:43+00:00"
+        },
+        {
+            "name": "phplrt/exception-contracts",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phplrt/exception-contracts.git",
+                "reference": "88fe10a8f2588a9728ed588d700afd633ba0e416"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phplrt/exception-contracts/zipball/88fe10a8f2588a9728ed588d700afd633ba0e416",
+                "reference": "88fe10a8f2588a9728ed588d700afd633ba0e416",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.3",
+                "phplrt/source-contracts": "2.0.*|2.0.x-dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Phplrt\\Contracts\\Exception\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Nesmeyanov",
+                    "email": "nesk@xakep.ru"
+                }
+            ],
+            "description": "A set of phplrt exceptions abstractions",
+            "homepage": "https://github.com/phplrt",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "exception",
+                "formatting",
+                "interfaces",
+                "interoperability",
+                "standards"
+            ],
+            "time": "2019-07-25T13:23:48+00:00"
+        },
+        {
+            "name": "phplrt/lexer-contracts",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phplrt/lexer-contracts.git",
+                "reference": "494cd6639be4db07efcc66cd98f04ec1715c6f62"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/494cd6639be4db07efcc66cd98f04ec1715c6f62",
+                "reference": "494cd6639be4db07efcc66cd98f04ec1715c6f62",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.3",
+                "phplrt/exception-contracts": "~2.0|2.0.x-dev",
+                "phplrt/source-contracts": "~2.0|2.0.x-dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Phplrt\\Contracts\\Lexer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Nesmeyanov",
+                    "email": "nesk@xakep.ru"
+                }
+            ],
+            "description": "A set of phplrt lexer abstractions",
+            "homepage": "https://github.com/phplrt",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "lexer",
+                "parsing",
+                "regex",
+                "standards",
+                "stream",
+                "token",
+                "tokenizer"
+            ],
+            "time": "2019-07-25T13:44:58+00:00"
+        },
+        {
+            "name": "phplrt/parser-contracts",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phplrt/parser-contracts.git",
+                "reference": "37303b6af135809231a1ebdffb300e2daf1f2cd6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phplrt/parser-contracts/zipball/37303b6af135809231a1ebdffb300e2daf1f2cd6",
+                "reference": "37303b6af135809231a1ebdffb300e2daf1f2cd6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.3",
+                "phplrt/ast-contracts": "2.0.*|2.0.x-dev",
+                "phplrt/exception-contracts": "2.0.*|2.0.x-dev",
+                "phplrt/source-contracts": "2.0.*|2.0.x-dev"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Phplrt\\Contracts\\Parser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kirill Nesmeyanov",
+                    "email": "nesk@xakep.ru"
+                }
+            ],
+            "description": "A set of phplrt parser abstractions",
+            "homepage": "https://github.com/phplrt",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "language",
+                "ll1",
+                "llk",
+                "lr",
+                "parser",
+                "php",
+                "slr",
+                "standards"
+            ],
+            "time": "2019-07-25T13:59:28+00:00"
+        },
+        {
+            "name": "phplrt/source-contracts",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phplrt/source-contracts.git",
+                "reference": "4a741a0b8541ed854fcc9af545ac5f506fa9ac25"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phplrt/source-contracts/zipball/4a741a0b8541ed854fcc9af545ac5f506fa9ac25",
+                "reference": "4a741a0b8541ed854fcc9af545ac5f506fa9ac25",
                 "shasum": ""
             },
             "require": {
@@ -111,7 +335,7 @@
                 "reader",
                 "standards"
             ],
-            "time": "2019-07-24T18:35:48+00:00"
+            "time": "2019-07-25T13:02:39+00:00"
         },
         {
             "name": "psr/container",
@@ -1410,16 +1634,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "3.0.2",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "c4a66b97f040e3e20b3aa2a243230a1c3a9f7c8c"
+                "reference": "e899757bb3df5ff6e95089132f32cd59aac2220a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/c4a66b97f040e3e20b3aa2a243230a1c3a9f7c8c",
-                "reference": "c4a66b97f040e3e20b3aa2a243230a1c3a9f7c8c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/e899757bb3df5ff6e95089132f32cd59aac2220a",
+                "reference": "e899757bb3df5ff6e95089132f32cd59aac2220a",
                 "shasum": ""
             },
             "require": {
@@ -1432,7 +1656,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -1455,7 +1679,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2019-07-08T05:24:54+00:00"
+            "time": "2019-07-25T05:29:42+00:00"
         },
         {
             "name": "phpunit/phpunit",

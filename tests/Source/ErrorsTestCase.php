@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Tests\Io;
+namespace Phplrt\Tests\Source;
 
-use Phplrt\Io\File;
-use Phplrt\Io\Exception\NotFoundException;
-use Phplrt\Io\Exception\NotReadableException;
+use Phplrt\Source\File;
+use Phplrt\Source\Exception\NotFoundException;
+use Phplrt\Source\Exception\NotReadableException;
 
 /**
  * Class ErrorsTestCase

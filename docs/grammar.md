@@ -41,7 +41,7 @@ In order to test the performance simply use the reading and
 playing grammar on the fly!
 
 ```php
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use Phplrt\Compiler\Compiler;
 
 $parser = Compiler::load(

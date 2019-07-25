@@ -12,8 +12,8 @@ namespace Phplrt\Tests\Parser;
 use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Dumper\HoaDumper;
-use Phplrt\Io\Exception\NotReadableException;
-use Phplrt\Io\File;
+use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\File;
 use PHPUnit\Framework\Exception;
 
 /**

@@ -7,14 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io;
-
-use Phplrt\Contracts\Source\FactoryInterface;
+namespace Phplrt\Source;
 
 /**
  * Class File
  */
-final class File implements FactoryInterface
+final class File
 {
     use FactoryTrait;
 
@@ -24,5 +22,23 @@ final class File implements FactoryInterface
     private function __construct()
     {
         throw new \LogicException('File factory is not instantiable');
+    }
+
+    /**
+     * @param string $pathName
+     * @return bool
+     */
+    public static function exists(string $pathName): bool
+    {
+        return \is_file($pathName);
+    }
+
+    /**
+     * @param string $pathName
+     * @return bool
+     */
+    public static function isReadable(string $pathName): bool
+    {
+        return \is_readable($pathName);
     }
 }

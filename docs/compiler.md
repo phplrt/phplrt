@@ -16,7 +16,7 @@ using method `$compiler->parse(...)`:
 
 ```php
 <?php
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use Phplrt\Compiler\Compiler;
 
 $compiler = Compiler::load(

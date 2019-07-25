@@ -8,7 +8,7 @@ The factory returns one of the available implementations, however you can create
 
 ```php
 use Phplrt\Lexer\Driver\NativeRegex;
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 
 $lexer = new NativeRegex(['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'], ['T_WHITESPACE', 'T_EOI']);
 
@@ -29,7 +29,7 @@ need support for [Parle extension](http://php.net/manual/en/book.parle.php).
 
 ```php
 use Phplrt\Lexer\Driver\ParleLexer;
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 
 $lexer = new ParleLexer(['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'], ['T_WHITESPACE', 'T_EOI']);
 

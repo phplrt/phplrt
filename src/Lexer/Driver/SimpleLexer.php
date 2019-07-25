@@ -12,7 +12,7 @@ namespace Phplrt\Lexer\Driver;
 use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use Phplrt\Lexer\Definition\TokenDefinition;
 use Phplrt\Lexer\SimpleLexerInterface;
 

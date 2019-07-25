@@ -7,12 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io\Exception;
+namespace Phplrt\Source\File;
 
 /**
- * The exception that occurs in case of errors when
- * working with the file system.
+ * Interface MemoizableInterface
  */
-class FileException extends \RuntimeException
+interface MemoizableInterface
 {
+    /**
+     * @return void
+     */
+    public function refresh(): void;
 }

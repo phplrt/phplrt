@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Tests\Io;
+namespace Phplrt\Tests\Source;
 
 /**
  * Class FileHashTestCase

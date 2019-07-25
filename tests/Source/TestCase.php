@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Tests\Io;
+namespace Phplrt\Tests\Source;
 
-use Phplrt\Io\File;
+use Phplrt\Source\File;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**

@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Tests\Io;
+namespace Phplrt\Tests\Source;
 
-use Phplrt\Io\Exception\NotReadableException;
-use Phplrt\Io\File;
-use Phplrt\Io\Readable;
+use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\File;
+use Phplrt\Contracts\Source\ReadableInterface;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**
@@ -37,10 +37,11 @@ class FileTestCase extends TestCase
      * @dataProvider provider
      * @param \Closure $factory
      * @throws ExpectationFailedException
+     * @throws \PHPUnit\Framework\SkippedTestError
      */
     public function testPathname(\Closure $factory): void
     {
-        /** @var Readable $readable */
+        /** @var ReadableInterface $readable */
         $readable = $factory();
 
         $path = $readable->getPathname();

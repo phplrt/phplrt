@@ -7,12 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Io\Exception;
+namespace Phplrt\Source\Exception;
 
 /**
- * The exception that occurs in case of file access
- * errors, like "Permission Denied".
+ * An exception that occurs when there is no read access to the file,
+ * such as "Access Denied".
  */
-class NotAccessibleException extends FileException
+class NotReadableException extends NotAccessibleException
 {
 }
