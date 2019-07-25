@@ -11,7 +11,7 @@ namespace Phplrt\Dumper;
 
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Dumper\DumperInterface;
 
 /**
@@ -99,7 +99,7 @@ class XmlDumper implements DumperInterface
     private function render(\DOMDocument $root, $node): \DOMElement
     {
         switch (true) {
-            case $node instanceof RuleInterface:
+            case $node instanceof NodeInterface:
                 return $this->rule($root, $node);
 
             case $node instanceof LeafInterface:
@@ -112,10 +112,10 @@ class XmlDumper implements DumperInterface
 
     /**
      * @param \DOMDocument $root
-     * @param RuleInterface $node
+     * @param NodeInterface $node
      * @return \DOMElement
      */
-    private function rule(\DOMDocument $root, RuleInterface $node): \DOMElement
+    private function rule(\DOMDocument $root, NodeInterface $node): \DOMElement
     {
         $rule = $root->createElement($this->name($node));
 

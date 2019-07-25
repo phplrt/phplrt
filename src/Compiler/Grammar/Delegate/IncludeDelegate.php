@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar\Delegate;
 
-use Phplrt\Ast\Rule;
+use Phplrt\Ast\Node;
 use Phplrt\Compiler\Exception\IncludeNotFoundException;
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Exception\ExternalException;
 use Phplrt\Io\Exception\NotReadableException;
 use Phplrt\Io\File;
@@ -19,7 +19,7 @@ use Phplrt\Io\File;
 /**
  * Class IncludeDelegate
  */
-class IncludeDelegate extends Rule
+class IncludeDelegate extends Node
 {
     /**
      * @param Readable $from

@@ -11,7 +11,7 @@ namespace Phplrt\Dumper;
 
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Dumper\DumperInterface;
 
 /**
@@ -35,7 +35,7 @@ class HoaDumper implements DumperInterface
     private const TOKEN_PREFIX = '>  ';
 
     /**
-     * @param NodeInterface|RuleInterface|LeafInterface $node
+     * @param NodeInterface|NodeInterface|LeafInterface $node
      * @param int $depth
      * @return array
      */
@@ -49,7 +49,7 @@ class HoaDumper implements DumperInterface
 
         $result = [$prefix . $node->getName()];
 
-        if ($node instanceof RuleInterface) {
+        if ($node instanceof NodeInterface) {
             foreach ($node->getChildren() as $child) {
                 /** @noinspection SlowArrayOperationsInLoopInspection */
                 $result = \array_merge($result, $this->render($child, $depth + 1));

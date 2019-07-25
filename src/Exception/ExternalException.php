@@ -11,7 +11,7 @@ namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Exception\FactoryInterface;
 use Phplrt\Contracts\Exception\MutableExceptionInterface;
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Exception\MutableException\MutableExceptionTrait;
 use Phplrt\Io\File;
 
@@ -26,7 +26,7 @@ class ExternalException extends \Exception implements
     use MutableExceptionTrait;
 
     /**
-     * @var \Phplrt\Contracts\Io\Readable|null
+     * @var \Phplrt\Contracts\Source\Readable|null
      */
     protected $readable;
 
@@ -42,7 +42,7 @@ class ExternalException extends \Exception implements
     }
 
     /**
-     * @return \Phplrt\Contracts\Io\Readable|null
+     * @return \Phplrt\Contracts\Source\Readable|null
      */
     public function getReadable(): ?Readable
     {

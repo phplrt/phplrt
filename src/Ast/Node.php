@@ -9,57 +9,64 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
+use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Dumper\Dumper;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class Node
+ * Class Rule
  */
-abstract class Node implements NodeInterface
+class Node extends Node implements NodeInterface
 {
     /**
-     * @var string
+     * @var array|iterable|\Traversable
      */
-    protected $name;
+    private $children;
 
     /**
-     * @var int
-     */
-    protected $offset;
-
-    /**
-     * Node constructor.
+     * Rule constructor.
      *
      * @param string $name
+     * @param array|NodeInterface[] $children
      * @param int $offset
      */
-    public function __construct(string $name, int $offset = 0)
+    public function __construct(string $name, array $children = [], int $offset = 0)
     {
-        $this->name   = $name;
-        $this->offset = $offset;
-    }
+        parent::__construct($name, $offset);
 
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
+        $this->children = $children;
     }
 
     /**
      * @return int
      */
-    public function getOffset(): int
+    public function count(): int
     {
-        return $this->offset;
+        return \count($this->children);
     }
 
     /**
-     * @return string
+     * @return \Traversable|LeafInterface[]|NodeInterface[]
      */
-    public function __toString(): string
+    public function getIterator(): \Traversable
     {
-        return Dumper::dump($this);
+        return new \ArrayIterator($this->children);
+    }
+
+    /**
+     * @param int $index
+     * @return LeafInterface|NodeInterface|NodeInterface|mixed
+     */
+    public function getChild(int $index)
+    {
+        return $this->children[$index] ?? null;
+    }
+
+    /**
+     * @return iterable|LeafInterface[]|NodeInterface[]|NodeInterface[]
+     */
+    public function getChildren(): iterable
+    {
+        return $this->children;
     }
 }

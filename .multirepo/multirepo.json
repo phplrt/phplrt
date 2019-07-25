@@ -60,49 +60,6 @@
             "dirs": {
                 "../src/Position": "."
             }
-        },
-
-        "phplrt/ast-contracts": {
-            "remote": "git@github.com:phplrt/ast-contracts.git",
-            "dirs": {
-                "../src/Contracts/Ast": "."
-            }
-        },
-        "phplrt/dumper-contracts": {
-            "remote": "git@github.com:phplrt/dumper-contracts.git",
-            "dirs": {
-                "../src/Contracts/Dumper": "."
-            }
-        },
-        "phplrt/exception-contracts": {
-            "remote": "git@github.com:phplrt/exception-contracts.git",
-            "dirs": {
-                "../src/Contracts/Exception": "."
-            }
-        },
-        "phplrt/io-contracts": {
-            "remote": "git@github.com:phplrt/io-contracts.git",
-            "dirs": {
-                "../src/Contracts/Io": "."
-            }
-        },
-        "phplrt/lexer-contracts": {
-            "remote": "git@github.com:phplrt/lexer-contracts.git",
-            "dirs": {
-                "../src/Contracts/Lexer": "."
-            }
-        },
-        "phplrt/parser-contracts": {
-            "remote": "git@github.com:phplrt/parser-contracts.git",
-            "dirs": {
-                "../src/Contracts/Parser": "."
-            }
-        },
-        "phplrt/position-contracts": {
-            "remote": "git@github.com:phplrt/position-contracts.git",
-            "dirs": {
-                "../src/Contracts/Position": "."
-            }
         }
     }
 }

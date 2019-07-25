@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Contracts\Exception\ExternalExceptionInterface;
+use Phplrt\Contracts\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Exception\MutableExceptionInterface;
 
 /**
@@ -36,9 +36,9 @@ trait FactoryTrait
     /**
      * @param \Throwable $e
      * @param \Throwable|null $previous
-     * @return ExternalExceptionInterface|MutableExceptionInterface|$this
+     * @return SourceExceptionInterface|MutableExceptionInterface|$this
      */
-    public static function from(\Throwable $e, \Throwable $previous = null): ExternalExceptionInterface
+    public static function from(\Throwable $e, \Throwable $previous = null): SourceExceptionInterface
     {
         $previous = $previous ?? $e->getPrevious();
 
@@ -48,9 +48,9 @@ trait FactoryTrait
     /**
      * @param string $message
      * @param mixed ...$args
-     * @return ExternalExceptionInterface|$this
+     * @return SourceExceptionInterface|$this
      */
-    public static function new(string $message, ...$args): ExternalExceptionInterface
+    public static function new(string $message, ...$args): SourceExceptionInterface
     {
         return static::create(\vsprintf($message, ...$args));
     }

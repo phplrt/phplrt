@@ -10,10 +10,10 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Ast;
 
 use Phplrt\Ast\Leaf;
-use Phplrt\Ast\Rule;
+use Phplrt\Ast\Node;
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Tests\Ast\Helper\AstAssertionTrait;
 use PHPUnit\Framework\ExpectationFailedException;
 
@@ -25,14 +25,14 @@ class RuleTestCase extends TestCase
     use AstAssertionTrait;
 
     /**
-     * @return RuleInterface
+     * @return NodeInterface
      */
-    private function rule(): RuleInterface
+    private function rule(): NodeInterface
     {
-        return new Rule('a', [
+        return new Node('a', [
             new Leaf('b', 'b', 42),
             new Leaf('c', 'c', 42),
-            new Rule('d', [
+            new Node('d', [
                 new Leaf('e', 'e', 42),
             ]),
         ], 42);
@@ -63,7 +63,7 @@ class RuleTestCase extends TestCase
 
         $this->assertInstanceOf(LeafInterface::class, $rule->getChild(0));
         $this->assertInstanceOf(LeafInterface::class, $rule->getChild(1));
-        $this->assertInstanceOf(RuleInterface::class, $rule->getChild(2));
+        $this->assertInstanceOf(NodeInterface::class, $rule->getChild(2));
         $this->assertNull($rule->getChild(3));
     }
 

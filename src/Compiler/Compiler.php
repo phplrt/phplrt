@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Grammar\Reader;
-use Phplrt\Contracts\Ast\RuleInterface;
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Exception\ExternalException;
 use Phplrt\Io\Exception\NotReadableException;
@@ -61,7 +61,7 @@ class Compiler implements ParserInterface
 
     /**
      * @param Readable $input
-     * @return mixed|RuleInterface
+     * @return mixed|NodeInterface
      */
     public function parse(Readable $input)
     {

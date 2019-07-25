@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Phplrt\Exception\MutableException;
 
 use Phplrt\Contracts\Exception\MutableExceptionInterface;
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Io\File;
 
@@ -52,7 +52,7 @@ trait MutableExceptionTrait
 
     /**
      * @param string|Readable $file
-     * @return \Phplrt\Contracts\Io\Readable
+     * @return \Phplrt\Contracts\Source\Readable
      */
     private function resolveFile($file): Readable
     {

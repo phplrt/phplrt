@@ -28,9 +28,9 @@ the production of grammar.
 ```php
 <?php
 
-use Phplrt\Ast\{Leaf, Rule};
+use Phplrt\Ast\{Leaf, Node};
 
-echo new Rule('rule', [
+echo new Node('rule', [
     new Leaf('leaf', 'a'),
     new Leaf('leaf', 'b'),
 ]);

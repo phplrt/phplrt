@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
 use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;

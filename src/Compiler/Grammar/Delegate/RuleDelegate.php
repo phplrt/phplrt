@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar\Delegate;
 
-use Phplrt\Ast\Rule;
+use Phplrt\Ast\Node;
 use Phplrt\Compiler\Grammar\LookaheadIterator;
 use Phplrt\Contracts\Ast\LeafInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
@@ -21,7 +21,7 @@ use Phplrt\Lexer\Token\Token;
 /**
  * Class RuleDelegate
  */
-class RuleDelegate extends Rule
+class RuleDelegate extends Node
 {
     /**
      * @return iterable|TokenInterface[]|LookaheadIterator
@@ -35,14 +35,14 @@ class RuleDelegate extends Rule
     }
 
     /**
-     * @param RuleInterface|NodeInterface $rule
+     * @param NodeInterface|NodeInterface $rule
      * @return \Traversable
      */
-    private function getTokens(RuleInterface $rule): \Traversable
+    private function getTokens(NodeInterface $rule): \Traversable
     {
         /** @var LeafInterface $child */
         foreach ($rule->getChildren() as $child) {
-            if ($child instanceof RuleInterface) {
+            if ($child instanceof NodeInterface) {
                 yield from $this->getTokens($child);
             } else {
                 yield new Token($child->getName(), $child->getValue(), $child->getOffset());
@@ -52,7 +52,7 @@ class RuleDelegate extends Rule
 
     /**
      * @param string $name
-     * @return LeafInterface|NodeInterface|RuleInterface|null
+     * @return LeafInterface|NodeInterface|NodeInterface|null
      */
     private function first(string $name)
     {
@@ -92,7 +92,7 @@ class RuleDelegate extends Rule
     {
         $delegate = $this->first('RuleDelegate');
 
-        if ($delegate instanceof RuleInterface) {
+        if ($delegate instanceof NodeInterface) {
             return $delegate->getChild(0)->getValue();
         }
 

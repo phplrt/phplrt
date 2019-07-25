@@ -37,7 +37,12 @@
         "nikic/php-parser": "~4.2",
         "psr/http-message": "1.0.*",
         "zendframework/zend-code": "~3.0",
-        "symfony/console": "~3.4|~4.0"
+        "symfony/console": "~3.4|~4.0",
+        "phplrt/parser-contracts": "~2.0",
+        "phplrt/lexer-contracts": "~2.0",
+        "phplrt/exception-contracts": "~2.0",
+        "phplrt/source-contracts": "~2.0",
+        "phplrt/ast-contracts": "~2.0"
     },
     "autoload": {
         "psr-4": {
@@ -50,18 +55,10 @@
         "phplrt/compiler": "*",
         "phplrt/dumper": "*",
         "phplrt/exception": "*",
-        "phplrt/io": "*",
+        "phplrt/source": "*",
         "phplrt/lexer": "*",
         "phplrt/parser": "*",
-        "phplrt/position": "*",
-        "phplrt/stream": "*",
-        "phplrt/ast-contracts": "*",
-        "phplrt/dumper-contracts": "*",
-        "phplrt/exception-contracts": "*",
-        "phplrt/io-contracts": "*",
-        "phplrt/lexer-contracts": "*",
-        "phplrt/parser-contracts": "*",
-        "phplrt/position-contracts": "*"
+        "phplrt/position": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5",
@@ -80,13 +77,11 @@
         }
     },
     "provide": {
-        "phplrt/ast-contracts-implementation": "2.0.0",
-        "phplrt/dumper-contracts-implementation": "2.0.0",
-        "phplrt/exception-contracts-implementation": "2.0.0",
-        "phplrt/io-contracts-implementation": "2.0.0",
-        "phplrt/lexer-contracts-implementation": "2.0.0",
-        "phplrt/parser-contracts-implementation": "2.0.0",
-        "phplrt/position-contracts-implementation": "2.0.0"
+        "phplrt/ast-contracts-implementation": "2.0",
+        "phplrt/exception-contracts-implementation": "2.0",
+        "phplrt/source-contracts-implementation": "2.0",
+        "phplrt/lexer-contracts-implementation": "2.0",
+        "phplrt/parser-contracts-implementation": "2.0"
     },
     "config": {
         "sort-packages": true

@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar\Delegate;
 
-use Phplrt\Ast\Rule;
+use Phplrt\Ast\Node;
 
 /**
  * Class TokenDelegate
  */
-class TokenDelegate extends Rule
+class TokenDelegate extends Node
 {
     /**
      * @var string

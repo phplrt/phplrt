@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Parser;
 
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Dumper\HoaDumper;
 use Phplrt\Io\Exception\NotReadableException;

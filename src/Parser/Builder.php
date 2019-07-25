@@ -11,9 +11,9 @@ namespace Phplrt\Parser;
 
 use Phplrt\Ast\Leaf;
 use Phplrt\Ast\Node;
-use Phplrt\Ast\Rule;
+use Phplrt\Ast\Node;
 use Phplrt\Contracts\Ast\LeafInterface;
-use Phplrt\Contracts\Ast\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Exception\GrammarException;
 use Phplrt\Parser\Trace\Entry;
@@ -47,7 +47,7 @@ class Builder implements BuilderInterface
     }
 
     /**
-     * @return RuleInterface|mixed
+     * @return NodeInterface|mixed
      * @throws \LogicException
      * @throws GrammarException
      */
@@ -160,7 +160,7 @@ class Builder implements BuilderInterface
      * @param string $name
      * @param array $children
      * @param int $offset
-     * @return Rule|mixed
+     * @return Node|mixed
      * @throws \LogicException
      * @throws GrammarException
      */
@@ -181,7 +181,7 @@ class Builder implements BuilderInterface
      */
     protected function getRuleClass(string $name): string
     {
-        return $this->grammar->delegate($name) ?? Rule::class;
+        return $this->grammar->delegate($name) ?? Node::class;
     }
 
     /**

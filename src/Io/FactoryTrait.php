@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Io;
 
-use Phplrt\Contracts\Io\FactoryInterface;
-use Phplrt\Contracts\Io\Readable;
+use Phplrt\Contracts\Source\FactoryInterface;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Io\Exception\FileException;
 use Phplrt\Io\Exception\NotReadableException;
 use Phplrt\Io\File\Physical;
