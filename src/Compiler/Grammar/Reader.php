@@ -12,14 +12,14 @@ namespace Phplrt\Compiler\Grammar;
 use Phplrt\Compiler\Grammar\Delegate\IncludeDelegate;
 use Phplrt\Compiler\Grammar\Delegate\RuleDelegate;
 use Phplrt\Compiler\Grammar\Delegate\TokenDelegate;
-use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Exception\ExternalException;
-use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Lexer\Driver\NativeRegex;
 use Phplrt\Parser\Grammar;
 use Phplrt\Parser\GrammarInterface;
+use Phplrt\Source\Exception\NotReadableException;
 
 /**
  * Class Reader

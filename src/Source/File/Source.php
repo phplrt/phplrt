@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * @internal A ReadableInterface internal implementation

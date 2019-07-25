@@ -11,8 +11,8 @@ namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Grammar\Reader;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Exception\ExternalException;
 use Phplrt\Source\Exception\NotReadableException;
 use Zend\Code\Exception\InvalidArgumentException;

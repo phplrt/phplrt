@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
+use Phplrt\Contracts\Source\FileInterface;
 
 /**
  * @internal A FileInterface internal implementation
@@ -36,7 +36,7 @@ class Virtual extends Readable implements FileInterface
     public function __construct(string $pathName, string $content)
     {
         $this->pathName = $pathName;
-        $this->content = $content;
+        $this->content  = $content;
     }
 
     /**

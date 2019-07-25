@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Source;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\File;
-use Phplrt\Contracts\Source\ReadableInterface;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**

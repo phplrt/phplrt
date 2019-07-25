@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\File\Source;
-use Phplrt\Source\File\Stream;
-use Phplrt\Source\File\Virtual;
-use Phplrt\Source\File\Physical;
-use Psr\Http\Message\StreamInterface;
+use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
+use Phplrt\Source\File\Physical;
+use Phplrt\Source\File\Source;
+use Phplrt\Source\File\Stream;
+use Phplrt\Source\File\Virtual;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Trait FactoryTrait

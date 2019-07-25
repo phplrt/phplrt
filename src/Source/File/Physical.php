@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\File as Facade;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\File as Facade;
 
 /**
  * @internal A FileInterface internal implementation

@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Source\File;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Lexer\Definition\TokenDefinition;
 use Phplrt\Lexer\SimpleLexerInterface;
+use Phplrt\Source\File;
 
 /**
  * Class BaseLexer

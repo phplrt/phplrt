@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Lexer;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Source\File;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Unknown;
+use Phplrt\Source\File;
 
 /**
  * Class LexerCompiler

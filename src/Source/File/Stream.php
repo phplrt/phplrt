@@ -50,7 +50,6 @@ class Stream extends Readable
         return $this->content;
     }
 
-
     /**
      * @return void
      */

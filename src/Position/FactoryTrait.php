@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Trait FactoryTrait
@@ -52,7 +52,7 @@ trait FactoryTrait
         // column.
         //
         if ($column !== 1) {
-            $last = (string)@\fread($stream, $column - 1);
+            $last  = (string)@\fread($stream, $column - 1);
             $lines = \explode(static::LINE_DELIMITER, $last);
 
             $offset += $column = \strlen((string)\reset($lines));
