@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace Phplrt\Source\File;
 
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Physical
