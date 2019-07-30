@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Phplrt\Source\File;
 
 /**
- * @internal A ReadableInterface internal implementation
+ * Class Stream
  */
 class Stream extends Readable
 {
@@ -18,11 +18,6 @@ class Stream extends Readable
      * @var resource
      */
     private $stream;
-
-    /**
-     * @var string|null
-     */
-    private $content;
 
     /**
      * Stream constructor.
@@ -35,30 +30,31 @@ class Stream extends Readable
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getContents(): string
+    private function isSeekable(): bool
     {
-        if ($this->content) {
-            if (\stream_get_meta_data($this->stream)['seekable'] ?? false === true) {
-                \rewind($this->stream);
-            }
-
-            $this->content = \stream_get_contents($this->stream);
-        }
-
-        return $this->content;
+        return (bool)(\stream_get_meta_data($this->stream)['seekable'] ?? false);
     }
-
 
     /**
      * @return void
      */
-    public function refresh(): void
+    private function rewind(): void
     {
-        $this->content = null;
+        if ($this->isSeekable()) {
+            \rewind($this->stream);
+        }
+    }
 
-        parent::refresh();
+    /**
+     * @return string
+     */
+    protected function read(): string
+    {
+        $this->rewind();
+
+        return \stream_get_contents($this->stream);
     }
 
     /**
@@ -66,14 +62,8 @@ class Stream extends Readable
      */
     public function getStream()
     {
-        return $this->stream;
-    }
+        $this->rewind();
 
-    /**
-     * @return string
-     */
-    protected function calculateHash(): string
-    {
-        return \hash(static::HASH_ALGORITHM, (string)$this->stream);
+        return $this->stream;
     }
 }

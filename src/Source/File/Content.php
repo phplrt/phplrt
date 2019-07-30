@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
 
 /**
- * @internal A ReadableInterface internal implementation
+ * Class Content
  */
-class Source extends Readable
+class Content implements ReadableInterface
 {
     /**
      * @var string
@@ -33,11 +33,12 @@ class Source extends Readable
     }
 
     /**
-     * @return bool|resource
-     * @throws NotReadableExceptionInterface
+     * @return resource
+     * @throws NotAccessibleException
      */
     public function getStream()
     {
+        /** @var resource $memory */
         $memory = @\fopen('php://memory', 'rb+');
 
         if ($memory === false) {
@@ -61,13 +62,5 @@ class Source extends Readable
     public function getContents(): string
     {
         return $this->content;
-    }
-
-    /**
-     * @return string
-     */
-    protected function calculateHash(): string
-    {
-        return \hash(static::HASH_ALGORITHM, $this->content);
     }
 }

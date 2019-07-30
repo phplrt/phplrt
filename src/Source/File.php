@@ -23,22 +23,4 @@ final class File
     {
         throw new \LogicException('File factory is not instantiable');
     }
-
-    /**
-     * @param string $pathName
-     * @return bool
-     */
-    public static function exists(string $pathName): bool
-    {
-        return \is_file($pathName);
-    }
-
-    /**
-     * @param string $pathName
-     * @return bool
-     */
-    public static function isReadable(string $pathName): bool
-    {
-        return \is_readable($pathName);
-    }
 }

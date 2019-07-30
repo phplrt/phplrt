@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of source package.
+ * This file is part of phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -18,30 +17,25 @@ use Phplrt\Contracts\Source\ReadableInterface;
 abstract class Readable implements ReadableInterface, MemoizableInterface
 {
     /**
-     * @var string
-     */
-    protected const HASH_ALGORITHM = 'sha1';
-
-    /**
      * @var string|null
      */
-    private $hash;
+    private $content;
 
     /**
      * @return string
      */
-    abstract protected function calculateHash(): string;
+    abstract protected function read(): string;
 
     /**
      * @return string
      */
-    public function getHash(): string
+    public function getContents(): string
     {
-        if ($this->hash === null) {
-            return $this->calculateHash();
+        if ($this->content === null) {
+            $this->content = $this->read();
         }
 
-        return $this->hash;
+        return $this->content;
     }
 
     /**
@@ -49,18 +43,6 @@ abstract class Readable implements ReadableInterface, MemoizableInterface
      */
     public function refresh(): void
     {
-        $this->hash = null;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        if ($this instanceof FileInterface) {
-            return $this->getPathName();
-        }
-
-        return 'php://memory';
+        $this->content = null;
     }
 }

@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\File\Source;
 use Phplrt\Source\File\Stream;
-use Phplrt\Source\File\Virtual;
+use Phplrt\Source\File\Content;
 use Phplrt\Source\File\Physical;
 use Psr\Http\Message\StreamInterface;
+use Phplrt\Source\File\VirtualStream;
+use Phplrt\Source\File\VirtualContent;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotReadableException;
@@ -31,6 +32,16 @@ trait FactoryTrait
     public static function empty(string $pathName = null): ReadableInterface
     {
         return static::fromSources('', $pathName);
+    }
+
+    /**
+     * @param string $sources
+     * @param string $pathName
+     * @return ReadableInterface|FileInterface
+     */
+    public static function fromSources(string $sources, string $pathName = null): ReadableInterface
+    {
+        return $pathName ? new VirtualContent($pathName, $sources) : new Content($sources);
     }
 
     /**
@@ -66,7 +77,6 @@ trait FactoryTrait
     /**
      * @param \SplFileInfo $info
      * @return FileInterface
-     * @throws NotReadableExceptionInterface
      */
     public static function fromSplFileInfo(\SplFileInfo $info): FileInterface
     {
@@ -76,7 +86,6 @@ trait FactoryTrait
     /**
      * @param string $pathName
      * @return FileInterface
-     * @throws NotReadableException
      */
     public static function fromPathName(string $pathName): FileInterface
     {
@@ -84,41 +93,33 @@ trait FactoryTrait
     }
 
     /**
-     * @param string $sources
-     * @param string $pathName
-     * @return ReadableInterface|FileInterface
-     */
-    public static function fromSources(string $sources, string $pathName = null): ReadableInterface
-    {
-        return $pathName ? new Virtual($pathName, $sources) : new Source($sources);
-    }
-
-    /**
      * @param StreamInterface $stream
+     * @param string|null $pathName
      * @return ReadableInterface
      * @throws \RuntimeException
      */
-    public static function fromPsrStream(StreamInterface $stream): ReadableInterface
+    public static function fromPsrStream(StreamInterface $stream, string $pathName = null): ReadableInterface
     {
         if ($stream->isSeekable()) {
             $stream->rewind();
         }
 
-        return new Source($stream->getContents());
+        return static::fromResource($stream->detach(), $pathName);
     }
 
     /**
      * @param resource $resource
-     * @return Source
+     * @param string|null $pathName
+     * @return ReadableInterface
      * @throws NotReadableException
      */
-    public static function fromResource($resource): ReadableInterface
+    public static function fromResource($resource, string $pathName = null): ReadableInterface
     {
         if (self::isClosedResource($resource)) {
             throw new NotReadableException('Can not open for reading already closed resource');
         }
 
-        return new Stream($resource);
+        return $pathName ? new VirtualStream($pathName, $resource) : new Stream($resource);
     }
 
     /**

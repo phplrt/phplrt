@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\File as Facade;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
- * @internal A FileInterface internal implementation
+ * Class Physical
  */
 class Physical extends Readable implements FileInterface
 {
@@ -27,7 +27,7 @@ class Physical extends Readable implements FileInterface
     /**
      * @var string
      */
-    private const ERROR_NOT_READABLE = 'Can not read the file "%s". Permission denied';
+    private const ERROR_NOT_READABLE = 'Can not read the file "%s"';
 
     /**
      * @var string
@@ -35,23 +35,56 @@ class Physical extends Readable implements FileInterface
     private $pathName;
 
     /**
-     * @var string|null
-     */
-    private $content;
-
-    /**
      * File constructor.
      *
      * @param string $pathName
-     * @throws NotFoundException
-     * @throws NotReadableException
      */
     public function __construct(string $pathName)
     {
-        $this->assertExists($pathName);
-        $this->assertIsReadable($pathName);
+        $this->pathName = $pathName;
+    }
 
-        $this->pathName = \realpath($pathName);
+    /**
+     * @return resource
+     * @throws NotAccessibleException
+     */
+    public function getStream()
+    {
+        $this->assertExists($this->getPathName());
+        $this->assertIsReadable($this->getPathName());
+
+        return \fopen($this->getPathName(), 'rb');
+    }
+
+    /**
+     * @return string
+     * @throws NotFoundException
+     * @throws NotReadableException
+     */
+    protected function read(): string
+    {
+        $this->assertExists($this->getPathName());
+        $this->assertIsReadable($this->getPathName());
+
+        return \file_get_contents($this->getPathName());
+    }
+
+    /**
+     * @param string $pathName
+     * @return bool
+     */
+    private function exists(string $pathName): bool
+    {
+        return \is_file($pathName);
+    }
+
+    /**
+     * @param string $pathName
+     * @return bool
+     */
+    private function isReadable(string $pathName): bool
+    {
+        return \is_readable($pathName);
     }
 
     /**
@@ -60,8 +93,9 @@ class Physical extends Readable implements FileInterface
      */
     private function assertExists(string $pathName): void
     {
-        if (! Facade::exists($pathName)) {
+        if (! $this->exists($pathName)) {
             $message = \sprintf(self::ERROR_NOT_FOUND, $pathName);
+
             throw new NotFoundException($message);
         }
     }
@@ -81,43 +115,10 @@ class Physical extends Readable implements FileInterface
      */
     private function assertIsReadable(string $pathName): void
     {
-        if (! Facade::isReadable($pathName)) {
+        if (! $this->isReadable($pathName)) {
             $message = \sprintf(self::ERROR_NOT_READABLE, \realpath($pathName));
+
             throw new NotReadableException($message);
         }
-    }
-
-    /**
-     * @return resource
-     */
-    public function getStream()
-    {
-        return \fopen($this->getPathName(), 'rb');
-    }
-
-    /**
-     * @return string
-     */
-    public function getContents(): string
-    {
-        return \file_get_contents($this->getPathName());
-    }
-
-    /**
-     * @return void
-     */
-    public function refresh(): void
-    {
-        $this->content = null;
-
-        parent::refresh();
-    }
-
-    /**
-     * @return string
-     */
-    protected function calculateHash(): string
-    {
-        return \hash_file(static::HASH_ALGORITHM, $this->getPathName());
     }
 }
