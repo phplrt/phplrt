@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Source\File;
-use Phplrt\Position\Position;
-use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Contracts\Exception\MutableSourceExceptionInterface;
 use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
+use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Position\Position;
+use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\File;
 
 /**
  * Class SourceException
@@ -43,14 +43,14 @@ class SourceException extends \RuntimeException implements MutableSourceExceptio
      */
     public static function from(\Throwable $e): self
     {
-        $instance = new static($e->getMessage(), $e->getLine(), $e->getPrevious());
+        $instance       = new static($e->getMessage(), $e->getLine(), $e->getPrevious());
         $instance->file = $e->getFile();
         $instance->line = $e->getLine();
 
         if ($e instanceof self) {
             $instance->readable = $e->readable;
-            $instance->column = $e->column;
-            $instance->offset = $e->offset;
+            $instance->column   = $e->column;
+            $instance->offset   = $e->offset;
         }
 
         return $instance;
@@ -90,7 +90,7 @@ class SourceException extends \RuntimeException implements MutableSourceExceptio
     private function setPosition(Position $position): void
     {
         $this->offset = $position->getOffset();
-        $this->line = $position->getLine();
+        $this->line   = $position->getLine();
         $this->column = $position->getColumn();
     }
 

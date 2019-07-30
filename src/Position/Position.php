@@ -64,7 +64,7 @@ class Position
         int $column = self::MIN_COLUMN
     ) {
         $this->offset = $offset;
-        $this->line = \max($line, static::MIN_LINE);
+        $this->line   = \max($line, static::MIN_LINE);
         $this->column = \max($column, static::MIN_COLUMN);
     }
 

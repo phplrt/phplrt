@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Contracts\Source\Readable;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\Readable;
 use Phplrt\Lexer\Driver\NativeStateful\PCRECompiler;
 use Phplrt\Lexer\Iterator\RegexNamedGroupsIterator;
 use Phplrt\Lexer\Token\EndOfInput;
