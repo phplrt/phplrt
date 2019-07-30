@@ -9,64 +9,58 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Contracts\Ast\LeafInterface;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class Rule
+ * Class Node
  */
-class Node extends Node implements NodeInterface
+abstract class Node implements NodeInterface
 {
-    /**
-     * @var array|iterable|\Traversable
-     */
-    private $children;
+    use AttributesTrait;
 
     /**
-     * Rule constructor.
+     * @var string
+     */
+    public const ATTR_OFFSET = 'offset';
+
+    /**
+     * @var int
+     */
+    private $type;
+
+    /**
+     * Node constructor.
      *
-     * @param string $name
-     * @param array|NodeInterface[] $children
-     * @param int $offset
+     * @param int $type
+     * @param array $attributes
      */
-    public function __construct(string $name, array $children = [], int $offset = 0)
+    public function __construct(int $type, array $attributes = [])
     {
-        parent::__construct($name, $offset);
-
-        $this->children = $children;
+        $this->type = $type;
+        $this->setAttributes($attributes);
     }
 
     /**
      * @return int
      */
-    public function count(): int
+    public function getType(): int
     {
-        return \count($this->children);
+        return $this->type;
     }
 
     /**
-     * @return \Traversable|LeafInterface[]|NodeInterface[]
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return (int)$this->getAttribute(self::ATTR_OFFSET, 0);
+    }
+
+    /**
+     * @return \Traversable
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->children);
-    }
-
-    /**
-     * @param int $index
-     * @return LeafInterface|NodeInterface|NodeInterface|mixed
-     */
-    public function getChild(int $index)
-    {
-        return $this->children[$index] ?? null;
-    }
-
-    /**
-     * @return iterable|LeafInterface[]|NodeInterface[]|NodeInterface[]
-     */
-    public function getChildren(): iterable
-    {
-        return $this->children;
+        return new \EmptyIterator();
     }
 }

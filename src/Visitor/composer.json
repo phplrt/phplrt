@@ -1,16 +1,18 @@
 {
-    "name": "phplrt/ast",
+    "name": "phplrt/visitor",
     "type": "library",
-    "description": "The phplrt abstract syntax tree package.",
+    "description": "The phplrt visitor package.",
     "license": "MIT",
     "keywords": [
         "ast",
-        "tree"
+        "tree",
+        "traverser",
+        "visitor"
     ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/ast"
+        "source": "https://github.com/phplrt/visitor"
     },
     "authors": [
         {
@@ -24,11 +26,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Ast\\": ""
+            "Phplrt\\Visitor\\": ""
         }
-    },
-    "provide": {
-        "phplrt/ast-contracts-implementation": "2.0.0"
     },
     "extra": {
         "branch-alias": {

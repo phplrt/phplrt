@@ -59,21 +59,20 @@
         },
         {
             "name": "phplrt/ast-contracts",
-            "version": "2.0.2",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phplrt/ast-contracts.git",
-                "reference": "b7db4a4837609eb32133cc3a8562b0a1d43eeb2b"
+                "reference": "1c3f81111e71a67072aa1e4e4233488e39e1501c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/ast-contracts/zipball/b7db4a4837609eb32133cc3a8562b0a1d43eeb2b",
-                "reference": "b7db4a4837609eb32133cc3a8562b0a1d43eeb2b",
+                "url": "https://api.github.com/repos/phplrt/ast-contracts/zipball/1c3f81111e71a67072aa1e4e4233488e39e1501c",
+                "reference": "1c3f81111e71a67072aa1e4e4233488e39e1501c",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.3",
-                "phplrt/source-contracts": "2.0.*"
+                "php": ">=7.1.3"
             },
             "type": "library",
             "extra": {
@@ -108,25 +107,25 @@
                 "standards",
                 "tree"
             ],
-            "time": "2019-07-25T13:01:43+00:00"
+            "time": "2019-07-30T14:05:16+00:00"
         },
         {
             "name": "phplrt/exception-contracts",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phplrt/exception-contracts.git",
-                "reference": "88fe10a8f2588a9728ed588d700afd633ba0e416"
+                "reference": "cf0a5302bd622c83dec05a14438a8f4993ecee6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/exception-contracts/zipball/88fe10a8f2588a9728ed588d700afd633ba0e416",
-                "reference": "88fe10a8f2588a9728ed588d700afd633ba0e416",
+                "url": "https://api.github.com/repos/phplrt/exception-contracts/zipball/cf0a5302bd622c83dec05a14438a8f4993ecee6f",
+                "reference": "cf0a5302bd622c83dec05a14438a8f4993ecee6f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.3",
-                "phplrt/source-contracts": "2.0.*|2.0.x-dev"
+                "phplrt/source-contracts": "~2.0|2.0.x-dev"
             },
             "type": "library",
             "extra": {
@@ -161,7 +160,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-07-25T13:23:48+00:00"
+            "time": "2019-07-30T09:58:10+00:00"
         },
         {
             "name": "phplrt/lexer-contracts",
@@ -223,23 +222,23 @@
         },
         {
             "name": "phplrt/parser-contracts",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phplrt/parser-contracts.git",
-                "reference": "37303b6af135809231a1ebdffb300e2daf1f2cd6"
+                "reference": "44231a329d14d31b154490876ac339f5d8bde49b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/parser-contracts/zipball/37303b6af135809231a1ebdffb300e2daf1f2cd6",
-                "reference": "37303b6af135809231a1ebdffb300e2daf1f2cd6",
+                "url": "https://api.github.com/repos/phplrt/parser-contracts/zipball/44231a329d14d31b154490876ac339f5d8bde49b",
+                "reference": "44231a329d14d31b154490876ac339f5d8bde49b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.1.3",
-                "phplrt/ast-contracts": "2.0.*|2.0.x-dev",
-                "phplrt/exception-contracts": "2.0.*|2.0.x-dev",
-                "phplrt/source-contracts": "2.0.*|2.0.x-dev"
+                "phplrt/ast-contracts": "~2.0|2.0.x-dev",
+                "phplrt/exception-contracts": "~2.0|2.0.x-dev",
+                "phplrt/source-contracts": "~2.0|2.0.x-dev"
             },
             "type": "library",
             "extra": {
@@ -279,7 +278,7 @@
                 "slr",
                 "standards"
             ],
-            "time": "2019-07-25T13:59:28+00:00"
+            "time": "2019-07-30T09:59:33+00:00"
         },
         {
             "name": "phplrt/source-contracts",
