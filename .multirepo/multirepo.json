@@ -37,12 +37,6 @@
                 "../src/Exception": "."
             }
         },
-        "phplrt/io": {
-            "remote": "git@github.com:phplrt/io.git",
-            "dirs": {
-                "../src/Io": "."
-            }
-        },
         "phplrt/lexer": {
             "remote": "git@github.com:phplrt/lexer.git",
             "dirs": {
@@ -59,6 +53,18 @@
             "remote": "git@github.com:phplrt/position.git",
             "dirs": {
                 "../src/Position": "."
+            }
+        },
+        "phplrt/source": {
+            "remote": "git@github.com:phplrt/source.git",
+            "dirs": {
+                "../src/Source": "."
+            }
+        },
+        "phplrt/visitor": {
+            "remote": "git@github.com:phplrt/visitor.git",
+            "dirs": {
+                "../src/Visitor": "."
             }
         }
     }
