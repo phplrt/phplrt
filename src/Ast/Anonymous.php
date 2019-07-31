@@ -79,7 +79,7 @@ class Anonymous extends Node
      * @param NodeInterface|null $value
      * @return void
      */
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
         \assert(\is_scalar($name));
         \assert($value === null || $value instanceof NodeInterface);
