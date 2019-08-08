@@ -93,3 +93,37 @@ $compiler
     ->setClassName('ExpressionParser')
     ->saveTo(__DIR__);
 ```
+
+## Stability
+
+### Contracts
+
+| Package                                                                                 | Stability                                                                                |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [phplrt/ast-contracts](https://packagist.org/packages/phplrt/ast-contracts)             | ![phplrt/ast-contracts](https://poser.pugx.org/phplrt/ast-contracts/version)             |
+| [phplrt/exception-contracts](https://packagist.org/packages/phplrt/exception-contracts) | ![phplrt/exception-contracts](https://poser.pugx.org/phplrt/exception-contracts/version) |
+| [phplrt/lexer-contracts](https://packagist.org/packages/phplrt/lexer-contracts)         | ![phplrt/lexer-contracts](https://poser.pugx.org/phplrt/lexer-contracts/version)         |
+| [phplrt/parser-contracts](https://packagist.org/packages/phplrt/parser-contracts)       | ![phplrt/parser-contracts](https://poser.pugx.org/phplrt/parser-contracts/version)       |
+| [phplrt/source-contracts](https://packagist.org/packages/phplrt/source-contracts)       | ![phplrt/source-contracts](https://poser.pugx.org/phplrt/source-contracts/version)       |
+
+### Packages
+
+| Package                                                             | Stability                                                            |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [phplrt/assembler](https://packagist.org/packages/phplrt/assembler) | ![phplrt/compiler](https://poser.pugx.org/phplrt/assembler/version)  |
+| [phplrt/ast](https://packagist.org/packages/phplrt/ast)             | ![phplrt/ast](https://poser.pugx.org/phplrt/ast/version)             |
+| [phplrt/compiler](https://packagist.org/packages/phplrt/compiler)   | ![phplrt/compiler](https://poser.pugx.org/phplrt/compiler/version)   |
+| [phplrt/dumper](https://packagist.org/packages/phplrt/dumper)       | ![phplrt/dumper](https://poser.pugx.org/phplrt/dumper/version)       |
+| [phplrt/exception](https://packagist.org/packages/phplrt/exception) | ![phplrt/exception](https://poser.pugx.org/phplrt/exception/version) |
+| [phplrt/lexer](https://packagist.org/packages/phplrt/lexer)         | ![phplrt/lexer](https://poser.pugx.org/phplrt/lexer/version)         |
+| [phplrt/parser](https://packagist.org/packages/phplrt/parser)       | ![phplrt/parser](https://poser.pugx.org/phplrt/parser/version)       |
+| [phplrt/position](https://packagist.org/packages/phplrt/position)   | ![phplrt/position](https://poser.pugx.org/phplrt/position/version)   |
+| [phplrt/source](https://packagist.org/packages/phplrt/source)       | ![phplrt/source](https://poser.pugx.org/phplrt/source/version)       |
+| [phplrt/visitor](https://packagist.org/packages/phplrt/visitor)     | ![phplrt/visitor](https://poser.pugx.org/phplrt/visitor/version)     |
+
+### Deprecated Packages
+
+| Package                                                       | Stability                                                      |
+| ------------------------------------------------------------- | -------------------------------------------------------------- |
+| [phplrt/io](https://packagist.org/packages/phplrt/io)         | ![phplrt/io](https://poser.pugx.org/phplrt/io/version)         |
+| [phplrt/stream](https://packagist.org/packages/phplrt/stream) | ![phplrt/stream](https://poser.pugx.org/phplrt/stream/version) |
