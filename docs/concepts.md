@@ -21,7 +21,7 @@ parser instructions.
 > final assembly of the parser so that he does not depend on external packages.
 
 | Package                                                             | Required | Version                                                              |
-| ------------------------------------------------------------------- |: ------ :| -------------------------------------------------------------------- |
+| ------------------------------------------------------------------- | :------: | -------------------------------------------------------------------- |
 | [phplrt/lexer](https://packagist.org/packages/phplrt/lexer)         | ✔        | ![phplrt/lexer](https://poser.pugx.org/phplrt/lexer/version)         |
 | [phplrt/parser](https://packagist.org/packages/phplrt/parser)       | ✔        | ![phplrt/parser](https://poser.pugx.org/phplrt/parser/version)       |
 | [phplrt/ast](https://packagist.org/packages/phplrt/ast)             | ✕        | ![phplrt/ast](https://poser.pugx.org/phplrt/ast/version)             |
