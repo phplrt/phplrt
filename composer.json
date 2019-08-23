@@ -40,8 +40,6 @@
         "symfony/console": "~3.4|~4.0",
         "phplrt/parser-contracts": "~2.0",
         "phplrt/lexer-contracts": "~2.0",
-        "phplrt/exception-contracts": "~2.0",
-        "phplrt/source-contracts": "~2.0",
         "phplrt/ast-contracts": "~2.0"
     },
     "autoload": {
@@ -50,15 +48,12 @@
         }
     },
     "replace": {
-        "phplrt/assembler": "*",
         "phplrt/ast": "*",
         "phplrt/compiler": "*",
-        "phplrt/dumper": "*",
-        "phplrt/exception": "*",
-        "phplrt/source": "*",
         "phplrt/lexer": "*",
         "phplrt/parser": "*",
-        "phplrt/position": "*"
+        "phplrt/position": "*",
+        "phplrt/visitor": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5",
@@ -78,8 +73,6 @@
     },
     "provide": {
         "phplrt/ast-contracts-implementation": "2.0",
-        "phplrt/exception-contracts-implementation": "2.0",
-        "phplrt/source-contracts-implementation": "2.0",
         "phplrt/lexer-contracts-implementation": "2.0",
         "phplrt/parser-contracts-implementation": "2.0"
     },

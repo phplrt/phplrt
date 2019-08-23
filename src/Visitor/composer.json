@@ -1,7 +1,7 @@
 {
     "name": "phplrt/visitor",
     "type": "library",
-    "description": "The phplrt visitor package.",
+    "description": "The phplrt visitor package",
     "license": "MIT",
     "keywords": [
         "ast",

@@ -26,18 +26,22 @@
     "require": {
         "php": ">=7.1.3",
         "phplrt/parser-contracts": "~2.0|2.0.x-dev",
-        "phplrt/ast": "~2.0|2.0.x-dev",
-        "phplrt/exception": "~2.0|2.0.x-dev",
-        "phplrt/lexer": "~2.0|2.0.x-dev",
-        "phplrt/source": "~2.0|2.0.x-dev"
+        "phplrt/lexer-contracts": "~2.0|2.0.x-dev",
+        "phplrt/ast-contracts": "~2.0|2.0.x-dev"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Parser\\": ""
         }
     },
+    "require-dev": {
+        "symfony/var-dumper": "~4.0",
+        "phplrt/ast": "~2.0|2.0.x-dev",
+        "phplrt/visitor": "~2.0|2.0.x-dev",
+        "phplrt/compiler": "~2.0|2.0.x-dev"
+    },
     "provide": {
-        "phplrt/parser-contracts-implementation": "2.0.0"
+        "phplrt/parser-contracts-implementation": "2.0"
     },
     "extra": {
         "branch-alias": {

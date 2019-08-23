@@ -1,11 +1,15 @@
 {
     "name": "phplrt/ast",
     "type": "library",
-    "description": "The phplrt abstract syntax tree package.",
+    "description": "The phplrt AST package provides a set of basic implementations of AST nodes",
     "license": "MIT",
     "keywords": [
         "ast",
-        "tree"
+        "tree",
+        "term",
+        "factor",
+        "leaf",
+        "node"
     ],
     "homepage": "https://github.com/phplrt",
     "support": {
@@ -20,15 +24,18 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/ast-contracts": "2.0.*|2.0.x-dev"
+        "phplrt/ast-contracts": "~2.0|2.0.x-dev"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Ast\\": ""
         }
     },
+    "require-dev": {
+        "symfony/var-dumper": "~4.0"
+    },
     "provide": {
-        "phplrt/ast-contracts-implementation": "2.0.0"
+        "phplrt/ast-contracts-implementation": "2.0"
     },
     "extra": {
         "branch-alias": {

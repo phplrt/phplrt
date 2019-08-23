@@ -15,14 +15,9 @@ namespace Phplrt\Lexer\Token;
 class Token extends BaseToken
 {
     /**
-     * @var string
+     * @var int
      */
-    private $name;
-
-    /**
-     * @var array
-     */
-    private $value;
+    private $type;
 
     /**
      * @var int
@@ -30,39 +25,36 @@ class Token extends BaseToken
     private $offset;
 
     /**
-     * Token constructor.
+     * @var string
+     */
+    private $value;
+
+    /**
+     * BaseToken constructor.
      *
-     * @param string $name
-     * @param string|array $value
+     * @param int $type
+     * @param string $value
      * @param int $offset
      */
-    public function __construct(string $name, $value, int $offset = 0)
+    public function __construct(int $type, string $value, int $offset)
     {
-        $this->name   = $name;
-        $this->value  = (array)$value;
+        $this->type = $type;
         $this->offset = $offset;
+        $this->value = $value;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
     }
 
     /**
      * @return string
      */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getValue(): string
-    {
-        return $this->value[0];
-    }
-
-    /**
-     * @return iterable|string[]
-     */
-    public function getGroups(): iterable
     {
         return $this->value;
     }

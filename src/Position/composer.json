@@ -1,7 +1,7 @@
 {
     "name": "phplrt/position",
     "type": "library",
-    "description": "The phplrt Position package.",
+    "description": "The phplrt position package.",
     "license": "MIT",
     "keywords": [
         "analyzing",

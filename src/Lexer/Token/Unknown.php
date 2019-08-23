@@ -12,21 +12,61 @@ namespace Phplrt\Lexer\Token;
 /**
  * Class Unknown
  */
-final class Unknown extends Token
+class Unknown extends BaseToken
 {
     /**
-     * Unknown token name.
+     * @var int
      */
-    public const T_NAME = 'T_UNKNOWN';
+    public const ID = self::TYPE_UNKNOWN;
 
     /**
-     * Undefined constructor.
+     * @var string
+     */
+    public const NAME = 'T_UNKNOWN';
+
+    /**
+     * @var string
+     */
+    private $value;
+
+    /**
+     * @var int
+     */
+    private $offset;
+
+    /**
+     * Unknown constructor.
      *
      * @param string $value
      * @param int $offset
      */
     public function __construct(string $value, int $offset = 0)
     {
-        parent::__construct(static::T_NAME, $value, $offset);
+        $this->value = $value;
+        $this->offset = $offset;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return static::ID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue(): string
+    {
+        return $this->value;
     }
 }

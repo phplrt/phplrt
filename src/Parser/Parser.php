@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of phplrt package.
+ * This file is part of parser package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,458 +9,48 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Source\Readable;
-use Phplrt\Exception\ExternalException;
-use Phplrt\Lexer\Token\Unknown;
-use Phplrt\Parser\Exception\GrammarException;
-use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Rule;
-use Phplrt\Parser\Rule\Terminal;
-use Phplrt\Parser\TokenStream\TokenStream;
-use Phplrt\Parser\Trace\Entry;
-use Phplrt\Parser\Trace\Escape;
-use Phplrt\Parser\Trace\Token;
-use Phplrt\Parser\Trace\TraceItem;
+use Phplrt\Parser\Exception\ParserException;
 
 /**
  * Class Parser
  */
-class Parser implements ParserInterface
+final class Parser extends AbstractParser
 {
     /**
-     * @var LexerInterface
+     * @var string
      */
-    protected $lexer;
+    private const ERROR_EMPTY_GRAMMAR = 'Parser grammar is empty';
 
     /**
-     * @var GrammarInterface
-     */
-    protected $grammar;
-
-    /**
-     * Lexer iterator
-     *
-     * @var TokenStream
-     */
-    protected $stream;
-
-    /**
-     * Trace of parsed rules
-     *
-     * @var array|TraceItem[]
-     */
-    protected $trace = [];
-
-    /**
-     * Possible token causing an error
-     *
-     * @var TokenInterface|null
-     */
-    private $errorToken;
-
-    /**
-     * Stack of items which need to be processed
-     *
-     * @var \SplStack|TraceItem[]
-     */
-    private $todo;
-
-    /**
-     * AbstractParser constructor.
+     * Parser constructor.
      *
      * @param LexerInterface $lexer
-     * @param GrammarInterface $grammar
+     * @param array|RuleInterface[] $rules
+     * @throws ParserException
      */
-    public function __construct(LexerInterface $lexer, GrammarInterface $grammar)
+    public function __construct(LexerInterface $lexer, array $rules)
     {
-        $this->lexer   = $lexer;
-        $this->grammar = $grammar;
-    }
+        parent::__construct($lexer);
 
-    /**
-     * @param string $ruleId
-     * @param \Closure $then
-     * @return ParserInterface|$this
-     * @throws GrammarException
-     */
-    public function extend(string $ruleId, \Closure $then): ParserInterface
-    {
-        $maxId = \count($this->grammar->getRules()) - 1;
-
-        $result = $then($this->grammar->fetch($ruleId), $maxId);
-
-        if ($result instanceof \Generator) {
-            while ($result->valid()) {
-                [$key, $value] = [$result->key(), $result->current()];
-
-                switch (true) {
-                    case $value instanceof Rule:
-                        $this->grammar->addRule($value);
-                        $value = $value->getName();
-                        break;
-
-                    case \is_string($key) && \is_string($value):
-                        if (! \class_exists($value)) {
-                            throw new GrammarException('Delegate class ' . $value . '::class not found');
-                        }
-
-                        $this->grammar->addDelegate($key, $value);
-                        break;
-
-                    default:
-                        throw new GrammarException('Bad parser extension generator arguments');
-                }
-
-                $result->send($value);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return GrammarInterface
-     */
-    public function getGrammar(): GrammarInterface
-    {
-        return $this->grammar;
-    }
-
-    /**
-     * @return LexerInterface
-     */
-    public function getLexer(): LexerInterface
-    {
-        return $this->lexer;
-    }
-
-    /**
-     * @param Readable $input
-     * @return NodeInterface|mixed
-     * @throws ExternalException
-     */
-    public function parse(Readable $input)
-    {
-        return $this->build($this->trace($input));
-    }
-
-    /**
-     * @param array $trace
-     * @return mixed
-     */
-    protected function build(array $trace)
-    {
-        return $this->getBuilder($trace)->build();
-    }
-
-    /**
-     * @param array $trace
-     * @return BuilderInterface
-     */
-    protected function getBuilder(array $trace): BuilderInterface
-    {
-        return new Builder($trace, $this->grammar);
-    }
-
-    /**
-     * @param Readable $input
-     * @return array
-     * @throws ExternalException
-     */
-    protected function trace(Readable $input): array
-    {
-        $this->reset($input);
-        $this->prepare();
-
-        do {
-            if ($this->unfold() && $this->stream->isEoi()) {
-                break;
-            }
-
-            $this->verifyBacktrace($input);
-        } while (true);
-
-        return $this->trace;
-    }
-
-    /**
-     * @param Readable $input
-     * @throws ExternalException
-     */
-    private function reset(Readable $input): void
-    {
-        $this->stream = $this->getStream($input);
-
-        $this->errorToken = null;
-
-        $this->trace = [];
-        $this->todo  = [];
-    }
-
-    /**
-     * @param Readable $input
-     * @return TokenStream
-     * @throws ExternalException
-     */
-    protected function getStream(Readable $input): TokenStream
-    {
-        return new TokenStream($this->lex($input), \PHP_INT_MAX);
-    }
-
-    /**
-     * @param Readable $input
-     * @return iterable|TokenInterface[]
-     * @throws UnexpectedTokenException
-     */
-    protected function lex(Readable $input): iterable
-    {
-        foreach ($this->lexer->lex($input) as $token) {
-            if ($token->getName() === Unknown::T_NAME) {
-                $exception = new UnexpectedTokenException(\sprintf('Unexpected token %s', $token));
-                $exception->throwsIn($input, $token->getOffset());
-
-                throw $exception;
-            }
-
-            yield $token;
-        }
+        $this->rules = $rules;
+        $this->bootInitialRule();
     }
 
     /**
      * @return void
+     * @throws ParserException
      */
-    private function prepare(): void
+    private function bootInitialRule(): void
     {
-        $openRule = new Entry($this->grammar->beginAt(), 0, [
-            $closeRule = new Escape($this->grammar->beginAt(), 0),
-        ]);
+        /** @noinspection LoopWhichDoesNotLoopInspection */
+        foreach ($this->rules as $id => $rule) {
+            $this->initial = $id;
 
-        $this->todo = [$closeRule, $openRule];
-    }
-
-    /**
-     * Unfold trace.
-     *
-     * @return bool
-     */
-    private function unfold(): bool
-    {
-        while (0 < \count($this->todo)) {
-            $rule = \array_pop($this->todo);
-
-            if ($rule instanceof Escape) {
-                $this->addTrace($rule);
-            } else {
-                $out = $this->reduce($this->grammar->fetch($rule->getRule()), $rule->getData());
-
-                if ($out === false && $this->backtrack() === false) {
-                    return false;
-                }
-            }
+            return;
         }
 
-        return true;
-    }
-
-    /**
-     * @param TraceItem $item
-     * @return TraceItem
-     */
-    private function addTrace(TraceItem $item): TraceItem
-    {
-        $this->trace[] = $item;
-
-        $item->at($this->stream->offset());
-
-        return $item;
-    }
-
-    /**
-     * @param Rule $current
-     * @param string|int $next
-     * @return bool
-     */
-    private function reduce(Rule $current, $next): bool
-    {
-        if (! $this->stream->current()) {
-            return false;
-        }
-
-        switch (true) {
-            case $current instanceof Terminal:
-                return $this->parseTerminal($current);
-
-            case $current instanceof Concatenation:
-                return $this->parseConcatenation($current);
-
-            case $current instanceof Alternation:
-                return $this->parseAlternation($current, $next);
-
-            case $current instanceof Repetition:
-                return $this->parseRepetition($current, $next);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Terminal $token
-     * @return bool
-     */
-    private function parseTerminal(Terminal $token): bool
-    {
-        /** @var TokenInterface $current */
-        $current = $this->stream->current();
-
-        if ($token->getTokenName() !== $current->getName()) {
-            return false;
-        }
-
-        \array_pop($this->todo);
-
-        $this->addTrace(new Token($current, $token->isKept()));
-        $this->errorToken = $this->stream->next();
-
-        return true;
-    }
-
-    /**
-     * @param Concatenation $concat
-     * @return bool
-     */
-    private function parseConcatenation(Concatenation $concat): bool
-    {
-        $this->addTrace(new Entry($concat->getName()));
-
-        $children = $concat->getChildren();
-
-        for ($i = \count($children) - 1; $i >= 0; --$i) {
-            $nextRule = $children[$i];
-
-            $this->todo[] = new Escape($nextRule, 0);
-            $this->todo[] = new Entry($nextRule, 0);
-        }
-
-        return true;
-    }
-
-    /**
-     * @param Alternation $choice
-     * @param string|int $next
-     * @return bool
-     */
-    private function parseAlternation(Alternation $choice, $next): bool
-    {
-        $children = $choice->getChildren();
-
-        if ($next >= \count($children)) {
-            return false;
-        }
-
-        $this->addTrace(new Entry($choice->getName(), $next, $this->todo));
-
-        $nextRule = $children[$next];
-
-        $this->todo[] = new Escape($nextRule, 0);
-        $this->todo[] = new Entry($nextRule, 0);
-
-        return true;
-    }
-
-    /**
-     * @param Repetition $repeat
-     * @param string|int $next
-     * @return bool
-     */
-    private function parseRepetition(Repetition $repeat, $next): bool
-    {
-        $nextRule = $repeat->getChildren();
-
-        if ($next === 0) {
-            $name = $repeat->getName();
-            $min  = $repeat->getMin();
-
-            $this->addTrace(new Entry($name, $min));
-
-            \array_pop($this->todo);
-
-            $this->todo[] = new Escape($name, $min, $this->todo);
-
-            for ($i = 0; $i < $min; ++$i) {
-                $this->todo[] = new Escape($nextRule, 0);
-                $this->todo[] = new Entry($nextRule, 0);
-            }
-
-            return true;
-        }
-
-        $max = $repeat->getMax();
-
-        if ($max !== -1 && $next > $max) {
-            return false;
-        }
-
-        $this->todo[] = new Escape($repeat->getName(), $next, $this->todo);
-        $this->todo[] = new Escape($nextRule, 0);
-        $this->todo[] = new Entry($nextRule, 0);
-
-        return true;
-    }
-
-    /**
-     * Backtrack the trace.
-     *
-     * @return bool
-     */
-    private function backtrack(): bool
-    {
-        $found = false;
-
-        do {
-            $last = \array_pop($this->trace);
-
-            if ($last instanceof Entry) {
-                $found = $this->grammar->fetch($last->getRule()) instanceof Alternation;
-            } elseif ($last instanceof Escape) {
-                $found = $this->grammar->fetch($last->getRule()) instanceof Repetition;
-            } elseif ($last instanceof Token) {
-                if (! $this->stream->prev()) {
-                    return false;
-                }
-            }
-        } while (0 < \count($this->trace) && $found === false);
-
-        if ($found === false) {
-            return false;
-        }
-
-        $this->todo   = $last->getTodo();
-        $this->todo[] = new Entry($last->getRule(), $last->getData() + 1);
-
-        return true;
-    }
-
-    /**
-     * @param Readable $input
-     * @throws ExternalException
-     */
-    private function verifyBacktrace(Readable $input): void
-    {
-        if ($this->backtrack() === false) {
-            /** @var TokenInterface $token */
-            $token = $this->errorToken ?? $this->stream->current();
-
-            $exception = new UnexpectedTokenException(\sprintf('Unexpected token %s', $token));
-            $exception->throwsIn($input, $token->getOffset());
-
-            throw $exception;
-        }
+        throw new ParserException(self::ERROR_EMPTY_GRAMMAR);
     }
 }

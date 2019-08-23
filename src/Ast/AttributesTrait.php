@@ -9,12 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Ast;
 
-use Phplrt\Contracts\Ast\MutatesAttributesInterface;
+use Phplrt\Contracts\Ast\ProvidesAttributesInterface;
 
 /**
- * Trait AttributesTrait
- *
- * @mixin MutatesAttributesInterface
+ * @mixin ProvidesAttributesInterface
  */
 trait AttributesTrait
 {
@@ -22,36 +20,6 @@ trait AttributesTrait
      * @var array
      */
     protected $attributes = [];
-
-    /**
-     * {@inheritDoc}
-     */
-    public function withAttribute(string $name, $value): MutatesAttributesInterface
-    {
-        $this->attributes[$name] = $value;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function withAttributes(array $attributes): MutatesAttributesInterface
-    {
-        $this->attributes = \array_merge($this->attributes, $attributes);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setAttributes(array $attributes): MutatesAttributesInterface
-    {
-        $this->attributes = $attributes;
-
-        return $this;
-    }
 
     /**
      * {@inheritDoc}

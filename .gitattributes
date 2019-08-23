@@ -1,9 +1,6 @@
-#
-# Language Formats
-#
 * text=auto
-*.pp linguist-language=EBNF
-*.pp2 linguist-language=EBNF
+*.pp linguist-language=Antlr
+*.pp2 linguist-language=Antlr
 
 
 /.github export-ignore

@@ -10,14 +10,24 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Token;
 
 /**
- * Class Eoi
+ * Class EndOfInput
  */
-final class EndOfInput extends BaseToken
+class EndOfInput extends BaseToken
 {
     /**
-     * End of input token name
+     * @var int
      */
-    public const T_NAME = 'T_EOI';
+    public const ID = self::TYPE_END_OF_INPUT;
+
+    /**
+     * @var string
+     */
+    public const NAME = 'T_EOI';
+
+    /**
+     * @var string
+     */
+    private const EOI_VALUE = "\0";
 
     /**
      * @var int
@@ -25,13 +35,21 @@ final class EndOfInput extends BaseToken
     private $offset;
 
     /**
-     * Eoi constructor.
+     * EndOfInput constructor.
      *
      * @param int $offset
      */
-    public function __construct(int $offset)
+    public function __construct(int $offset = 0)
     {
         $this->offset = $offset;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return static::ID;
     }
 
     /**
@@ -45,42 +63,17 @@ final class EndOfInput extends BaseToken
     /**
      * @return string
      */
-    public function getName(): string
+    public function getValue(): string
     {
-        return static::T_NAME;
+        return self::EOI_VALUE;
     }
 
     /**
-     * @param int|null $offset
-     * @return string
+     * @return string|null
      */
-    public function getValue(int $offset = null): string
+    public function getState(): ?string
     {
-        return "\0";
-    }
-
-    /**
-     * @return iterable|string[]
-     */
-    public function getGroups(): iterable
-    {
-        return [$this->getValue()];
-    }
-
-    /**
-     * @return int
-     */
-    public function getBytes(): int
-    {
-        return 0;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLength(): int
-    {
-        return 0;
+        return null;
     }
 
     /**
@@ -88,6 +81,6 @@ final class EndOfInput extends BaseToken
      */
     public function __toString(): string
     {
-        return \sprintf('"%s" (%s)', '\0', self::T_NAME);
+        return 'end of input';
     }
 }

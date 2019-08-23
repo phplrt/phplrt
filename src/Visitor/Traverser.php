@@ -77,10 +77,27 @@ class Traverser implements TraverserInterface
     }
 
     /**
+     * @param NodeInterface|NodeInterface[] $node
+     * @return NodeInterface|NodeInterface[]
+     */
+    public function traverse(iterable $node): iterable
+    {
+        if ($node instanceof NodeInterface) {
+            return $this->element($node);
+        }
+
+        foreach ($node as &$item) {
+            $item = $this->element($item);
+        }
+
+        return $node;
+    }
+
+    /**
      * @param NodeInterface $node
      * @return NodeInterface
      */
-    public function traverse(NodeInterface $node): NodeInterface
+    private function element(NodeInterface $node): NodeInterface
     {
         $node = $this->before($node) ?? $node;
 
@@ -144,6 +161,10 @@ class Traverser implements TraverserInterface
     private function visit(NodeInterface $node): void
     {
         foreach ($node as $index => $current) {
+            if (! $current instanceof NodeInterface) {
+                continue;
+            }
+
             $value = $this->each($current);
 
             try {

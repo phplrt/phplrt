@@ -1,92 +1,148 @@
 # Parser
 
-The parser provides a set of components for grammar analysis (Parsing) of the source code 
-and converting them into an abstract syntax tree (AST).
+Parsing, syntax analysis, or syntactic analysis is the process of analysing a 
+string of symbols, either in natural language, computer languages or data 
+structures, conforming to the rules of a formal grammar.
 
-For the beginning it is necessary to familiarize with parsing algorithms. This implementation,
-although it allows you to switch between runtime, but provides out of the box two 
-implementations: [LL(1) - Simple and LL(k) - Lookahead](https://en.wikipedia.org/wiki/LL_parser).
+The parser itself is responsible for the syntax receiving a 
+[set of tokens](./lexer.md) as an input.
 
-Let's create a primitive lexer that can handle spaces, 
-numbers and the addition character.
+Let's try to recognize an elementary mathematical expression `2 + 2`. 
 
-```php
-use Phplrt\Lexer\Driver\NativeRegex as Lexer;
+### Lexer
 
-$lexer = (new Lexer())
-    ->add('T_WHITESPACE', '\\s+')
-    ->add('T_NUMBER', '\\d+')
-    ->add('T_PLUS', '\\+')
-    ->skip('T_WHITESPACE'); 
-```
-
-Grammar will be a little more complicated. We need to determine in what order 
-the tokens in the source text can be located, which we will parse.
+The first step will be [a lexer implementation](./lexer.md), 
+like this:
 
 ```php
-$grammar = new Grammar(array $rules[, string|int $rootRuleId = null [, array $delegates = []]])
+$lexer = Phplrt\Lexer\Lexer::create([
+    1 => '\s+', // whitespaces
+    2 => '\d+', // digits
+    3 => '\+',  // symbol "+"
+], [1]);
 ```
 
-First we start with the [(E)BNF format](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
+Please note that any implementation of the 
+[`phplrt/lexer-contracts`](./lexer-contracts.md) is 
+possible, and the implementation from 
+[`phplrt/lexer`](./lexer.md) used only as an example.
 
-```ebnf
-(* A simple example of adding two numbers will look like this: *)
-expr = T_NUMBER T_PLUS T_NUMBER ;
+### Grammar
+
+Next, we need to determine the grammar. In this case, it will look like (in BNF):
+
+```bnf
+expr ::= digit "+" digit ;
+digit ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 ```
 
-To define this rule inside the Grammar, we simply use two classes that define the rules 
-inside the product, this is the [concatenation](https://en.wikipedia.org/wiki/Concatenation) 
-and definitions of the tokens.
+However, in [section about lexer](#lexer) we have already defined a 
+lexer, where any number (`\d+`) is under the index `2`, and the addition 
+symbol (`\+`) is under the index `3`.
+
+It turns out that the grammar is slightly transformed (pseudo BNF code):
+
+```bnf
+expr ::= digit #3 digit ;
+digit ::= #2;
+```
+
+Now that we have decided on the grammar, we can translate it into a 
+format that the parser understands:
 
 ```php
-use Phplrt\Parser\Grammar;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Terminal;
+$rules = [ 
+    // Expr is a sequence of [rule #1 then #2 then #1] 
+    0 => new Phplrt\Parser\Rule\Concatenation([1, 2, 1]),
 
-//
-// This (e)BNF construction:
-// expression = T_NUMBER T_PLUS T_NUMBER ;
-// 
-// Looks like:
-// Concatenation1 = Token1 Token2 Token1
-//
-$grammar = new Grammar([
-    new Concatenation(0, [1, 2, 1], 'expression'),
-    new Terminal(1, 'T_NUMBER', true),
-    new Terminal(2, 'T_PLUS', true),
-]);
+    // Rule #1 is a digit (#2) token
+    1 => new Phplrt\Parser\Rule\Lexeme(2),
+
+    // Rule #2 is a plus (#3) token
+    2 => new Phplrt\Parser\Rule\Lexeme(3),
+];
 ```
 
-In order to test the grammar, we can simply parse the source.
+### Initialization
+
+Now we can use the parser:
 
 ```php
-use Phplrt\Source\File;
-use Phplrt\Parser\Driver\Llk as Parser;
+$parser = new Phplrt\Parser\Parser($lexer, $rules);
 
-$parser = new Parser($lexer, $grammar);
-
-echo $parser->parse(File::fromSources('2 + 2'));
+$parser->parse('2 + 2');    // OK
+$parser->parse('2 +');      // Error: Syntax error, unexpected end of input
+$parser->parse('2 + 2 2');  // Error: Syntax error, unexpected "23"
+$parser->parse('2 * 2');    // Error: Syntax error, unrecognized lexeme "*"
 ```
 
-Will outputs:
+Everything works successfully!
 
-```xml
-<Ast>
-    <expression offset="0">
-        <T_NUMBER offset="0">2</T_NUMBER>
-        <T_PLUS offset="2">+</T_PLUS>
-        <T_NUMBER offset="4">2</T_NUMBER>
-    </expression>
-</Ast>
-```
+### AST Generation
 
-But if the source is wrong, the parser will tell you 
-exactly where the error occurred:
+After we have decided on the grammar, we can proceed to the construction 
+of abstract syntax tree.
+
+In this case, we can use any implementation of 
+[`phplrt/ast-contracts`](./ast-contracts.md). But in 
+example we can use the existing [`phplrt/ast`](./ast.md) 
+package which already implements this set of interfaces:
 
 ```php
-echo $parser->parse(File::fromSources('2 + + 2'));
-//                                         ^
-//
-// throws "Phplrt\Parser\Exception\UnexpectedTokenException" with message: 
-// "Unexpected token '+' (T_PLUS) at line 1 and column 5"
+use Phplrt\Ast\TreeNode;
+use Phplrt\Contracts\Lexer\TokenInterface;
+
+class Addition extends TreeNode
+{
+    /**First digit */
+    public $a;
+
+    /** Second digit */
+    public $b;
+
+    public function __construct(TokenInterface $a, TokenInterface $b) 
+    {
+        parent::__construct(0);
+
+        $this->a = (int)$a->getValue();
+        $this->b = (int)$b->getValue();
+    }
+}
+```
+
+In this case, we created a simple AST node for addition that contains two 
+numbers, `$addition->a` and `$addition->b`.
+
+In order to apply it, we should modify the rule for concatenation:
+
+```php
+$rules = [
+    0 => new Phplrt\Parser\Rule\Concatenation([1, 2, 1], function (array $children) {
+        //
+        // The $children variable contains three tokens as defined in the rule: 
+        //  1) the first digit (#1)
+        //  2) the plus sign (#2)
+        //  3) the second number (#1)
+        // In order to correctly create a node, we should give 
+        // it only two digits.
+        //
+        return new Addition($children[0], $children[2]);
+    }),
+    // ...
+```
+
+And now we can check try to check the result:
+
+```php
+$ast = $parser->parse('2 + 2');
+
+var_dump(
+    \get_class($ast),
+    $ast->a,
+    $ast->b
+);
+// expceted output:
+// > string(8) "Addition"
+// > int(2)
+// > int(2)
 ```

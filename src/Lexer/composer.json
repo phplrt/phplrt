@@ -1,7 +1,7 @@
 {
     "name": "phplrt/lexer",
     "type": "library",
-    "description": "The PHPLRT Lexer package.",
+    "description": "The phplrt lexer library that can be used for scanners implementation using PCRE",
     "license": "MIT",
     "keywords": [
         "regex",
@@ -9,6 +9,7 @@
         "token",
         "stream",
         "parsing",
+        "scanner",
         "tokenizer"
     ],
     "homepage": "https://github.com/phplrt",
@@ -24,25 +25,26 @@
     ],
     "require": {
         "php": ">=7.1.3",
+        "ext-spl": "*",
         "ext-pcre": "*",
-        "phplrt/lexer-contracts": "~2.0|2.0.x-dev",
-        "phplrt/exception": "~2.0|2.0.x-dev",
-        "phplrt/source": "~2.0|2.0.x-dev"
+        "ext-mbstring": "*",
+        "phplrt/lexer-contracts": "~2.0|2.0.x-dev"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Lexer\\": ""
+            "Phplrt\\Lexer\\": "./"
         }
     },
-    "suggest": {
-        "ext-parle": "Parle extension fallback"
+    "require-dev": {
+        "symfony/var-dumper": "~4.3",
+        "monolog/monolog": "~1.24"
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "2.0.0"
+        "phplrt/lexer-contracts-implementation": "2.0"
     },
     "extra": {
         "branch-alias": {
-            "master": "1.1.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     },
     "config": {

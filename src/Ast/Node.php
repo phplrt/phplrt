@@ -14,7 +14,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 /**
  * Class Node
  */
-abstract class Node implements NodeInterface
+abstract class Node implements NodeInterface, \JsonSerializable
 {
     use AttributesTrait;
 
@@ -37,7 +37,28 @@ abstract class Node implements NodeInterface
     public function __construct(int $type, array $attributes = [])
     {
         $this->type = $type;
-        $this->setAttributes($attributes);
+        $this->attributes = $attributes;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return $this->jsonSerialize();
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id'         => $this->getType(),
+            'offset'     => $this->getOffset(),
+            'attributes' => $this->getAttributes(),
+            'children'   => \iterator_to_array($this->getIterator(), false),
+        ];
     }
 
     /**
@@ -54,13 +75,5 @@ abstract class Node implements NodeInterface
     public function getOffset(): int
     {
         return (int)$this->getAttribute(self::ATTR_OFFSET, 0);
-    }
-
-    /**
-     * @return \Traversable
-     */
-    public function getIterator(): \Traversable
-    {
-        return new \EmptyIterator();
     }
 }

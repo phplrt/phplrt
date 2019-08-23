@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Exception\ExternalException;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 
 /**
  * Class LexerException
  */
-abstract class LexerException extends ExternalException
+class LexerException extends \LogicException implements LexerExceptionInterface
 {
 }

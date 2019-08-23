@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of phplrt package.
+ * This file is part of Phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,69 +9,83 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
+use Phplrt\Parser\Buffer\BufferInterface;
+
 /**
  * Class Repetition
  */
-class Repetition extends Rule
+class Repetition extends Production
 {
     /**
-     * Minimum bound.
-     * @var int
+     * @var int|float
      */
-    protected $min = 0;
+    private $gte;
 
     /**
-     * Maximum bound.
+     * @var int|float
+     */
+    private $lte;
+
+    /**
      * @var int
      */
-    protected $max = 0;
+    private $rule;
 
     /**
      * Repetition constructor.
      *
-     * @param string|int $name Rule name.
-     * @param int $min Minimum bound.
-     * @param int $max Maximum bound.
-     * @param mixed $children Children.
-     * @param string|null $nodeId Node ID.
+     * @param int $rule
+     * @param int|float $gte
+     * @param int|float $lte
+     * @param \Closure|null $reducer
      */
-    public function __construct($name, $min, $max, $children, string $nodeId = null)
+    public function __construct(int $rule, float $gte = 0, float $lte = \INF, \Closure $reducer = null)
     {
-        $this->min = \max(0, (int)$min);
-        $this->max = \max(-1, (int)$max);
+        \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
 
-        parent::__construct($name, $children, $nodeId);
+        parent::__construct($reducer);
 
-        \assert(
-            $min <= $max || $max === -1,
-            \sprintf('Cannot repeat with a min (%d) greater than max (%d).', $min, $max)
-        );
+        $this->rule = $rule;
+        $this->gte = $gte;
+        $this->lte = $lte;
     }
 
     /**
-     * Get minimum bound.
-     * @return int
+     * @param BufferInterface $buffer
+     * @param int $type
+     * @param int $offset
+     * @param \Closure $reduce
+     * @return iterable|null
      */
-    public function getMin(): int
+    public function reduce(BufferInterface $buffer, int $type, int $offset, \Closure $reduce): ?iterable
     {
-        return $this->min;
+        [$children, $iterations] = [[], 0];
+
+        do {
+            [$valid, $rollback] = [
+                $iterations >= $this->gte && $iterations <= $this->lte,
+                $buffer->key(),
+            ];
+
+            $result = $reduce($this->rule);
+
+            if ($result === null && ! $valid) {
+                $buffer->seek($rollback);
+
+                return null;
+            }
+
+            $children = $this->merge($children, $result);
+        } while ($result !== null && ++$iterations);
+
+        return $this->toAst($this->merge([], $children), $type, $offset);
     }
 
     /**
-     * Check whether the maximum repetition is unbounded.
-     * @return bool
+     * @return string
      */
-    public function isInfinite(): bool
+    public function __toString(): string
     {
-        return $this->getMax() === -1;
-    }
-
-    /**
-     * Get maximum bound.
-     * @return int
-     */
-    public function getMax(): int
-    {
-        return $this->max;
+        return $this->rule . ' { ' . $this->gte . ' ... ' . $this->lte . ' }';
     }
 }

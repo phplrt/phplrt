@@ -14,6 +14,10 @@
     <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
 </p>
 
+> Please note that this is phplrt `2.0.x-dev` documentation.* 
+> The latest stable version is here: 
+> [https://github.com/phplrt/phplrt/tree/1.1.0](https://github.com/phplrt/phplrt/tree/1.1.0)
+
 ## Introduction
 
 The phplrt is a set of tools for programming languages recognition. The library 
@@ -22,95 +26,24 @@ text analysis and so on.
 
 ## Documentation
 
-- [Installation](docs/installation.md)
-- [Grammar](docs/grammar.md)
-    - [Definitions](docs/grammar.md#definitions)
-    - [Comments](docs/grammar.md#comments)
-    - [Output Control](docs/grammar.md#output-control)
-    - [Declaring Rules](docs/grammar.md#declaring-rules)
-    - [Delegates](docs/grammar.md#delegation)
-- [Compiler](docs/compiler.md)
-    - [Loading](docs/compiler.md#loading)
-    - [Compilation](docs/compiler.md#compilation)
-- [Lexer](docs/lexer.md)
-- [Parser](docs/parser.md#parser)
-- [Drivers](docs/drivers.md)
-    - [PCRE](docs/drivers.md#pcre)
-    - [Lexrtl](docs/drivers.md#lexertl)
-- [Rules](docs/rules.md#rules)
-    - [Alternation](docs/rules.md#alternation)
-    - [Concatenation](docs/rules.md#concatenation)
-    - [Repetition](docs/rules.md#repetition)
-    - [Terminal](docs/rules.md#terminal)
-- [Examples](docs/examples.md#examples)
-- [Abstract Syntax Tree](docs/ast.md#abstract-syntax-tree)
-- [Delegates](docs/delegates.md#delegates)
-- [Assembler](docs/assembler.md)
+- **Introduction**
+    - ~~Installation~~
+    - ~~Release Notes~~
+    - [Concepts](./docs/concepts.md)
+    - ~~Architecture~~
 
-## Quickstart
+- **Getting Started**
+    - ~~Grammar~~
+        - [Lexical Analysis](./docs/lexer.md)
+        - [Syntax Analysis](./docs/parser.md)
+        - [Abstract Syntax Tree](./docs/ast.md)
+        - ~~Semantic Analysis~~
+    - ~~Assembling~~
+    - ~~Compilation~~
 
-```php
-<?php
-use Phplrt\Source\File;
-use Phplrt\Compiler\Compiler;
+- **Contracts**
+    - [Lexer Contracts](./docs/lexer-contracts.md)
+    - [Parser Contracts](./docs/parser-contracts.md)
+    - [AST Contracts](./docs/ast-contracts.md)
 
-$compiler = Compiler::load(File::fromSources(<<<EBNF
-   
-    %token T_DIGIT      \d
-    %token T_PLUS       \+
-    %token T_MINUS      \-
-    %token T_POW        \*
-    %token T_DIV        \/
-    %skip  T_WHITESPACE \s+
-    
-    #Expression
-      : <T_DIGIT> (::T_PLUS:: | ::T_MINUS:: | ::T_POW:: | ::T_DIV::) <T_DIGIT> 
-      ;
 
-EBNF));
-```
-
-**Execution:**
-
-```php
-echo $compiler->parse(File::fromSources('2 + 2'));
-
-//
-// Output:
-//
-// <Expression offset="0">
-//   <T_DIGIT offset="0">2</T_DIGIT>
-//   <T_DIGIT offset="2">2</T_DIGIT>
-// </Expression>
-//
-```
-
-**Compilation:**
-
-```php
-$compiler
-    ->setNamespace('App')
-    ->setClassName('ExpressionParser')
-    ->saveTo(__DIR__);
-```
-
-## Contracts
-
-| Package                                                                                 | Stability                                                                                |
-| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [phplrt/ast-contracts](https://packagist.org/packages/phplrt/ast-contracts)             | ![phplrt/ast-contracts](https://poser.pugx.org/phplrt/ast-contracts/version)             |
-| [phplrt/lexer-contracts](https://packagist.org/packages/phplrt/lexer-contracts)         | ![phplrt/lexer-contracts](https://poser.pugx.org/phplrt/lexer-contracts/version)         |
-| [phplrt/parser-contracts](https://packagist.org/packages/phplrt/parser-contracts)       | ![phplrt/parser-contracts](https://poser.pugx.org/phplrt/parser-contracts/version)       |
-
-## Packages
-
-| Package                                                             | Stability                                                            |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [phplrt/lexer](https://packagist.org/packages/phplrt/lexer)         | ![phplrt/lexer](https://poser.pugx.org/phplrt/lexer/version)         |
-| [phplrt/parser](https://packagist.org/packages/phplrt/parser)       | ![phplrt/parser](https://poser.pugx.org/phplrt/parser/version)       |
-| [phplrt/ast](https://packagist.org/packages/phplrt/ast)             | ![phplrt/ast](https://poser.pugx.org/phplrt/ast/version)             |
-| [phplrt/position](https://packagist.org/packages/phplrt/position)   | ![phplrt/position](https://poser.pugx.org/phplrt/position/version)   |
-| [phplrt/visitor](https://packagist.org/packages/phplrt/visitor)     | ![phplrt/visitor](https://poser.pugx.org/phplrt/visitor/version)     |
-| [phplrt/compiler](https://packagist.org/packages/phplrt/compiler)   | ![phplrt/compiler](https://poser.pugx.org/phplrt/compiler/version)   |
-| [phplrt/dumper](https://packagist.org/packages/phplrt/dumper)       | ![phplrt/dumper](https://poser.pugx.org/phplrt/dumper/version)       |
-| [phplrt/assembler](https://packagist.org/packages/phplrt/assembler) | ![phplrt/assembler](https://poser.pugx.org/phplrt/assembler/version) |
