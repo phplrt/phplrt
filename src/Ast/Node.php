@@ -36,7 +36,7 @@ abstract class Node implements NodeInterface, \JsonSerializable
      */
     public function __construct(int $type, array $attributes = [])
     {
-        $this->type = $type;
+        $this->type       = $type;
         $this->attributes = $attributes;
     }
 

@@ -39,7 +39,7 @@ class EagerBuffer implements BufferInterface
     public function __construct(\Generator $stream)
     {
         $this->buffer = \iterator_to_array($stream, false);
-        $this->size = \count($this->buffer);
+        $this->size   = \count($this->buffer);
     }
 
     /**
@@ -56,7 +56,7 @@ class EagerBuffer implements BufferInterface
     public function next(): void
     {
         if ($this->current < $this->size - 1) {
-            $this->current++;
+            ++$this->current;
         }
     }
 

@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\State;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Exception\CompilationException;
 use Phplrt\Lexer\Token\Skip;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Unknown;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Exception\CompilationException;
 
 /**
  * Class Markers

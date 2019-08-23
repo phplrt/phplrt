@@ -38,9 +38,9 @@ class Token extends BaseToken
      */
     public function __construct(int $type, string $value, int $offset)
     {
-        $this->type = $type;
+        $this->type   = $type;
         $this->offset = $offset;
-        $this->value = $value;
+        $this->value  = $value;
     }
 
     /**

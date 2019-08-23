@@ -42,7 +42,7 @@ class Unknown extends BaseToken
      */
     public function __construct(string $value, int $offset = 0)
     {
-        $this->value = $value;
+        $this->value  = $value;
         $this->offset = $offset;
     }
 

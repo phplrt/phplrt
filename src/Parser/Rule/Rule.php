@@ -14,5 +14,4 @@ namespace Phplrt\Parser\Rule;
  */
 abstract class Rule implements RuleInterface
 {
-
 }

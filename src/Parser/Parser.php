@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Parser\Exception\ParserException;
+use Phplrt\Parser\Rule\RuleInterface;
 
 /**
  * Class Parser

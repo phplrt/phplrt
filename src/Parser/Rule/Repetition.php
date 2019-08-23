@@ -46,8 +46,8 @@ class Repetition extends Production
         parent::__construct($reducer);
 
         $this->rule = $rule;
-        $this->gte = $gte;
-        $this->lte = $lte;
+        $this->gte  = $gte;
+        $this->lte  = $lte;
     }
 
     /**

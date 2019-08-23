@@ -45,8 +45,8 @@ abstract class State implements StateInterface
     public function __construct(array $tokens, array $skip = [], array $after = [], array $before = [])
     {
         $this->tokens = $tokens;
-        $this->skip = $skip;
-        $this->after = $after;
+        $this->skip   = $skip;
+        $this->after  = $after;
         $this->before = $before;
     }
 }

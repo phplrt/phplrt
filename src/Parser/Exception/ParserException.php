@@ -16,5 +16,4 @@ use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
  */
 class ParserException extends \Exception implements ParserExceptionInterface
 {
-
 }

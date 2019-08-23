@@ -9,19 +9,19 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Parser\Buffer\EagerBuffer;
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Parser\Exception\ParserException;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Exception\ParserException;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Rule\ProductionInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 
 /**
  * A LL(k) recurrence recursive descent parser implementation.
@@ -160,7 +160,7 @@ abstract class AbstractParser implements ParserInterface
             $this->token = $buffer->current();
         } catch (LexerRuntimeExceptionInterface $e) {
             throw $this->lexError($e->getToken());
-        } catch (\Exception|LexerExceptionInterface $e) {
+        } catch (\Exception | LexerExceptionInterface $e) {
             throw new ParserException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -304,42 +304,3 @@ abstract class AbstractParser implements ParserInterface
         return $result;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -29,7 +29,7 @@ interface BufferInterface extends \Iterator
      *
      * @see \Iterator::current()
      * @return TokenInterface
-     * @link https://php.net/manual/en/iterator.current.php
+     * @see https://php.net/manual/en/iterator.current.php
      */
     public function current(): TokenInterface;
 
@@ -38,7 +38,7 @@ interface BufferInterface extends \Iterator
      *
      * @see \Iterator::key()
      * @return int
-     * @link https://php.net/manual/en/iterator.key.php
+     * @see https://php.net/manual/en/iterator.key.php
      */
     public function key(): int;
 
@@ -47,7 +47,7 @@ interface BufferInterface extends \Iterator
      *
      * @see \Iterator::valid()
      * @return bool
-     * @link https://php.net/manual/en/iterator.valid.php
+     * @see https://php.net/manual/en/iterator.valid.php
      */
     public function valid(): bool;
 
@@ -56,7 +56,7 @@ interface BufferInterface extends \Iterator
      *
      * @see \Iterator::rewind()
      * @return void
-     * @link https://php.net/manual/en/iterator.rewind.php
+     * @see https://php.net/manual/en/iterator.rewind.php
      */
     public function rewind(): void;
 
@@ -65,7 +65,7 @@ interface BufferInterface extends \Iterator
      *
      * @see \Iterator::next()
      * @return void
-     * @link https://php.net/manual/en/iterator.next.php
+     * @see https://php.net/manual/en/iterator.next.php
      */
     public function next(): void;
 }

@@ -14,5 +14,4 @@ namespace Phplrt\Lexer\Exception;
  */
 class UnexpectedStateException extends LexerRuntimeException
 {
-
 }
