@@ -28,7 +28,7 @@ class Composite extends Token implements \IteratorAggregate, \Countable, \ArrayA
      */
     public function __construct(array $children)
     {
-        $first = \array_shift($children);
+        $first          = \array_shift($children);
         $this->children = $children;
 
         parent::__construct($first->getName(), $first->getValue(), $first->getOffset());

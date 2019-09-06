@@ -29,7 +29,7 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable
         return [
             'name'   => $this->getName(),
             'value'  => $this->getValue(),
-            'offset' => $this->getOffset()
+            'offset' => $this->getOffset(),
         ];
     }
 

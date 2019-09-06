@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Renderer;
 
 /**
  * Class UnrecognizedTokenException
@@ -31,7 +31,7 @@ class UnrecognizedTokenException extends LexerRuntimeException
     public function __construct(TokenInterface $token, \Throwable $prev = null)
     {
         $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
-            (new Renderer())->render($token)
+            (new Renderer())->render($token),
         ]);
 
         parent::__construct($message, $token, $prev);

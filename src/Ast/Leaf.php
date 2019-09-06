@@ -28,7 +28,7 @@ class Leaf extends Node
      */
     public function __construct(TokenInterface $token)
     {
-        $this->value = $token->getValue();
+        $this->value  = $token->getValue();
         $this->offset = $token->getOffset();
     }
 
