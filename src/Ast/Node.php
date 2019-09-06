@@ -16,29 +16,10 @@ use Phplrt\Contracts\Ast\NodeInterface;
  */
 abstract class Node implements NodeInterface, \JsonSerializable
 {
-    use AttributesTrait;
-
-    /**
-     * @var string
-     */
-    public const ATTR_OFFSET = 'offset';
-
     /**
      * @var int
      */
-    private $type;
-
-    /**
-     * Node constructor.
-     *
-     * @param int $type
-     * @param array $attributes
-     */
-    public function __construct(int $type, array $attributes = [])
-    {
-        $this->type       = $type;
-        $this->attributes = $attributes;
-    }
+    public $offset;
 
     /**
      * @return array
@@ -54,9 +35,7 @@ abstract class Node implements NodeInterface, \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id'         => $this->getType(),
             'offset'     => $this->getOffset(),
-            'attributes' => $this->getAttributes(),
             'children'   => \iterator_to_array($this->getIterator(), false),
         ];
     }
@@ -64,16 +43,19 @@ abstract class Node implements NodeInterface, \JsonSerializable
     /**
      * @return int
      */
-    public function getType(): int
+    public function getOffset(): int
     {
-        return $this->type;
+        return (int)$this->offset;
     }
 
     /**
-     * @return int
+     * @param int $offset
+     * @return Node|$this
      */
-    public function getOffset(): int
+    public function setOffset(int $offset): self
     {
-        return (int)$this->getAttribute(self::ATTR_OFFSET, 0);
+        $this->offset = $offset;
+
+        return $this;
     }
 }

@@ -17,7 +17,6 @@ use Phplrt\Contracts\Ast\NodeInterface;
 class TreeNode extends Node
 {
     use ChildNodesTrait;
-    use MutableAttributesTrait;
 
     /**
      * @return \Traversable|NodeInterface[]

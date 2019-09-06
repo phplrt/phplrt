@@ -31,9 +31,6 @@
             "Phplrt\\Compiler\\": ""
         }
     },
-    "require-dev": {
-        "symfony/var-dumper": "~4.0"
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.0.x-dev"

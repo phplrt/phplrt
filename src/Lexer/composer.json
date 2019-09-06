@@ -35,10 +35,6 @@
             "Phplrt\\Lexer\\": "./"
         }
     },
-    "require-dev": {
-        "symfony/var-dumper": "~4.3",
-        "monolog/monolog": "~1.24"
-    },
     "provide": {
         "phplrt/lexer-contracts-implementation": "2.0"
     },

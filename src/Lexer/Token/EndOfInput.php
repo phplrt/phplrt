@@ -12,18 +12,8 @@ namespace Phplrt\Lexer\Token;
 /**
  * Class EndOfInput
  */
-class EndOfInput extends BaseToken
+final class EndOfInput extends BaseToken
 {
-    /**
-     * @var int
-     */
-    public const ID = self::TYPE_END_OF_INPUT;
-
-    /**
-     * @var string
-     */
-    public const NAME = 'T_EOI';
-
     /**
      * @var string
      */
@@ -45,11 +35,11 @@ class EndOfInput extends BaseToken
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getType(): int
+    public function getName(): string
     {
-        return static::ID;
+        return self::END_OF_INPUT;
     }
 
     /**
@@ -69,11 +59,11 @@ class EndOfInput extends BaseToken
     }
 
     /**
-     * @return string|null
+     * @return int
      */
-    public function getState(): ?string
+    public function getBytes(): int
     {
-        return null;
+        return 0;
     }
 
     /**
@@ -81,6 +71,6 @@ class EndOfInput extends BaseToken
      */
     public function __toString(): string
     {
-        return 'end of input';
+        return '\0';
     }
 }

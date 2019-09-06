@@ -17,11 +17,6 @@ class Token extends BaseToken
     /**
      * @var int
      */
-    private $type;
-
-    /**
-     * @var int
-     */
     private $offset;
 
     /**
@@ -30,25 +25,30 @@ class Token extends BaseToken
     private $value;
 
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
      * BaseToken constructor.
      *
-     * @param int $type
+     * @param string $name
      * @param string $value
      * @param int $offset
      */
-    public function __construct(int $type, string $value, int $offset)
+    public function __construct(string $name, string $value, int $offset)
     {
-        $this->type   = $type;
-        $this->offset = $offset;
+        $this->name = $name;
         $this->value  = $value;
+        $this->offset = $offset;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getType(): int
+    public function getName(): string
     {
-        return $this->type;
+        return $this->name;
     }
 
     /**

@@ -7,11 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Exception;
+namespace Phplrt\Lexer\Driver;
 
 /**
- * Class EndlessRecursionException
+ * Interface CompilerInterface
  */
-class EndlessRecursionException extends LexerRuntimeException
+interface CompilerInterface
 {
+    /**
+     * @param array $tokens
+     * @return string
+     */
+    public function compile(array $tokens): string;
 }

@@ -9,40 +9,145 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use Phplrt\Lexer\State\StateInterface;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Driver\Markers;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Driver\DriverInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Lexer\Exception\UnrecognizedTokenException;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Lexer
  */
-class Lexer extends AbstractLexer
+class Lexer implements LexerInterface
 {
+    /**
+     * @var array|string[]
+     */
+    protected $tokens;
+
+    /**
+     * @var array|string[]
+     */
+    protected $skip;
+
+    /**
+     * @var DriverInterface
+     */
+    private $driver;
+
     /**
      * Lexer constructor.
      *
-     * @param array|StateInterface[]|array[] $states
-     * @param null|int $initial
+     * @param array|string[] $tokens
+     * @param array|string[] $skip
      */
-    public function __construct(array $states = [], int $initial = null)
+    public function __construct(array $tokens, array $skip = [])
     {
-        $this->initial = $initial;
-        /** @noinspection AdditionOperationOnArraysInspection */
-        $this->states = $states;
-
-        parent::__construct();
+        $this->tokens = $tokens;
+        $this->skip = $skip;
     }
 
     /**
-     * @param array $tokens
-     * @param array $skip
+     * @param string ...$names
      * @return Lexer|$this
      */
-    public static function create(array $tokens, array $skip = []): self
+    public function skip(string ...$names): self
     {
-        return new static([
-            [
-                $tokens,
-                $skip,
-            ],
-        ]);
+        $this->skip = \array_merge($this->skip, $names);
+
+        return $this;
+    }
+
+    /**
+     * @param string $token
+     * @param string $pattern
+     * @return Lexer|$this
+     */
+    public function add(string $token, string $pattern): self
+    {
+        $this->reset();
+        $this->tokens[$token] = $pattern;
+
+        return $this;
+    }
+
+    /**
+     * @return void
+     */
+    private function reset(): void
+    {
+        $this->driver = null;
+    }
+
+    /**
+     * @param string $tokens
+     * @return Lexer|$this
+     */
+    public function addMany(string $tokens): self
+    {
+        $this->reset();
+        $this->tokens = \array_merge($this->tokens, $tokens);
+
+        return $this;
+    }
+
+    /**
+     * @param resource|string $source
+     * @return iterable
+     * @throws LexerExceptionInterface
+     * @throws RuntimeExceptionInterface
+     */
+    public function lex($source): iterable
+    {
+        $driver = $this->driver ?? $this->driver = $this->getDriver();
+        $unknown = [];
+
+        foreach ($driver->lex($source) as $token) {
+            if (\in_array($token->getName(), $this->skip, true)) {
+                continue;
+            }
+
+            if ($token->getName() === $driver::UNKNOWN_TOKEN_NAME) {
+                $unknown[] = $token;
+                continue;
+            }
+
+            if (\count($unknown) && $token->getName() !== $driver::UNKNOWN_TOKEN_NAME) {
+                throw new UnrecognizedTokenException($this->reduce($unknown));
+            }
+
+            yield $token;
+        }
+
+        if (\count($unknown)) {
+            throw new UnrecognizedTokenException($this->reduce($unknown));
+        }
+
+        yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
+    }
+
+    /**
+     * @return DriverInterface
+     */
+    public function getDriver(): DriverInterface
+    {
+        return new Markers($this->tokens, false);
+    }
+
+    /**
+     * @param array|TokenInterface[] $tokens
+     * @return TokenInterface
+     */
+    private function reduce(array $tokens): TokenInterface
+    {
+        $value = (string)\array_reduce($tokens, static function (string $data, TokenInterface $token): string {
+            return $data . $token->getValue();
+        }, '');
+
+        return new Token(\reset($tokens)->getName(), $value, \reset($tokens)->getOffset());
     }
 }

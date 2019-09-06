@@ -31,9 +31,6 @@
             "Phplrt\\Ast\\": ""
         }
     },
-    "require-dev": {
-        "symfony/var-dumper": "~4.0"
-    },
     "provide": {
         "phplrt/ast-contracts-implementation": "2.0"
     },

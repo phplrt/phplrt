@@ -34,12 +34,6 @@
             "Phplrt\\Parser\\": ""
         }
     },
-    "require-dev": {
-        "symfony/var-dumper": "~4.0",
-        "phplrt/ast": "~2.0|2.0.x-dev",
-        "phplrt/visitor": "~2.0|2.0.x-dev",
-        "phplrt/compiler": "~2.0|2.0.x-dev"
-    },
     "provide": {
         "phplrt/parser-contracts-implementation": "2.0"
     },

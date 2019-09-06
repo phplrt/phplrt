@@ -9,22 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
-use Phplrt\Contracts\Source\Exception\NotReadableExceptionInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-
 /**
  * Trait FactoryTrait
  */
 trait FactoryTrait
 {
     /**
-     * @param ReadableInterface $sources
+     * @param string $sources
      * @param int $line
      * @param int $column
      * @return Position
-     * @throws NotReadableExceptionInterface
      */
-    public static function fromPosition(ReadableInterface $sources, int $line = 1, int $column = 1): Position
+    public static function fromPosition(string $sources, int $line = 1, int $column = 1): Position
     {
         \assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
         \assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
@@ -80,12 +76,11 @@ trait FactoryTrait
     }
 
     /**
-     * @param ReadableInterface $file
+     * @param string $sources
      * @param int $offset
      * @return Position
-     * @throws NotReadableExceptionInterface
      */
-    public static function fromOffset(ReadableInterface $file, int $offset = 0): Position
+    public static function fromOffset(string $sources, int $offset = 0): Position
     {
         \assert($offset >= Position::MIN_OFFSET, 'Offset argument should be greater or equal than 0');
 
