@@ -9,16 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
+use Phplrt\Lexer\Exception\SourceTypeException;
+
 /**
  * Class Driver
  */
 abstract class Driver implements DriverInterface
 {
-    /**
-     * @var string
-     */
-    private const ERROR_ARGUMENT_TYPE = 'A $source argument should be a resource or string type, but %s given';
-
     /**
      * @var array|string[]
      */
@@ -36,6 +33,26 @@ abstract class Driver implements DriverInterface
 
     /**
      * @param string|resource $source
+     * @param int $offset
+     * @return string|resource
+     */
+    protected function seek($source, int $offset = 0)
+    {
+        switch (true) {
+            case \is_string($source):
+                return $offset === 0 ? $source : \substr($source, $offset);
+
+            case \is_resource($source):
+                \fseek($source, $offset);
+                return $source;
+
+            default:
+                throw new SourceTypeException($source);
+        }
+    }
+
+    /**
+     * @param string|resource $source
      * @return string
      */
     protected function read($source): string
@@ -48,7 +65,7 @@ abstract class Driver implements DriverInterface
                 return $source;
 
             default:
-                throw new \TypeError(\sprintf(self::ERROR_ARGUMENT_TYPE, \gettype($source)));
+                throw new SourceTypeException($source);
         }
     }
 }

@@ -35,6 +35,7 @@
         "ext-mbstring": "*",
         "nette/php-generator": "~3.0",
         "symfony/console": "~3.4|~4.0",
+        "symfony/polyfill-php73": "~1.12",
         "phplrt/parser-contracts": "~2.0",
         "phplrt/lexer-contracts": "~2.0",
         "phplrt/ast-contracts": "~2.0"

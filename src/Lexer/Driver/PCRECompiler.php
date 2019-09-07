@@ -211,7 +211,7 @@ abstract class PCRECompiler implements CompilerInterface
         $chunks = [];
 
         foreach ($tokens as $name => $pcre) {
-            $chunks[] = $chunk = $this->buildToken($name, $pcre);
+            $chunks[] = $chunk = $this->buildToken($this->name($name), $this->pattern($pcre));
 
             $this->test($chunk, $name);
         }

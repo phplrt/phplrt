@@ -62,11 +62,12 @@ class Markers extends Driver
 
     /**
      * @param string $source
+     * @param int $offset
      * @return iterable|TokenInterface[]|string
      */
-    public function lex($source): iterable
+    public function lex($source, int $offset = 0): iterable
     {
-        $tokens = $this->match($this->getPattern(), $this->read($source));
+        $tokens = $this->match($this->getPattern(), $this->read($source), $offset);
 
         foreach ($tokens as $index => $payload) {
             $name = \array_pop($payload);
@@ -78,11 +79,12 @@ class Markers extends Driver
     /**
      * @param string $pattern
      * @param string $source
+     * @param int $offset
      * @return array
      */
-    private function match(string $pattern, string $source): array
+    private function match(string $pattern, string $source, int $offset): array
     {
-        \preg_match_all($pattern, $source, $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE);
+        \preg_match_all($pattern, $source, $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE, $offset);
 
         return $matches;
     }

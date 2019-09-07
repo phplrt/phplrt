@@ -97,16 +97,15 @@ class Lexer implements LexerInterface
 
     /**
      * @param resource|string $source
+     * @param int $offset
      * @return iterable
-     * @throws LexerExceptionInterface
-     * @throws RuntimeExceptionInterface
      */
-    public function lex($source): iterable
+    public function lex($source, int $offset = 0): iterable
     {
-        $driver  = $this->driver ?? $this->driver  = $this->getDriver();
+        $driver  = $this->driver ?? $this->driver = $this->getDriver();
         $unknown = [];
 
-        foreach ($driver->lex($source) as $token) {
+        foreach ($driver->lex($source, $offset) as $token) {
             if (\in_array($token->getName(), $this->skip, true)) {
                 continue;
             }

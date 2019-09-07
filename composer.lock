@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "584d1aeab6a74e00fcffa18c9a42f76b",
+    "content-hash": "6e00c1300442bde6dab056a92c7cea9e",
     "packages": [
         {
             "name": "nette/php-generator",
@@ -191,20 +191,20 @@
                 "standards",
                 "tree"
             ],
-            "time": "2019-08-21T10:45:46+00:00"
+            "time": "2019-09-02T12:44:26+00:00"
         },
         {
             "name": "phplrt/lexer-contracts",
-            "version": "2.0.2",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phplrt/lexer-contracts.git",
-                "reference": "05bfa97a82fe35bdbfbd6ec3c45a24de5d411946"
+                "reference": "fb7c1162a387921b91e61c7b84730d291d9c52b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/05bfa97a82fe35bdbfbd6ec3c45a24de5d411946",
-                "reference": "05bfa97a82fe35bdbfbd6ec3c45a24de5d411946",
+                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/fb7c1162a387921b91e61c7b84730d291d9c52b8",
+                "reference": "fb7c1162a387921b91e61c7b84730d291d9c52b8",
                 "shasum": ""
             },
             "require": {
@@ -247,7 +247,7 @@
                 "token",
                 "tokenizer"
             ],
-            "time": "2019-08-24T18:10:07+00:00"
+            "time": "2019-09-06T15:00:16+00:00"
         },
         {
             "name": "phplrt/parser-contracts",
