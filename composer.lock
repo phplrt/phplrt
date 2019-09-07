@@ -195,16 +195,16 @@
         },
         {
             "name": "phplrt/lexer-contracts",
-            "version": "2.0.1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phplrt/lexer-contracts.git",
-                "reference": "fb7c1162a387921b91e61c7b84730d291d9c52b8"
+                "reference": "597e6ae4780eefa14103c0352761e8e689e143c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/fb7c1162a387921b91e61c7b84730d291d9c52b8",
-                "reference": "fb7c1162a387921b91e61c7b84730d291d9c52b8",
+                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/597e6ae4780eefa14103c0352761e8e689e143c5",
+                "reference": "597e6ae4780eefa14103c0352761e8e689e143c5",
                 "shasum": ""
             },
             "require": {
@@ -247,7 +247,7 @@
                 "token",
                 "tokenizer"
             ],
-            "time": "2019-09-06T15:00:16+00:00"
+            "time": "2019-09-07T02:56:49+00:00"
         },
         {
             "name": "phplrt/parser-contracts",
