@@ -25,23 +25,18 @@ class Concatenation extends Production
      * Rule constructor.
      *
      * @param array $sequence
-     * @param \Closure $reducer|null
      */
-    public function __construct(array $sequence, \Closure $reducer = null)
+    public function __construct(array $sequence)
     {
         $this->sequence = $sequence;
-
-        parent::__construct($reducer);
     }
 
     /**
      * @param BufferInterface $buffer
-     * @param int $type
-     * @param int $offset
      * @param \Closure $reduce
      * @return iterable|null
      */
-    public function reduce(BufferInterface $buffer, int $type, int $offset, \Closure $reduce): ?iterable
+    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
         [$revert, $children] = [$buffer->key(), []];
 
@@ -55,14 +50,6 @@ class Concatenation extends Production
             $children = $this->merge($children, $result);
         }
 
-        return $this->toAst($children, $offset, $type);
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return '[' . \implode(', ', $this->sequence) . ']';
+        return $children;
     }
 }

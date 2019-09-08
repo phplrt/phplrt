@@ -16,5 +16,5 @@
 
 ### Environment
 
-- Phplrt Version: dev-master
+- Phplrt Version: 2.0
 - PHP Version: 7.1

@@ -15,43 +15,39 @@ use Phplrt\Parser\Buffer\BufferInterface;
 /**
  * Class Lexeme
  */
-class Lexeme extends Rule implements TerminalInterface
+class Lexeme extends Terminal
 {
     /**
-     * @var int
+     * @var string
      */
     public $token;
 
     /**
      * Lexeme constructor.
      *
-     * @param int $token
+     * @param string $token
+     * @param bool $keep
      */
-    public function __construct(int $token)
+    public function __construct(string $token, bool $keep = true)
     {
+        parent::__construct($keep);
+
         $this->token = $token;
     }
 
     /**
      * @param BufferInterface $buffer
+     * @param \Closure $reduce
      * @return TokenInterface|null
      */
-    public function reduce(BufferInterface $buffer): ?TokenInterface
+    public function reduce(BufferInterface $buffer, \Closure $reduce): ?TokenInterface
     {
         $haystack = $buffer->current();
 
-        if ($haystack->getType() === $this->token) {
+        if ($haystack->getName() === $this->token) {
             return $haystack;
         }
 
         return null;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return 'is ' . $this->token;
     }
 }

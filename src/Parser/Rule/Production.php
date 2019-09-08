@@ -18,36 +18,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 abstract class Production extends Rule implements ProductionInterface
 {
     /**
-     * @var \Closure
-     */
-    private $reducer;
-
-    /**
-     * Rule constructor.
-     *
-     * @param \Closure $reducer|null
-     */
-    public function __construct(\Closure $reducer = null)
-    {
-        $this->reducer = $reducer;
-    }
-
-    /**
-     * @param int $type
-     * @param int $offset
-     * @param array|NodeInterface[]|TokenInterface[] $children
-     * @return iterable|NodeInterface[]|NodeInterface
-     */
-    protected function toAst(array $children, int $offset, int $type): iterable
-    {
-        if ($this->reducer) {
-            return ($this->reducer)($children, $offset, $type);
-        }
-
-        return $children;
-    }
-
-    /**
      * @param array|NodeInterface[] $children
      * @param iterable|NodeInterface|TokenInterface $result
      * @return array|NodeInterface[]
@@ -62,5 +32,14 @@ abstract class Production extends Rule implements ProductionInterface
         $children[] = $result;
 
         return $children;
+    }
+
+    /**
+     * @param mixed $result
+     * @return array
+     */
+    protected function toArray($result): array
+    {
+        return \is_array($result) ? $result : [$result];
     }
 }

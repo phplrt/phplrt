@@ -17,7 +17,7 @@ use Phplrt\Parser\Buffer\BufferInterface;
 class Alternation extends Production
 {
     /**
-     * @var array|int[]
+     * @var array|int[]|string[]
      */
     private $sequence;
 
@@ -25,38 +25,25 @@ class Alternation extends Production
      * Rule constructor.
      *
      * @param array $sequence
-     * @param \Closure $reducer|null
      */
-    public function __construct(array $sequence, \Closure $reducer = null)
+    public function __construct(array $sequence)
     {
         $this->sequence = $sequence;
-
-        parent::__construct($reducer);
     }
 
     /**
      * @param BufferInterface $buffer
-     * @param int $type
-     * @param int $offset
      * @param \Closure $reduce
      * @return iterable|null
      */
-    public function reduce(BufferInterface $buffer, int $type, int $offset, \Closure $reduce): ?iterable
+    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
         foreach ($this->sequence as $rule) {
             if (($value = $reduce($rule)) !== null) {
-                return $this->toAst($this->merge([], $value), $offset, $type);
+                return $this->merge([], $value);
             }
         }
 
         return null;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return '[' . \implode(' | ', $this->sequence) . ']';
     }
 }

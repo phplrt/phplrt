@@ -18,8 +18,7 @@ use Phplrt\Parser\Buffer\BufferInterface;
 interface TerminalInterface extends RuleInterface
 {
     /**
-     * @param BufferInterface $buffer
-     * @return null|mixed
+     * @return bool
      */
-    public function reduce(BufferInterface $buffer): ?TokenInterface;
+    public function isKeep(): bool;
 }

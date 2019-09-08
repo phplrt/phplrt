@@ -7,24 +7,6 @@
         "LICENSE.md": "LICENSE.md"
     },
     "packages": {
-        "phplrt/assembler": {
-            "remote": "git@github.com:phplrt/assembler.git",
-            "dirs": {
-                "src/Assembler": "."
-            }
-        },
-        "phplrt/ast": {
-            "remote": "git@github.com:phplrt/ast.git",
-            "dirs": {
-                "src/Ast": "."
-            }
-        },
-        "phplrt/compiler": {
-            "remote": "git@github.com:phplrt/compiler.git",
-            "dirs": {
-                "src/Compiler": "."
-            }
-        },
         "phplrt/lexer": {
             "remote": "git@github.com:phplrt/lexer.git",
             "dirs": {

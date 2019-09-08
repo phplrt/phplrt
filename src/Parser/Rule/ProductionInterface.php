@@ -14,14 +14,6 @@ use Phplrt\Parser\Buffer\BufferInterface;
 /**
  * Interface ProductionInterface
  */
-interface ProductionInterface
+interface ProductionInterface extends RuleInterface
 {
-    /**
-     * @param int $type
-     * @param int $offset
-     * @param BufferInterface $buffer
-     * @param \Closure $reduce
-     * @return iterable|null
-     */
-    public function reduce(BufferInterface $buffer, int $type, int $offset, \Closure $reduce): ?iterable;
 }
