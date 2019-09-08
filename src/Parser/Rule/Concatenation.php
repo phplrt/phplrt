@@ -50,6 +50,6 @@ class Concatenation extends Production
             $children = $this->merge($children, $result);
         }
 
-        return $children;
+        return \count($children) === 1 ? \reset($children) : $children;
     }
 }

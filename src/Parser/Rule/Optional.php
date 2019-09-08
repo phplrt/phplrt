@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Optional
@@ -34,14 +36,14 @@ class Optional extends Production
     /**
      * @param BufferInterface $buffer
      * @param \Closure $reduce
-     * @return iterable|null
+     * @return NodeInterface|TokenInterface|array|null
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
+    public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
         $rollback = $buffer->key();
 
         if ($result = $reduce($this->rule)) {
-            return $this->toArray($result);
+            return $result;
         }
 
         $buffer->seek($rollback);
