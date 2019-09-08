@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Alternation
@@ -34,9 +36,9 @@ class Alternation extends Production
     /**
      * @param BufferInterface $buffer
      * @param \Closure $reduce
-     * @return iterable|null
+     * @return TokenInterface|NodeInterface|null
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
+    public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
         foreach ($this->sequence as $rule) {
             if (($value = $reduce($rule)) !== null) {
