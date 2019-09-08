@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
-use Phplrt\Parser\Buffer\BufferInterface;
-
 /**
  * Interface ProductionInterface
  */

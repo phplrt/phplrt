@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\Lexeme;
 use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\Concatenation;
 
 /**
  * Trait Facade
