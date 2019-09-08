@@ -29,7 +29,7 @@
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "symfony/polyfill-php73": "~1.12",
-        "phplrt/lexer-contracts": "~2.0|2.0.x-dev"
+        "phplrt/lexer-contracts": "~2.0"
     },
     "autoload": {
         "psr-4": {
