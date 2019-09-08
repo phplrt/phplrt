@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
-use ParaTest\Util\Str;
 use Phplrt\Parser\Buffer\BufferInterface;
 
 /**

@@ -9,9 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-
 /**
  * Interface TerminalInterface
  */

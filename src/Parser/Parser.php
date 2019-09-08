@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Ast\Leaf;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
@@ -128,8 +127,8 @@ class Parser implements ParserInterface
      */
     public function __construct(LexerInterface $lexer, array $rules = [], $initial = null)
     {
-        $this->lexer = $lexer;
-        $this->rules = $rules;
+        $this->lexer   = $lexer;
+        $this->rules   = $rules;
         $this->initial = $initial ?? $this->initial;
 
         $this->detectDebuggers();
