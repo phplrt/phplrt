@@ -40,7 +40,7 @@ class Alternation extends Production
     {
         foreach ($this->sequence as $rule) {
             if (($value = $reduce($rule)) !== null) {
-                return $this->merge([], $value);
+                return $value;
             }
         }
 
