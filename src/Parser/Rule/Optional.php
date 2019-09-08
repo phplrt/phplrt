@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Rule;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
 
 /**
  * Class Optional
