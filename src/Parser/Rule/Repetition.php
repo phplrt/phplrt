@@ -64,10 +64,14 @@ class Repetition extends Production
 
             $result = $reduce($this->rule);
 
-            if ($result === null && ! $valid) {
-                $buffer->seek($rollback);
+            if ($result === null) {
+                if (! $valid) {
+                    $buffer->seek($rollback);
 
-                return null;
+                    return null;
+                }
+
+                return $children;
             }
 
             $children = $this->merge($children, $result);
