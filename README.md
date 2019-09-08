@@ -26,24 +26,4 @@ text analysis and so on.
 
 ## Documentation
 
-- **Introduction**
-    - ~~Installation~~
-    - ~~Release Notes~~
-    - [Concepts](./docs/concepts.md)
-    - ~~Architecture~~
-
-- **Getting Started**
-    - ~~Grammar~~
-        - [Lexical Analysis](./docs/lexer.md)
-        - [Syntax Analysis](./docs/parser.md)
-        - [Abstract Syntax Tree](./docs/ast.md)
-        - ~~Semantic Analysis~~
-    - ~~Assembling~~
-    - ~~Compilation~~
-
-- **Contracts**
-    - [Lexer Contracts](./docs/lexer-contracts.md)
-    - [Parser Contracts](./docs/parser-contracts.md)
-    - [AST Contracts](./docs/ast-contracts.md)
-
-
+Not yet =)

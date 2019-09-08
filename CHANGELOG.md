@@ -21,10 +21,13 @@
 - Added support for the [PHP-Parser](https://github.com/nikic/PHP-Parser) architecture traverse.
     - *nikic:* [PhpParser\NodeTraverser](https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php).
     - *phplrt:* [Phplrt\Visitor\Traverser](https://github.com/phplrt/phplrt/blob/master/src/Visitor/Traverser.php).
-- Deprecations.
+- Deprecations:
     - The [phplrt/io](https://github.com/phplrt/io) package was deprecated.
     - The [phplrt/stream](https://github.com/phplrt/stream) package was deprecated.
     - The [phplrt/exception](https://github.com/phplrt/exception) package was deprecated.
+- Temporary deprecations:
+    - The [phplrt/ast](https://github.com/phplrt/ast) package was temporarily archived.
+    - The [phplrt/compiler](https://github.com/phplrt/compiler) package was temporarily archived.
 - *[...and much more](https://github.com/phplrt/phplrt/blob/master/README.md)*.
 
 ## 1.1.0
