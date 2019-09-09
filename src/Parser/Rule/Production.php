@@ -33,13 +33,4 @@ abstract class Production extends Rule implements ProductionInterface
 
         return $children;
     }
-
-    /**
-     * @param mixed $result
-     * @return array
-     */
-    protected function toArray($result): array
-    {
-        return \is_array($result) ? $result : [$result];
-    }
 }
