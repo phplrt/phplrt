@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Position\Position;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Position\Position;
 use Phplrt\Visitor\Visitor as BaseVisitor;
 
 /**

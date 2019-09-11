@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Mutations;
 
-use Phplrt\Visitor\Visitor;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Tests\Visitor\TestCase;
-use Phplrt\Tests\Visitor\Stub\Node;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Tests\Visitor\Stub\Node;
+use Phplrt\Tests\Visitor\TestCase;
 use Phplrt\Visitor\Exception\BadMethodException;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Visitor\Visitor;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**
@@ -34,8 +34,7 @@ class EnteringMutationsTestCase extends TestCase
         $this->expectException(BadMethodException::class);
         $this->expectExceptionCode(Traverser::ERROR_CODE_ARRAY_ENTERING);
 
-        $this->traverse($original = $this->nodes(2), new class extends Visitor
-        {
+        $this->traverse($original = $this->nodes(2), new class() extends Visitor {
             public function enter(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
@@ -53,8 +52,7 @@ class EnteringMutationsTestCase extends TestCase
         $this->expectException(BadMethodException::class);
         $this->expectExceptionCode(Traverser::ERROR_CODE_ARRAY_ENTERING);
 
-        $this->traverse($original = $this->node(), new class extends Visitor
-        {
+        $this->traverse($original = $this->node(), new class() extends Visitor {
             public function enter(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
@@ -70,16 +68,15 @@ class EnteringMutationsTestCase extends TestCase
      */
     public function testUpdateRootsByNodeWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->nodes(2), new class extends Visitor
-        {
+        $actual = $this->traverse($original = $this->nodes(2), new class() extends Visitor {
             public function enter(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }
         });
 
-        $this->assertEquals([new Node(42), new Node(42)], $actual);
-        $this->assertNotEquals($original, $actual);
+        $this->assertSame([new Node(42), new Node(42)], $actual);
+        $this->assertNotSame($original, $actual);
     }
 
     /**
@@ -90,15 +87,14 @@ class EnteringMutationsTestCase extends TestCase
      */
     public function testUpdateRootByNodeWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->node(), new class extends Visitor
-        {
+        $actual = $this->traverse($original = $this->node(), new class() extends Visitor {
             public function enter(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }
         });
 
-        $this->assertEquals(new Node(42), $actual);
-        $this->assertNotEquals($original, $actual);
+        $this->assertSame(new Node(42), $actual);
+        $this->assertNotSame($original, $actual);
     }
 }

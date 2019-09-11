@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Compiler\Builder;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Builder;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
  * Class IncludesVisitor
@@ -51,7 +51,7 @@ class IncludesVisitor extends Visitor
     public function __construct(\SplFileInfo $from, Builder $builder, \SplObjectStorage $stack)
     {
         $this->builder = $builder;
-        $this->stack = $stack;
+        $this->stack   = $stack;
 
         parent::__construct($from);
     }

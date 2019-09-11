@@ -9,16 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Visitor\Traverser;
-use Phplrt\Position\Position;
-use Phplrt\Compiler\Builder\StackTrace;
-use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Builder\IncludesVisitor;
-use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Position\Position;
+use Phplrt\Visitor\Traverser;
 
 /**
  * Class Builder
@@ -48,9 +47,9 @@ class Builder
      */
     public function __construct(\SplFileInfo $file, GrammarInterface $grammar = null)
     {
-        $this->file = $file;
+        $this->file    = $file;
         $this->grammar = $grammar ?? new PP2Grammar();
-        $this->stack = new \SplObjectStorage();
+        $this->stack   = new \SplObjectStorage();
     }
 
     /**
@@ -65,9 +64,8 @@ class Builder
             $error->trace = $this->serializeTrace();
 
             throw $error;
-
         } catch (\Throwable $e) {
-            $error = new GrammarException($e->getMessage(), $e->getCode());
+            $error        = new GrammarException($e->getMessage(), $e->getCode());
             $error->trace = $this->serializeTrace();
 
             throw $error;

@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Stub;
 
-use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\VisitorInterface;
 
 class Counter implements VisitorInterface
 {
@@ -21,24 +21,24 @@ class Counter implements VisitorInterface
 
     public function before(iterable $nodes): ?iterable
     {
-        $this->before++;
+        ++$this->before;
 
         return null;
     }
 
-    public function enter(NodeInterface $node)
+    public function enter(NodeInterface $node): void
     {
-        $this->enter++;
+        ++$this->enter;
     }
 
-    public function leave(NodeInterface $node)
+    public function leave(NodeInterface $node): void
     {
-        $this->leave++;
+        ++$this->leave;
     }
 
     public function after(iterable $nodes): ?iterable
     {
-        $this->after++;
+        ++$this->after;
 
         return null;
     }

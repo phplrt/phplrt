@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 
 /**
  * Class Common
@@ -45,8 +45,7 @@ class Common implements BuilderInterface
      */
     protected function terminal($state, TokenInterface $token): NodeInterface
     {
-        return new class($state, $token) implements NodeInterface
-        {
+        return new class($state, $token) implements NodeInterface {
             private $state;
             private $token;
 
@@ -81,17 +80,16 @@ class Common implements BuilderInterface
      */
     protected function production(string $state, array $children, int $offset): NodeInterface
     {
-        return new class($state, $children, $offset) implements NodeInterface
-        {
+        return new class($state, $children, $offset) implements NodeInterface {
             private $state;
             public $children;
             private $offset;
 
             public function __construct($state, array $children, int $offset)
             {
-                $this->state = $state;
+                $this->state    = $state;
                 $this->children = $children;
-                $this->offset = $offset;
+                $this->offset   = $offset;
             }
 
             public function getName(): string

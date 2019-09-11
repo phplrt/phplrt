@@ -43,10 +43,10 @@ declare(strict_types=1);
 namespace Phplrt\Visitor;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Exception\AttributeException;
-use Phplrt\Visitor\Exception\BrokenTreeException;
+use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Exception\BadReturnTypeException;
+use Phplrt\Visitor\Exception\BrokenTreeException;
 
 /**
  * Class Traverser
@@ -209,7 +209,7 @@ class Traverser implements TraverserInterface
 
         foreach ($nodes as $i => &$node) {
             if ($node instanceof NodeInterface) {
-                $traverseChildren = true;
+                $traverseChildren  = true;
                 $breakVisitorIndex = null;
 
                 foreach ($this->visitors as $index => $visitor) {
@@ -228,7 +228,7 @@ class Traverser implements TraverserInterface
                             break;
 
                         case $return === self::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
-                            $traverseChildren = false;
+                            $traverseChildren  = false;
                             $breakVisitorIndex = $index;
                             break 2;
 
@@ -322,7 +322,7 @@ class Traverser implements TraverserInterface
                     return $node;
                 }
             } elseif ($child instanceof NodeInterface) {
-                $traverseChildren = true;
+                $traverseChildren  = true;
                 $breakVisitorIndex = null;
 
                 foreach ($this->visitors as $index => $visitor) {
@@ -337,7 +337,7 @@ class Traverser implements TraverserInterface
                             break;
 
                         case $return === self::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
-                            $traverseChildren = false;
+                            $traverseChildren  = false;
                             $breakVisitorIndex = $index;
                             break 2;
 

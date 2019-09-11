@@ -29,7 +29,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->node(), $counter = new Counter());
 
-        $this->assertEquals(1, $counter->before);
+        $this->assertSame(1, $counter->before);
     }
 
     /**
@@ -42,11 +42,10 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->nodes(2), $counter = new Counter());
 
-        $this->assertEquals(1, $counter->before);
+        $this->assertSame(1, $counter->before);
     }
 
     /**
-     *
      * @testdox Counting the number of Visitor::after() method calls using AST node
      *
      * @return void
@@ -56,7 +55,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->node(), $counter = new Counter());
 
-        $this->assertEquals(1, $counter->after);
+        $this->assertSame(1, $counter->after);
     }
 
     /**
@@ -69,7 +68,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->nodes(2), $counter = new Counter());
 
-        $this->assertEquals(1, $counter->after);
+        $this->assertSame(1, $counter->after);
     }
 
     /**
@@ -82,7 +81,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->node(), $counter = new Counter());
 
-        $this->assertEquals(self::NODES_COUNT_STUB, $counter->enter);
+        $this->assertSame(self::NODES_COUNT_STUB, $counter->enter);
     }
 
     /**
@@ -95,7 +94,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->nodes(2), $counter = new Counter());
 
-        $this->assertEquals(self::NODES_COUNT_STUB * 2, $counter->enter);
+        $this->assertSame(self::NODES_COUNT_STUB * 2, $counter->enter);
     }
 
     /**
@@ -108,7 +107,7 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->node(), $counter = new Counter());
 
-        $this->assertEquals(self::NODES_COUNT_STUB, $counter->leave);
+        $this->assertSame(self::NODES_COUNT_STUB, $counter->leave);
     }
 
     /**
@@ -121,6 +120,6 @@ class TraversableTestCase extends TestCase
     {
         $this->traverse($this->nodes(2), $counter = new Counter());
 
-        $this->assertEquals(self::NODES_COUNT_STUB * 2, $counter->leave);
+        $this->assertSame(self::NODES_COUNT_STUB * 2, $counter->leave);
     }
 }

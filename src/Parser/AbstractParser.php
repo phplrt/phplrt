@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Builder\BuilderInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Rule\ProductionInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 
 /**
  * A LL(k) recurrence recursive descent parser implementation.

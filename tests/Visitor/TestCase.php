@@ -9,11 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor;
 
-use Phplrt\Visitor\Traverser;
-use Phplrt\Tests\Visitor\Stub\Node;
-use Phplrt\Tests\Visitor\Stub\Root;
-use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Tests\Visitor\Stub\Node;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Visitor\VisitorInterface;
 use PHPUnit\Framework\TestCase as BastTestCase;
 
 /**
@@ -44,7 +43,7 @@ abstract class TestCase extends BastTestCase
                         new Node(10),
                     ]),
                 ]),
-            ])
+            ]),
         ]);
     }
 

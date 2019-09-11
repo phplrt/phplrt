@@ -14,5 +14,4 @@ namespace Phplrt\Visitor\Exception;
  */
 class BadReturnTypeException extends VisitorException
 {
-
 }

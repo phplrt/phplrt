@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Expr\Expression;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
  * Class StackTrace
