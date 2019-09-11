@@ -37,16 +37,34 @@ class IncludesVisitor extends Visitor
     private $builder;
 
     /**
+     * @var \SplObjectStorage
+     */
+    private $stack;
+
+    /**
      * IncludesVisitor constructor.
      *
      * @param \SplFileInfo $from
      * @param Builder $builder
+     * @param \SplObjectStorage $stack
      */
-    public function __construct(\SplFileInfo $from, Builder $builder)
+    public function __construct(\SplFileInfo $from, Builder $builder, \SplObjectStorage $stack)
     {
         $this->builder = $builder;
+        $this->stack = $stack;
 
         parent::__construct($from);
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return mixed|void|null
+     */
+    public function enter(NodeInterface $node)
+    {
+        if ($node instanceof IncludeExpr) {
+            $this->stack->attach($node, $this->file);
+        }
     }
 
     /**
@@ -58,7 +76,11 @@ class IncludesVisitor extends Visitor
     public function leave(NodeInterface $node)
     {
         if ($node instanceof IncludeExpr) {
-            return $this->lookup($node);
+            $result = $this->lookup($node);
+
+            $this->stack->detach($node);
+
+            return $result;
         }
 
         return $node;

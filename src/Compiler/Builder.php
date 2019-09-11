@@ -61,6 +61,11 @@ class Builder
     {
         try {
             return $this->analyze($this->file);
+        } catch (GrammarException $error) {
+            $error->trace = $this->serializeTrace();
+
+            throw $error;
+
         } catch (\Throwable $e) {
             $error = new GrammarException($e->getMessage(), $e->getCode());
             $error->trace = $this->serializeTrace();
@@ -78,8 +83,7 @@ class Builder
     {
         $traverser = new Traverser();
 
-        $traverser->with(new IncludesVisitor($source, $this));
-        $traverser->with(new StackTrace($source, $this->stack));
+        $traverser->with(new IncludesVisitor($source, $this, $this->stack));
 
         return $traverser->traverse($this->parse($source));
     }
