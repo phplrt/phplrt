@@ -16,4 +16,13 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
  */
 class ParserRuntimeException extends ParserException implements RuntimeExceptionInterface
 {
+    /**
+     * @var string
+     */
+    public const ERROR_UNEXPECTED_TOKEN = 'Syntax error, unexpected %s';
+
+    /**
+     * @var string
+     */
+    public const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized lexeme %s';
 }

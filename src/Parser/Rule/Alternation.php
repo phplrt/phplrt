@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Rule;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Alternation
@@ -21,7 +21,7 @@ class Alternation extends Production
     /**
      * @var array|int[]|string[]
      */
-    private $sequence;
+    public $sequence;
 
     /**
      * Rule constructor.
@@ -40,10 +40,14 @@ class Alternation extends Production
      */
     public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
+        $rollback = $buffer->key();
+
         foreach ($this->sequence as $rule) {
-            if (($value = $reduce($rule)) !== null) {
-                return $value;
+            if (($result = $reduce($rule)) !== null) {
+                return $result;
             }
+
+            $buffer->seek($rollback);
         }
 
         return null;

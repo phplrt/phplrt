@@ -7,44 +7,39 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Visitor;
+namespace Phplrt\Tests\Visitor\Stub;
 
+use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 
-/**
- * Class Visitor
- */
-abstract class Visitor implements VisitorInterface
+class Counter implements VisitorInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function before(iterable $node): ?iterable
+    public $before = 0;
+    public $after  = 0;
+    public $enter  = 0;
+    public $leave  = 0;
+
+    public function before(iterable $nodes): ?iterable
     {
+        $this->before++;
+
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function enter(NodeInterface $node)
     {
-        return null;
+        $this->enter++;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function leave(NodeInterface $node)
     {
-        return null;
+        $this->leave++;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function after(iterable $node): ?iterable
+    public function after(iterable $nodes): ?iterable
     {
+        $this->after++;
+
         return null;
     }
 }

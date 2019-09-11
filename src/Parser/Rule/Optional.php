@@ -21,7 +21,7 @@ class Optional extends Production
     /**
      * @var int|string
      */
-    private $rule;
+    public $rule;
 
     /**
      * Optional constructor.
@@ -42,7 +42,7 @@ class Optional extends Production
     {
         $rollback = $buffer->key();
 
-        if ($result = $reduce($this->rule)) {
+        if (($result = $reduce($this->rule)) !== null) {
             return $result;
         }
 

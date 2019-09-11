@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\RuleInterface;
 
 /**
@@ -18,16 +21,6 @@ use Phplrt\Parser\Rule\RuleInterface;
  */
 trait Facade
 {
-    /**
-     * @var array|int[]
-     */
-    private $names = [];
-
-    /**
-     * @var array|\Closure[]
-     */
-    private $reducers = [];
-
     /**
      * @param \Closure $grammar
      * @return Facade|$this
@@ -42,108 +35,134 @@ trait Facade
         }
 
         while ($stream->valid()) {
-            [$name, $value] = [$this->map($stream->key()), $stream->current()];
+            [$name, $value] = [$stream->key(), $stream->current()];
 
-            if (! $value instanceof RuleInterface) {
-                $error = 'Generator value should be an instance of %s but %s given';
-                throw new \InvalidArgumentException(\sprintf($error, RuleInterface::class, \gettype($stream)));
+            if ($value instanceof RuleInterface) {
+                $stream->send($this->with($value, $name));
+
+                continue;
             }
 
-            $this->rules[$name] = $value;
-
-            $stream->send($name);
+            $stream->send($value);
         }
 
         return $this;
     }
 
     /**
-     * @param string|int $rule
-     * @param \Closure $then
-     * @return Facade
+     * @param RuleInterface $rule
+     * @param null $name
+     * @return int|string
      */
-    public function when($rule, \Closure $then): self
+    public function with(RuleInterface $rule, $name = null)
     {
-        $index = (($found = \array_search($rule, $this->names, true)) === false) ? $rule : $found;
+        if ($name === null) {
+            $this->rules[] = $rule;
 
-        $this->reducers[$index] = $then;
+            return \array_key_last($this->rules);
+        }
 
-        return $this;
+        $this->rules[$name] = $rule;
+
+        return $name;
     }
 
     /**
-     * @param string|int $rule
-     * @return Facade
+     * @param int|string|int[]|string[] $of
+     * @param int $from
+     * @param float $to
+     * @return Repetition
      */
-    public function startsAt($rule): self
+    public function some($of, int $from = 0, float $to = \INF): Repetition
     {
-        $this->initial = $this->map($rule);
+        $of = $this->resolve(\is_array($of) ? $this->all($of) : $of);
 
-        return $this;
+        return new Repetition($of, $from, $to);
     }
 
     /**
-     * @param $value
-     * @return int
+     * @param mixed $rule
+     * @return array|int|string
      */
-    private function map($value): int
+    private function resolve($rule)
     {
-        $index = \count($this->rules) ? \array_key_last($this->rules) + 1 : 0;
-
         switch (true) {
-            case \is_string($value):
-                return $this->names[$value] ?? $this->names[$value] = $index;
+            case \is_array($rule):
+                return \array_map([$this, 'resolve'], $rule);
 
-            case \is_int($value):
-                return $value;
-
-            case $value === null:
-                return $index;
+            case $rule instanceof RuleInterface:
+                return $this->with($rule);
 
             default:
-                $error = 'Rule name must be a string or integer, but %s given';
-                throw new \InvalidArgumentException(\sprintf($error, \gettype($value)));
+                return $rule;
         }
     }
 
     /**
-     * @param iterable|int[]|string[] $values
-     * @return array|int[]
-     */
-    private function mapAll(iterable $values): array
-    {
-        $result = [];
-
-        foreach ($values as $value) {
-            $result[] = $this->map($value);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param iterable $sequence
+     * @param int|string|int[]|string[] $of
      * @return Concatenation
      */
-    public function concat(iterable $sequence): Concatenation
+    public function all($of): Concatenation
     {
-        return new Concatenation($this->mapAll($sequence));
+        $of = $this->resolve(\is_array($of) ? $of : [$of]);
+
+        return new Concatenation($of);
+    }
+
+    /**
+     * @param int|string|int[]|string[] $of
+     * @return Alternation
+     */
+    public function any($of): Alternation
+    {
+        $of = $this->resolve(\is_array($of) ? $of : [$of]);
+
+        return new Alternation($of);
+    }
+
+    /**
+     * @param int|string|int[]|string[] $of
+     * @return Optional
+     */
+    public function maybe($of): Optional
+    {
+        $of = $this->resolve(\is_array($of) ? $this->all($of) : $of);
+
+        return new Optional($of);
+    }
+
+    /**
+     * @param string $token
+     * @param string ...$tokens
+     * @return Concatenation|Lexeme
+     */
+    public function is(string $token, string ...$tokens)
+    {
+        $tokens = \array_merge([$token], $tokens);
+
+        if (\count($tokens) === 1) {
+            return new Lexeme(\reset($tokens), true);
+        }
+
+        return $this->all(\array_map([$this, 'is'], $tokens));
+    }
+
+    /**
+     * @param \Closure $builder
+     * @return Facade|$this
+     */
+    public function where(\Closure $builder): self
+    {
+        $builder($this->builder);
+
+        return $this;
     }
 
     /**
      * @param string $name
      * @return Lexeme
      */
-    public function token(string $name): Lexeme
-    {
-        return new Lexeme($name, true);
-    }
-
-    /**
-     * @param string $name
-     * @return Lexeme
-     */
-    public function skip(string $name): Lexeme
+    public function like(string $name): Lexeme
     {
         return new Lexeme($name, false);
     }

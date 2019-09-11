@@ -52,6 +52,16 @@ interface TraverserInterface
     public const REMOVE_NODE = 0x03;
 
     /**
+     * If VisitorInterface::enter() returns DONT_TRAVERSE_CURRENT_AND_CHILDREN,
+     * child nodes of the current node will not be traversed for any visitors.
+     *
+     * For subsequent visitors VisitorInterface::enter() will not be called as
+     * well. VisitorInterface::leave() will be invoked for visitors that has
+     * VisitorInterface::enter() method invoked.
+     */
+    public const DONT_TRAVERSE_CURRENT_AND_CHILDREN = 0x04;
+
+    /**
      * Adds a visitor.
      *
      * @param VisitorInterface $visitor

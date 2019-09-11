@@ -134,7 +134,7 @@ final class Renderer
     {
         $prefix = $this->wrap(\mb_substr($value, 0, $this->length) . '…');
 
-        return $this->wrap($prefix) . $this->suffix($value);
+        return $prefix . $this->suffix($value);
     }
 
     /**

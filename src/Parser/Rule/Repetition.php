@@ -19,17 +19,17 @@ class Repetition extends Production
     /**
      * @var int|float
      */
-    private $gte;
+    public $gte;
 
     /**
      * @var int|float
      */
-    private $lte;
+    public $lte;
 
     /**
      * @var int|string
      */
-    private $rule;
+    public $rule;
 
     /**
      * Repetition constructor.
@@ -56,20 +56,20 @@ class Repetition extends Production
     {
         [$children, $iterations] = [[], 0];
 
+        $global = $buffer->key();
+
         do {
-            [$valid, $rollback] = [
-                $iterations >= $this->gte && $iterations <= $this->lte,
-                $buffer->key(),
-            ];
+            $inRange = $iterations >= $this->gte && $iterations <= $this->lte;
+            $rollback = $buffer->key();
 
-            $result = $reduce($this->rule);
-
-            if ($result === null) {
-                if (! $valid) {
-                    $buffer->seek($rollback);
+            if (($result = $reduce($this->rule)) === null) {
+                if (! $inRange) {
+                    $buffer->seek($global);
 
                     return null;
                 }
+
+                $buffer->seek($rollback);
 
                 return $children;
             }
