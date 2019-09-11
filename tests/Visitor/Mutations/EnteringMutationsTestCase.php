@@ -75,7 +75,7 @@ class EnteringMutationsTestCase extends TestCase
             }
         });
 
-        $this->assertSame([new Node(42), new Node(42)], $actual);
+        $this->assertEquals([new Node(42), new Node(42)], $actual);
         $this->assertNotSame($original, $actual);
     }
 
@@ -94,7 +94,7 @@ class EnteringMutationsTestCase extends TestCase
             }
         });
 
-        $this->assertSame(new Node(42), $actual);
+        $this->assertEquals(new Node(42), $actual);
         $this->assertNotSame($original, $actual);
     }
 }
