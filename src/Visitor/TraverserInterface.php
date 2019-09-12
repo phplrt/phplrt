@@ -65,9 +65,10 @@ interface TraverserInterface
      * Adds a visitor.
      *
      * @param VisitorInterface $visitor
+     * @param bool $prepend
      * @return TraverserInterface|$this
      */
-    public function with(VisitorInterface $visitor): self;
+    public function with(VisitorInterface $visitor, bool $prepend = false): self;
 
     /**
      * Removes a visitor.

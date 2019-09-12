@@ -16,6 +16,11 @@ namespace Phplrt\Compiler\Ast\Stmt;
 class TokenStmt extends Statement
 {
     /**
+     * @var string
+     */
+    public $name;
+
+    /**
      * @var bool
      */
     public $keep;

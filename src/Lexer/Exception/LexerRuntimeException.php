@@ -32,6 +32,7 @@ class LexerRuntimeException extends LexerException implements RuntimeExceptionIn
     public function __construct(string $message, TokenInterface $token, \Throwable $prev = null)
     {
         parent::__construct($message, 0, $prev);
+
         $this->token = $token;
     }
 

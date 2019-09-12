@@ -12,9 +12,11 @@ namespace Phplrt\Parser;
 use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Parser\Builder\Common;
 use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Lexer\Exception\LexerRuntimeException;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 
 /**
@@ -57,7 +59,7 @@ class Parser extends AbstractParser
             (new Renderer())->render($token),
         ]);
 
-        return new ParserRuntimeException($message);
+        return new LexerRuntimeException($message, $token);
     }
 
     /**
@@ -71,12 +73,12 @@ class Parser extends AbstractParser
     /**
      * {@inheritDoc}
      */
-    public function onSyntaxError(TokenInterface $token): \Throwable
+    public function onSyntaxError(TokenInterface $token, NodeInterface $node): \Throwable
     {
         $message = \vsprintf(ParserRuntimeException::ERROR_UNEXPECTED_TOKEN, [
             (new Renderer())->render($token),
         ]);
 
-        return new ParserRuntimeException($message);
+        return new ParserRuntimeException($message, $node);
     }
 }

@@ -18,7 +18,7 @@ class IncludeExpr extends Expression
     /**
      * @var string
      */
-    public $file;
+    public $inclusion;
 
     /**
      * Inclusion constructor.
@@ -28,7 +28,7 @@ class IncludeExpr extends Expression
      */
     public function __construct(string $file, int $offset)
     {
-        $this->file = \trim($file, '"\'');
+        $this->inclusion = \trim($file, '"\'');
 
         parent::__construct($offset);
     }
@@ -38,6 +38,6 @@ class IncludeExpr extends Expression
      */
     public function render(): string
     {
-        return '%include(\'' . $this->file . '\')';
+        return '%include(\'' . $this->inclusion . '\')';
     }
 }

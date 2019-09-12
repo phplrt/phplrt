@@ -9,17 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Compiler\Builder;
+use Phplrt\Visitor\Visitor;
+use Phplrt\Compiler\Ast\Node;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
-use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 
 /**
- * Class IncludesVisitor
+ * Class IncludesExecutor
  */
-class IncludesVisitor extends Visitor
+class IncludesExecutor extends Visitor
 {
     /**
      * @var string
@@ -32,55 +33,48 @@ class IncludesVisitor extends Visitor
     private const FILE_EXTENSIONS = ['', '.pp2', '.pp'];
 
     /**
-     * @var Builder
+     * @var \Closure
      */
-    private $builder;
+    private $loader;
 
     /**
-     * @var \SplObjectStorage
+     * @var string
      */
-    private $stack;
+    private $pathname;
 
     /**
      * IncludesVisitor constructor.
      *
-     * @param \SplFileInfo $from
-     * @param Builder $builder
-     * @param \SplObjectStorage $stack
+     * @param string $pathname
+     * @param \Closure $loader
      */
-    public function __construct(\SplFileInfo $from, Builder $builder, \SplObjectStorage $stack)
+    public function __construct(string $pathname, \Closure $loader)
     {
-        $this->builder = $builder;
-        $this->stack = $stack;
-
-        parent::__construct($from);
-    }
-
-    /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
-     */
-    public function enter(NodeInterface $node)
-    {
-        if ($node instanceof IncludeExpr) {
-            $this->stack->attach($node, $this->file);
-        }
+        $this->pathname = $pathname;
+        $this->loader = $loader;
     }
 
     /**
      * @param NodeInterface $node
      * @return mixed|null
-     * @throws \ReflectionException
-     * @throws \Throwable
+     */
+    public function enter(NodeInterface $node)
+    {
+        if ($node instanceof Node && $node->file === null) {
+            $node->file = $this->pathname;
+        }
+
+        return parent::enter($node);
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return mixed|null
      */
     public function leave(NodeInterface $node)
     {
         if ($node instanceof IncludeExpr) {
-            $result = $this->lookup($node);
-
-            $this->stack->detach($node);
-
-            return $result;
+            return $this->lookup($node);
         }
 
         return $node;
@@ -89,12 +83,11 @@ class IncludesVisitor extends Visitor
     /**
      * @param IncludeExpr $expr
      * @return array
-     * @throws \ReflectionException
-     * @throws \Throwable
+     * @throws ParserRuntimeException
      */
     private function lookup(IncludeExpr $expr): array
     {
-        $pathname = \dirname($this->file->getPathname()) . '/' . $expr->file;
+        $pathname = $this->getPathname($expr->inclusion);
 
         foreach (self::FILE_EXTENSIONS as $ext) {
             if (\is_file($pathname . $ext)) {
@@ -102,18 +95,32 @@ class IncludesVisitor extends Visitor
             }
         }
 
-        $exception = new GrammarException(\sprintf(self::ERROR_INVALID_SOURCE, $expr->file));
+        throw new ParserRuntimeException(\sprintf(self::ERROR_INVALID_SOURCE, $expr->inclusion), $expr);
+    }
 
-        throw $this->error($exception, $expr);
+    /**
+     * @param string $file
+     * @return string
+     */
+    private function getPathname(string $file): string
+    {
+        return $this->getDirname() . \DIRECTORY_SEPARATOR . $file;
+    }
+
+    /**
+     * @return string
+     */
+    private function getDirname(): string
+    {
+        return \dirname($this->pathname);
     }
 
     /**
      * @param string $pathname
      * @return iterable|Definition[]|Expression[]
-     * @throws \Throwable
      */
     private function execute(string $pathname)
     {
-        return $this->builder->analyze(new \SplFileInfo($pathname));
+        return ($this->loader)($pathname);
     }
 }

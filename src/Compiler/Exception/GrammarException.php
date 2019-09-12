@@ -9,6 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Exception;
 
+use Phplrt\StackTrace\Trace;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\StackTrace\Record\Record;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Compiler\Ast\Expr\Expression;
+use Phplrt\StackTrace\Record\NodeRecord;
+use Phplrt\StackTrace\Record\TokenRecord;
+use Phplrt\StackTrace\Record\RecordInterface;
+
 /**
  * Class GrammarException
  */
@@ -20,54 +29,45 @@ class GrammarException extends \LogicException
     private const ERROR_HEADER = '%s: %s in %s:%d';
 
     /**
-     * @var array
+     * @var Trace
      */
-    public $trace = [];
+    public $trace;
 
     /**
      * @return string
      */
     public function __toString(): string
     {
-        $result = [
-            \vsprintf(self::ERROR_HEADER, [
-                static::class,
-                $this->getMessage(),
-                $this->getFile(),
-                $this->getLine(),
-            ]),
-        ];
+        $result = [];
 
-        if (\count($this->trace)) {
+        $result[] = \vsprintf(self::ERROR_HEADER, [
+            static::class,
+            $this->getMessage(),
+            $this->getFile(),
+            $this->getLine(),
+        ]);
+
+        if ($this->trace && ! $this->trace->isEmpty()) {
             $result[] = 'Grammar Stack Trace:';
-            $result[] = $this->getInternalTraceAsString();
+            $result[] = $this->trace->render(static function (RecordInterface $item) {
+                switch (true) {
+                    case $item instanceof NodeRecord:
+                        $node = $item->node;
+
+                        return $node instanceof Expression ? $node->render() : '{internal}';
+
+                    case $item instanceof TokenRecord:
+                        return '{ ' . $item->token->getName() . ': ' . (new Renderer())->value($item->token) . ' }';
+
+                    default:
+                        return '{main}';
+                }
+            });
         }
 
-        $result[] =  'Stack Trace:';
+        $result[] = 'Stack Trace:';
         $result[] = $this->getTraceAsString();
 
         return \implode("\n", $result);
-    }
-
-    /**
-     * @return string
-     */
-    private function getInternalTraceAsString(): string
-    {
-        return \implode("\n", $this->getInternalTrace());
-    }
-
-    /**
-     * @return array
-     */
-    private function getInternalTrace(): array
-    {
-        $format = static function (array $info, int $key) {
-            return '#' . $key . ' ' . $info['file'] . '(' . $info['line'] . '): ' . $info['info'];
-        };
-
-        $trace = \array_reverse($this->trace);
-
-        return \array_map($format, $trace, \array_keys($trace));
     }
 }

@@ -12,7 +12,7 @@ namespace Phplrt\Position;
 /**
  * Class Position
  */
-class Position
+class Position implements PositionInterface
 {
     use FactoryTrait;
 
@@ -90,33 +90,5 @@ class Position
     public function getColumn(): int
     {
         return $this->column;
-    }
-
-    /**
-     * @param \Throwable $e
-     * @param string $pathname
-     * @return \Throwable
-     * @throws \ReflectionException
-     */
-    public function inject(\Throwable $e, string $pathname): \Throwable
-    {
-        $this->insert($e, 'line', $this->getLine());
-        $this->insert($e, 'file', $pathname);
-
-        return $e;
-    }
-
-    /**
-     * @param \Throwable $ctx
-     * @param string $property
-     * @param mixed $value
-     * @return void
-     * @throws \ReflectionException
-     */
-    private function insert(\Throwable $ctx, string $property, $value): void
-    {
-        $reflection = new \ReflectionProperty($ctx, $property);
-        $reflection->setAccessible(true);
-        $reflection->setValue($ctx, $value);
     }
 }

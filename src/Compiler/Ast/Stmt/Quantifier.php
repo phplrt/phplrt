@@ -18,26 +18,26 @@ use Phplrt\Compiler\Ast\Node;
 class Quantifier extends Node
 {
     /**
-     * @var float
+     * @var int
      */
     public $from;
 
     /**
-     * @var float
+     * @var int|float
      */
     public $to;
 
     /**
      * Quantifier constructor.
      *
-     * @param float $from
+     * @param int $from
      * @param float $to
      * @param int $offset
      */
-    public function __construct(float $from, float $to, int $offset)
+    public function __construct(int $from, float $to, int $offset)
     {
         $this->from = $from;
-        $this->to = $to;
+        $this->to = \is_infinite($to) ? $to : (int)$to;
 
         parent::__construct($offset);
     }

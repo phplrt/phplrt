@@ -11,6 +11,7 @@ namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
  * Class PatternStmt
+ *
  * @internal Compiler's grammar AST node class
  */
 class PatternStmt extends Statement
@@ -21,6 +22,11 @@ class PatternStmt extends Statement
     public $pattern;
 
     /**
+     * @var string
+     */
+    public $name;
+
+    /**
      * TokenDefinition constructor.
      *
      * @param string $pattern
@@ -28,7 +34,8 @@ class PatternStmt extends Statement
      */
     public function __construct(string $pattern, int $offset)
     {
-        $this->pattern = $pattern;
+        $this->pattern = \str_replace('\"', '"', $pattern);
+        $this->name = 'T_' . \strtoupper(\hash('crc32', $pattern));
 
         parent::__construct($offset);
     }

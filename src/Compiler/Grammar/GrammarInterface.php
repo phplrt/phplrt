@@ -20,7 +20,7 @@ interface GrammarInterface extends ParserInterface
 {
     /**
      * {@inheritDoc}
-     * @param \SplFileInfo|string|resource $source
+     * @param string|resource $source
      * @return iterable|Definition[]|Expression[]
      */
     public function parse($source): iterable;

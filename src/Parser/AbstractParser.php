@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -96,6 +97,11 @@ abstract class AbstractParser implements ParserInterface
     private $token;
 
     /**
+     * @var NodeInterface|null
+     */
+    private $node;
+
+    /**
      * @var LexerInterface
      */
     private $lexer;
@@ -151,17 +157,23 @@ abstract class AbstractParser implements ParserInterface
 
         $starts = $this->getInitialRule($buffer, $this->rules);
 
-        $result = $this->reduce($buffer, $starts);
+        while (! $this->isEoi($buffer)) {
+            $before = $buffer->key();
 
-        if ($result === null) {
-            throw $this->onSyntaxError($this->getToken($buffer));
+            $chunk = $this->reduce($buffer, $starts);
+
+            if ($chunk === null || $buffer->key() === $before) {
+                throw $this->onSyntaxError($this->getToken($buffer), $this->node);
+            }
+
+            if ($chunk instanceof NodeInterface) {
+                yield $chunk;
+            }
+
+            if (\is_array($chunk)) {
+                yield from $chunk;
+            }
         }
-
-        if (! $this->isEoi($buffer)) {
-            throw $this->onSyntaxError($this->getToken($buffer));
-        }
-
-        return $result;
     }
 
     /**
@@ -238,6 +250,10 @@ abstract class AbstractParser implements ParserInterface
 
         if ($result !== null) {
             $result = $this->builder->build($rule, $token, $state, $result) ?? $result;
+
+            if ($result instanceof NodeInterface) {
+                $this->node = $result;
+            }
         }
 
         return $result;
@@ -246,7 +262,7 @@ abstract class AbstractParser implements ParserInterface
     /**
      * {@inheritDoc}
      */
-    abstract public function onSyntaxError(TokenInterface $token): \Throwable;
+    abstract public function onSyntaxError(TokenInterface $token, NodeInterface $node): \Throwable;
 
     /**
      * @param BufferInterface $buffer

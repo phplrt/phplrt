@@ -120,24 +120,34 @@ class Traverser implements TraverserInterface
 
     /**
      * @param VisitorInterface $visitor
-     * @return TraverserInterface|$this
+     * @param bool $prepend
+     * @return TraverserInterface|Traverser
      */
-    public function with(VisitorInterface $visitor): TraverserInterface
+    public function with(VisitorInterface $visitor, bool $prepend = false): TraverserInterface
     {
-        $this->visitors[\spl_object_hash($visitor)] = $visitor;
+        $self = clone $this;
 
-        return $this;
+        if ($prepend) {
+            $visitors = \array_reverse($self->visitors);
+            $visitors[\spl_object_hash($visitor)] = $visitor;
+            $self->visitors = \array_reverse($visitors);
+        } else {
+            $self->visitors[\spl_object_hash($visitor)] = $visitor;
+        }
+
+        return $self;
     }
 
     /**
      * @param VisitorInterface $visitor
-     * @return TraverserInterface|$this
+     * @return TraverserInterface|Traverser
      */
     public function without(VisitorInterface $visitor): TraverserInterface
     {
-        unset($this->visitors[\spl_object_hash($visitor)]);
+        $self = clone $this;
+        unset($self->visitors[\spl_object_hash($visitor)]);
 
-        return $this;
+        return $self;
     }
 
     /**
@@ -258,7 +268,7 @@ class Traverser implements TraverserInterface
                     }
                 }
 
-                foreach ($this->visitors as $index => $visitor) {
+                foreach (\array_reverse($this->visitors) as $index => $visitor) {
                     $return = $visitor->leave($node);
 
                     switch (true) {
@@ -361,7 +371,7 @@ class Traverser implements TraverserInterface
                     }
                 }
 
-                foreach ($this->visitors as $index => $visitor) {
+                foreach (\array_reverse($this->visitors) as $index => $visitor) {
                     $return = $visitor->leave($child);
 
                     switch (true) {
@@ -427,7 +437,7 @@ class Traverser implements TraverserInterface
      */
     private function after(iterable $ast): iterable
     {
-        foreach ($this->visitors as $visitor) {
+        foreach (\array_reverse($this->visitors) as $visitor) {
             if (($result = $visitor->after($ast)) !== null) {
                 $ast = $result;
             }
