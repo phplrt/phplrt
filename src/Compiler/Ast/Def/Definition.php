@@ -17,6 +17,4 @@ use Phplrt\Compiler\Ast\Node;
  */
 abstract class Definition extends Node
 {
-
 }
-

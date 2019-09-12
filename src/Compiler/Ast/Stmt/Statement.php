@@ -18,4 +18,3 @@ use Phplrt\Compiler\Ast\Node;
 abstract class Statement extends Node
 {
 }
-

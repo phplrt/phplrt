@@ -59,7 +59,7 @@ class Repetition extends Production
         $global = $buffer->key();
 
         do {
-            $inRange = $iterations >= $this->gte && $iterations <= $this->lte;
+            $inRange  = $iterations >= $this->gte && $iterations <= $this->lte;
             $rollback = $buffer->key();
 
             if (($result = $reduce($this->rule)) === null) {

@@ -36,7 +36,7 @@ class RepetitionStmt extends Statement
      */
     public function __construct(Statement $stmt, Quantifier $quantifier, int $offset)
     {
-        $this->statement = $stmt;
+        $this->statement  = $stmt;
         $this->quantifier = $quantifier;
 
         parent::__construct($offset);

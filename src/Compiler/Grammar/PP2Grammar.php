@@ -9,32 +9,31 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
+use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\Quantifier;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Compiler\Ast\Stmt\RuleStmt;
+use Phplrt\Compiler\Ast\Stmt\TokenStmt;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Builder\Expandable;
 use Phplrt\Parser\Parser;
-use Phplrt\Position\Position;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\Lexeme;
 use Phplrt\Parser\Rule\Optional;
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Builder\Expandable;
-use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Compiler\Ast\Stmt\RuleStmt;
-use Phplrt\Compiler\Ast\Def\PragmaDef;
-use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Compiler\Ast\Stmt\Quantifier;
-use Phplrt\Compiler\Ast\Expr\IncludeExpr;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
-use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
 
 /**
  * Class GrammarParser
@@ -249,4 +248,3 @@ class PP2Grammar extends Parser implements GrammarInterface
         return self::PARSER_ROOT_RULE;
     }
 }
-

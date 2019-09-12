@@ -35,7 +35,7 @@ class Node implements NodeInterface
     public function __construct(int $id, array $children = [])
     {
         $this->children = $children;
-        $this->id = $id;
+        $this->id       = $id;
     }
 
     /**

@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast\Def;
 
-use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
+use Phplrt\Compiler\Ast\Stmt\Statement;
 
 /**
  * Class RuleDef
@@ -48,8 +48,8 @@ class RuleDef extends Definition
      */
     public function __construct(string $name, DelegateStmt $delegate, Statement $body, int $offset)
     {
-        $this->name = $name;
-        $this->body = $body;
+        $this->name     = $name;
+        $this->body     = $body;
         $this->delegate = $delegate;
 
         parent::__construct($offset);

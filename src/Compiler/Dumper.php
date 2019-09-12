@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Visitor\Visitor;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Visitor\Visitor;
+use Phplrt\Visitor\VisitorInterface;
 
 /**
  * Class Dumper
@@ -39,8 +39,7 @@ class Dumper
      */
     private function visitor(): VisitorInterface
     {
-        return new class extends Visitor
-        {
+        return new class() extends Visitor {
             /**
              * @var array|string[]
              */
@@ -130,7 +129,7 @@ class Dumper
              */
             public function leave(NodeInterface $node): void
             {
-                $this->depth--;
+                --$this->depth;
             }
 
             /**
