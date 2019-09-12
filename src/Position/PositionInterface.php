@@ -14,13 +14,8 @@ namespace Phplrt\Position;
  */
 interface PositionInterface
 {
-    /**
-     * @inheritdoc
-     */
     public function getLine();
 
-    /**
-     * @inheritdoc
-     */
+
     public function getColumn(): int;
 }

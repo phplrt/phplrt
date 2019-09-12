@@ -9,22 +9,22 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Compiler\Builder\IncludesExecutor;
+use Phplrt\Compiler\Builder\LexerBuilder;
+use Phplrt\Compiler\Builder\ParserBuilder;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\StackTrace\Record\NodeRecord;
+use Phplrt\StackTrace\Record\TokenRecord;
 use Phplrt\StackTrace\Trace;
+use Phplrt\StackTrace\TraceableNodeInterface;
+use Phplrt\StackTrace\VisitorDecorator;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Visitor\VisitorInterface;
-use Phplrt\Compiler\Grammar\PP2Grammar;
-use Phplrt\StackTrace\VisitorDecorator;
-use Phplrt\StackTrace\Record\NodeRecord;
-use Phplrt\Compiler\Builder\LexerBuilder;
-use Phplrt\StackTrace\Record\TokenRecord;
-use Phplrt\Compiler\Builder\ParserBuilder;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Compiler\Builder\IncludesExecutor;
-use Phplrt\Compiler\Grammar\GrammarInterface;
-use Phplrt\StackTrace\TraceableNodeInterface;
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Compiler
@@ -60,8 +60,8 @@ class Compiler
     {
         $this->grammar = $grammar ?? new PP2Grammar();
 
-        $this->trace = new Trace();
-        $this->lexer = new LexerBuilder();
+        $this->trace  = new Trace();
+        $this->lexer  = new LexerBuilder();
         $this->parser = new ParserBuilder();
     }
 
@@ -95,7 +95,7 @@ class Compiler
 
             throw $this->error($e);
         } catch (ParserRuntimeException $e) {
-            $node = $e->getNode();
+            $node     = $e->getNode();
             $filename = $node instanceof TraceableNodeInterface
                 ? $node->getFile()
                 : $pathname;
@@ -144,7 +144,7 @@ class Compiler
      */
     private function error(\Throwable $e): GrammarException
     {
-        $exception = new GrammarException($e->getMessage(), $e->getCode(), $e);
+        $exception        = new GrammarException($e->getMessage(), $e->getCode(), $e);
         $exception->trace = $this->trace;
 
         return $this->trace->patch($exception, true);

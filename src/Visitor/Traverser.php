@@ -128,9 +128,9 @@ class Traverser implements TraverserInterface
         $self = clone $this;
 
         if ($prepend) {
-            $visitors = \array_reverse($self->visitors);
+            $visitors                             = \array_reverse($self->visitors);
             $visitors[\spl_object_hash($visitor)] = $visitor;
-            $self->visitors = \array_reverse($visitors);
+            $self->visitors                       = \array_reverse($visitors);
         } else {
             $self->visitors[\spl_object_hash($visitor)] = $visitor;
         }

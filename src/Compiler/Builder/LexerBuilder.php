@@ -9,13 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Visitor\Visitor;
-use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\StackTrace\TraceableVisitor;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**
  * Class LexerBuilder
@@ -47,7 +46,7 @@ class LexerBuilder extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes = \array_reverse($this->lexemes);
+            $lexemes              = \array_reverse($this->lexemes);
             $lexemes[$node->name] = $node->pattern;
 
             $this->lexemes = \array_reverse($lexemes);

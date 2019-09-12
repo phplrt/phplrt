@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Visitor\Visitor;
-use Phplrt\Compiler\Ast\Node;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Ast\Node;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Visitor\Visitor;
 
 /**
  * Class IncludesExecutor
@@ -51,7 +51,7 @@ class IncludesExecutor extends Visitor
     public function __construct(string $pathname, \Closure $loader)
     {
         $this->pathname = $pathname;
-        $this->loader = $loader;
+        $this->loader   = $loader;
     }
 
     /**

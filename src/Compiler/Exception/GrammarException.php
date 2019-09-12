@@ -9,14 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Exception;
 
-use Phplrt\StackTrace\Trace;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\StackTrace\Record\Record;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Expr\Expression;
+use Phplrt\Lexer\Token\Renderer;
 use Phplrt\StackTrace\Record\NodeRecord;
-use Phplrt\StackTrace\Record\TokenRecord;
 use Phplrt\StackTrace\Record\RecordInterface;
+use Phplrt\StackTrace\Record\TokenRecord;
+use Phplrt\StackTrace\Trace;
 
 /**
  * Class GrammarException

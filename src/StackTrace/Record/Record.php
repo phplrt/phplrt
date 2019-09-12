@@ -45,7 +45,7 @@ class Record implements RecordInterface
      */
     public function __construct(string $pathname, int $offset)
     {
-        $this->file = $pathname;
+        $this->file   = $pathname;
         $this->offset = $offset;
     }
 

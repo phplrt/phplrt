@@ -35,7 +35,7 @@ class PatternStmt extends Statement
     public function __construct(string $pattern, int $offset)
     {
         $this->pattern = \str_replace('\"', '"', $pattern);
-        $this->name = 'T_' . \strtoupper(\hash('crc32', $pattern));
+        $this->name    = 'T_' . \strtoupper(\hash('crc32', $pattern));
 
         parent::__construct($offset);
     }
