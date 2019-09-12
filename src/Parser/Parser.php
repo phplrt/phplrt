@@ -9,14 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Builder\BuilderInterface;
 use Phplrt\Lexer\Exception\LexerRuntimeException;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Builder\Common;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 
 /**

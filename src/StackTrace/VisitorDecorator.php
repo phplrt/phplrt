@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\StackTrace;
 
-use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\StackTrace\Record\NodeRecord;
+use Phplrt\Visitor\VisitorInterface;
 
 /**
  * Class VisitorDecorator
@@ -36,7 +36,7 @@ class VisitorDecorator implements VisitorInterface
      */
     public function __construct(Trace $trace, VisitorInterface $visitor)
     {
-        $this->trace = $trace;
+        $this->trace   = $trace;
         $this->visitor = $visitor;
     }
 
