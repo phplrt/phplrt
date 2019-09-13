@@ -30,8 +30,6 @@ class ConcatenationStmt extends Statement
     public function __construct(array $statements)
     {
         $this->statements = $statements;
-
-
     }
 
     /**

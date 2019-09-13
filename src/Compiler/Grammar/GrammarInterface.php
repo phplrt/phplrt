@@ -9,10 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Compiler\Ast\Def\Definition;
-use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Source\ReadableInterface;
 
 /**
  * Interface GrammarInterface

@@ -9,18 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Source\File;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Compiler\Builder\IncludesExecutor;
 use Phplrt\Compiler\Builder\LexerBuilder;
 use Phplrt\Compiler\Builder\ParserBuilder;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Compiler\Builder\IncludesExecutor;
-use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Source\File;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Visitor\Traverser;
 
 /**
  * Class Compiler
@@ -56,7 +56,7 @@ class Compiler implements ParserInterface
     {
         $this->grammar = $grammar ?? new PP2Grammar();
 
-        $this->lexer = new LexerBuilder();
+        $this->lexer  = new LexerBuilder();
         $this->parser = new ParserBuilder();
 
         $this->traverser = (new Traverser())

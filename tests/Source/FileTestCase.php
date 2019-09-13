@@ -11,8 +11,8 @@ namespace Phplrt\Tests\Source;
 
 use Phplrt\Source\FileInterface;
 use Phplrt\Source\ReadableInterface;
-use PHPUnit\Framework\SkippedTestError;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\SkippedTestError;
 
 /**
  * Class FactoryTestCase

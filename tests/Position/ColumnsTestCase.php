@@ -10,9 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Position;
 
 use Phplrt\Position\Position;
-use PHPUnit\Framework\ExpectationFailedException;
 use Phplrt\Source\Exception\NotAccessibleException;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use PHPUnit\Framework\ExpectationFailedException;
 
 /**
  * Class ColumnsTestCase

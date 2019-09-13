@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Exception;
 
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 

@@ -9,24 +9,24 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Source\File;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Builder\Common;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Rule\ProductionInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Source\File;
+use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -220,7 +220,7 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node = null;
+        $this->node  = null;
     }
 
     /**

@@ -9,26 +9,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Parser\Parser;
-use Phplrt\Visitor\Visitor;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Parser;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Visitor\Visitor;
 
 /**
  * Class LexerBuilder

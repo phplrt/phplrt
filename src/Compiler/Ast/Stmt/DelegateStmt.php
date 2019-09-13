@@ -28,7 +28,5 @@ class DelegateStmt extends Statement
     public function __construct(?string $code)
     {
         $this->code = $code ?? 'return $children;';
-
-
     }
 }

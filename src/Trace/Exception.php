@@ -10,9 +10,9 @@ declare(strict_types=1);
 namespace Phplrt\Trace;
 
 use Phplrt\Position\Position;
+use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\FileInterface;
 use Phplrt\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Exception

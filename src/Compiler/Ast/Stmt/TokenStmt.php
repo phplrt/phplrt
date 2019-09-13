@@ -35,7 +35,5 @@ class TokenStmt extends Statement
     {
         $this->name = $name;
         $this->keep = $keep;
-
-
     }
 }

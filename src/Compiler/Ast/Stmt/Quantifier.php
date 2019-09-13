@@ -37,7 +37,5 @@ class Quantifier extends Node
     {
         $this->from = $from;
         $this->to   = \is_infinite($to) ? $to : (int)$to;
-
-
     }
 }

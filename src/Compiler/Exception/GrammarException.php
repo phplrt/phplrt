@@ -9,16 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Exception;
 
-use Phplrt\StackTrace\Trace;
 use Phplrt\Position\Position;
-use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\FileInterface;
 use Phplrt\Source\ReadableInterface;
-use Phplrt\StackTrace\Record\NodeRecord;
-use Phplrt\Compiler\Ast\Expr\Expression;
-use Phplrt\StackTrace\Record\TokenRecord;
-use Phplrt\StackTrace\Record\RecordInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class GrammarException

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
+use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\File;
 use Phplrt\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Trait FactoryTrait
@@ -53,8 +53,8 @@ trait FactoryTrait
         // column.
         //
         if ($column !== 1) {
-            $last = (string)@\fread($stream, $column - 1);
-            $lines = \explode(static::LINE_DELIMITER, $last);
+            $last              = (string)@\fread($stream, $column - 1);
+            $lines             = \explode(static::LINE_DELIMITER, $last);
             $offset += $column = \strlen((string)\reset($lines));
         }
 

@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast;
 
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Source\FileInterface;
 use Phplrt\Source\ReadableInterface;
-use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
  * Class Node

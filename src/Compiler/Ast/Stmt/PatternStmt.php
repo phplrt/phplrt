@@ -35,7 +35,5 @@ class PatternStmt extends Statement
     {
         $this->pattern = \str_replace('\"', '"', $pattern);
         $this->name    = 'T_' . \strtoupper(\hash('crc32', $pattern));
-
-
     }
 }
