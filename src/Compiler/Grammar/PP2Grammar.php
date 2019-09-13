@@ -9,31 +9,33 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Parser\Parser;
+use Phplrt\Compiler\Ast\Node;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Source\ReadableInterface;
 use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Parser\Builder\Expandable;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\RuleStmt;
+use Phplrt\Compiler\Ast\Stmt\TokenStmt;
+use Phplrt\Compiler\Ast\Stmt\Quantifier;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
 use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
 use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\Quantifier;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\RuleStmt;
-use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\Composite;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Builder\Expandable;
-use Phplrt\Parser\Parser;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\RuleInterface;
 
 /**
  * Class GrammarParser
@@ -132,9 +134,38 @@ class PP2Grammar extends Parser implements GrammarInterface
     }
 
     /**
+     * @param ReadableInterface $source
+     * @param BufferInterface $buffer
+     * @param int|string $state
+     * @return iterable|TokenInterface|null
+     */
+    public function reduce(ReadableInterface $source, BufferInterface $buffer, $state)
+    {
+        $offset = $buffer->current()->getOffset();
+
+        $result = parent::reduce($source, $buffer, $state);
+
+        if ($result instanceof Node) {
+            $result->offset = $offset;
+            $result->file = $source;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $rules
+     * @return int|mixed|string
+     */
+    public function getInitialRule(array $rules)
+    {
+        return self::PARSER_ROOT_RULE;
+    }
+
+    /**
      * @return BuilderInterface
      */
-    public function builder(): BuilderInterface
+    protected function getBuilder(): BuilderInterface
     {
         return new Expandable($this->reducers());
     }
@@ -145,32 +176,32 @@ class PP2Grammar extends Parser implements GrammarInterface
     private function reducers(): array
     {
         return [
-            'RuleDelegate'           => static function (array $delegate, int $offset) {
+            'RuleDelegate'           => static function (array $delegate) {
                 if (\count($delegate)) {
-                    return new ClassDelegateStmt($delegate[0]->getValue(), $offset);
+                    return new ClassDelegateStmt($delegate[0]->getValue());
                 }
 
-                return new DelegateStmt(null, $offset);
+                return new DelegateStmt(null);
             },
-            'Inclusion'              => static function (Composite $include, int $offset) {
-                return new IncludeExpr($include[0]->getValue(), $offset);
+            'Inclusion'              => static function (Composite $include) {
+                return new IncludeExpr($include[0]->getValue());
             },
-            'PragmaDefinition'       => static function (Composite $pragma, int $offset) {
-                return new PragmaDef($pragma[0]->getValue(), $pragma[1]->getValue(), $offset);
+            'PragmaDefinition'       => static function (Composite $pragma) {
+                return new PragmaDef($pragma[0]->getValue(), $pragma[1]->getValue());
             },
-            'TokenDefinition'        => static function (Composite $pragma, int $offset) {
-                return new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue(), $offset);
+            'TokenDefinition'        => static function (Composite $pragma) {
+                return new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue());
             },
-            'SkippedTokenDefinition' => static function (Composite $pragma, int $offset) {
-                $token = new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue(), $offset);
+            'SkippedTokenDefinition' => static function (Composite $pragma) {
+                $token = new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue());
                 $token->keep = false;
 
                 return $token;
             },
-            'RuleDefinition'         => static function (array $sequence, int $offset) {
+            'RuleDefinition'         => static function (array $sequence) {
                 [$name, $keep, $delegate, $stmt] = $sequence;
 
-                $result = new RuleDef($name, $delegate, $stmt, $offset);
+                $result = new RuleDef($name, $delegate, $stmt);
                 $result->keep = $keep;
 
                 return $result;
@@ -184,67 +215,57 @@ class PP2Grammar extends Parser implements GrammarInterface
             'T_NAME'                 => static function (TokenInterface $name) {
                 return [$name];
             },
-            'T_INVOKE'               => static function (Composite $invocation, int $offset) {
-                return new RuleStmt($invocation[0]->getValue(), $offset);
+            'T_INVOKE'               => static function (Composite $invocation) {
+                return new RuleStmt($invocation[0]->getValue());
             },
-            'T_TOKEN_KEPT'           => static function (Composite $invocation, int $offset) {
-                return new TokenStmt($invocation[0]->getValue(), true, $offset);
+            'T_TOKEN_KEPT'           => static function (Composite $invocation) {
+                return new TokenStmt($invocation[0]->getValue(), true);
             },
-            'T_TOKEN_SKIPPED'        => static function (Composite $invocation, int $offset) {
-                return new TokenStmt($invocation[0]->getValue(), false, $offset);
+            'T_TOKEN_SKIPPED'        => static function (Composite $invocation) {
+                return new TokenStmt($invocation[0]->getValue(), false);
             },
-            'T_TOKEN_STRING'         => static function (Composite $invocation, int $offset) {
-                return new PatternStmt($invocation[0]->getValue(), $offset);
+            'T_TOKEN_STRING'         => static function (Composite $invocation) {
+                return new PatternStmt($invocation[0]->getValue());
             },
-            'Choice'                 => static function (array $statements, int $offset) {
-                return new AlternationStmt($statements, $offset);
+            'Choice'                 => static function (array $statements) {
+                return new AlternationStmt($statements);
             },
-            'Sequence'               => static function (array $statements, int $offset) {
-                return new ConcatenationStmt($statements, $offset);
+            'Sequence'               => static function (array $statements) {
+                return new ConcatenationStmt($statements);
             },
-            'Repeat'                 => static function (array $payload, int $offset) {
+            'Repeat'                 => static function (array $payload) {
                 [$stmt, $q] = $payload;
 
-                return new RepetitionStmt($stmt, $q, $offset);
+                return new RepetitionStmt($stmt, $q);
             },
             'Group'                  => static function (array $group) {
                 return \reset($group);
             },
-            'T_REPEAT_ZERO_OR_ONE'   => static function ($_, int $offset) {
-                return new Quantifier(0, 1, $offset);
+            'T_REPEAT_ZERO_OR_ONE'   => static function () {
+                return new Quantifier(0, 1);
             },
-            'T_REPEAT_ONE_OR_MORE'   => static function ($_, int $offset) {
-                return new Quantifier(1, \INF, $offset);
+            'T_REPEAT_ONE_OR_MORE'   => static function () {
+                return new Quantifier(1, \INF);
             },
-            'T_REPEAT_ZERO_OR_MORE'  => static function ($_, int $offset) {
-                return new Quantifier(0, \INF, $offset);
+            'T_REPEAT_ZERO_OR_MORE'  => static function () {
+                return new Quantifier(0, \INF);
             },
-            'T_REPEAT_N_TO_M'        => static function (Composite $value, int $offset) {
+            'T_REPEAT_N_TO_M'        => static function (Composite $value) {
                 [$from, $to] = [$value[0]->getValue(), $value[1]->getValue()];
 
-                return new Quantifier((int)$from, (int)$to, $offset);
+                return new Quantifier((int)$from, (int)$to);
             },
-            'T_REPEAT_N_OR_MORE'     => static function (Composite $value, int $offset) {
-                return new Quantifier((int)$value[0]->getValue(), \INF, $offset);
+            'T_REPEAT_N_OR_MORE'     => static function (Composite $value) {
+                return new Quantifier((int)$value[0]->getValue(), \INF);
             },
-            'T_REPEAT_ZERO_TO_M'     => static function (Composite $value, int $offset) {
-                return new Quantifier(0, (int)$value[0]->getValue(), $offset);
+            'T_REPEAT_ZERO_TO_M'     => static function (Composite $value) {
+                return new Quantifier(0, (int)$value[0]->getValue());
             },
-            'T_REPEAT_EXACTLY_N'     => static function (Composite $value, int $offset) {
+            'T_REPEAT_EXACTLY_N'     => static function (Composite $value) {
                 $count = (int)$value[0]->getValue();
 
-                return new Quantifier($count, $count, $offset);
+                return new Quantifier($count, $count);
             },
         ];
-    }
-
-    /**
-     * @param BufferInterface $buffer
-     * @param array $rules
-     * @return int|mixed|string
-     */
-    public function getInitialRule(BufferInterface $buffer, array $rules)
-    {
-        return self::PARSER_ROOT_RULE;
     }
 }

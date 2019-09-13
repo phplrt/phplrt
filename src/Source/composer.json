@@ -1,21 +1,20 @@
 {
-    "name": "phplrt/parser",
+    "name": "phplrt/source",
     "type": "library",
-    "description": "The phplrt Parser package.",
+    "description": "The phplrt sources package.",
     "license": "MIT",
     "keywords": [
-        "parser",
-        "llk",
-        "ll1",
-        "lr",
-        "slr",
-        "language",
-        "php"
+        "file",
+        "directory",
+        "reader",
+        "abstraction",
+        "fs",
+        "file system"
     ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/parser"
+        "source": "https://github.com/phplrt/source"
     },
     "authors": [
         {
@@ -24,20 +23,15 @@
         }
     ],
     "require": {
-        "php": ">=7.1.3",
-        "phplrt/source": "~2.1",
-        "symfony/polyfill-php73": "~1.12",
-        "phplrt/parser-contracts": "~2.0",
-        "phplrt/lexer-contracts": "~2.0",
-        "phplrt/ast-contracts": "~2.0"
+        "php": ">=7.1.3"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Parser\\": ""
+            "Phplrt\\Source\\": ""
         }
     },
-    "provide": {
-        "phplrt/parser-contracts-implementation": "2.0"
+    "require-dev": {
+        "psr/http-message": "~1.0"
     },
     "extra": {
         "branch-alias": {

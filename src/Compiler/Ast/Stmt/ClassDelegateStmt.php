@@ -19,12 +19,11 @@ class ClassDelegateStmt extends DelegateStmt
      * ClassDelegateStmt constructor.
      *
      * @param string $class
-     * @param int $offset
      */
-    public function __construct(string $class, int $offset)
+    public function __construct(string $class)
     {
         $code = \sprintf('return new \\%s($name, $children, $offset);', \ltrim($class, '\\'));
 
-        parent::__construct($code, $offset);
+        parent::__construct($code);
     }
 }

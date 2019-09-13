@@ -9,9 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+
 /**
  * Interface ProductionInterface
  */
 interface ProductionInterface extends RuleInterface
 {
+    /**
+     * @param BufferInterface $buffer
+     * @param \Closure $reduce
+     * @return TokenInterface|iterable|null
+     */
+    public function reduce(BufferInterface $buffer, \Closure $reduce);
 }

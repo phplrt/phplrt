@@ -30,13 +30,12 @@ class TokenStmt extends Statement
      *
      * @param string $name
      * @param bool $keep
-     * @param int $offset
      */
-    public function __construct(string $name, bool $keep, int $offset)
+    public function __construct(string $name, bool $keep)
     {
         $this->name = $name;
         $this->keep = $keep;
 
-        parent::__construct($offset);
+
     }
 }

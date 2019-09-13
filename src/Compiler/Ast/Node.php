@@ -9,41 +9,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast;
 
-use Phplrt\StackTrace\TraceableNodeInterface;
+use Phplrt\Source\FileInterface;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
  * Class Node
+ *
  * @internal Compiler's grammar AST node class
  */
-abstract class Node implements TraceableNodeInterface
+abstract class Node implements NodeInterface
 {
     /**
-     * @var int
-     */
-    private $offset;
-
-    /**
-     * @var string
+     * @var ReadableInterface|FileInterface
      */
     public $file;
 
     /**
-     * Node constructor.
-     *
-     * @param int $offset
+     * @var int
      */
-    public function __construct(int $offset)
-    {
-        $this->offset = $offset;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFile(): string
-    {
-        return $this->file ?? '{internal}';
-    }
+    public $offset = 0;
 
     /**
      * @return int

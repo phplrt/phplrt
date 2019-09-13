@@ -9,12 +9,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Exception;
 
-use Phplrt\Compiler\Ast\Expr\Expression;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\StackTrace\Record\NodeRecord;
-use Phplrt\StackTrace\Record\RecordInterface;
-use Phplrt\StackTrace\Record\TokenRecord;
 use Phplrt\StackTrace\Trace;
+use Phplrt\Position\Position;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Source\FileInterface;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\StackTrace\Record\NodeRecord;
+use Phplrt\Compiler\Ast\Expr\Expression;
+use Phplrt\StackTrace\Record\TokenRecord;
+use Phplrt\StackTrace\Record\RecordInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class GrammarException
@@ -26,46 +30,22 @@ class GrammarException extends \LogicException
      */
     private const ERROR_HEADER = '%s: %s in %s:%d';
 
-    /**
-     * @var Trace
-     */
     public $trace;
 
     /**
-     * @return string
+     * GrammarException constructor.
+     *
+     * @param string $message
+     * @param ReadableInterface $source
+     * @param int $offset
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
-    public function __toString(): string
+    public function __construct(string $message, ReadableInterface $source, int $offset)
     {
-        $result = [];
+        parent::__construct($message);
 
-        $result[] = \vsprintf(self::ERROR_HEADER, [
-            static::class,
-            $this->getMessage(),
-            $this->getFile(),
-            $this->getLine(),
-        ]);
-
-        if ($this->trace && ! $this->trace->isEmpty()) {
-            $result[] = 'Grammar Stack Trace:';
-            $result[] = $this->trace->render(static function (RecordInterface $item) {
-                switch (true) {
-                    case $item instanceof NodeRecord:
-                        $node = $item->node;
-
-                        return $node instanceof Expression ? $node->render() : '{internal}';
-
-                    case $item instanceof TokenRecord:
-                        return '{ ' . $item->token->getName() . ': ' . (new Renderer())->value($item->token) . ' }';
-
-                    default:
-                        return '{main}';
-                }
-            });
-        }
-
-        $result[] = 'Stack Trace:';
-        $result[] = $this->getTraceAsString();
-
-        return \implode("\n", $result);
+        $this->file = $source instanceof FileInterface ? $source->getPathname() : '{source}';
+        $this->line = Position::fromOffset($source, $offset)->getLine();
     }
 }

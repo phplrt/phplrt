@@ -9,27 +9,23 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Builder\IncludesExecutor;
+use Phplrt\Source\File;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Builder\LexerBuilder;
 use Phplrt\Compiler\Builder\ParserBuilder;
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Compiler\Grammar\GrammarInterface;
-use Phplrt\Compiler\Grammar\PP2Grammar;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\StackTrace\Record\NodeRecord;
-use Phplrt\StackTrace\Record\TokenRecord;
-use Phplrt\StackTrace\Trace;
-use Phplrt\StackTrace\TraceableNodeInterface;
-use Phplrt\StackTrace\VisitorDecorator;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Visitor\VisitorInterface;
+use Phplrt\Compiler\Builder\IncludesExecutor;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
+use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Compiler
  */
-class Compiler
+class Compiler implements ParserInterface
 {
     /**
      * @var GrammarInterface
@@ -47,9 +43,9 @@ class Compiler
     private $parser;
 
     /**
-     * @var Trace
+     * @var Traverser
      */
-    private $trace;
+    private $traverser;
 
     /**
      * Compiler constructor.
@@ -60,101 +56,55 @@ class Compiler
     {
         $this->grammar = $grammar ?? new PP2Grammar();
 
-        $this->trace  = new Trace();
-        $this->lexer  = new LexerBuilder();
+        $this->lexer = new LexerBuilder();
         $this->parser = new ParserBuilder();
+
+        $this->traverser = (new Traverser())
+            ->with(new IncludesExecutor(function (string $pathname): iterable {
+                return $this->run(File::fromPathname($pathname));
+            }))
+            ->with($this->lexer)
+            ->with($this->parser);
     }
 
     /**
-     * @param string $pathname
-     * @return Compiler|$this
-     * @throws \ReflectionException
-     * @throws \Throwable
-     */
-    public function load(string $pathname): self
-    {
-        $this->trace = new Trace();
-
-        $this->run($pathname);
-
-        return $this;
-    }
-
-    /**
-     * @param string $pathname
+     * @param ReadableInterface $source
      * @return iterable
-     * @throws \ReflectionException
      * @throws \Throwable
      */
-    private function run(string $pathname): iterable
+    private function run(ReadableInterface $source): iterable
     {
         try {
-            return $this->parse($pathname);
-        } catch (RuntimeExceptionInterface $e) {
-            $this->trace->push(new TokenRecord($pathname, $e->getToken()));
+            $ast = $this->grammar->parse($source);
 
-            throw $this->error($e);
-        } catch (ParserRuntimeException $e) {
-            $node     = $e->getNode();
-            $filename = $node instanceof TraceableNodeInterface
-                ? $node->getFile()
-                : $pathname;
-
-            $this->trace->push(new NodeRecord($filename, $e->getNode()));
-
-            throw $this->error($e);
-        } catch (\Throwable $e) {
-            throw $this->error($e);
+            return $this->traverser->traverse($ast);
+        } catch (GrammarException $e) {
+            throw $e;
         }
     }
 
     /**
-     * @param string $pathname
+     * @param resource|string|ReadableInterface $source
      * @return iterable
+     * @throws ParserExceptionInterface
+     * @throws RuntimeExceptionInterface
+     */
+    public function parse($source): iterable
+    {
+        $parser = $this->parser->getParser($this->lexer->getLexer());
+
+        return $parser->parse($source);
+    }
+
+    /**
+     * @param string|resource|ReadableInterface $source
+     * @return Compiler|$this
      * @throws \Throwable
      */
-    private function parse(string $pathname): iterable
+    public function load($source): self
     {
-        $ast = $this->grammar->parse(\fopen($pathname, 'rb+'));
+        $this->run(File::new($source));
 
-        $executor = function (string $pathname): iterable {
-            return $this->parse($pathname);
-        };
-
-        return (new Traverser())
-            ->with($this->decorate(new IncludesExecutor($pathname, $executor)))
-            ->with($this->decorate($this->lexer))
-            ->with($this->decorate($this->parser))
-            ->traverse($ast);
-    }
-
-    /**
-     * @param VisitorInterface $visitor
-     * @return VisitorInterface
-     */
-    private function decorate(VisitorInterface $visitor): VisitorInterface
-    {
-        return new VisitorDecorator($this->trace, $visitor);
-    }
-
-    /**
-     * @param \Throwable $e
-     * @return GrammarException|\Throwable
-     * @throws \ReflectionException
-     */
-    private function error(\Throwable $e): GrammarException
-    {
-        $exception        = new GrammarException($e->getMessage(), $e->getCode(), $e);
-        $exception->trace = $this->trace;
-
-        return $this->trace->patch($exception, true);
-    }
-
-    /**
-     * @return ParserInterface
-     */
-    public function execute(): ParserInterface
-    {
-        return $this->parser->getParser($this->lexer->getLexer());
+        return $this;
     }
 }

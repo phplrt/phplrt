@@ -32,13 +32,12 @@ class Quantifier extends Node
      *
      * @param int $from
      * @param float $to
-     * @param int $offset
      */
-    public function __construct(int $from, float $to, int $offset)
+    public function __construct(int $from, float $to)
     {
         $this->from = $from;
         $this->to   = \is_infinite($to) ? $to : (int)$to;
 
-        parent::__construct($offset);
+
     }
 }

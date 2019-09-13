@@ -12,6 +12,12 @@
         <testsuite name="Visitor Test Suite">
             <directory suffix="TestCase.php">./tests/Visitor</directory>
         </testsuite>
+        <testsuite name="Source Test Suite">
+            <directory suffix="TestCase.php">./tests/Source</directory>
+        </testsuite>
+        <testsuite name="Position Test Suite">
+            <directory suffix="TestCase.php">./tests/Position</directory>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist>

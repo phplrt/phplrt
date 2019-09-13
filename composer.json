@@ -48,6 +48,7 @@
         "phplrt/visitor": "*"
     },
     "require-dev": {
+        "psr/http-message": "~1.0",
         "illuminate/support": "~6.0",
         "laravel/helpers": "~1.1",
         "phpunit/phpunit": "^7.5",

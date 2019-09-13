@@ -32,14 +32,11 @@ class RepetitionStmt extends Statement
      *
      * @param Statement $stmt
      * @param Quantifier $quantifier
-     * @param int $offset
      */
-    public function __construct(Statement $stmt, Quantifier $quantifier, int $offset)
+    public function __construct(Statement $stmt, Quantifier $quantifier)
     {
         $this->statement  = $stmt;
         $this->quantifier = $quantifier;
-
-        parent::__construct($offset);
     }
 
     /**

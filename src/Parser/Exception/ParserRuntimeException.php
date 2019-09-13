@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Exception;
 
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 
 /**
@@ -23,34 +24,27 @@ class ParserRuntimeException extends ParserException implements RuntimeException
     public const ERROR_UNEXPECTED_TOKEN = 'Syntax error, unexpected %s';
 
     /**
-     * @var string
+     * @var TokenInterface
      */
-    public const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized lexeme %s';
-
-    /**
-     * @var NodeInterface
-     */
-    private $node;
+    private $token;
 
     /**
      * LexerRuntimeException constructor.
      *
      * @param string $message
-     * @param NodeInterface $node
+     * @param TokenInterface $token
      * @param \Throwable|null $prev
      */
-    public function __construct(string $message, NodeInterface $node, \Throwable $prev = null)
+    public function __construct(string $message, TokenInterface $token, \Throwable $prev = null)
     {
-        $this->node = $node;
-
         parent::__construct($message, 0, $prev);
     }
 
     /**
-     * @return NodeInterface
+     * @return TokenInterface
      */
-    public function getNode(): NodeInterface
+    public function getToken(): TokenInterface
     {
-        return $this->node;
+        return $this->token;
     }
 }

@@ -24,12 +24,11 @@ class DelegateStmt extends Statement
      * DelegateStmt constructor.
      *
      * @param string|null $code
-     * @param int $offset
      */
-    public function __construct(?string $code, int $offset)
+    public function __construct(?string $code)
     {
         $this->code = $code ?? 'return $children;';
 
-        parent::__construct($offset);
+
     }
 }

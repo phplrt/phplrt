@@ -37,10 +37,9 @@ class Lexeme extends Terminal
 
     /**
      * @param BufferInterface $buffer
-     * @param \Closure $reduce
      * @return TokenInterface|null
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce): ?TokenInterface
+    public function reduce(BufferInterface $buffer): ?TokenInterface
     {
         $haystack = $buffer->current();
 

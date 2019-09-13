@@ -7,17 +7,20 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\StackTrace;
-
-use Phplrt\Contracts\Ast\NodeInterface;
+namespace Phplrt\Source;
 
 /**
- * Interface TraceableNodeInterface
+ * Interface ReadableInterface
  */
-interface TraceableNodeInterface extends NodeInterface
+interface ReadableInterface
 {
+    /**
+     * @return resource
+     */
+    public function getStream();
+
     /**
      * @return string
      */
-    public function getFile(): string;
+    public function getContents(): string;
 }

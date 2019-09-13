@@ -9,8 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast\Expr;
 
+use Phplrt\Source\FileInterface;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Source\Exception\NotAccessibleException;
+
 /**
  * Class IncludeExpr
+ *
  * @internal Compiler's grammar AST node class
  */
 class IncludeExpr extends Expression
@@ -18,19 +23,38 @@ class IncludeExpr extends Expression
     /**
      * @var string
      */
-    public $inclusion;
+    private $target;
 
     /**
      * Inclusion constructor.
      *
      * @param string $file
-     * @param int $offset
      */
-    public function __construct(string $file, int $offset)
+    public function __construct(string $file)
     {
-        $this->inclusion = \trim($file, '"\'');
+        $this->target = \trim($file, '"\'');
+    }
 
-        parent::__construct($offset);
+    /**
+     * @return string
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTargetPathname(): string
+    {
+        if (! $this->file instanceof FileInterface) {
+            return $this->target;
+        }
+
+        $directory = \dirname($this->file->getPathname());
+
+        return \str_replace('\\', '/', $directory . '/' . \trim($this->target, '/'));
     }
 
     /**
@@ -38,6 +62,6 @@ class IncludeExpr extends Expression
      */
     public function render(): string
     {
-        return '%include(\'' . $this->inclusion . '\')';
+        return '%include(\'' . $this->getTargetPathname() . '\')';
     }
 }

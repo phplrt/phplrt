@@ -30,13 +30,10 @@ class PragmaDef extends Definition
      *
      * @param string $name
      * @param string $value
-     * @param int $offset
      */
-    public function __construct(string $name, string $value, int $offset)
+    public function __construct(string $name, string $value)
     {
         $this->name  = $name;
         $this->value = $value;
-
-        parent::__construct($offset);
     }
 }

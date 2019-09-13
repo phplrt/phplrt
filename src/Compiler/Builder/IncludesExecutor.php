@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
+use Phplrt\Visitor\Visitor;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
-use Phplrt\Compiler\Ast\Node;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Visitor\Visitor;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class IncludesExecutor
@@ -25,7 +25,7 @@ class IncludesExecutor extends Visitor
     /**
      * @var string
      */
-    private const ERROR_INVALID_SOURCE = 'Can not find "%s" grammar file';
+    private const ERROR_NOT_FOUND = '%s: failed to open stream: No such file or directory';
 
     /**
      * @var string[]
@@ -38,38 +38,20 @@ class IncludesExecutor extends Visitor
     private $loader;
 
     /**
-     * @var string
-     */
-    private $pathname;
-
-    /**
-     * IncludesVisitor constructor.
+     * IncludesExecutor constructor.
      *
-     * @param string $pathname
      * @param \Closure $loader
      */
-    public function __construct(string $pathname, \Closure $loader)
+    public function __construct(\Closure $loader)
     {
-        $this->pathname = $pathname;
-        $this->loader   = $loader;
+        $this->loader = $loader;
     }
 
     /**
      * @param NodeInterface $node
      * @return mixed|null
-     */
-    public function enter(NodeInterface $node)
-    {
-        if ($node instanceof Node && $node->file === null) {
-            $node->file = $this->pathname;
-        }
-
-        return parent::enter($node);
-    }
-
-    /**
-     * @param NodeInterface $node
-     * @return mixed|null
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     public function leave(NodeInterface $node)
     {
@@ -83,11 +65,12 @@ class IncludesExecutor extends Visitor
     /**
      * @param IncludeExpr $expr
      * @return array
-     * @throws ParserRuntimeException
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     private function lookup(IncludeExpr $expr): array
     {
-        $pathname = $this->getPathname($expr->inclusion);
+        $pathname = $expr->getTargetPathname();
 
         foreach (self::FILE_EXTENSIONS as $ext) {
             if (\is_file($pathname . $ext)) {
@@ -95,24 +78,9 @@ class IncludesExecutor extends Visitor
             }
         }
 
-        throw new ParserRuntimeException(\sprintf(self::ERROR_INVALID_SOURCE, $expr->inclusion), $expr);
-    }
+        $message = \sprintf(self::ERROR_NOT_FOUND, $expr->render());
 
-    /**
-     * @param string $file
-     * @return string
-     */
-    private function getPathname(string $file): string
-    {
-        return $this->getDirname() . \DIRECTORY_SEPARATOR . $file;
-    }
-
-    /**
-     * @return string
-     */
-    private function getDirname(): string
-    {
-        return \dirname($this->pathname);
+        throw new GrammarException($message, $expr->file, $expr->offset);
     }
 
     /**

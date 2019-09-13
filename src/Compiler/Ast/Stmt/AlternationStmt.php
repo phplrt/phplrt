@@ -26,13 +26,10 @@ class AlternationStmt extends Statement
      * Choice constructor.
      *
      * @param array $statements
-     * @param int $offset
      */
-    public function __construct(array $statements, int $offset)
+    public function __construct(array $statements)
     {
         $this->statements = $statements;
-
-        parent::__construct($offset);
     }
 
     /**

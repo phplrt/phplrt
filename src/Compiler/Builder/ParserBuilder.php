@@ -9,26 +9,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
+use Phplrt\Parser\Parser;
+use Phplrt\Visitor\Visitor;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Parser\Parser;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Visitor\Visitor;
 
 /**
  * Class LexerBuilder
@@ -41,6 +41,11 @@ class ParserBuilder extends Visitor
     private $rules = [];
 
     /**
+     * @var array|int[]
+     */
+    private $aliases = [];
+
+    /**
      * @param NodeInterface $node
      * @return mixed|void|null
      * @throws ParserRuntimeException
@@ -49,8 +54,9 @@ class ParserBuilder extends Visitor
     {
         if ($node instanceof RuleDef) {
             $rule = $this->reduce($node->body);
+            $rule = $rule instanceof RuleInterface ? $rule : new Concatenation([$rule]);
 
-            $this->rules[$node->name] = $rule instanceof RuleInterface ? $rule : new Concatenation([$rule]);
+            $this->register($node, $rule);
         }
     }
 
@@ -89,7 +95,7 @@ class ParserBuilder extends Visitor
             default:
                 $error = \sprintf('Unsupported statement %s', \class_basename($statement));
 
-                throw new ParserRuntimeException($error, $statement);
+                throw new ParserRuntimeException($error, $statement->getOffset(), $statement);
         }
     }
 
@@ -151,6 +157,16 @@ class ParserBuilder extends Visitor
         }
 
         return $result;
+    }
+
+    /**
+     * @param RuleDef $def
+     * @param RuleInterface $rule
+     * @return void
+     */
+    private function register(RuleDef $def, RuleInterface $rule): void
+    {
+        $this->rules[$def->name] = $rule;
     }
 
     /**

@@ -24,12 +24,11 @@ class RuleStmt extends Statement
      * RuleInvocation constructor.
      *
      * @param string $name
-     * @param int $offset
      */
-    public function __construct(string $name, int $offset)
+    public function __construct(string $name)
     {
         $this->name = $name;
 
-        parent::__construct($offset);
+
     }
 }

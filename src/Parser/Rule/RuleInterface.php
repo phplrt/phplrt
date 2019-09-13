@@ -9,17 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Rule;
 
-use Phplrt\Parser\Buffer\BufferInterface;
-
 /**
  * Interface RuleInterface
  */
 interface RuleInterface
 {
-    /**
-     * @param BufferInterface $buffer
-     * @param \Closure $reduce
-     * @return mixed|null
-     */
-    public function reduce(BufferInterface $buffer, \Closure $reduce);
 }

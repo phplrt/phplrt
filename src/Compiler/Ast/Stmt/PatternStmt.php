@@ -30,13 +30,12 @@ class PatternStmt extends Statement
      * TokenDefinition constructor.
      *
      * @param string $pattern
-     * @param int $offset
      */
-    public function __construct(string $pattern, int $offset)
+    public function __construct(string $pattern)
     {
         $this->pattern = \str_replace('\"', '"', $pattern);
         $this->name    = 'T_' . \strtoupper(\hash('crc32', $pattern));
 
-        parent::__construct($offset);
+
     }
 }

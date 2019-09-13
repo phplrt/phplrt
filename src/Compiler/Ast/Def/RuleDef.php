@@ -44,15 +44,12 @@ class RuleDef extends Definition
      * @param string $name
      * @param DelegateStmt $delegate
      * @param Statement $body
-     * @param int $offset
      */
-    public function __construct(string $name, DelegateStmt $delegate, Statement $body, int $offset)
+    public function __construct(string $name, DelegateStmt $delegate, Statement $body)
     {
         $this->name     = $name;
         $this->body     = $body;
         $this->delegate = $delegate;
-
-        parent::__construct($offset);
     }
 
     /**

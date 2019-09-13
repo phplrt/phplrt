@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
+use Phplrt\Source\ReadableInterface;
 use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Contracts\Parser\ParserInterface;
@@ -19,9 +20,8 @@ use Phplrt\Contracts\Parser\ParserInterface;
 interface GrammarInterface extends ParserInterface
 {
     /**
-     * {@inheritDoc}
-     * @param string|resource $source
-     * @return iterable|Definition[]|Expression[]
+     * @param ReadableInterface $source
+     * @return iterable
      */
     public function parse($source): iterable;
 }

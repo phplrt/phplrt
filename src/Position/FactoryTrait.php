@@ -9,28 +9,33 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
+use Phplrt\Source\File;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
+
 /**
  * Trait FactoryTrait
  */
 trait FactoryTrait
 {
     /**
-     * @param string|resource $source
+     * @param ReadableInterface|string|resource|mixed $source
      * @param int $line
      * @param int $column
-     * @return Position
+     * @return PositionInterface
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
-    public static function fromPosition($source, int $line = 1, int $column = 1): Position
+    public static function fromPosition($source, int $line = 1, int $column = 1): PositionInterface
     {
         \assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
         \assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
-
 
         if ($line === Position::MIN_LINE && $column === Position::MIN_COLUMN) {
             return static::start();
         }
 
-        $stream = self::toStream($source);
+        $stream = File::new($source)->getStream();
         $offset = $cursor = 0;
 
         //
@@ -48,9 +53,8 @@ trait FactoryTrait
         // column.
         //
         if ($column !== 1) {
-            $last  = (string)@\fread($stream, $column - 1);
+            $last = (string)@\fread($stream, $column - 1);
             $lines = \explode(static::LINE_DELIMITER, $last);
-
             $offset += $column = \strlen((string)\reset($lines));
         }
 
@@ -58,57 +62,46 @@ trait FactoryTrait
     }
 
     /**
-     * @return Position
+     * @return PositionInterface
      */
-    public static function start(): Position
+    public static function start(): PositionInterface
     {
         return new Position(Position::MIN_OFFSET, Position::MIN_LINE, Position::MIN_COLUMN);
     }
 
     /**
-     * @param resource|string $source
-     * @return resource
-     */
-    private static function toStream($source)
-    {
-        switch (true) {
-            case \is_string($source):
-                \file_put_contents($resource = \fopen('php://memory', 'rb+'), $source);
-
-                return $resource;
-
-            case \is_resource($source):
-                return $source;
-
-            default:
-                $error = 'A source argument should be a resource or string type, but %s given';
-                throw new \TypeError(\sprintf($error, \gettype($source)));
-        }
-    }
-
-    /**
-     * @param $source
+     * @param ReadableInterface|string|resource|mixed $source
      * @return Position
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
-    public static function end($source): Position
+    public static function end($source): PositionInterface
     {
-        return static::fromOffset($source, \strlen(self::toString($source)));
+        $source = File::new($source);
+
+        return static::fromOffset($source, self::length($source));
     }
 
     /**
-     * @param string|resource $source
+     * @param ReadableInterface|string|resource|mixed $source
      * @param int $offset
-     * @return Position
+     * @return PositionInterface
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
-    public static function fromOffset($source, int $offset = 0): Position
+    public static function fromOffset($source, int $offset = 0): PositionInterface
     {
-        \assert($offset >= Position::MIN_OFFSET, 'Offset argument should be greater or equal than 0');
-
-        if ($offset === Position::MIN_OFFSET) {
+        if ($offset <= Position::MIN_OFFSET) {
             return static::start();
         }
 
-        $sources = \substr(self::toString($source), 0, $offset);
+        $source = File::new($source);
+
+        if ($offset > self::length($source)) {
+            return static::end($source);
+        }
+
+        $sources = \fread($source->getStream(), $offset);
 
         //
         // Format the offset so that it does not exceed the allowable text
@@ -133,21 +126,13 @@ trait FactoryTrait
     }
 
     /**
-     * @param resource|string $source
-     * @return string
+     * @param ReadableInterface|string|resource|mixed $source
+     * @return int
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
-    private static function toString($source): string
+    private static function length($source): int
     {
-        switch (true) {
-            case \is_resource($source):
-                return \stream_get_contents($source);
-
-            case \is_string($source):
-                return $source;
-
-            default:
-                $error = 'A source argument should be a resource or string type, but %s given';
-                throw new \TypeError(\sprintf($error, \gettype($source)));
-        }
+        return \strlen(File::new($source)->getContents());
     }
 }

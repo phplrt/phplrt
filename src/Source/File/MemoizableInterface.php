@@ -7,17 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\StackTrace\Record;
-
-use Phplrt\Position\PositionInterface;
+namespace Phplrt\Source\File;
 
 /**
- * Interface RecordInterface
+ * Interface MemoizableInterface
  */
-interface RecordInterface extends PositionInterface
+interface MemoizableInterface
 {
     /**
-     * @return string
+     * @return void
      */
-    public function getFile(): string;
+    public function refresh(): void;
 }
