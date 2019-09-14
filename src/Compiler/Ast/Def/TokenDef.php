@@ -41,6 +41,6 @@ class TokenDef extends Definition
     {
         $this->name  = $name;
         $this->value = $value;
-        $this->keep = $keep;
+        $this->keep  = $keep;
     }
 }

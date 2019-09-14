@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Builder;
 
-use Phplrt\Visitor\Visitor;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\Visitor;
 
 /**
  * Class IdCollection
