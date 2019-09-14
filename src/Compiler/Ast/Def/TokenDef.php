@@ -28,17 +28,19 @@ class TokenDef extends Definition
     /**
      * @var bool
      */
-    public $keep = true;
+    public $keep;
 
     /**
      * Pragma constructor.
      *
      * @param string $name
      * @param string $value
+     * @param bool $keep
      */
-    public function __construct(string $name, string $value)
+    public function __construct(string $name, string $value, bool $keep = true)
     {
         $this->name  = $name;
         $this->value = $value;
+        $this->keep = $keep;
     }
 }

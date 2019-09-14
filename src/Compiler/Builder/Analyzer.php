@@ -1,0 +1,330 @@
+<?php
+/**
+ * This file is part of phplrt package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+declare(strict_types=1);
+
+namespace Phplrt\Compiler\Builder;
+
+use Phplrt\Visitor\Visitor;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Compiler\Ast\Stmt\RuleStmt;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\Statement;
+use Phplrt\Compiler\Ast\Stmt\TokenStmt;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+
+/**
+ * Class Analyzer
+ */
+class Analyzer extends Visitor
+{
+    /**
+     * @var string
+     */
+    public const PRAGMA_ROOT = 'root';
+
+    /**
+     * @var array|RuleInterface
+     */
+    public $rules = [];
+
+    /**
+     * @var array|string[]
+     */
+    public $tokens = [];
+
+    /**
+     * @var array|string[]
+     */
+    public $skip = [];
+
+    /**
+     * @var string|int|null
+     */
+    public $initial;
+
+    /**
+     * @var int
+     */
+    private $counter = 0;
+
+    /**
+     * @var array
+     */
+    private $aliases = [];
+
+    /**
+     * @var IdCollection
+     */
+    private $ids;
+
+    /**
+     * ParserBuilder constructor.
+     *
+     * @param IdCollection $ids
+     */
+    public function __construct(IdCollection $ids)
+    {
+        $this->ids = $ids;
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return mixed|void|null
+     */
+    public function enter(NodeInterface $node)
+    {
+        if ($node instanceof TokenDef) {
+            $this->tokens[$node->name] = $node->value;
+
+            if (! $node->keep) {
+                $this->skip[] = $node->name;
+            }
+        }
+
+        if ($node instanceof PatternStmt) {
+            $lexemes              = \array_reverse($this->tokens);
+            $lexemes[$node->name] = $node->pattern;
+
+            $this->tokens = \array_reverse($lexemes);
+        }
+    }
+
+    /**
+     * @param NodeInterface $node
+     * @return mixed|void|null
+     * @throws ParserRuntimeException
+     */
+    public function leave(NodeInterface $node)
+    {
+        if ($node instanceof PragmaDef) {
+            switch ($node->name) {
+                case self::PRAGMA_ROOT:
+                    $this->initial = $this->name($node->value);
+                    break;
+
+                default:
+                    $error = 'Unrecognized pragma "%s"';
+                    throw new GrammarException(\sprintf($error, $node->name), $node->file, $node->offset);
+            }
+        }
+
+        if ($node instanceof RuleDef) {
+            $this->register($this->rule($node), $node->name);
+        }
+    }
+
+    /**
+     * @param RuleInterface $rule
+     * @param string|null $name
+     * @return string|int
+     */
+    private function register(RuleInterface $rule, string $name = null)
+    {
+        if ($name === null) {
+            $this->rules[$this->counter] = $rule;
+
+            return $this->counter++;
+        }
+
+        $id = $this->name($name);
+
+        $this->rules[$id] = $rule;
+
+        return $id;
+    }
+
+    /**
+     * @param AlternationStmt $choice
+     * @return array
+     * @throws ParserRuntimeException
+     */
+    private function loadForAlternation(AlternationStmt $choice): array
+    {
+        $choices = [];
+
+        foreach ($choice->statements as $stmt) {
+            $choices[] = $this->map($this->reduce($stmt));
+
+            foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
+                $error = 'The alternation (OR condition) contains excess repeating relation %s';
+                throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
+            }
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @param string $rule
+     * @return string|int
+     */
+    private function name(string $rule)
+    {
+        if ($this->ids->rule($rule) === false) {
+            if (\array_key_exists($rule, $this->aliases)) {
+                return $this->aliases[$rule];
+            }
+
+            return $this->aliases[$rule] = $this->counter++;
+        }
+
+        return $rule;
+    }
+
+    /**
+     * @param RuleDef $def
+     * @return RuleInterface
+     * @throws ParserRuntimeException
+     */
+    private function rule(RuleDef $def): RuleInterface
+    {
+        $rule = $this->reduce($def->body);
+
+        return $rule instanceof RuleInterface ? $rule : new Concatenation([$rule]);
+    }
+
+    /**
+     * @param Statement $statement
+     * @return RuleInterface|string
+     * @throws ParserRuntimeException
+     */
+    private function reduce(Statement $statement)
+    {
+        switch (true) {
+            case $statement instanceof AlternationStmt:
+                return new Alternation($this->loadForAlternation($statement));
+
+            case $statement instanceof RepetitionStmt:
+                $info = $statement->quantifier;
+
+                if ($info->from === 0 && $info->to === 1) {
+                    return new Optional($this->load($statement->statement));
+                }
+
+                return new Repetition($this->load($statement->statement), $info->from, $info->to);
+
+            case $statement instanceof ConcatenationStmt:
+                return new Concatenation($this->load($statement->statements));
+
+            case $statement instanceof PatternStmt:
+                return new Lexeme($statement->name, false);
+
+            case $statement instanceof TokenStmt:
+                return $this->tokenRelation($statement);
+
+            case $statement instanceof RuleStmt:
+                return $this->ruleRelation($statement);
+
+            default:
+                $error = \sprintf('Unsupported statement %s', \class_basename($statement));
+
+                throw new GrammarException($error, $statement->file, $statement->offset);
+        }
+    }
+
+    /**
+     * @param mixed $stmt
+     * @return array|int|int[]|string|string[]
+     * @throws ParserRuntimeException
+     */
+    private function load($stmt)
+    {
+        if (\is_array($stmt)) {
+            return $this->mapAll($this->reduceAll($stmt));
+        }
+
+        return $this->map($this->reduce($stmt));
+    }
+
+    /**
+     * @param array $rules
+     * @return array|int[]
+     */
+    private function mapAll(array $rules): array
+    {
+        $result = [];
+
+        foreach ($rules as $rule) {
+            $result[] = $this->map($rule);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param RuleInterface|string $rule
+     * @return int|string
+     */
+    private function map($rule)
+    {
+        if ($rule instanceof RuleInterface) {
+            return $this->register($rule);
+        }
+
+        return $rule;
+    }
+
+    /**
+     * @param array $statements
+     * @return array
+     * @throws ParserRuntimeException
+     */
+    private function reduceAll(array $statements): array
+    {
+        $result = [];
+
+        foreach ($statements as $stmt) {
+            $result[] = $this->reduce($stmt);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param TokenStmt $token
+     * @return Lexeme
+     */
+    private function tokenRelation(TokenStmt $token): Lexeme
+    {
+        if ($this->ids->lexeme($token->name) === null) {
+            $error = \sprintf('Token "%s" has not been defined', $token->name);
+
+            throw new GrammarException($error, $token->file, $token->offset);
+        }
+
+        return new Lexeme($token->name, $token->keep);
+    }
+
+    /**
+     * @param RuleStmt $rule
+     * @return int|string
+     */
+    private function ruleRelation(RuleStmt $rule)
+    {
+        if ($this->ids->rule($rule->name) === null) {
+            $error = \sprintf('Rule "%s" has not been defined', $rule->name);
+
+            throw new GrammarException($error, $rule->file, $rule->offset);
+        }
+
+        return $this->name($rule->name);
+    }
+}

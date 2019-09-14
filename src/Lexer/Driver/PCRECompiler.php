@@ -174,6 +174,26 @@ abstract class PCRECompiler implements CompilerInterface
     protected $delimiter = self::DEFAULT_DELIMITER;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
+     * PCRECompiler constructor.
+     *
+     * @param bool|null $debug
+     */
+    public function __construct(bool $debug = null)
+    {
+        if ($debug === null) {
+            // Hack: Enable debug mode if assertions is enabled
+            \assert($this->debug = true);
+        } else {
+            $this->debug = $debug;
+        }
+    }
+
+    /**
      * @param array $tokens
      * @return string
      * @throws CompilationException
@@ -233,12 +253,14 @@ abstract class PCRECompiler implements CompilerInterface
      */
     protected function test(string $pattern, string $original = null): void
     {
-        \error_clear_last();
+        if ($this->debug) {
+            \error_clear_last();
 
-        @\preg_match_all($this->wrap($pattern), '', $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE);
+            @\preg_match_all($this->wrap($pattern), '', $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE);
 
-        if ($error = \error_get_last()) {
-            throw new CompilationException($this->formatException($error['message'], $original));
+            if ($error = \error_get_last()) {
+                throw new CompilationException($this->formatException($error['message'], $original));
+            }
         }
     }
 

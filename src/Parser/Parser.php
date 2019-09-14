@@ -9,24 +9,23 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Source\File;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Parser\Builder\Common;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Parser\Builder\Expandable;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Source\File;
-use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -205,8 +204,6 @@ class Parser implements ParserInterface
     /**
      * @param ReadableInterface $source
      * @return \Generator
-     * @throws LexerRuntimeExceptionInterface
-     * @throws LexerExceptionInterface
      */
     protected function lex(ReadableInterface $source): \Generator
     {
@@ -220,7 +217,7 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node  = null;
+        $this->node = null;
     }
 
     /**
@@ -253,16 +250,20 @@ class Parser implements ParserInterface
     protected function reduce(ReadableInterface $source, BufferInterface $buffer, $state)
     {
         /** @var TokenInterface $token */
-        [$rule, $result] = [$this->rules[$state], null];
+        [$rule, $result, $token] = [$this->rules[$state], null, $buffer->current()];
 
         switch (true) {
             case $rule instanceof ProductionInterface:
-                $result = $rule->reduce($buffer, $this->next($source, $buffer));
+                $result = $rule->reduce($buffer, function ($state) use ($source, $buffer) {
+                    return $this->reduce($source, $buffer, $state);
+                });
 
                 break;
 
             case $rule instanceof TerminalInterface:
-                if (($result = $rule->reduce($buffer)) !== null) {
+                $result = $rule->reduce($buffer);
+
+                if ($result !== null) {
                     $buffer->next();
 
                     $this->spotTerminal($buffer);
@@ -272,6 +273,7 @@ class Parser implements ParserInterface
                     }
                 }
 
+
                 break;
         }
 
@@ -279,19 +281,13 @@ class Parser implements ParserInterface
             return null;
         }
 
-        return $this->build($buffer, $state, $result);
-    }
+        // Assert reducer type
+        \assert(
+            $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result),
+            'Reducer constraint violation: ' . (\is_object($result) ? \get_class($result) : \gettype($result))
+        );
 
-    /**
-     * @param ReadableInterface $source
-     * @param BufferInterface $buffer
-     * @return \Closure
-     */
-    protected function next(ReadableInterface $source, BufferInterface $buffer): \Closure
-    {
-        return function ($state) use ($source, $buffer) {
-            return $this->reduce($source, $buffer, $state);
-        };
+        return $this->build($token, $state, $result);
     }
 
     /**
@@ -309,29 +305,20 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param mixed $result
-     * @param BufferInterface $buffer
+     * @param TokenInterface $token
      * @param int|string $state
+     * @param mixed $result
      * @return mixed|null
      */
-    private function build(BufferInterface $buffer, $state, $result)
+    private function build(TokenInterface $token, $state, $result)
     {
-        $result = $this->builder->build($this->rules[$state], $buffer->current(), $state, $result) ?? $result;
+        $result = $this->builder->build($this->rules[$state], $token, $state, $result) ?? $result;
 
-        $this->spotProduction($result);
-
-        return $result;
-    }
-
-    /**
-     * @param mixed $result
-     * @return void
-     */
-    private function spotProduction($result): void
-    {
         if ($result instanceof NodeInterface) {
             $this->node = $result;
         }
+
+        return $result;
     }
 
     /**
@@ -354,10 +341,10 @@ class Parser implements ParserInterface
     private function render(TokenInterface $token): string
     {
         if (\class_exists(Renderer::class)) {
-            return (new Renderer())->render($token);
+            return (new Renderer())->value($token);
         }
 
-        return '"' . $token->getValue() . '" (' . $token->getName() . ')';
+        return '"' . $token->getValue() . '"';
     }
 
     /**

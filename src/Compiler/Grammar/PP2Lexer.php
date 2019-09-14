@@ -159,7 +159,7 @@ final class PP2Lexer extends Lexer
         self::T_OR                  => '\\|',
         self::T_TOKEN_SKIPPED       => '::(\\w+)::',
         self::T_TOKEN_KEPT          => '<(\\w+)>',
-        self::T_TOKEN_STRING        => '"([^"\\\\]+(?:\\\\.[^"\\\\]*)*)"',
+        self::T_TOKEN_STRING        => '"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"',
         self::T_INVOKE              => '([a-zA-Z0-9_]+)\\(\\)',
         self::T_GROUP_OPEN          => '\\(',
         self::T_GROUP_CLOSE         => '\\)',

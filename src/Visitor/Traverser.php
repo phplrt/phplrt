@@ -268,7 +268,7 @@ class Traverser implements TraverserInterface
                     }
                 }
 
-                foreach (\array_reverse($this->visitors) as $index => $visitor) {
+                foreach ($this->visitors as $index => $visitor) {
                     $return = $visitor->leave($node);
 
                     switch (true) {
@@ -371,7 +371,7 @@ class Traverser implements TraverserInterface
                     }
                 }
 
-                foreach (\array_reverse($this->visitors) as $index => $visitor) {
+                foreach ($this->visitors as $index => $visitor) {
                     $return = $visitor->leave($child);
 
                     switch (true) {
@@ -437,7 +437,7 @@ class Traverser implements TraverserInterface
      */
     private function after(iterable $ast): iterable
     {
-        foreach (\array_reverse($this->visitors) as $visitor) {
+        foreach ($this->visitors as $visitor) {
             if (($result = $visitor->after($ast)) !== null) {
                 $ast = $result;
             }

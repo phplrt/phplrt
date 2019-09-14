@@ -36,7 +36,7 @@ class RuleDef extends Definition
     /**
      * @var bool
      */
-    public $keep = true;
+    public $keep;
 
     /**
      * Rule constructor.
@@ -44,12 +44,14 @@ class RuleDef extends Definition
      * @param string $name
      * @param DelegateStmt $delegate
      * @param Statement $body
+     * @param bool $keep
      */
-    public function __construct(string $name, DelegateStmt $delegate, Statement $body)
+    public function __construct(string $name, DelegateStmt $delegate, Statement $body, bool $keep = true)
     {
         $this->name     = $name;
         $this->body     = $body;
         $this->delegate = $delegate;
+        $this->keep = $keep;
     }
 
     /**

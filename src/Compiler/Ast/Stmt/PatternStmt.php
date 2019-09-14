@@ -22,9 +22,14 @@ class PatternStmt extends Statement
     public $pattern;
 
     /**
-     * @var string
+     * @var int
      */
     public $name;
+
+    /**
+     * @var array
+     */
+    private static $identifiers = [];
 
     /**
      * TokenDefinition constructor.
@@ -34,6 +39,14 @@ class PatternStmt extends Statement
     public function __construct(string $pattern)
     {
         $this->pattern = \str_replace('\"', '"', $pattern);
-        $this->name    = 'T_' . \strtoupper(\hash('crc32', $pattern));
+        $this->name    = 'T_ANONYMOUS_' . $this->getId();
+    }
+
+    /**
+     * @return int
+     */
+    private function getId(): int
+    {
+        return self::$identifiers[$this->pattern] ?? self::$identifiers[$this->pattern] = \count(self::$identifiers);
     }
 }
