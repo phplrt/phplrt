@@ -99,7 +99,7 @@ class Compiler implements ParserInterface
         $lexer = new Lexer($this->builder->tokens, $this->builder->skip);
 
         $parser = new Parser($lexer, $this->builder->rules, [
-            Parser::CONFIG_INITIAL_RULE => $this->builder->initial
+            Parser::CONFIG_INITIAL_RULE => $this->builder->initial,
         ]);
 
         return $parser->parse($source);
