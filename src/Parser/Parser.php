@@ -117,31 +117,46 @@ class Parser implements ParserInterface
     private $node;
 
     /**
+     * A buffer class that allows you to iterate over the stream of tokens and
+     * return to the selected position.
+     *
+     * Initialized by the generator with tokens during parser launch.
+     *
      * @var string
      */
     private $buffer = EagerBuffer::class;
 
     /**
+     * An abstract syntax tree builder.
+     *
      * @var BuilderInterface
      */
     private $builder;
 
     /**
+     * The initial state (initial rule identifier) of the parser.
+     *
      * @var string|int|null
      */
     private $initial;
 
     /**
+     * The lexer instance.
+     *
      * @var LexerInterface
      */
     private $lexer;
 
     /**
+     * Array of transition rules for the parser.
+     *
      * @var array|RuleInterface[]
      */
     private $rules;
 
     /**
+     * Token indicating the end of parsing.
+     *
      * @var string
      */
     private $eoi = TokenInterface::END_OF_INPUT;
@@ -295,7 +310,7 @@ class Parser implements ParserInterface
      * @param string|int|mixed $state
      * @return mixed
      */
-    private function next(ReadableInterface $source, BufferInterface $buffer, $state)
+    protected function next(ReadableInterface $source, BufferInterface $buffer, $state)
     {
         return $this->reduce($source, $buffer, $state);
     }
@@ -331,7 +346,6 @@ class Parser implements ParserInterface
                         return [];
                     }
                 }
-
 
                 break;
         }

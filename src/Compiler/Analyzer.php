@@ -7,28 +7,28 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Builder;
+namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Ast\Def\PragmaDef;
-use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\RuleStmt;
-use Phplrt\Compiler\Ast\Stmt\Statement;
-use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Visitor\Visitor;
 use Phplrt\Parser\Rule\Lexeme;
 use Phplrt\Parser\Rule\Optional;
 use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Visitor\Visitor;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\RuleStmt;
+use Phplrt\Compiler\Ast\Stmt\Statement;
+use Phplrt\Compiler\Ast\Stmt\TokenStmt;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 
 /**
  * Class Analyzer
@@ -100,7 +100,7 @@ class Analyzer extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes              = \array_reverse($this->tokens);
+            $lexemes = \array_reverse($this->tokens);
             $lexemes[$node->name] = $node->pattern;
 
             $this->tokens = \array_reverse($lexemes);
@@ -132,6 +132,23 @@ class Analyzer extends Visitor
     }
 
     /**
+     * @param string $rule
+     * @return string|int
+     */
+    private function name(string $rule)
+    {
+        if ($this->ids->rule($rule) === false) {
+            if (\array_key_exists($rule, $this->aliases)) {
+                return $this->aliases[$rule];
+            }
+
+            return $this->aliases[$rule] = $this->counter++;
+        }
+
+        return $rule;
+    }
+
+    /**
      * @param RuleInterface $rule
      * @param string|null $name
      * @return string|int
@@ -149,44 +166,6 @@ class Analyzer extends Visitor
         $this->rules[$id] = $rule;
 
         return $id;
-    }
-
-    /**
-     * @param AlternationStmt $choice
-     * @return array
-     * @throws ParserRuntimeException
-     */
-    private function loadForAlternation(AlternationStmt $choice): array
-    {
-        $choices = [];
-
-        foreach ($choice->statements as $stmt) {
-            $choices[] = $this->map($this->reduce($stmt));
-
-            foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
-                $error = 'The alternation (OR condition) contains excess repeating relation %s';
-                throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
-            }
-        }
-
-        return $choices;
-    }
-
-    /**
-     * @param string $rule
-     * @return string|int
-     */
-    private function name(string $rule)
-    {
-        if ($this->ids->rule($rule) === false) {
-            if (\array_key_exists($rule, $this->aliases)) {
-                return $this->aliases[$rule];
-            }
-
-            return $this->aliases[$rule] = $this->counter++;
-        }
-
-        return $rule;
     }
 
     /**
@@ -241,6 +220,40 @@ class Analyzer extends Visitor
     }
 
     /**
+     * @param AlternationStmt $choice
+     * @return array
+     * @throws ParserRuntimeException
+     */
+    private function loadForAlternation(AlternationStmt $choice): array
+    {
+        $choices = [];
+
+        foreach ($choice->statements as $stmt) {
+            $choices[] = $this->map($this->reduce($stmt));
+
+            foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
+                $error = 'The alternation (OR condition) contains excess repeating relation %s';
+                throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
+            }
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @param RuleInterface|string $rule
+     * @return int|string
+     */
+    private function map($rule)
+    {
+        if ($rule instanceof RuleInterface) {
+            return $this->register($rule);
+        }
+
+        return $rule;
+    }
+
+    /**
      * @param mixed $stmt
      * @return array|int|int[]|string|string[]
      * @throws ParserRuntimeException
@@ -267,19 +280,6 @@ class Analyzer extends Visitor
         }
 
         return $result;
-    }
-
-    /**
-     * @param RuleInterface|string $rule
-     * @return int|string
-     */
-    private function map($rule)
-    {
-        if ($rule instanceof RuleInterface) {
-            return $this->register($rule);
-        }
-
-        return $rule;
     }
 
     /**

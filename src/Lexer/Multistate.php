@@ -34,31 +34,23 @@ class Multistate implements LexerInterface
     /**
      * @var array
      */
-    private $transitions = [];
+    private $transitions;
 
     /**
      * Multistate constructor.
      *
      * @param array|LexerInterface[] $states
+     * @param array $transitions
      * @param int|string|null $state
      */
-    public function __construct(array $states, $state = null)
+    public function __construct(array $states, array $transitions = [], $state = null)
     {
         $this->states = \array_map(static function ($data) {
             return $data instanceof LexerInterface ? $data : new Lexer($data);
         }, $states);
 
-        $this->state = $state ?? \array_key_first($states);
-    }
-
-    /**
-     * @param array|LexerInterface[] $states
-     * @param int|string|null $state
-     * @return Multistate|static
-     */
-    public static function new(array $states, $state = null): self
-    {
-        return new static($states, $state);
+        $this->transitions = $transitions;
+        $this->state = $state ?? \count($states) ? \array_key_first($states) : 0;
     }
 
     /**

@@ -47,7 +47,7 @@ class Concatenation extends Production
                 return null;
             }
 
-            $children = $this->merge($children, $result);
+            $children = $this->mergeWith($children, $result);
         }
 
         return $children;

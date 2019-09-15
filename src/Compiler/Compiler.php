@@ -9,21 +9,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Builder\Analyzer;
-use Phplrt\Compiler\Builder\IdCollection;
-use Phplrt\Compiler\Builder\IncludesExecutor;
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Lexer\Lexer;
+use Phplrt\Source\File;
+use Phplrt\Parser\Parser;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Visitor\TraverserInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Lexer;
-use Phplrt\Parser\Parser;
-use Phplrt\Source\File;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Visitor\TraverserInterface;
 
 /**
  * Class Compiler
@@ -55,7 +52,7 @@ class Compiler implements ParserInterface
         $this->grammar = $grammar ?? new PP2Grammar();
 
         $this->preloader = $this->bootPreloader($ids = new IdCollection());
-        $this->builder   = new Analyzer($ids);
+        $this->builder = new Analyzer($ids);
     }
 
     /**
@@ -99,7 +96,7 @@ class Compiler implements ParserInterface
         $lexer = new Lexer($this->builder->tokens, $this->builder->skip);
 
         $parser = new Parser($lexer, $this->builder->rules, [
-            Parser::CONFIG_INITIAL_RULE => $this->builder->initial
+            Parser::CONFIG_INITIAL_RULE => $this->builder->initial,
         ]);
 
         return $parser->parse($source);
@@ -113,6 +110,8 @@ class Compiler implements ParserInterface
     public function load($source): self
     {
         $ast = $this->run(File::new($source));
+
+        dump($ast);
 
         (new Traverser())
             ->with($this->builder)

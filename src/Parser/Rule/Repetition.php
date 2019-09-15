@@ -74,7 +74,7 @@ class Repetition extends Production
                 return $children;
             }
 
-            $children = $this->merge($children, $result);
+            $children = $this->mergeWith($children, $result);
         } while ($result !== null && ++$iterations);
 
         return $children;

@@ -147,6 +147,16 @@ final class PP2Lexer extends Lexer
     public const T_ARROW_RIGHT = 'T_ARROW_RIGHT';
 
     /**
+     * @var string
+     */
+    public const T_PHP_OPEN = 'T_PHP_OPEN';
+
+    /**
+     * @var string
+     */
+    public const T_PHP_CLOSE = 'T_PHP_CLOSE';
+
+    /**
      * Lexical tokens list.
      *
      * @var string[]
@@ -174,7 +184,9 @@ final class PP2Lexer extends Lexer
         self::T_NAME                => '\\\\?[a-zA-Z0-9_]+(?:\\\\[a-zA-Z0-9_]+)*',
         self::T_EQ                  => '(?:\\:\\:=|\\:|=)',
         self::T_END_OF_RULE         => ';',
+        self::T_PHP_OPEN            => '\->\h*{',
         self::T_ARROW_RIGHT         => '\->',
+        self::T_PHP_CLOSE           => '}',
         self::T_WHITESPACE          => '(\\xfe\\xff|\\x20|\\x09|\\x0a|\\x0d)+',
         self::T_COMMENT             => '//[^\\n]*',
         self::T_BLOCK_COMMENT       => '/\\*.*?\\*/',
@@ -191,6 +203,9 @@ final class PP2Lexer extends Lexer
         'T_BLOCK_COMMENT',
     ];
 
+    /**
+     * PP2Lexer constructor.
+     */
     public function __construct()
     {
         parent::__construct(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);

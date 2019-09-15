@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Builder;
+namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
