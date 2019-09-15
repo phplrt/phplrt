@@ -13,7 +13,6 @@ use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Parser\Builder\Common;
 use Phplrt\Source\ReadableInterface;
-use Phplrt\Parser\Builder\Expandable;
 use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
@@ -65,6 +64,26 @@ class Parser implements ParserInterface
     /**
      * @var string
      */
+    public const CONFIG_INITIAL_RULE = 'initial';
+
+    /**
+     * @var string
+     */
+    public const CONFIG_AST_BUILDER = 'builder';
+
+    /**
+     * @var string
+     */
+    public const CONFIG_BUFFER = 'buffer';
+
+    /**
+     * @var string
+     */
+    public const CONFIG_EOI = 'eoi';
+
+    /**
+     * @var string
+     */
     private const ERROR_XDEBUG_NOTICE_MESSAGE =
         'Please note that if Xdebug is enabled, a "Fatal error: Maximum function nesting level of "%d" ' .
         'reached, aborting!" errors may occur. In the second case, it is worth increasing the ini value ' .
@@ -98,6 +117,11 @@ class Parser implements ParserInterface
     private $node;
 
     /**
+     * @var string
+     */
+    private $buffer = EagerBuffer::class;
+
+    /**
      * @var BuilderInterface
      */
     private $builder;
@@ -118,43 +142,60 @@ class Parser implements ParserInterface
     private $rules;
 
     /**
+     * @var string
+     */
+    private $eoi = TokenInterface::END_OF_INPUT;
+
+    /**
      * Parser constructor.
      *
      * @param LexerInterface $lexer
      * @param array|RuleInterface[] $rules
-     * @param null $initial
+     * @param array $options
      */
-    public function __construct(LexerInterface $lexer, array $rules, $initial = null)
+    public function __construct(LexerInterface $lexer, array $rules, array $options = [])
     {
         $this->lexer = $lexer;
         $this->rules = $rules;
 
-        $this->builder = $this->getBuilder();
-        $this->initial = $initial ?? $this->getInitialRule($this->rules);
+        $this->bootConfigs($options);
 
         $this->boot();
     }
 
     /**
-     * @return BuilderInterface
+     * @param array $options
+     * @return void
      */
-    protected function getBuilder(): BuilderInterface
+    private function bootConfigs(array $options): void
     {
-        return new Common();
+        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
+        $this->buffer  = $options[static::CONFIG_BUFFER] ?? $this->buffer;
+        $this->builder = $options[static::CONFIG_AST_BUILDER] ?? $this->getDefaultBuilder();
+        $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? $this->getDefaultInitialRule($this->rules);
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $rules
+     * @return int|mixed|string|null
      */
-    protected function getInitialRule(array $rules)
+    private function getDefaultInitialRule(array $rules)
     {
         return \count($rules) ? \array_key_first($rules) : 0;
     }
 
     /**
+     * @return BuilderInterface
+     */
+    private function getDefaultBuilder(): BuilderInterface
+    {
+        return new Common();
+    }
+
+    /**
      * @return void
      */
-    protected function boot(): void
+    private function boot(): void
     {
         if (\function_exists('\\xdebug_is_enabled')) {
             @\trigger_error(\vsprintf(self::ERROR_XDEBUG_NOTICE_MESSAGE, [
@@ -196,16 +237,23 @@ class Parser implements ParserInterface
      * @param \Generator $stream
      * @return BufferInterface
      */
-    protected function getBuffer(\Generator $stream): BufferInterface
+    private function getBuffer(\Generator $stream): BufferInterface
     {
-        return new EagerBuffer($stream);
+        \assert(
+            \is_subclass_of($this->buffer, BufferInterface::class),
+            'Buffer class should implement ' . BufferInterface::class
+        );
+
+        $class = $this->buffer;
+
+        return new $class($stream);
     }
 
     /**
      * @param ReadableInterface $source
      * @return \Generator
      */
-    protected function lex(ReadableInterface $source): \Generator
+    private function lex(ReadableInterface $source): \Generator
     {
         yield from $this->lexer->lex($source->getContents());
     }
@@ -228,7 +276,7 @@ class Parser implements ParserInterface
      */
     private function parseOrFail(ReadableInterface $source, BufferInterface $buffer): iterable
     {
-        $result = $this->reduce($source, $buffer, $this->initial);
+        $result = $this->next($source, $buffer, $this->initial);
 
         if (\is_iterable($result) && $this->isEoi($buffer)) {
             return $result;
@@ -244,10 +292,21 @@ class Parser implements ParserInterface
     /**
      * @param ReadableInterface $source
      * @param BufferInterface $buffer
+     * @param string|int|mixed $state
+     * @return mixed
+     */
+    private function next(ReadableInterface $source, BufferInterface $buffer, $state)
+    {
+        return $this->reduce($source, $buffer, $state);
+    }
+
+    /**
+     * @param ReadableInterface $source
+     * @param BufferInterface $buffer
      * @param int|string $state
      * @return iterable|TokenInterface|null
      */
-    protected function reduce(ReadableInterface $source, BufferInterface $buffer, $state)
+    private function reduce(ReadableInterface $source, BufferInterface $buffer, $state)
     {
         /** @var TokenInterface $token */
         [$rule, $result, $token] = [$this->rules[$state], null, $buffer->current()];
@@ -255,7 +314,7 @@ class Parser implements ParserInterface
         switch (true) {
             case $rule instanceof ProductionInterface:
                 $result = $rule->reduce($buffer, function ($state) use ($source, $buffer) {
-                    return $this->reduce($source, $buffer, $state);
+                    return $this->next($source, $buffer, $state);
                 });
 
                 break;
@@ -327,11 +386,11 @@ class Parser implements ParserInterface
      * @param BufferInterface $buffer
      * @return bool
      */
-    protected function isEoi(BufferInterface $buffer): bool
+    private function isEoi(BufferInterface $buffer): bool
     {
         $current = $buffer->current();
 
-        return $current->getName() === TokenInterface::END_OF_INPUT;
+        return $current->getName() === $this->eoi;
     }
 
     /**
