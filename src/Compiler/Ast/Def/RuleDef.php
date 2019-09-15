@@ -51,7 +51,7 @@ class RuleDef extends Definition
         $this->name     = $name;
         $this->body     = $body;
         $this->delegate = $delegate;
-        $this->keep = $keep;
+        $this->keep     = $keep;
     }
 
     /**
