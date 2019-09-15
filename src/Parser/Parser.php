@@ -9,22 +9,22 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Source\File;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Rule\ProductionInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Builder\Common;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Rule\ProductionInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Source\File;
+use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -184,7 +184,7 @@ class Parser implements ParserInterface
      */
     private function bootConfigs(array $options): void
     {
-        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
+        $this->eoi     = $options[static::CONFIG_EOI] ?? $this->eoi;
         $this->buffer  = $options[static::CONFIG_BUFFER] ?? $this->buffer;
         $this->builder = $options[static::CONFIG_AST_BUILDER] ?? $this->getDefaultBuilder();
         $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? $this->getDefaultInitialRule($this->rules);
@@ -280,7 +280,7 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node = null;
+        $this->node  = null;
     }
 
     /**
