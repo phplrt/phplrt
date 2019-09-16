@@ -12,10 +12,12 @@ namespace Phplrt\Compiler;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Source\File;
 use Phplrt\Parser\Parser;
+use Phplrt\Lexer\Multistate;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Source\ReadableInterface;
 use Phplrt\Visitor\TraverserInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Exception\GrammarException;
@@ -35,7 +37,7 @@ class Compiler implements ParserInterface
     /**
      * @var Analyzer
      */
-    private $builder;
+    private $analyzer;
 
     /**
      * @var Traverser
@@ -52,7 +54,7 @@ class Compiler implements ParserInterface
         $this->grammar = $grammar ?? new PP2Grammar();
 
         $this->preloader = $this->bootPreloader($ids = new IdCollection());
-        $this->builder = new Analyzer($ids);
+        $this->analyzer = new Analyzer($ids);
     }
 
     /**
@@ -93,13 +95,31 @@ class Compiler implements ParserInterface
      */
     public function parse($source): iterable
     {
-        $lexer = new Lexer($this->builder->tokens, $this->builder->skip);
+        $lexer = $this->createLexer();
 
-        $parser = new Parser($lexer, $this->builder->rules, [
-            Parser::CONFIG_INITIAL_RULE => $this->builder->initial,
+        $parser = new Parser($lexer, $this->analyzer->rules, [
+            Parser::CONFIG_INITIAL_RULE => $this->analyzer->initial,
         ]);
 
         return $parser->parse($source);
+    }
+
+    /**
+     * @return LexerInterface
+     */
+    private function createLexer(): LexerInterface
+    {
+        if (\count($this->analyzer->tokens) === 1) {
+            return new Lexer($this->analyzer->tokens[Analyzer::STATE_DEFAULT], $this->analyzer->skip);
+        }
+
+        $states = [];
+
+        foreach ($this->analyzer->tokens as $state => $tokens) {
+            $states[$state] = new Lexer($tokens, $this->analyzer->skip);
+        }
+
+        return new Multistate($states, $this->analyzer->transitions);
     }
 
     /**
@@ -111,12 +131,18 @@ class Compiler implements ParserInterface
     {
         $ast = $this->run(File::new($source));
 
-        dump($ast);
-
         (new Traverser())
-            ->with($this->builder)
+            ->with($this->analyzer)
             ->traverse($ast);
 
         return $this;
+    }
+
+    /**
+     * @return Builder
+     */
+    public function build(): Builder
+    {
+        return new Builder($this->analyzer);
     }
 }

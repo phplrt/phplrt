@@ -31,6 +31,16 @@ class TokenDef extends Definition
     public $keep;
 
     /**
+     * @var string|null
+     */
+    public $state;
+
+    /**
+     * @var string|null
+     */
+    public $next;
+
+    /**
      * Pragma constructor.
      *
      * @param string $name

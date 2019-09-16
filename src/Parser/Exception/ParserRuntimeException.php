@@ -36,6 +36,8 @@ class ParserRuntimeException extends ParserException implements RuntimeException
      */
     public function __construct(string $message, TokenInterface $token, \Throwable $prev = null)
     {
+        $this->token = $token;
+
         parent::__construct($message, 0, $prev);
     }
 

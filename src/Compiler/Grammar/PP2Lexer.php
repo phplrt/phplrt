@@ -29,12 +29,12 @@ final class PP2Lexer extends Lexer
     /**
      * @var string
      */
-    public const T_TOKEN = 'T_TOKEN';
+    public const T_TOKEN_DEF = 'T_TOKEN_DEF';
 
     /**
      * @var string
      */
-    public const T_SKIP = 'T_SKIP';
+    public const T_SKIP_DEF = 'T_SKIP_DEF';
 
     /**
      * @var string
@@ -164,8 +164,8 @@ final class PP2Lexer extends Lexer
     private const LEXER_TOKENS = [
         self::T_PRAGMA              => '%pragma\\h+([\\w\\.]+)\\h+([^\\s]+)',
         self::T_INCLUDE             => '%include\\h+([^\\s]+)',
-        self::T_TOKEN               => '%token\\h+(\\w+)\\h+([^\\s]+)',
-        self::T_SKIP                => '%skip\\h+(\\w+)\\h+([^\\s]+)',
+        self::T_TOKEN_DEF           => '%token\\h+(?:(\\w+):)?(\\w+)\\h+([^\\s]+)(?:\\h*\\->\\h*([^\\s]+))?',
+        self::T_SKIP_DEF            => '%skip\\h+(\\w+)\\h+([^\\s]+)',
         self::T_OR                  => '\\|',
         self::T_TOKEN_SKIPPED       => '::(\\w+)::',
         self::T_TOKEN_KEPT          => '<(\\w+)>',

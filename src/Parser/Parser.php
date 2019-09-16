@@ -9,22 +9,24 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Source\File;
+use Phplrt\Position\Position;
+use Phplrt\Source\FileInterface;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Parser\Builder\Common;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Source\File;
-use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -184,10 +186,18 @@ class Parser implements ParserInterface
      */
     private function bootConfigs(array $options): void
     {
-        $this->eoi     = $options[static::CONFIG_EOI] ?? $this->eoi;
-        $this->buffer  = $options[static::CONFIG_BUFFER] ?? $this->buffer;
+        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
+        $this->buffer = $options[static::CONFIG_BUFFER] ?? $this->buffer;
         $this->builder = $options[static::CONFIG_AST_BUILDER] ?? $this->getDefaultBuilder();
         $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? $this->getDefaultInitialRule($this->rules);
+    }
+
+    /**
+     * @return BuilderInterface
+     */
+    private function getDefaultBuilder(): BuilderInterface
+    {
+        return new Common();
     }
 
     /**
@@ -197,14 +207,6 @@ class Parser implements ParserInterface
     private function getDefaultInitialRule(array $rules)
     {
         return \count($rules) ? \array_key_first($rules) : 0;
-    }
-
-    /**
-     * @return BuilderInterface
-     */
-    private function getDefaultBuilder(): BuilderInterface
-    {
-        return new Common();
     }
 
     /**
@@ -280,7 +282,7 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node  = null;
+        $this->node = null;
     }
 
     /**
@@ -301,7 +303,9 @@ class Parser implements ParserInterface
             $this->render($this->token ?? $buffer->current()),
         ]);
 
-        throw new ParserRuntimeException($message, $this->token ?? $buffer->current());
+        $error = new ParserRuntimeException($message, $this->token ?? $buffer->current());
+
+        throw static::error($error, $error->getToken()->getOffset(), $source);
     }
 
     /**
@@ -414,10 +418,46 @@ class Parser implements ParserInterface
     private function render(TokenInterface $token): string
     {
         if (\class_exists(Renderer::class)) {
-            return (new Renderer())->value($token);
+            return (new Renderer())->render($token);
         }
 
         return '"' . $token->getValue() . '"';
+    }
+
+    /**
+     * @param \Throwable $e
+     * @param int $offset
+     * @param ReadableInterface $source
+     * @return \Throwable
+     * @throws NotAccessibleException
+     * @throws \ReflectionException
+     * @throws \RuntimeException
+     */
+    public static function error(\Throwable $e, int $offset, ReadableInterface $source): \Throwable
+    {
+        if ($source instanceof FileInterface) {
+            self::insert($e, 'line', Position::fromOffset($source, $offset)->getLine());
+            self::insert($e, 'file', $source->getPathname());
+        }
+
+        return $e;
+    }
+
+    /**
+     * @param \Throwable $ctx
+     * @param string $property
+     * @param mixed $value
+     * @return void
+     * @throws \ReflectionException
+     */
+    private static function insert(\Throwable $ctx, string $property, $value): void
+    {
+        if (\property_exists($ctx, $property)) {
+            $reflection = new \ReflectionProperty($ctx, $property);
+
+            $reflection->setAccessible(true);
+            $reflection->setValue($ctx, $value);
+        }
     }
 
     /**

@@ -38,6 +38,11 @@ class Analyzer extends Visitor
     /**
      * @var string
      */
+    public const STATE_DEFAULT = 'default';
+
+    /**
+     * @var string
+     */
     public const PRAGMA_ROOT = 'root';
 
     /**
@@ -48,7 +53,14 @@ class Analyzer extends Visitor
     /**
      * @var array|string[]
      */
-    public $tokens = [];
+    public $tokens = [
+        self::STATE_DEFAULT => []
+    ];
+
+    /**
+     * @var array|string[]
+     */
+    public $transitions = [];
 
     /**
      * @var array|string[]
@@ -92,7 +104,17 @@ class Analyzer extends Visitor
     public function enter(NodeInterface $node)
     {
         if ($node instanceof TokenDef) {
-            $this->tokens[$node->name] = $node->value;
+            $state = $node->state ?: self::STATE_DEFAULT;
+
+            if (! \array_key_exists($state, $this->tokens)) {
+                $this->tokens[$state] = [];
+            }
+
+            $this->tokens[$state][$node->name] = $node->value;
+
+            if ($node->next) {
+                $this->transitions[$state][$node->name] = $node->next;
+            }
 
             if (! $node->keep) {
                 $this->skip[] = $node->name;
@@ -100,10 +122,10 @@ class Analyzer extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes = \array_reverse($this->tokens);
+            $lexemes = \array_reverse($this->tokens[self::STATE_DEFAULT]);
             $lexemes[$node->name] = $node->pattern;
 
-            $this->tokens = \array_reverse($lexemes);
+            $this->tokens[self::STATE_DEFAULT] = \array_reverse($lexemes);
         }
     }
 

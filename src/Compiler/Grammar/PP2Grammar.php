@@ -78,14 +78,14 @@ class PP2Grammar extends Parser implements GrammarInterface
             ]),
             13 => new Lexeme('T_PRAGMA'),
             14 => new Lexeme('T_INCLUDE'),
-            15 => new Lexeme('T_TOKEN'),
-            16 => new Lexeme('T_SKIP'),
+            15 => new Lexeme('T_TOKEN_DEF'),
+            16 => new Lexeme('T_SKIP_DEF'),
             17 => new Concatenation([10, 20, 28, 8, 9]),
             10 => new Alternation([
                 18,
                 19,
             ]),
-            18 => new Concatenation([26, 48]),
+            18 => new Concatenation([26, 27]),
             19 => new Concatenation([27]),
             20 => new Optional(48),
             12 => new Concatenation([25, 27]),
@@ -135,11 +135,11 @@ class PP2Grammar extends Parser implements GrammarInterface
             41 => new Lexeme('T_REPEAT_ZERO_TO_M'),
             42 => new Lexeme('T_REPEAT_N_OR_MORE'),
             43 => new Lexeme('T_REPEAT_EXACTLY_N'),
-            48 => new Alternation([12, 44]),
             44 => new Concatenation([45, 47, 46]),
             45 => new Lexeme('T_PHP_OPEN', false),
             46 => new Lexeme('T_PHP_CLOSE', false),
             47 => new Lexeme('T_PHP_CODE'),
+            48 => new Alternation([12, 44]),
         ];
     }
 
@@ -168,11 +168,24 @@ class PP2Grammar extends Parser implements GrammarInterface
             13 => static function (Composite $pragma): NodeInterface {
                 return new PragmaDef($pragma[0]->getValue(), $pragma[1]->getValue());
             },
-            15 => static function (Composite $pragma): NodeInterface {
-                return new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue());
+            15 => static function (Composite $token): NodeInterface {
+                /** @var TokenInterface[] $token */
+                [$state, $name, $pattern, $next] = $token;
+
+                $result = new TokenDef($name->getValue(), $pattern->getValue());
+
+                if ($state->getValue()) {
+                    $result->state = $state->getValue();
+                }
+
+                if ($next) {
+                    $result->next = $next->getValue();
+                }
+
+                return $result;
             },
-            16 => static function (Composite $pragma): NodeInterface {
-                return new TokenDef($pragma[0]->getValue(), $pragma[1]->getValue(), false);
+            16 => static function (Composite $skip): NodeInterface {
+                return new TokenDef($skip[0]->getValue(), $skip[1]->getValue(), false);
             },
             17 => static function (array $sequence): NodeInterface {
                 [$name, $keep, $delegate, $stmt] = $sequence;
@@ -191,11 +204,11 @@ class PP2Grammar extends Parser implements GrammarInterface
             34 => static function (Composite $invocation): NodeInterface {
                 return new RuleStmt($invocation[0]->getValue());
             },
-            32 => static function (Composite $invocation): NodeInterface {
-                return new TokenStmt($invocation[0]->getValue(), true);
+            32 => static function (Composite $token): NodeInterface {
+                return new TokenStmt($token[0]->getValue(), true);
             },
-            31 => static function (Composite $invocation): NodeInterface {
-                return new TokenStmt($invocation[0]->getValue(), false);
+            31 => static function (Composite $skip): NodeInterface {
+                return new TokenStmt($skip[0]->getValue(), false);
             },
             33 => static function (Composite $invocation): NodeInterface {
                 return new PatternStmt($invocation[0]->getValue());
