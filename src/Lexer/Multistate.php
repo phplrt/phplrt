@@ -50,7 +50,7 @@ class Multistate implements LexerInterface
         }, $states);
 
         $this->transitions = $transitions;
-        $this->state = $state ?? \count($states) ? \array_key_first($states) : 0;
+        $this->state       = $state ?? \count($states) ? \array_key_first($states) : 0;
     }
 
     /**

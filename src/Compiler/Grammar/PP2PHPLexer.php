@@ -9,10 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Lexer\Token\Nested;
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Nested;
 
 /**
  * Class PP2PHPLexer
@@ -47,16 +46,16 @@ class PP2PHPLexer implements LexerInterface
     public function lex($source, int $offset = 0): iterable
     {
         $children = [];
-        $value = '';
+        $value    = '';
 
         /** @var TokenInterface $inner */
         foreach ($this->lexer->lex($source, $offset) as $inner) {
             if ($inner->getName() === '{') {
-                $this->depth++;
+                ++$this->depth;
             }
 
             if ($inner->getName() === '}') {
-                $this->depth--;
+                --$this->depth;
             }
 
             if ($this->depth < 0) {

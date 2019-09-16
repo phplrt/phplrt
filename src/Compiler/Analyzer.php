@@ -9,26 +9,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Visitor\Visitor;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Visitor\Visitor;
 
 /**
  * Class Analyzer
@@ -54,7 +54,7 @@ class Analyzer extends Visitor
      * @var array|string[]
      */
     public $tokens = [
-        self::STATE_DEFAULT => []
+        self::STATE_DEFAULT => [],
     ];
 
     /**
@@ -122,7 +122,7 @@ class Analyzer extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes = \array_reverse($this->tokens[self::STATE_DEFAULT]);
+            $lexemes              = \array_reverse($this->tokens[self::STATE_DEFAULT]);
             $lexemes[$node->name] = $node->pattern;
 
             $this->tokens[self::STATE_DEFAULT] = \array_reverse($lexemes);

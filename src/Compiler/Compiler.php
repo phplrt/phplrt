@@ -9,20 +9,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Lexer\Lexer;
-use Phplrt\Source\File;
-use Phplrt\Parser\Parser;
-use Phplrt\Lexer\Multistate;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Visitor\TraverserInterface;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Compiler\Grammar\GrammarInterface;
-use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Lexer\Lexer;
+use Phplrt\Lexer\Multistate;
+use Phplrt\Parser\Parser;
+use Phplrt\Source\File;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Visitor\TraverserInterface;
 
 /**
  * Class Compiler
@@ -54,7 +54,7 @@ class Compiler implements ParserInterface
         $this->grammar = $grammar ?? new PP2Grammar();
 
         $this->preloader = $this->bootPreloader($ids = new IdCollection());
-        $this->analyzer = new Analyzer($ids);
+        $this->analyzer  = new Analyzer($ids);
     }
 
     /**
