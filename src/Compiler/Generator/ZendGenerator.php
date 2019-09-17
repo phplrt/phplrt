@@ -11,8 +11,8 @@ namespace Phplrt\Compiler\Generator;
 
 use Phplrt\Compiler\Analyzer;
 use Phplrt\Parser\Rule\RuleInterface;
-use Zend\Code\Generator\ValueGenerator;
 use Zend\Code\Generator\Exception\RuntimeException;
+use Zend\Code\Generator\ValueGenerator;
 
 /**
  * Class ZendGenerator
@@ -74,7 +74,7 @@ class ZendGenerator extends Generator
     public function value($value, bool $multiline = true): string
     {
         $output = $multiline ? ValueGenerator::OUTPUT_MULTIPLE_LINE : ValueGenerator::OUTPUT_SINGLE_LINE;
-        $type = ValueGenerator::TYPE_AUTO;
+        $type   = ValueGenerator::TYPE_AUTO;
 
         return (new ValueGenerator($value, $type, $output))->generate();
     }

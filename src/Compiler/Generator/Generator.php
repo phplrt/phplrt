@@ -84,8 +84,8 @@ abstract class Generator implements GeneratorInterface
     {
         $this->fqn = '\\' . \trim($fqn, '\\');
 
-        $chunks = \explode('\\', \trim($this->fqn, '\\'));
-        $this->class = \array_pop($chunks);
+        $chunks          = \explode('\\', \trim($this->fqn, '\\'));
+        $this->class     = \array_pop($chunks);
         $this->namespace = \implode('\\', $chunks) ?: null;
     }
 
