@@ -32,6 +32,14 @@ class Concatenation extends Production
     }
 
     /**
+     * @return array
+     */
+    public function getConstructorArguments(): array
+    {
+        return [$this->sequence];
+    }
+
+    /**
      * @param BufferInterface $buffer
      * @param \Closure $reduce
      * @return iterable|null

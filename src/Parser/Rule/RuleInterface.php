@@ -14,4 +14,8 @@ namespace Phplrt\Parser\Rule;
  */
 interface RuleInterface
 {
+    /**
+     * @return array
+     */
+    public function getConstructorArguments(): array;
 }

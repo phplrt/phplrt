@@ -125,17 +125,10 @@ class Traverser implements TraverserInterface
      */
     public function with(VisitorInterface $visitor, bool $prepend = false): TraverserInterface
     {
-        $self = clone $this;
+        $fn = $prepend ? '\\array_unshift' : '\\array_push';
+        $fn($this->visitors, $visitor);
 
-        if ($prepend) {
-            $visitors                             = \array_reverse($self->visitors);
-            $visitors[\spl_object_hash($visitor)] = $visitor;
-            $self->visitors                       = \array_reverse($visitors);
-        } else {
-            $self->visitors[\spl_object_hash($visitor)] = $visitor;
-        }
-
-        return $self;
+        return $this;
     }
 
     /**
@@ -144,10 +137,11 @@ class Traverser implements TraverserInterface
      */
     public function without(VisitorInterface $visitor): TraverserInterface
     {
-        $self = clone $this;
-        unset($self->visitors[\spl_object_hash($visitor)]);
+        $this->visitors = \array_filter($this->visitors, static function (VisitorInterface $haystack) use ($visitor) {
+            return $haystack !== $visitor;
+        });
 
-        return $self;
+        return $this;
     }
 
     /**

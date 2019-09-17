@@ -22,7 +22,7 @@ class ClassDelegateStmt extends DelegateStmt
      */
     public function __construct(string $class)
     {
-        $code = \sprintf('return new \\%s($name, $children, $offset);', \ltrim($class, '\\'));
+        $code = \sprintf('return new \\%s((string)$state, (array)$children, $offset);', \ltrim($class, '\\'));
 
         parent::__construct($code);
     }

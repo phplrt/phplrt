@@ -9,26 +9,28 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Ast\Def\PragmaDef;
-use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\RuleStmt;
-use Phplrt\Compiler\Ast\Stmt\Statement;
-use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Visitor\Visitor;
 use Phplrt\Parser\Rule\Lexeme;
 use Phplrt\Parser\Rule\Optional;
 use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Parser\Rule\Concatenation;
 use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Visitor\Visitor;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\RuleStmt;
+use Phplrt\Compiler\Ast\Stmt\Statement;
+use Phplrt\Compiler\Ast\Stmt\TokenStmt;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Analyzer
@@ -49,6 +51,11 @@ class Analyzer extends Visitor
      * @var array|RuleInterface
      */
     public $rules = [];
+
+    /**
+     * @var array|string[]
+     */
+    public $reducers = [];
 
     /**
      * @var array|string[]
@@ -122,7 +129,7 @@ class Analyzer extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes              = \array_reverse($this->tokens[self::STATE_DEFAULT]);
+            $lexemes = \array_reverse($this->tokens[self::STATE_DEFAULT]);
             $lexemes[$node->name] = $node->pattern;
 
             $this->tokens[self::STATE_DEFAULT] = \array_reverse($lexemes);
@@ -133,23 +140,26 @@ class Analyzer extends Visitor
      * @param NodeInterface $node
      * @return mixed|void|null
      * @throws ParserRuntimeException
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     public function leave(NodeInterface $node)
     {
         if ($node instanceof PragmaDef) {
-            switch ($node->name) {
-                case self::PRAGMA_ROOT:
-                    $this->initial = $this->name($node->value);
-                    break;
-
-                default:
-                    $error = 'Unrecognized pragma "%s"';
-                    throw new GrammarException(\sprintf($error, $node->name), $node->file, $node->offset);
+            if ($node->name !== self::PRAGMA_ROOT) {
+                $error = 'Unrecognized pragma "%s"';
+                throw new GrammarException(\sprintf($error, $node->name), $node->file, $node->offset);
             }
+
+            $this->initial = $this->name($node->value);
         }
 
         if ($node instanceof RuleDef) {
-            $this->register($this->rule($node), $node->name);
+            $id = $this->register($this->rule($node), $node->name);
+
+            if ($node->delegate->code !== null) {
+                $this->reducers[$id] = $node->delegate->code;
+            }
         }
     }
 
@@ -180,6 +190,8 @@ class Analyzer extends Visitor
         if ($name === null) {
             $this->rules[$this->counter] = $rule;
 
+            \ksort($this->rules);
+
             return $this->counter++;
         }
 
@@ -187,13 +199,19 @@ class Analyzer extends Visitor
 
         $this->rules[$id] = $rule;
 
+        if ($this->initial === null) {
+            $this->initial = $id;
+        }
+
         return $id;
     }
 
     /**
      * @param RuleDef $def
      * @return RuleInterface
+     * @throws NotAccessibleException
      * @throws ParserRuntimeException
+     * @throws \RuntimeException
      */
     private function rule(RuleDef $def): RuleInterface
     {
@@ -205,7 +223,9 @@ class Analyzer extends Visitor
     /**
      * @param Statement $statement
      * @return RuleInterface|string
+     * @throws NotAccessibleException
      * @throws ParserRuntimeException
+     * @throws \RuntimeException
      */
     private function reduce(Statement $statement)
     {
@@ -244,7 +264,9 @@ class Analyzer extends Visitor
     /**
      * @param AlternationStmt $choice
      * @return array
+     * @throws NotAccessibleException
      * @throws ParserRuntimeException
+     * @throws \RuntimeException
      */
     private function loadForAlternation(AlternationStmt $choice): array
     {
@@ -253,6 +275,7 @@ class Analyzer extends Visitor
         foreach ($choice->statements as $stmt) {
             $choices[] = $this->map($this->reduce($stmt));
 
+            /** @noinspection LoopWhichDoesNotLoopInspection */
             foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
                 $error = 'The alternation (OR condition) contains excess repeating relation %s';
                 throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
@@ -278,7 +301,9 @@ class Analyzer extends Visitor
     /**
      * @param mixed $stmt
      * @return array|int|int[]|string|string[]
+     * @throws NotAccessibleException
      * @throws ParserRuntimeException
+     * @throws \RuntimeException
      */
     private function load($stmt)
     {
@@ -307,7 +332,9 @@ class Analyzer extends Visitor
     /**
      * @param array $statements
      * @return array
+     * @throws NotAccessibleException
      * @throws ParserRuntimeException
+     * @throws \RuntimeException
      */
     private function reduceAll(array $statements): array
     {
@@ -323,6 +350,8 @@ class Analyzer extends Visitor
     /**
      * @param TokenStmt $token
      * @return Lexeme
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     private function tokenRelation(TokenStmt $token): Lexeme
     {
@@ -338,6 +367,8 @@ class Analyzer extends Visitor
     /**
      * @param RuleStmt $rule
      * @return int|string
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     private function ruleRelation(RuleStmt $rule)
     {

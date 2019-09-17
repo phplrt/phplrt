@@ -33,6 +33,6 @@ class EndlessRecursionException extends LexerRuntimeException
     {
         $token = $token ?? new Token('', '', 0);
 
-        parent::__construct(\sprintf(static::ERROR_ENDLESS_TRANSITIONS, $state), $token, $prev);
+        parent::__construct(\sprintf(static::ERROR_ENDLESS_TRANSITIONS, $token ?? $state), $token, $prev);
     }
 }

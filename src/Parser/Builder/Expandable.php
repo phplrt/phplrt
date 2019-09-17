@@ -61,7 +61,7 @@ class Expandable implements BuilderInterface
     public function build(RuleInterface $rule, TokenInterface $token, $state, $children)
     {
         if (isset($this->reducers[$state])) {
-            return $this->reducers[$state]($children, $token->getOffset());
+            return $this->reducers[$state]($children, $token->getOffset(), $state);
         }
 
         return null;

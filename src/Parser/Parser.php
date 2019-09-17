@@ -9,24 +9,24 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Source\File;
+use Phplrt\Position\Position;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Source\FileInterface;
+use Phplrt\Parser\Builder\Common;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
-use Phplrt\Position\Position;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Source\File;
-use Phplrt\Source\FileInterface;
-use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -90,6 +90,16 @@ class Parser implements ParserInterface
         'Please note that if Xdebug is enabled, a "Fatal error: Maximum function nesting level of "%d" ' .
         'reached, aborting!" errors may occur. In the second case, it is worth increasing the ini value ' .
         'or disabling the extension.';
+
+    /**
+     * @var string
+     */
+    private const ERROR_REDUCER_RESULT = 'Reducer result constraint violation: %s';
+
+    /**
+     * @var string
+     */
+    private const ERROR_BUFFER_TYPE = 'Buffer class should implement %s interface';
 
     /**
      * Contains the readonly token object which was last successfully processed
@@ -186,27 +196,10 @@ class Parser implements ParserInterface
      */
     private function bootConfigs(array $options): void
     {
-        $this->eoi     = $options[static::CONFIG_EOI] ?? $this->eoi;
-        $this->buffer  = $options[static::CONFIG_BUFFER] ?? $this->buffer;
-        $this->builder = $options[static::CONFIG_AST_BUILDER] ?? $this->getDefaultBuilder();
-        $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? $this->getDefaultInitialRule($this->rules);
-    }
-
-    /**
-     * @return BuilderInterface
-     */
-    private function getDefaultBuilder(): BuilderInterface
-    {
-        return new Common();
-    }
-
-    /**
-     * @param array $rules
-     * @return int|mixed|string|null
-     */
-    private function getDefaultInitialRule(array $rules)
-    {
-        return \count($rules) ? \array_key_first($rules) : 0;
+        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
+        $this->buffer = $options[static::CONFIG_BUFFER] ?? $this->buffer;
+        $this->builder = $options[static::CONFIG_AST_BUILDER] ?? new Common();
+        $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules);
     }
 
     /**
@@ -247,7 +240,16 @@ class Parser implements ParserInterface
 
         $this->reset($buffer);
 
-        return $this->parseOrFail($source, $buffer);
+        return $this->filter($this->parseOrFail($source, $buffer));
+    }
+
+    /**
+     * @param mixed $result
+     * @return array|mixed
+     */
+    private function filter($result)
+    {
+        return \is_array($result) ? \array_filter($result, '\\is_iterable') : $result;
     }
 
     /**
@@ -256,14 +258,19 @@ class Parser implements ParserInterface
      */
     private function getBuffer(\Generator $stream): BufferInterface
     {
-        \assert(
-            \is_subclass_of($this->buffer, BufferInterface::class),
-            'Buffer class should implement ' . BufferInterface::class
-        );
+        \assert($this->assertBufferType(), \sprintf(self::ERROR_BUFFER_TYPE, BufferInterface::class));
 
         $class = $this->buffer;
 
         return new $class($stream);
+    }
+
+    /**
+     * @return bool
+     */
+    private function assertBufferType(): bool
+    {
+        return \is_subclass_of($this->buffer, BufferInterface::class);
     }
 
     /**
@@ -282,7 +289,7 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node  = null;
+        $this->node = null;
     }
 
     /**
@@ -359,12 +366,9 @@ class Parser implements ParserInterface
         }
 
         // Assert reducer type
-        \assert(
-            $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result),
-            'Reducer constraint violation: ' . (\is_object($result) ? \get_class($result) : \gettype($result))
-        );
+//        \assert($this->assertResult($result), \sprintf(self::ERROR_REDUCER_RESULT, $this->getType($result)));
 
-        return $this->build($token, $state, $result);
+        return $this->buildAst($token, $state, $result);
     }
 
     /**
@@ -382,12 +386,30 @@ class Parser implements ParserInterface
     }
 
     /**
+     * @param mixed $result
+     * @return bool
+     */
+    private function assertResult($result): bool
+    {
+        return $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result);
+    }
+
+    /**
+     * @param mixed $result
+     * @return string
+     */
+    private function getType($result): string
+    {
+        return \is_object($result) ? \get_class($result) : \gettype($result);
+    }
+
+    /**
      * @param TokenInterface $token
      * @param int|string $state
      * @param mixed $result
      * @return mixed|null
      */
-    private function build(TokenInterface $token, $state, $result)
+    private function buildAst(TokenInterface $token, $state, $result)
     {
         $result = $this->builder->build($this->rules[$state], $token, $state, $result) ?? $result;
 

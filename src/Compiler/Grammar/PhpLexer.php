@@ -9,11 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\File;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class PP2PhpLexer
@@ -36,22 +37,11 @@ class PhpLexer implements LexerInterface
     }
 
     /**
-     * @param int|string $id
-     * @return string
-     */
-    private function getName($id): string
-    {
-        if (\is_string($id)) {
-            return $id;
-        }
-
-        return \token_name($id);
-    }
-
-    /**
      * @param resource|string|ReadableInterface $source
      * @param int $offset
      * @return iterable
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     public function lex($source, int $offset = 0): iterable
     {
@@ -90,5 +80,18 @@ class PhpLexer implements LexerInterface
         $prefix = $this->inline ? '<?php ' : '';
 
         return $prefix . ($offset === 0 ? $source : \substr($source, $offset));
+    }
+
+    /**
+     * @param int|string $id
+     * @return string
+     */
+    private function getName($id): string
+    {
+        if (\is_string($id)) {
+            return $id;
+        }
+
+        return \token_name($id);
     }
 }

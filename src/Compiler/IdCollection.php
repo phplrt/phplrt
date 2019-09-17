@@ -51,7 +51,7 @@ class IdCollection extends Visitor
      */
     public function lexeme(string $name): ?bool
     {
-        return $this->tokens[$name];
+        return $this->tokens[$name] ?? null;
     }
 
     /**

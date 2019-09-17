@@ -34,6 +34,14 @@ class Optional extends Production
     }
 
     /**
+     * @return array
+     */
+    public function getConstructorArguments(): array
+    {
+        return [$this->rule];
+    }
+
+    /**
      * @param BufferInterface $buffer
      * @param \Closure $reduce
      * @return NodeInterface|TokenInterface|array|null

@@ -37,6 +37,6 @@ class ConcatenationStmt extends Statement
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->statements);
+        return new \ArrayIterator(['statements' => $this->statements]);
     }
 }

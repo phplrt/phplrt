@@ -36,6 +36,14 @@ class Lexeme extends Terminal
     }
 
     /**
+     * @return array
+     */
+    public function getConstructorArguments(): array
+    {
+        return [$this->token, $this->keep];
+    }
+
+    /**
      * @param BufferInterface $buffer
      * @return TokenInterface|null
      */

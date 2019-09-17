@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Driver\Markers;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Lexer\Driver\Markers;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Lexer
@@ -46,7 +48,7 @@ class Lexer implements LexerInterface
     public function __construct(array $tokens, array $skip = [])
     {
         $this->tokens = $tokens;
-        $this->skip   = $skip;
+        $this->skip = $skip;
     }
 
     /**
@@ -97,10 +99,12 @@ class Lexer implements LexerInterface
      * @param resource|string $source
      * @param int $offset
      * @return iterable
+     * @throws LexerExceptionInterface
+     * @throws RuntimeExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable
     {
-        $driver  = $this->driver ?? $this->driver  = $this->getDriver();
+        $driver = $this->driver ?? $this->driver = $this->getDriver();
         $unknown = [];
 
         foreach ($driver->lex($source, $offset) as $token) {

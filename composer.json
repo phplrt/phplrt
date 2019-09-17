@@ -31,7 +31,7 @@
         "ext-pcre": "*",
         "psr/log": "~1.1",
         "ext-mbstring": "*",
-        "nette/php-generator": "~3.0",
+        "zendframework/zend-code": "~3.0",
         "symfony/polyfill-php73": "~1.12",
         "phplrt/parser-contracts": "~2.0",
         "phplrt/lexer-contracts": "~2.0",

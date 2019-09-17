@@ -17,7 +17,7 @@ use Phplrt\Parser\Buffer\BufferInterface;
 class Repetition extends Production
 {
     /**
-     * @var int|float
+     * @var int
      */
     public $gte;
 
@@ -38,13 +38,21 @@ class Repetition extends Production
      * @param int|float $gte
      * @param int|float $lte
      */
-    public function __construct($rule, float $gte = 0, float $lte = \INF)
+    public function __construct($rule, int $gte = 0, float $lte = \INF)
     {
         \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
 
         $this->rule = $rule;
         $this->gte  = $gte;
-        $this->lte  = $lte;
+        $this->lte  = \is_infinite($lte) ? INF : (int)$lte;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConstructorArguments(): array
+    {
+        return [$this->rule, $this->gte, $this->lte];
     }
 
     /**
