@@ -1,5 +1,5 @@
 parameters:
-    package_alias_format: '<major>.<minor>.x-dev'
+    package_alias_format: '<major>.0.x-dev'
     merge_sections:
         - 'provide'
         - 'require'

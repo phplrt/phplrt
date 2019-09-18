@@ -3,13 +3,7 @@
     "type": "library",
     "description": "A set of phplrt source abstractions",
     "license": "MIT",
-    "keywords": [
-        "file",
-        "source",
-        "io",
-        "disk",
-        "read"
-    ],
+    "keywords": ["file", "source", "io", "disk", "read"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/source-contracts/issues",
@@ -31,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "config": {

@@ -3,16 +3,7 @@
     "type": "library",
     "description": "A set of phplrt ast abstractions",
     "license": "MIT",
-    "keywords": [
-        "abstractions",
-        "contracts",
-        "decoupling",
-        "interfaces",
-        "interoperability",
-        "standards",
-        "ast",
-        "tree"
-    ],
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "ast", "tree"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/ast-contracts/issues",
@@ -34,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "config": {

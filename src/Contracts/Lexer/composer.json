@@ -3,20 +3,7 @@
     "type": "library",
     "description": "A set of phplrt lexer abstractions",
     "license": "MIT",
-    "keywords": [
-        "abstractions",
-        "contracts",
-        "decoupling",
-        "interfaces",
-        "interoperability",
-        "standards",
-        "regex",
-        "lexer",
-        "token",
-        "stream",
-        "parsing",
-        "tokenizer"
-    ],
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "regex", "lexer", "token", "stream", "parsing", "tokenizer"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/lexer-contracts/issues",
@@ -38,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "config": {
