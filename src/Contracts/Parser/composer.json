@@ -1,0 +1,49 @@
+{
+    "name": "phplrt/parser-contracts",
+    "type": "library",
+    "description": "A set of phplrt parser abstractions",
+    "license": "MIT",
+    "keywords": [
+        "abstractions",
+        "contracts",
+        "decoupling",
+        "interfaces",
+        "interoperability",
+        "standards",
+        "parser",
+        "syntax",
+        "analysis",
+        "language",
+        "php"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/parser-contracts/issues",
+        "source": "https://github.com/phplrt/parser-contracts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "phplrt/ast-contracts": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Parser\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
