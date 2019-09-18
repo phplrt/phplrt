@@ -11,8 +11,8 @@ namespace Phplrt\Compiler\Generator;
 
 use Phplrt\Compiler\Analyzer;
 use Phplrt\Parser\Rule\RuleInterface;
-use Zend\Code\Generator\Exception\RuntimeException;
 use Zend\Code\Generator\ValueGenerator;
+use Zend\Code\Generator\Exception\RuntimeException;
 
 /**
  * Class ZendGenerator

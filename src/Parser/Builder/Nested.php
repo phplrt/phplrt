@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Nested

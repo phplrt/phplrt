@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Stub;
 
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Visitor\VisitorInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 
 class Counter implements VisitorInterface
 {

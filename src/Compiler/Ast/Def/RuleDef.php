@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast\Def;
 
-use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
+use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 
 /**
  * Class RuleDef

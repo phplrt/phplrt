@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class EndlessRecursionException

@@ -16,6 +16,5 @@ interface PositionInterface
 {
     public function getLine();
 
-
     public function getColumn(): int;
 }

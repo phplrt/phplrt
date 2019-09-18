@@ -9,34 +9,34 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Compiler\Ast\Def\PragmaDef;
-use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Parser\Parser;
+use Phplrt\Lexer\Multistate;
 use Phplrt\Compiler\Ast\Node;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
-use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Compiler\Ast\Stmt\Quantifier;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Parser\Rule\Lexeme;
+use Phplrt\Parser\Rule\Optional;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Parser\Rule\Repetition;
+use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Compiler\Ast\Def\RuleDef;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Compiler\Ast\Def\TokenDef;
+use Phplrt\Parser\Builder\Expandable;
+use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Multistate;
-use Phplrt\Lexer\Token\Composite;
+use Phplrt\Compiler\Ast\Stmt\Quantifier;
+use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
 use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Builder\Expandable;
-use Phplrt\Parser\Parser;
-use Phplrt\Parser\Rule\Alternation;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 
 /**
  * Class GrammarParser

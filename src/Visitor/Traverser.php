@@ -45,8 +45,8 @@ namespace Phplrt\Visitor;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Visitor\Exception\AttributeException;
 use Phplrt\Visitor\Exception\BadMethodException;
-use Phplrt\Visitor\Exception\BadReturnTypeException;
 use Phplrt\Visitor\Exception\BrokenTreeException;
+use Phplrt\Visitor\Exception\BadReturnTypeException;
 
 /**
  * Class Traverser

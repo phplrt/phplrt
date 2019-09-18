@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Tests\Position;
 
 use Phplrt\Position\Position;
-use Phplrt\Source\Exception\NotAccessibleException;
 use PHPUnit\Framework\ExpectationFailedException;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class ColumnsTestCase

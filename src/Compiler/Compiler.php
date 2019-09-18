@@ -9,22 +9,22 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Compiler\Generator\GeneratorInterface;
-use Phplrt\Compiler\Generator\ZendGenerator;
-use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Lexer\Lexer;
+use Phplrt\Source\File;
+use Phplrt\Parser\Parser;
+use Phplrt\Lexer\Multistate;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Visitor\TraverserInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Compiler\Generator\ZendGenerator;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Generator\GeneratorInterface;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Lexer;
-use Phplrt\Lexer\Multistate;
-use Phplrt\Parser\Parser;
-use Phplrt\Source\File;
-use Phplrt\Source\ReadableInterface;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Visitor\TraverserInterface;
 
 /**
  * Class Compiler

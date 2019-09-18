@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
-use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\File;
 use Phplrt\Source\ReadableInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Trait FactoryTrait
