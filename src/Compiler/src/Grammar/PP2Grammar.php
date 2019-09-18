@@ -18,7 +18,6 @@ use Phplrt\Lexer\Token\Composite;
 use Phplrt\Parser\Rule\Repetition;
 use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Parser\Builder\Expandable;
 use Phplrt\Parser\Rule\Concatenation;
@@ -35,6 +34,7 @@ use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt;
 use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 

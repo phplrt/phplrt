@@ -96,7 +96,6 @@ class ParserRuntimeException extends ParserException implements ParserRuntimeExc
         return $this->node;
     }
 
-
     /**
      * @return TokenInterface
      */

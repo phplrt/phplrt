@@ -15,25 +15,27 @@ echo '<?php';
 declare(strict_types=1);
 
 <?php if ($this->namespace): ?>
-namespace <?=$this->namespace?>;
+namespace <?=$this->namespace; ?>;
 <?php endif; ?>
 
 /**
  * The main class of the generated parser.
  *
- * @package <?=$this->fqn?>
+ * @package <?=$this->fqn; ?>
 
- * @generator \<?=static::class?>
+ * @generator \<?=static::class; ?>
 
  */
 class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     \Phplrt\Parser\Builder\BuilderInterface
 {
 <?php foreach ($this->getTokens() as $name => $value): ?>
-<?php if (\is_int($name)) { continue; } ?>
+<?php if (\is_int($name)) {
+    continue;
+} ?>
 
     /** @var string */
-    public const <?=$this->constantName($name)?> = <?=$this->value($name)?>;
+    public const <?=$this->constantName($name); ?> = <?=$this->value($name); ?>;
 <?php endforeach; ?>
 
     /**
@@ -42,9 +44,9 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     private const LEXER_TOKENS = [
 <?php foreach ($this->getTokens() as $name => $value): ?>
 <?php if (\is_int($name)): ?>
-        <?=$this->value($name)?> => <?=$this->value($value)?>,
+        <?=$this->value($name); ?> => <?=$this->value($value); ?>,
 <?php else: ?>
-        self::<?=$this->constantName($name)?> => <?=$this->value($value)?>,
+        self::<?=$this->constantName($name); ?> => <?=$this->value($value); ?>,
 <?php endif; ?>
 <?php endforeach; ?>
     ];
@@ -54,7 +56,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
      */
     private const LEXER_SKIPS = [
 <?php foreach ($this->analyzer->skip as $name => $value): ?>
-        <?=$this->value($value)?>,
+        <?=$this->value($value); ?>,
 <?php endforeach; ?>
     ];
 
@@ -70,14 +72,14 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     public $reducers = [];
 
     /**
-     * <?=$this->class?> class constructor.
+     * <?=$this->class; ?> class constructor.
      */
     public function __construct()
     {
         $this->lexer = new \Phplrt\Lexer\Lexer(self::LEXER_TOKENS, self::LEXER_SKIPS);
 
         parent::__construct($this->lexer, $this->grammar(), [
-            self::CONFIG_INITIAL_RULE   => <?=$this->value($this->analyzer->initial)?>,
+            self::CONFIG_INITIAL_RULE   => <?=$this->value($this->analyzer->initial); ?>,
             self::CONFIG_AST_BUILDER    => $this,
         ]);
     }
@@ -89,7 +91,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     {
         return [
 <?php foreach ($this->getRules() as $id => $rule): ?>
-            <?=$this->value($id)?> => <?=$this->rule($rule)?>,
+            <?=$this->value($id); ?> => <?=$this->rule($rule); ?>,
 <?php endforeach; ?>
         ];
     }
@@ -104,8 +106,8 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
         try {
             switch ((string)$state) {
 <?php foreach ($this->analyzer->reducers as $id => $code): ?>
-                case <?=$this->value((string)$id)?>:
-                    <?=$code?>
+                case <?=$this->value((string)$id); ?>:
+                    <?=$code; ?>
 
                     break;
 <?php endforeach; ?>

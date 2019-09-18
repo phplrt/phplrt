@@ -16,5 +16,4 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  */
 interface CompositeTokenInterface extends TokenInterface, \IteratorAggregate, \Countable, \ArrayAccess
 {
-
 }
