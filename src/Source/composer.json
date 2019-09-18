@@ -1,7 +1,7 @@
 {
     "name": "phplrt/source",
     "type": "library",
-    "description": "The phplrt sources package.",
+    "description": "The phplrt sources package",
     "license": "MIT",
     "keywords": [
         "file",
@@ -32,6 +32,9 @@
     },
     "require-dev": {
         "psr/http-message": "~1.0"
+    },
+    "provide": {
+        "phplrt/source-contracts-implementation": "~2.0"
     },
     "extra": {
         "branch-alias": {

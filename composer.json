@@ -1,24 +1,14 @@
 {
-    "name": "phplrt/phplrt",
-    "type": "library",
-    "description": "PHP Language Recognition Tool",
-    "license": "MIT",
-    "keywords": [
-        "compiler",
-        "parser",
-        "ast",
-        "trace",
-        "llk",
-        "ll1",
-        "lookahead",
-        "buffer",
-        "grammar"
-    ],
-    "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/phplrt"
     },
+    "name": "phplrt/phplrt",
+    "type": "library",
+    "description": "PHP Language Recognition Tool",
+    "keywords": ["compiler", "parser", "ast", "trace", "llk", "ll1", "lookahead", "buffer", "grammar"],
+    "homepage": "https://github.com/phplrt",
+    "license": "MIT",
     "authors": [
         {
             "name": "Kirill Nesmeyanov",
@@ -27,26 +17,11 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "ext-spl": "*",
-        "ext-pcre": "*",
-        "psr/log": "~1.1",
         "ext-mbstring": "*",
-        "zendframework/zend-code": "~3.0",
+        "ext-pcre": "*",
+        "ext-spl": "*",
         "symfony/polyfill-php73": "~1.12",
-        "phplrt/parser-contracts": "~2.0",
-        "phplrt/lexer-contracts": "~2.0",
-        "phplrt/ast-contracts": "~2.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Phplrt\\": "src/"
-        }
-    },
-    "replace": {
-        "phplrt/lexer": "*",
-        "phplrt/parser": "*",
-        "phplrt/position": "*",
-        "phplrt/visitor": "*"
+        "zendframework/zend-code": "~3.0"
     },
     "require-dev": {
         "brianium/paratest": "^2.1",
@@ -59,29 +34,55 @@
         "symfony/var-dumper": "~3.4|~4.0",
         "symplify/monorepo-builder": "^6.1"
     },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Compiler\\": "src/Compiler/",
+            "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
+            "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
+            "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
+            "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
+            "Phplrt\\Lexer\\": "src/Lexer/",
+            "Phplrt\\Parser\\": "src/Parser/",
+            "Phplrt\\Position\\": "src/Position/",
+            "Phplrt\\Source\\": "src/Source/",
+            "Phplrt\\Visitor\\": "src/Visitor/"
+        }
+    },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Tests\\": "tests/"
+            "Phplrt\\Tests\\": "tests"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "master": "2.0.x-dev"
-        }
+    "replace": {
+        "phplrt/lexer": "self.version",
+        "phplrt/parser": "self.version",
+        "phplrt/position": "self.version",
+        "phplrt/visitor": "self.version",
+        "phplrt/ast-contracts": "self.version",
+        "phplrt/compiler": "self.version",
+        "phplrt/lexer-contracts": "self.version",
+        "phplrt/parser-contracts": "self.version",
+        "phplrt/source": "self.version",
+        "phplrt/source-contracts": "self.version"
     },
     "provide": {
-        "phplrt/ast-contracts-implementation": "2.0",
-        "phplrt/lexer-contracts-implementation": "2.0",
-        "phplrt/parser-contracts-implementation": "2.0"
-    },
-    "config": {
-        "sort-packages": true
+        "phplrt/lexer-contracts-implementation": "~2.0",
+        "phplrt/parser-contracts-implementation": "~2.0",
+        "phplrt/source-contracts-implementation": "~2.0"
     },
     "scripts": {
         "phpcbf": [
             "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src"
         ]
     },
+    "config": {
+        "sort-packages": true
+    },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "master": "2.0.x-dev"
+        }
+    }
 }

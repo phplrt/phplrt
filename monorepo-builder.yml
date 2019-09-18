@@ -1,7 +1,18 @@
 parameters:
+    package_alias_format: '<major>.<minor>.x-dev'
+    merge_sections:
+        - 'provide'
+        - 'require'
+        - 'require-dev'
+        - 'autoload'
+        - 'autoload-dev'
+        - 'repositories'
     package_directories:
         - 'src'
     data_to_append:
+        autoload-dev:
+            psr-4:
+                'Phplrt\Tests\': 'tests'
         require-dev:
             brianium/paratest: '^2.1'
             illuminate/support: '~6.0'
@@ -16,14 +27,14 @@ parameters:
     # for "split" command
     directories_to_repositories:
         # Packages
-        phplrt/lexer: 'git@github.com:phplrt/lexer.git'
-        phplrt/parser: 'git@github.com:phplrt/parser.git'
-        phplrt/position: 'git@github.com:phplrt/position.git'
-        phplrt/visitor: 'git@github.com:phplrt/visitor.git'
-        phplrt/compiler: 'git@github.com:phplrt/compiler.git'
-        phplrt/source: 'git@github.com:phplrt/source.git'
+        src/Compiler: 'git@github.com:phplrt/compiler.git'
+        src/Lexer: 'git@github.com:phplrt/lexer.git'
+        src/Parser: 'git@github.com:phplrt/parser.git'
+        src/Position: 'git@github.com:phplrt/position.git'
+        src/Source: 'git@github.com:phplrt/source.git'
+        src/Visitor: 'git@github.com:phplrt/visitor.git'
         # Contracts
-        phplrt/lexer-contracts: 'git@github.com:phplrt/lexer-contracts.git'
-        phplrt/parser-contracts: 'git@github.com:phplrt/parser-contracts.git'
-        phplrt/ast-contracts: 'git@github.com:phplrt/ast-contracts.git'
-        phplrt/source-contracts: 'git@github.com:phplrt/source-contracts.git'
+        src/Contracts/Ast: 'git@github.com:phplrt/ast-contracts.git'
+        src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
+        src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'
+        src/Contracts/Source: 'git@github.com:phplrt/source-contracts.git'
