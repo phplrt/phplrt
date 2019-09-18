@@ -38,6 +38,21 @@ abstract class Generator implements GeneratorInterface
     protected $analyzer;
 
     /**
+     * @var array|string[]
+     */
+    protected $constants = [];
+
+    /**
+     * @var array|string[]
+     */
+    protected $properties = [];
+
+    /**
+     * @var array|string[]
+     */
+    protected $methods = [];
+
+    /**
      * Generator constructor.
      *
      * @param Analyzer $analyzer
@@ -75,6 +90,11 @@ abstract class Generator implements GeneratorInterface
 
         return $rules;
     }
+
+    /**
+     * @return array|string
+     */
+    abstract public function getTokens(): array;
 
     /**
      * @param string $fqn

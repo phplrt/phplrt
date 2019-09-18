@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 <?php if ($this->namespace): ?>
 namespace <?=$this->namespace; ?>;
-<?php endif; ?>
 
+<?php endif; ?>
 /**
  * The main class of the generated parser.
  *
@@ -29,10 +29,11 @@ namespace <?=$this->namespace; ?>;
 class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     \Phplrt\Parser\Builder\BuilderInterface
 {
-<?php foreach ($this->getTokens() as $name => $value): ?>
-<?php if (\is_int($name)) {
-    continue;
-} ?>
+<?php foreach ($this->getTokens() as $name => $value):
+    if (\is_int($name)) {
+        continue;
+    }
+?>
 
     /** @var string */
     public const <?=$this->constantName($name); ?> = <?=$this->value($name); ?>;
@@ -59,6 +60,11 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
         <?=$this->value($value); ?>,
 <?php endforeach; ?>
     ];
+<?php foreach ($this->constants as $const): ?>
+
+<?=$const?>
+
+<?php endforeach; ?>
 
     /**
      * A generated lexer instance.
@@ -69,7 +75,12 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     /**
      * @var array|\Closure[]
      */
-    public $reducers = [];
+    protected $reducers = [];
+<?php foreach ($this->properties as $property): ?>
+
+<?=$property?>
+
+<?php endforeach; ?>
 
     /**
      * <?=$this->class; ?> class constructor.
@@ -124,4 +135,9 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
 
         return null;
     }
+<?php foreach ($this->methods as $method): ?>
+
+<?=$method?>
+
+<?php endforeach; ?>
 }

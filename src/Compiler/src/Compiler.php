@@ -150,7 +150,7 @@ class Compiler implements ParserInterface
 
     /**
      * @param string $fqn
-     * @return GeneratorInterface
+     * @return GeneratorInterface|ZendGenerator
      */
     public function build(string $fqn): GeneratorInterface
     {

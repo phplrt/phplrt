@@ -12,6 +12,8 @@ namespace Phplrt\Compiler\Generator;
 use Phplrt\Compiler\Analyzer;
 use Phplrt\Parser\Rule\RuleInterface;
 use Zend\Code\Generator\ValueGenerator;
+use Zend\Code\Generator\MethodGenerator;
+use Zend\Code\Generator\PropertyGenerator;
 use Zend\Code\Generator\Exception\RuntimeException;
 
 /**
@@ -35,7 +37,7 @@ class ZendGenerator extends Generator
     }
 
     /**
-     * @return array
+     * @return array|string[]
      */
     public function getTokens(): array
     {
@@ -60,23 +62,74 @@ class ZendGenerator extends Generator
     {
         \ob_start();
 
-        require __DIR__ . '/../Resources/template.tpl.php';
+        require __DIR__ . '/../../resources/template.tpl.php';
 
         return \ob_get_clean();
     }
 
     /**
-     * @param mixed $value
-     * @param bool $multiline
-     * @return string
+     * @param PropertyGenerator $property
+     * @return ZendGenerator|$this
      * @throws RuntimeException
      */
-    public function value($value, bool $multiline = true): string
+    public function withProperty(PropertyGenerator $property): self
     {
-        $output = $multiline ? ValueGenerator::OUTPUT_MULTIPLE_LINE : ValueGenerator::OUTPUT_SINGLE_LINE;
-        $type   = ValueGenerator::TYPE_AUTO;
+        if ($property->isConst()) {
+            $this->addConstant($property);
+        } else {
+            $this->addProperty($property);
+        }
 
-        return (new ValueGenerator($value, $type, $output))->generate();
+        return $this;
+    }
+
+    /**
+     * @param PropertyGenerator $property
+     * @return void
+     * @throws RuntimeException
+     */
+    private function addConstant(PropertyGenerator $property): void
+    {
+        $reserved = \in_array(\strtoupper($property->getName()), ['LEXER_SKIPS', 'LEXER_TOKENS'], true);
+
+        if ($reserved) {
+            throw new \InvalidArgumentException('Constant name ' . $property->getName() . ' is reserved');
+        }
+
+        $this->constants[\strtoupper($property->getName())] = $property->generate();
+    }
+
+    /**
+     * @param PropertyGenerator $property
+     * @return void
+     * @throws RuntimeException
+     */
+    private function addProperty(PropertyGenerator $property): void
+    {
+        $reserved = \in_array(\strtolower($property->getName()), ['reducers', 'lexer'], true);
+
+        if ($reserved) {
+            throw new \InvalidArgumentException('Property name ' . $property->getName() . ' is reserved');
+        }
+
+        $this->properties[\strtolower($property->getName())] = $property->generate();
+    }
+
+    /**
+     * @param MethodGenerator $method
+     * @return ZendGenerator|$this
+     */
+    public function withMethod(MethodGenerator $method): self
+    {
+        $reserved = \in_array(\strtolower($method->getName()), ['build', 'grammar', '__construct'], true);
+
+        if ($reserved) {
+            throw new \InvalidArgumentException('Method name ' . $method->getName() . ' is reserved');
+        }
+
+        $this->methods[\strtolower($method->getName())] = $method->generate();
+
+        return $this;
     }
 
     /**
@@ -93,5 +146,19 @@ class ZendGenerator extends Generator
         }
 
         return 'new \\' . \get_class($rule) . '(' . \implode(', ', $arguments) . ')';
+    }
+
+    /**
+     * @param mixed $value
+     * @param bool $multiline
+     * @return string
+     * @throws RuntimeException
+     */
+    public function value($value, bool $multiline = true): string
+    {
+        $output = $multiline ? ValueGenerator::OUTPUT_MULTIPLE_LINE : ValueGenerator::OUTPUT_SINGLE_LINE;
+        $type = ValueGenerator::TYPE_AUTO;
+
+        return (new ValueGenerator($value, $type, $output))->generate();
     }
 }
