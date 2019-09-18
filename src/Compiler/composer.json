@@ -20,6 +20,8 @@
         "symfony/polyfill-php73": "~1.12",
         "zendframework/zend-code": "~3.0",
         "phplrt/lexer": "^2.1.2",
+        "phplrt/visitor": "^2.1.2",
+        "phplrt/position": "^2.1.2",
         "phplrt/parser": "^2.1.2"
     },
     "autoload": {
