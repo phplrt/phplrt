@@ -1,0 +1,29 @@
+parameters:
+    package_directories:
+        - 'src'
+    data_to_append:
+        require-dev:
+            brianium/paratest: '^2.1'
+            illuminate/support: '~6.0'
+            laravel/helpers: '~1.1'
+            monolog/monolog: '~1.0'
+            phpunit/phpunit: '^7.5'
+            psr/http-message: '~1.0'
+            squizlabs/php_codesniffer: '~3.0'
+            symfony/var-dumper: '~3.4|~4.0'
+            symplify/monorepo-builder: '^6.1'
+
+    # for "split" command
+    directories_to_repositories:
+        # Packages
+        phplrt/lexer: 'git@github.com:phplrt/lexer.git'
+        phplrt/parser: 'git@github.com:phplrt/parser.git'
+        phplrt/position: 'git@github.com:phplrt/position.git'
+        phplrt/visitor: 'git@github.com:phplrt/visitor.git'
+        phplrt/compiler: 'git@github.com:phplrt/compiler.git'
+        phplrt/source: 'git@github.com:phplrt/source.git'
+        # Contracts
+        phplrt/lexer-contracts: 'git@github.com:phplrt/lexer-contracts.git'
+        phplrt/parser-contracts: 'git@github.com:phplrt/parser-contracts.git'
+        phplrt/ast-contracts: 'git@github.com:phplrt/ast-contracts.git'
+        phplrt/source-contracts: 'git@github.com:phplrt/source-contracts.git'
