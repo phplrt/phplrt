@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\ReadableInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Content

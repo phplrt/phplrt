@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Mutations;
 
-use Phplrt\Tests\Visitor\Stub\Node;
-use Phplrt\Tests\Visitor\TestCase;
 use Phplrt\Visitor\Visitor;
+use Phplrt\Tests\Visitor\TestCase;
+use Phplrt\Tests\Visitor\Stub\Node;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**

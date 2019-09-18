@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Mutations;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Tests\Visitor\Stub\Node;
-use Phplrt\Tests\Visitor\TestCase;
-use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Visitor;
+use Phplrt\Tests\Visitor\TestCase;
+use Phplrt\Tests\Visitor\Stub\Node;
+use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\Exception\BadMethodException;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**

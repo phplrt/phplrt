@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\File;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class PP2PhpLexer

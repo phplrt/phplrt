@@ -9,13 +9,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Visitor\Visitor;
 use Phplrt\Compiler\Ast\Def\Definition;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
 use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Visitor\Visitor;
 
 /**
  * Class IncludesExecutor

@@ -9,15 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Driver\Markers;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Lexer\Driver\Markers;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Lexer

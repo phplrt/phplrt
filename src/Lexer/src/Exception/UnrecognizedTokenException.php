@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class UnrecognizedTokenException

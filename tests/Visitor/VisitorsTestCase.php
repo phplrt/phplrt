@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor;
 
-use Phplrt\Tests\Visitor\Stub\Counter;
 use Phplrt\Visitor\Traverser;
+use Phplrt\Tests\Visitor\Stub\Counter;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**

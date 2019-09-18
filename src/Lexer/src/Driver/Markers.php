@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Markers

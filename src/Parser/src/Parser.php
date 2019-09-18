@@ -9,24 +9,24 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Source\File;
+use Phplrt\Position\Position;
+use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Source\FileInterface;
+use Phplrt\Parser\Builder\Common;
+use Phplrt\Source\ReadableInterface;
+use Phplrt\Parser\Buffer\EagerBuffer;
+use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Rule\ProductionInterface;
-use Phplrt\Parser\Rule\RuleInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
-use Phplrt\Position\Position;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Source\File;
-use Phplrt\Source\FileInterface;
-use Phplrt\Source\ReadableInterface;
 
 /**
  * A recurrence recursive descent parser implementation.

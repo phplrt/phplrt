@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
+use Phplrt\Lexer\Token\Nested;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\Nested;
 use Phplrt\Source\Exception\NotAccessibleException;
 
 /**

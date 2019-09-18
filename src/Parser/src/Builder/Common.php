@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Rule\TerminalInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Common
