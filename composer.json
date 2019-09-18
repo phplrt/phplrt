@@ -36,16 +36,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\": "src/Compiler/",
+            "Phplrt\\Compiler\\": "src/Compiler/src",
             "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
             "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
             "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
-            "Phplrt\\Lexer\\": "src/Lexer/",
-            "Phplrt\\Parser\\": "src/Parser/",
-            "Phplrt\\Position\\": "src/Position/",
-            "Phplrt\\Source\\": "src/Source/",
-            "Phplrt\\Visitor\\": "src/Visitor/"
+            "Phplrt\\Lexer\\": "src/Lexer/src",
+            "Phplrt\\Parser\\": "src/Parser/src",
+            "Phplrt\\Position\\": "src/Position/src",
+            "Phplrt\\Source\\": "src/Source/src",
+            "Phplrt\\Visitor\\": "src/Visitor/src"
         }
     },
     "autoload-dev": {

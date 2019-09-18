@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Lexer\\": ""
+            "Phplrt\\Lexer\\": "src"
         }
     },
     "provide": {

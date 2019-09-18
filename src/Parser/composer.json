@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Parser\\": ""
+            "Phplrt\\Parser\\": "src"
         }
     },
     "provide": {

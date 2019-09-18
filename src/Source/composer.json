@@ -27,7 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Source\\": ""
+            "Phplrt\\Source\\": "src"
         }
     },
     "require-dev": {

@@ -4,219 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61dc87156e667c6f82639dc341f04c1d",
+    "content-hash": "24cf342bae970b2697ee5a40797b06cf",
     "packages": [
-        {
-            "name": "phplrt/ast-contracts",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phplrt/ast-contracts.git",
-                "reference": "a85574639b494d313bea0965a226e90703e9a3f1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/ast-contracts/zipball/a85574639b494d313bea0965a226e90703e9a3f1",
-                "reference": "a85574639b494d313bea0965a226e90703e9a3f1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Phplrt\\Contracts\\Ast\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kirill Nesmeyanov",
-                    "email": "nesk@xakep.ru"
-                }
-            ],
-            "description": "A set of phplrt ast abstractions",
-            "homepage": "https://github.com/phplrt",
-            "keywords": [
-                "abstractions",
-                "ast",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards",
-                "tree"
-            ],
-            "time": "2019-09-02T12:44:26+00:00"
-        },
-        {
-            "name": "phplrt/lexer-contracts",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phplrt/lexer-contracts.git",
-                "reference": "597e6ae4780eefa14103c0352761e8e689e143c5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/lexer-contracts/zipball/597e6ae4780eefa14103c0352761e8e689e143c5",
-                "reference": "597e6ae4780eefa14103c0352761e8e689e143c5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Phplrt\\Contracts\\Lexer\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kirill Nesmeyanov",
-                    "email": "nesk@xakep.ru"
-                }
-            ],
-            "description": "A set of phplrt lexer abstractions",
-            "homepage": "https://github.com/phplrt",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "lexer",
-                "parsing",
-                "regex",
-                "standards",
-                "stream",
-                "token",
-                "tokenizer"
-            ],
-            "time": "2019-09-07T02:56:49+00:00"
-        },
-        {
-            "name": "phplrt/parser-contracts",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phplrt/parser-contracts.git",
-                "reference": "014a075b85b23bfc8c176f1378f151cbcde388be"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phplrt/parser-contracts/zipball/014a075b85b23bfc8c176f1378f151cbcde388be",
-                "reference": "014a075b85b23bfc8c176f1378f151cbcde388be",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.3",
-                "phplrt/ast-contracts": "~2.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Phplrt\\Contracts\\Parser\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kirill Nesmeyanov",
-                    "email": "nesk@xakep.ru"
-                }
-            ],
-            "description": "A set of phplrt parser abstractions",
-            "homepage": "https://github.com/phplrt",
-            "keywords": [
-                "abstractions",
-                "analysis",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "language",
-                "parser",
-                "php",
-                "standards",
-                "syntax"
-            ],
-            "time": "2019-08-21T11:04:24+00:00"
-        },
-        {
-            "name": "psr/log",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
-                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for logging libraries",
-            "homepage": "https://github.com/php-fig/log",
-            "keywords": [
-                "log",
-                "psr",
-                "psr-3"
-            ],
-            "time": "2018-11-20T15:27:04+00:00"
-        },
         {
             "name": "symfony/polyfill-php73",
             "version": "v1.12.0",
@@ -2217,6 +2006,53 @@
                 "response"
             ],
             "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "psr/log",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "reference": "6c001f1daafa3a3ac1d8ff69ee4db8e799a654dd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2018-11-20T15:27:04+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -4482,9 +4318,9 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1.3",
-        "ext-spl": "*",
+        "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-mbstring": "*"
+        "ext-spl": "*"
     },
     "platform-dev": []
 }
