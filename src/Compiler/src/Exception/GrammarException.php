@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Exception;
 
 use Phplrt\Position\Position;
-use Phplrt\Source\FileInterface;
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
@@ -19,13 +19,6 @@ use Phplrt\Source\Exception\NotAccessibleException;
  */
 class GrammarException extends \LogicException
 {
-    /**
-     * @var string
-     */
-    private const ERROR_HEADER = '%s: %s in %s:%d';
-
-    public $trace;
-
     /**
      * GrammarException constructor.
      *

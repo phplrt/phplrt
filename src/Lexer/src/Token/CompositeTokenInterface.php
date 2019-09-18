@@ -7,15 +7,14 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Source;
+namespace Phplrt\Lexer\Token;
+
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
- * Interface FileInterface
+ * Interface CompositeTokenInterface
  */
-interface FileInterface extends ReadableInterface
+interface CompositeTokenInterface extends TokenInterface, \IteratorAggregate, \Countable, \ArrayAccess
 {
-    /**
-     * @return string
-     */
-    public function getPathname(): string;
+
 }

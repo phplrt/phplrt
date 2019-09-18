@@ -14,7 +14,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 
 /**
  * Class Multistate
@@ -45,12 +44,14 @@ class Multistate implements LexerInterface
      */
     public function __construct(array $states, array $transitions = [], $state = null)
     {
-        $this->states = \array_map(static function ($data) {
+        $mapper = static function ($data) {
             return $data instanceof LexerInterface ? $data : new Lexer($data);
-        }, $states);
+        };
+
+        $this->states = \array_map($mapper, $states);
 
         $this->transitions = $transitions;
-        $this->state       = $state ?? \count($states) ? \array_key_first($states) : 0;
+        $this->state = $state ?? \count($states) ? \array_key_first($states) : 0;
     }
 
     /**
@@ -71,7 +72,6 @@ class Multistate implements LexerInterface
      * @param int $offset
      * @return iterable|TokenInterface[]
      * @throws LexerExceptionInterface
-     * @throws RuntimeExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable
     {

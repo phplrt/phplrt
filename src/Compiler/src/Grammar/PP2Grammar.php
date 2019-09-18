@@ -18,7 +18,7 @@ use Phplrt\Lexer\Token\Composite;
 use Phplrt\Parser\Rule\Repetition;
 use Phplrt\Parser\Rule\Alternation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Parser\Builder\Expandable;
 use Phplrt\Parser\Rule\Concatenation;

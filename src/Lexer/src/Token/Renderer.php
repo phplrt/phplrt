@@ -66,8 +66,10 @@ final class Renderer
      */
     public function render(TokenInterface $token): string
     {
-        if ($token->getName() === DriverInterface::UNKNOWN_TOKEN_NAME) {
-            return $this->value($token);
+        switch (true) {
+            case $token->getName() === DriverInterface::UNKNOWN_TOKEN_NAME:
+            case $token->getName() === $token->getValue():
+                return $this->value($token);
         }
 
         return \sprintf('%s (%s)', $this->value($token), $this->name($token));

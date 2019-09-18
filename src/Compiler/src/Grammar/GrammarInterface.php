@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 
 /**

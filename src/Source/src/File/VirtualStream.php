@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\FileInterface;
+use Phplrt\Contracts\Source\FileInterface;
 
 /**
  * Class VirtualStream
@@ -29,8 +29,9 @@ class VirtualStream extends Stream implements FileInterface
      */
     public function __construct(string $pathname, $stream)
     {
-        parent::__construct($stream);
         $this->pathname = $pathname;
+
+        parent::__construct($stream);
     }
 
     /**

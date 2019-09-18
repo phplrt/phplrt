@@ -17,12 +17,12 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
  * Class Lexer
  */
-class Lexer implements LexerInterface
+class Lexer implements LexerInterface, MutableLexerInterface
 {
     /**
      * @var array|string[]
@@ -40,22 +40,42 @@ class Lexer implements LexerInterface
     private $driver;
 
     /**
+     * @var string|DriverInterface
+     */
+    private $driverClass;
+
+    /**
      * Lexer constructor.
      *
      * @param array|string[] $tokens
      * @param array|string[] $skip
+     * @param string $driver
      */
-    public function __construct(array $tokens, array $skip = [])
+    public function __construct(array $tokens, array $skip = [], string $driver = Markers::class)
     {
+        $this->driverClass = $driver;
         $this->tokens = $tokens;
-        $this->skip   = $skip;
+        $this->skip = $skip;
+    }
+
+    /**
+     * @param string $class
+     * @return Lexer|$this
+     */
+    public function setDriver(string $class): self
+    {
+        \assert(\is_subclass_of($class, DriverInterface::class));
+
+        $this->driver = $class;
+
+        return $this;
     }
 
     /**
      * @param string ...$names
-     * @return Lexer|$this
+     * @return MutableLexerInterface|$this
      */
-    public function skip(string ...$names): self
+    public function skip(string ...$names): MutableLexerInterface
     {
         $this->skip = \array_merge($this->skip, $names);
 
@@ -63,11 +83,9 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param string $token
-     * @param string $pattern
-     * @return Lexer|$this
+     * {@inheritDoc}
      */
-    public function add(string $token, string $pattern): self
+    public function append(string $token, string $pattern): MutableLexerInterface
     {
         $this->reset();
         $this->tokens[$token] = $pattern;
@@ -84,13 +102,34 @@ class Lexer implements LexerInterface
     }
 
     /**
-     * @param string $tokens
-     * @return Lexer|$this
+     * {@inheritDoc}
      */
-    public function addMany(string $tokens): self
+    public function appendMany(array $tokens): MutableLexerInterface
     {
         $this->reset();
         $this->tokens = \array_merge($this->tokens, $tokens);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function prepend(string $token, string $pattern): MutableLexerInterface
+    {
+        $this->reset();
+        $this->tokens = \array_merge([$token, $pattern], $this->tokens);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function prependMany(array $tokens, bool $reverseOrder = true): MutableLexerInterface
+    {
+        $this->reset();
+        $this->tokens = \array_merge($reverseOrder ? \array_reverse($tokens) : $tokens, $this->tokens);
 
         return $this;
     }
@@ -100,11 +139,11 @@ class Lexer implements LexerInterface
      * @param int $offset
      * @return iterable
      * @throws LexerExceptionInterface
-     * @throws RuntimeExceptionInterface
+     * @throws LexerRuntimeExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable
     {
-        $driver  = $this->driver ?? $this->driver  = $this->getDriver();
+        $driver = $this->driver ?? $this->driver = $this->getDriver();
         $unknown = [];
 
         foreach ($driver->lex($source, $offset) as $token) {
@@ -134,9 +173,11 @@ class Lexer implements LexerInterface
     /**
      * @return DriverInterface
      */
-    public function getDriver(): DriverInterface
+    private function getDriver(): DriverInterface
     {
-        return new Markers($this->tokens, false);
+        $class = $this->driverClass;
+
+        return new $class($this->tokens);
     }
 
     /**
@@ -145,9 +186,11 @@ class Lexer implements LexerInterface
      */
     private function reduce(array $tokens): TokenInterface
     {
-        $value = (string)\array_reduce($tokens, static function (string $data, TokenInterface $token): string {
+        $concat = static function (string $data, TokenInterface $token): string {
             return $data . $token->getValue();
-        }, '');
+        };
+
+        $value = (string)\array_reduce($tokens, $concat, '');
 
         return new Token(\reset($tokens)->getName(), $value, \reset($tokens)->getOffset());
     }

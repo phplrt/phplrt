@@ -7,15 +7,20 @@
  */
 declare(strict_types=1);
 
-namespace Phplrt\Source\File;
+namespace Phplrt\Contracts\Source;
 
 /**
- * Interface MemoizableInterface
+ * Interface ReadableInterface
  */
-interface MemoizableInterface
+interface ReadableInterface
 {
     /**
-     * @return void
+     * @return resource
      */
-    public function refresh(): void;
+    public function getStream();
+
+    /**
+     * @return string
+     */
+    public function getContents(): string;
 }

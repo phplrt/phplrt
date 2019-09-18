@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/source": "~3.0|3.0.x-dev",
+        "phplrt/source": "~2.1|2.1.x-dev",
         "symfony/polyfill-php73": "~1.12",
-        "phplrt/parser-contracts": "~3.0|3.0.x-dev",
-        "phplrt/lexer-contracts": "~3.0|3.0.x-dev",
-        "phplrt/ast-contracts": "~3.0|3.0.x-dev"
+        "phplrt/parser-contracts": "~2.1|2.1.x-dev",
+        "phplrt/lexer-contracts": "~2.1|2.1.x-dev",
+        "phplrt/ast-contracts": "~2.1|2.1.x-dev"
     },
     "autoload": {
         "psr-4": {
@@ -33,7 +33,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0.x-dev"
+            "dev-master": "2.1.x-dev"
         }
     },
     "config": {

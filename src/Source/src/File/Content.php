@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 
 /**

@@ -9,9 +9,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
+use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Markers
@@ -34,22 +37,15 @@ class Markers extends Driver
     private $compiler;
 
     /**
-     * @var bool
-     */
-    private $skipErrors;
-
-    /**
      * Markers constructor.
      *
      * @param array|string[] $tokens
-     * @param bool $skipErrors
      */
-    public function __construct(array $tokens, bool $skipErrors = false)
+    public function __construct(array $tokens)
     {
         parent::__construct($tokens);
 
-        $this->compiler   = new MarkersCompiler();
-        $this->skipErrors = $skipErrors;
+        $this->compiler = new MarkersCompiler();
     }
 
     /**
@@ -61,13 +57,15 @@ class Markers extends Driver
     }
 
     /**
-     * @param string $source
+     * @param ReadableInterface $source
      * @param int $offset
      * @return iterable|TokenInterface[]|string
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
      */
     public function lex($source, int $offset = 0): iterable
     {
-        $tokens = $this->match($this->getPattern(), $this->read($source), $offset);
+        $tokens = $this->match($this->getPattern(), File::new($source)->getContents(), $offset);
 
         foreach ($tokens as $index => $payload) {
             $name = \array_pop($payload);
@@ -115,13 +113,9 @@ class Markers extends Driver
      */
     private function getTokens(): array
     {
-        if (! $this->skipErrors) {
-            return \array_merge($this->tokens, [
-                self::UNKNOWN_TOKEN_NAME => self::UNKNOWN_PATTERN,
-            ]);
-        }
-
-        return $this->tokens;
+        return \array_merge($this->tokens, [
+            self::UNKNOWN_TOKEN_NAME => self::UNKNOWN_PATTERN,
+        ]);
     }
 
     /**
@@ -132,10 +126,10 @@ class Markers extends Driver
     private function make(string $name, array $payload): TokenInterface
     {
         if (\count($payload) > 1) {
-            return new Composite($this->transform($name, $payload));
+            return Composite::fromArray($this->transform($name, $payload));
         }
 
-        return new Token($name, ...$payload[0]);
+        return new Token($this->name($name), ...$payload[0]);
     }
 
     /**
@@ -148,7 +142,7 @@ class Markers extends Driver
         $result = [];
 
         foreach ($payload as $index => $value) {
-            $result[] = new Token(\is_int($index) ? $name : $index, ...$value);
+            $result[] = new Token(\is_int($index) ? $this->name($name) : $index, ...$value);
         }
 
         return $result;

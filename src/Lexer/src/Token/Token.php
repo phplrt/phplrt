@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
+use Phplrt\Lexer\Driver\DriverInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+
 /**
  * Class Token
  */
@@ -25,18 +28,18 @@ class Token extends BaseToken
     private $value;
 
     /**
-     * @var string
+     * @var string|int
      */
     private $name;
 
     /**
      * BaseToken constructor.
      *
-     * @param string $name
+     * @param string|int $name
      * @param string $value
      * @param int $offset
      */
-    public function __construct(string $name, string $value, int $offset)
+    public function __construct($name, string $value, int $offset)
     {
         $this->name   = $name;
         $this->value  = $value;
@@ -44,11 +47,19 @@ class Token extends BaseToken
     }
 
     /**
+     * @return TokenInterface
+     */
+    public static function empty(): TokenInterface
+    {
+        return new static(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
     {
-        return $this->name;
+        return $this->containsValidName() ? $this->name : $this->value;
     }
 
     /**
@@ -65,5 +76,27 @@ class Token extends BaseToken
     public function getOffset(): int
     {
         return $this->offset;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        $renderer = new Renderer();
+
+        if ($this->containsValidName()) {
+            return $renderer->render($this);
+        }
+
+        return $renderer->value($this);
+    }
+
+    /**
+     * @return bool
+     */
+    private function containsValidName(): bool
+    {
+        return \is_string($this->name) && \trim($this->name) !== '';
     }
 }

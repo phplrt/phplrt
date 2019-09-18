@@ -1,5 +1,29 @@
 # Release Notes
 
+## 2.1.0
+
+- The [phplrt/compiler](https://github.com/phplrt/compiler) package was unarchived and actualized.
+- The [phplrt/position](https://github.com/phplrt/position) package was added.
+- The [phplrt/source](https://github.com/phplrt/source) package was added instead of old [phplrt/io](https://github.com/phplrt/io) (renaming).
+- Added [phplrt/source-contracts](https://github.com/phplrt/source-contracts) interfaces.
+
+#### Parser Contracts
+
+- Interface `RuntimeExceptionInterface` was renamed to `ParserRuntimeExceptionInterface`.
+- The `ParserRuntimeExceptionInterface::getNode(): NodeInterface` method added.
+- Now `ParserInterface::parse(string|resource|ReadableInterface $source): iterable` allow 
+`ReadableInterface` as a source argument. 
+- Now parser should throw `ParserRuntimeExceptionInterface` instead `RuntimeExceptionInterface` 
+when an error occurs during parsing. 
+
+#### Lexer Contracts
+
+- Interface `RuntimeExceptionInterface` was renamed to `LexerRuntimeExceptionInterface`.
+- Now `LexerInterface::lex(string|resource|ReadableInterface $source, [int $offset = 0]): iterable` allow 
+`ReadableInterface` as a source argument.
+- Now parser should throw `LexerRuntimeExceptionInterface` instead `RuntimeExceptionInterface` 
+when an error occurs during parsing. 
+
 ## 2.0.0
 
 > **Please note that API is no longer compatible with 1.x**

@@ -9,11 +9,17 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Parser\Exception;
 
+use Phplrt\Contracts\Ast\NodeInterface;
+
 /**
  * Throws when the error of the parsing of the source code happens.
- *
- * @deprecated since version 2.1 and will be removed in 3.0. Use ParserRuntimeExceptionInterface instead
  */
-interface RuntimeExceptionInterface extends ParserRuntimeExceptionInterface
+interface ParserRuntimeExceptionInterface extends ParserExceptionInterface
 {
+    /**
+     * Returns an AST node object during which processing errors occurred.
+     *
+     * @return NodeInterface
+     */
+    public function getNode(): NodeInterface;
 }

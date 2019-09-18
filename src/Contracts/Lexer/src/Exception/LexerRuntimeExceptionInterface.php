@@ -13,10 +13,8 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Throws when the error of the lexical analysis of the source code happens.
- *
- * @deprecated since version 2.1 and will be removed in 3.0. Use LexerRuntimeExceptionInterface instead
  */
-interface RuntimeExceptionInterface extends LexerRuntimeExceptionInterface
+interface LexerRuntimeExceptionInterface extends LexerExceptionInterface
 {
     /**
      * Returns a token object during which processing errors occurred.

@@ -14,7 +14,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 /**
  * Class Composite
  */
-class Composite extends Token implements \IteratorAggregate, \Countable, \ArrayAccess
+class Composite extends Token implements CompositeTokenInterface
 {
     /**
      * @var array|TokenInterface[]
@@ -24,14 +24,29 @@ class Composite extends Token implements \IteratorAggregate, \Countable, \ArrayA
     /**
      * BaseToken constructor.
      *
+     * @param string|int $name
+     * @param string $value
+     * @param int $offset
      * @param array|TokenInterface[] $children
      */
-    public function __construct(array $children)
+    public function __construct($name, string $value, int $offset, array $children)
     {
-        $first          = \array_shift($children);
         $this->children = $children;
 
-        parent::__construct($first->getName(), $first->getValue(), $first->getOffset());
+        parent::__construct($name, $value, $offset);
+    }
+
+    /**
+     * @param array|TokenInterface[] $tokens
+     * @return static
+     */
+    public static function fromArray(array $tokens): self
+    {
+        \assert(\count($tokens) > 0);
+
+        $first = \array_shift($tokens);
+
+        return new static($first->getName(), $first->getValue(), $first->getOffset(), $tokens);
     }
 
     /**

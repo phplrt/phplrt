@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Lexer\Exception\SourceTypeException;
+use Phplrt\Lexer\Exception\LexerException;
 
 /**
  * Class Driver
@@ -22,50 +22,59 @@ abstract class Driver implements DriverInterface
     protected $tokens;
 
     /**
+     * @var mixed[]
+     */
+    protected $map = [];
+
+    /**
      * State constructor.
      *
      * @param array|string[] $tokens
      */
     public function __construct(array $tokens)
     {
-        $this->tokens = $tokens;
-    }
+        foreach ($tokens as $name => $pattern) {
+            $pattern = (string)$pattern;
 
-    /**
-     * @param string|resource $source
-     * @param int $offset
-     * @return string|resource
-     */
-    protected function seek($source, int $offset = 0)
-    {
-        switch (true) {
-            case \is_string($source):
-                return $offset === 0 ? $source : \substr($source, $offset);
-
-            case \is_resource($source):
-                \fseek($source, $offset);
-                return $source;
-
-            default:
-                throw new SourceTypeException($source);
+            $this->tokens[$this->createName($name, $pattern)] = $pattern;
         }
     }
 
     /**
-     * @param string|resource $source
+     * @param mixed $name
+     * @param string $pattern
      * @return string
      */
-    protected function read($source): string
+    private function createName($name, string $pattern): string
     {
-        switch (true) {
-            case \is_resource($source):
-                return \stream_get_contents($source);
-
-            case \is_string($source):
-                return $source;
-
-            default:
-                throw new SourceTypeException($source);
+        if (\is_string($name) && $name !== '') {
+            return $name;
         }
+
+        if (\is_int($name) || $name === '') {
+            $this->map[$alias = $this->generate($pattern)] = $name;
+
+            return $alias;
+        }
+
+        throw new LexerException('Type ' . \gettype($name) . ' can not be used as token name');
+    }
+
+    /**
+     * @param string $token
+     * @return mixed|string
+     */
+    protected function name(string $token)
+    {
+        return $this->map[$token] ?? $token;
+    }
+
+    /**
+     * @param string $pattern
+     * @return string
+     */
+    private function generate(string $pattern): string
+    {
+        return 'T' . \hash('crc32', $pattern);
     }
 }

@@ -14,7 +14,7 @@ use Phplrt\Source\File;
 use Phplrt\Parser\Parser;
 use Phplrt\Lexer\Multistate;
 use Phplrt\Visitor\Traverser;
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Visitor\TraverserInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Contracts\Lexer\LexerInterface;

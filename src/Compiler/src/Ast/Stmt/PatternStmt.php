@@ -17,6 +17,11 @@ namespace Phplrt\Compiler\Ast\Stmt;
 class PatternStmt extends Statement
 {
     /**
+     * @var array
+     */
+    private static $identifiers = [];
+
+    /**
      * @var string
      */
     public $pattern;
@@ -27,11 +32,6 @@ class PatternStmt extends Statement
     public $name;
 
     /**
-     * @var array
-     */
-    private static $identifiers = [];
-
-    /**
      * TokenDefinition constructor.
      *
      * @param string $pattern
@@ -39,7 +39,7 @@ class PatternStmt extends Statement
     public function __construct(string $pattern)
     {
         $this->pattern = \str_replace('\"', '"', $pattern);
-        $this->name    = 'T_ANONYMOUS_' . $this->getId();
+        $this->name = $this->getId();
     }
 
     /**

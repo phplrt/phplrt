@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Exception;
 
+use Phplrt\Compiler\Ast\Node;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
 
 /**
  * Class ParserRuntimeException
  */
-class ParserRuntimeException extends ParserException implements RuntimeExceptionInterface
+class ParserRuntimeException extends ParserException implements ParserRuntimeExceptionInterface
 {
     /**
      * @var string
@@ -28,18 +30,72 @@ class ParserRuntimeException extends ParserException implements RuntimeException
     private $token;
 
     /**
+     * @var NodeInterface
+     */
+    private $node;
+
+    /**
      * LexerRuntimeException constructor.
      *
      * @param string $message
      * @param TokenInterface $token
+     * @param NodeInterface $node
      * @param \Throwable|null $prev
      */
-    public function __construct(string $message, TokenInterface $token, \Throwable $prev = null)
+    public function __construct(string $message, TokenInterface $token, NodeInterface $node = null, \Throwable $prev = null)
     {
         $this->token = $token;
+        $this->node = $node ?? $this->createNode($token);
 
         parent::__construct($message, 0, $prev);
     }
+
+    /**
+     * @param TokenInterface $token
+     * @return NodeInterface
+     */
+    private function createNode(TokenInterface $token): NodeInterface
+    {
+        return new class($token->getOffset()) implements NodeInterface {
+            /**
+             * @var int
+             */
+            private $offset;
+
+            /**
+             * @param int $offset
+             */
+            public function __construct(int $offset)
+            {
+                $this->offset = $offset;
+            }
+
+            /**
+             * @return int
+             */
+            public function getOffset(): int
+            {
+                return $this->offset;
+            }
+
+            /**
+             * @return \Traversable|NodeInterface[]
+             */
+            public function getIterator(): \Traversable
+            {
+                return new \EmptyIterator();
+            }
+        };
+    }
+
+    /**
+     * @return NodeInterface
+     */
+    public function getNode(): NodeInterface
+    {
+        return $this->node;
+    }
+
 
     /**
      * @return TokenInterface

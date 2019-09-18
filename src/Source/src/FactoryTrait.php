@@ -15,7 +15,9 @@ use Phplrt\Source\File\Physical;
 use Phplrt\Source\File\VirtualStream;
 use Psr\Http\Message\StreamInterface;
 use Phplrt\Source\File\VirtualContent;
+use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\Exception\NotFoundException;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\Exception\NotAccessibleException;
 

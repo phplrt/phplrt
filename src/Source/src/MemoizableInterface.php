@@ -10,17 +10,12 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 /**
- * Interface ReadableInterface
+ * Interface MemoizableInterface
  */
-interface ReadableInterface
+interface MemoizableInterface
 {
     /**
-     * @return resource
+     * @return void
      */
-    public function getStream();
-
-    /**
-     * @return string
-     */
-    public function getContents(): string;
+    public function refresh(): void;
 }

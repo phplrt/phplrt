@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Source\MemoizableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Class Readable

@@ -12,9 +12,7 @@ namespace Phplrt\Parser;
 use Phplrt\Source\File;
 use Phplrt\Position\Position;
 use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Source\FileInterface;
 use Phplrt\Parser\Builder\Common;
-use Phplrt\Source\ReadableInterface;
 use Phplrt\Parser\Buffer\EagerBuffer;
 use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
@@ -25,8 +23,10 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Builder\BuilderInterface;
 use Phplrt\Parser\Rule\ProductionInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -90,11 +90,6 @@ class Parser implements ParserInterface
         'Please note that if Xdebug is enabled, a "Fatal error: Maximum function nesting level of "%d" ' .
         'reached, aborting!" errors may occur. In the second case, it is worth increasing the ini value ' .
         'or disabling the extension.';
-
-    /**
-     * @var string
-     */
-    private const ERROR_REDUCER_RESULT = 'Reducer result constraint violation: %s';
 
     /**
      * @var string
@@ -196,8 +191,8 @@ class Parser implements ParserInterface
      */
     private function bootConfigs(array $options): void
     {
-        $this->eoi     = $options[static::CONFIG_EOI] ?? $this->eoi;
-        $this->buffer  = $options[static::CONFIG_BUFFER] ?? $this->buffer;
+        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
+        $this->buffer = $options[static::CONFIG_BUFFER] ?? $this->buffer;
         $this->builder = $options[static::CONFIG_AST_BUILDER] ?? new Common();
         $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules);
     }
@@ -244,15 +239,6 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param mixed $result
-     * @return array|mixed
-     */
-    private function filter($result)
-    {
-        return \is_array($result) ? \array_filter($result, '\\is_iterable') : $result;
-    }
-
-    /**
      * @param \Generator $stream
      * @return BufferInterface
      */
@@ -275,11 +261,20 @@ class Parser implements ParserInterface
 
     /**
      * @param ReadableInterface $source
-     * @return \Generator
+     * @return \Generator|TokenInterface[]
+     * @throws LexerRuntimeExceptionInterface
      */
     private function lex(ReadableInterface $source): \Generator
     {
-        yield from $this->lexer->lex($source->getContents());
+        $result = $this->lexer->lex($source);
+
+        if ($result instanceof \Generator) {
+            return $result;
+        }
+
+        return (static function () use ($result) {
+            yield from $result;
+        })();
     }
 
     /**
@@ -289,7 +284,16 @@ class Parser implements ParserInterface
     private function reset(BufferInterface $buffer): void
     {
         $this->token = $buffer->current();
-        $this->node  = null;
+        $this->node = null;
+    }
+
+    /**
+     * @param mixed $result
+     * @return array|mixed
+     */
+    private function filter($result)
+    {
+        return \is_array($result) ? \array_filter($result, '\\is_iterable') : $result;
     }
 
     /**
@@ -310,9 +314,7 @@ class Parser implements ParserInterface
             $this->render($this->token ?? $buffer->current()),
         ]);
 
-        $error = new ParserRuntimeException($message, $this->token ?? $buffer->current());
-
-        throw static::error($error, $error->getToken()->getOffset(), $source);
+        throw new ParserRuntimeException($message, $this->token ?? $buffer->current(), $this->node);
     }
 
     /**
@@ -365,9 +367,6 @@ class Parser implements ParserInterface
             return null;
         }
 
-        // Assert reducer type
-//        \assert($this->assertResult($result), \sprintf(self::ERROR_REDUCER_RESULT, $this->getType($result)));
-
         return $this->buildAst($token, $state, $result);
     }
 
@@ -383,24 +382,6 @@ class Parser implements ParserInterface
         if ($buffer->current()->getOffset() > $this->token->getOffset()) {
             $this->token = $buffer->current();
         }
-    }
-
-    /**
-     * @param mixed $result
-     * @return bool
-     */
-    private function assertResult($result): bool
-    {
-        return $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result);
-    }
-
-    /**
-     * @param mixed $result
-     * @return string
-     */
-    private function getType($result): string
-    {
-        return \is_object($result) ? \get_class($result) : \gettype($result);
     }
 
     /**
@@ -447,42 +428,6 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @param \Throwable $e
-     * @param int $offset
-     * @param ReadableInterface $source
-     * @return \Throwable
-     * @throws NotAccessibleException
-     * @throws \ReflectionException
-     * @throws \RuntimeException
-     */
-    public static function error(\Throwable $e, int $offset, ReadableInterface $source): \Throwable
-    {
-        if ($source instanceof FileInterface) {
-            self::insert($e, 'line', Position::fromOffset($source, $offset)->getLine());
-            self::insert($e, 'file', $source->getPathname());
-        }
-
-        return $e;
-    }
-
-    /**
-     * @param \Throwable $ctx
-     * @param string $property
-     * @param mixed $value
-     * @return void
-     * @throws \ReflectionException
-     */
-    private static function insert(\Throwable $ctx, string $property, $value): void
-    {
-        if (\property_exists($ctx, $property)) {
-            $reflection = new \ReflectionProperty($ctx, $property);
-
-            $reflection->setAccessible(true);
-            $reflection->setValue($ctx, $value);
-        }
-    }
-
-    /**
      * @param string|resource|mixed $source
      * @return ReadableInterface
      * @throws NotAccessibleException
@@ -491,5 +436,23 @@ class Parser implements ParserInterface
     private function open($source): ReadableInterface
     {
         return File::new($source);
+    }
+
+    /**
+     * @param mixed $result
+     * @return bool
+     */
+    private function assertResult($result): bool
+    {
+        return $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result);
+    }
+
+    /**
+     * @param mixed $result
+     * @return string
+     */
+    private function getType($result): string
+    {
+        return \is_object($result) ? \get_class($result) : \gettype($result);
     }
 }

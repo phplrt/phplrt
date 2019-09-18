@@ -12,7 +12,7 @@ namespace Phplrt\Compiler\Grammar;
 use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Source\ReadableInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 

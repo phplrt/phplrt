@@ -9,13 +9,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
+use Phplrt\Lexer\Token\Token;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
  * Class LexerException
  */
-class LexerRuntimeException extends LexerException implements RuntimeExceptionInterface
+class LexerRuntimeException extends LexerException implements LexerRuntimeExceptionInterface
 {
     /**
      * @var TokenInterface
@@ -26,14 +27,14 @@ class LexerRuntimeException extends LexerException implements RuntimeExceptionIn
      * LexerRuntimeException constructor.
      *
      * @param string $message
-     * @param TokenInterface $token
+     * @param TokenInterface|null $token
      * @param \Throwable|null $prev
      */
-    public function __construct(string $message, TokenInterface $token, \Throwable $prev = null)
+    public function __construct(string $message, TokenInterface $token = null, \Throwable $prev = null)
     {
         parent::__construct($message, 0, $prev);
 
-        $this->token = $token;
+        $this->token = $token ?? Token::empty();
     }
 
     /**

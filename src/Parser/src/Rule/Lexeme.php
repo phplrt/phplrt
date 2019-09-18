@@ -18,17 +18,17 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class Lexeme extends Terminal
 {
     /**
-     * @var string
+     * @var string|int
      */
     public $token;
 
     /**
      * Lexeme constructor.
      *
-     * @param string $token
+     * @param string|int $token
      * @param bool $keep
      */
-    public function __construct(string $token, bool $keep = true)
+    public function __construct($token, bool $keep = true)
     {
         parent::__construct($keep);
 

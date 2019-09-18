@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\File;
 
-use Phplrt\Source\FileInterface;
+use Phplrt\Contracts\Source\FileInterface;
 
 /**
  * Class VirtualContent
@@ -29,9 +29,9 @@ class VirtualContent extends Content implements FileInterface
      */
     public function __construct(string $pathname, string $content)
     {
-        parent::__construct($content);
-
         $this->pathname = $pathname;
+
+        parent::__construct($content);
     }
 
     /**

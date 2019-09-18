@@ -208,15 +208,6 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param string $pcre
-     * @return string
-     */
-    protected function wrap(string $pcre): string
-    {
-        return $this->delimiter . $pcre . $this->delimiter . \implode('', $this->flags);
-    }
-
-    /**
      * @param array|string[] $chunks
      * @return string
      */
@@ -247,6 +238,24 @@ abstract class PCRECompiler implements CompilerInterface
     abstract protected function buildToken(string $name, string $pattern): string;
 
     /**
+     * @param string $name
+     * @return string
+     */
+    protected function name(string $name): string
+    {
+        return \preg_quote($name, $this->delimiter);
+    }
+
+    /**
+     * @param string $pattern
+     * @return string
+     */
+    protected function pattern(string $pattern): string
+    {
+        return \addcslashes($pattern, $this->delimiter);
+    }
+
+    /**
      * @param string $pattern
      * @param string|null $original
      * @return void
@@ -265,6 +274,15 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
+     * @param string $pcre
+     * @return string
+     */
+    protected function wrap(string $pcre): string
+    {
+        return $this->delimiter . $pcre . $this->delimiter . \implode('', $this->flags);
+    }
+
+    /**
      * @param string $message
      * @param string|null $token
      * @return string
@@ -278,23 +296,5 @@ abstract class PCRECompiler implements CompilerInterface
         $message = \preg_replace('/\h*at\h+offset\h+\d+/', '', $message);
 
         return \ucfirst($message) . (\is_string($token) ? $suffix : '');
-    }
-
-    /**
-     * @param string $pattern
-     * @return string
-     */
-    protected function pattern(string $pattern): string
-    {
-        return \addcslashes($pattern, $this->delimiter);
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function name(string $name): string
-    {
-        return \preg_quote($name, $this->delimiter);
     }
 }
