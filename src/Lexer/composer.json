@@ -30,7 +30,7 @@
         }
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "~3.0"
+        "phplrt/lexer-contracts-implementation": "~2.1"
     },
     "extra": {
         "branch-alias": {

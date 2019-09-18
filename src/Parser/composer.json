@@ -29,7 +29,7 @@
         }
     },
     "provide": {
-        "phplrt/parser-contracts-implementation": "~3.0"
+        "phplrt/parser-contracts-implementation": "~2.1"
     },
     "extra": {
         "branch-alias": {

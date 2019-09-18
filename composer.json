@@ -66,9 +66,9 @@
         "phplrt/source-contracts": "self.version"
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "~3.0",
-        "phplrt/parser-contracts-implementation": "~3.0",
-        "phplrt/source-contracts-implementation": "~3.0"
+        "phplrt/lexer-contracts-implementation": "~2.1",
+        "phplrt/parser-contracts-implementation": "~2.1",
+        "phplrt/source-contracts-implementation": "~2.1"
     },
     "scripts": {
         "phpcbf": [

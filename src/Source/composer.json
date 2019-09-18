@@ -27,7 +27,7 @@
         "psr/http-message": "~1.0"
     },
     "provide": {
-        "phplrt/source-contracts-implementation": "~3.0"
+        "phplrt/source-contracts-implementation": "~2.1"
     },
     "extra": {
         "branch-alias": {
