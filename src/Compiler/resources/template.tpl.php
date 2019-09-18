@@ -62,7 +62,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     ];
 <?php foreach ($this->constants as $const): ?>
 
-<?=$const?>
+<?=$const; ?>
 
 <?php endforeach; ?>
 
@@ -78,7 +78,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     protected $reducers = [];
 <?php foreach ($this->properties as $property): ?>
 
-<?=$property?>
+<?=$property; ?>
 
 <?php endforeach; ?>
 
@@ -137,7 +137,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     }
 <?php foreach ($this->methods as $method): ?>
 
-<?=$method?>
+<?=$method; ?>
 
 <?php endforeach; ?>
 }
