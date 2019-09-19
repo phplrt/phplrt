@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Lexer\Token\Nested;
+use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
@@ -70,6 +70,6 @@ class PP2PHPLexer implements LexerInterface
             $value .= $inner->getValue();
         }
 
-        yield new Nested('T_PHP_CODE', $value, $children);
+        yield new Composite('T_PHP_CODE', $value, $offset, $children);
     }
 }
