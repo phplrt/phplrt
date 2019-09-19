@@ -24,7 +24,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Compiler\Generator\GeneratorInterface;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
-use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
 
