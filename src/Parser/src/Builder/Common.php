@@ -13,6 +13,7 @@ use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Class Common
@@ -22,7 +23,7 @@ class Common implements BuilderInterface
     /**
      * {@inheritDoc}
      */
-    public function build(RuleInterface $rule, TokenInterface $token, $state, $children)
+    public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
     {
         switch (true) {
             case $rule instanceof TerminalInterface:

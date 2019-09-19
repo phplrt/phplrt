@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Source\File;
-use Phplrt\Position\Position;
 use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Parser\Builder\Common;
 use Phplrt\Parser\Buffer\EagerBuffer;
@@ -367,7 +366,7 @@ class Parser implements ParserInterface
             return null;
         }
 
-        return $this->buildAst($token, $state, $result);
+        return $this->buildAst($source, $token, $state, $result);
     }
 
     /**
@@ -385,14 +384,15 @@ class Parser implements ParserInterface
     }
 
     /**
+     * @param ReadableInterface $file
      * @param TokenInterface $token
      * @param int|string $state
      * @param mixed $result
      * @return mixed|null
      */
-    private function buildAst(TokenInterface $token, $state, $result)
+    private function buildAst(ReadableInterface $file, TokenInterface $token, $state, $result)
     {
-        $result = $this->builder->build($this->rules[$state], $token, $state, $result) ?? $result;
+        $result = $this->builder->build($file, $this->rules[$state], $token, $state, $result) ?? $result;
 
         if ($result instanceof NodeInterface) {
             $this->node = $result;

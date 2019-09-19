@@ -11,6 +11,7 @@ namespace Phplrt\Parser\Builder;
 
 use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Class Nested
@@ -35,10 +36,10 @@ class Nested implements BuilderInterface
     /**
      * {@inheritDoc}
      */
-    public function build(RuleInterface $rule, TokenInterface $token, $state, $children)
+    public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
     {
         foreach ($this->builders as $builder) {
-            if (($result = $builder->build($rule, $token, $state, $children)) !== null) {
+            if (($result = $builder->build($file, $rule, $token, $state, $children)) !== null) {
                 return $result;
             }
         }

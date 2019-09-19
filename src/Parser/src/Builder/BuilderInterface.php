@@ -12,6 +12,7 @@ namespace Phplrt\Parser\Builder;
 use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Interface BuilderInterface
@@ -19,11 +20,12 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 interface BuilderInterface
 {
     /**
+     * @param ReadableInterface $file
      * @param RuleInterface $rule
      * @param TokenInterface $token
      * @param int|string $state
      * @param NodeInterface|TokenInterface|array|iterable $children
      * @return mixed|null
      */
-    public function build(RuleInterface $rule, TokenInterface $token, $state, $children);
+    public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children);
 }

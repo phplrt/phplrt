@@ -11,6 +11,7 @@ namespace Phplrt\Parser\Builder;
 
 use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * Class Expandable
@@ -58,10 +59,10 @@ class Expandable implements BuilderInterface
     /**
      * {@inheritDoc}
      */
-    public function build(RuleInterface $rule, TokenInterface $token, $state, $children)
+    public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
     {
         if (isset($this->reducers[$state])) {
-            return $this->reducers[$state]($children, $token->getOffset(), $state);
+            return $this->reducers[$state]($children, $token->getOffset(), $state, $file);
         }
 
         return null;

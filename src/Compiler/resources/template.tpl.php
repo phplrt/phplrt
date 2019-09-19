@@ -71,11 +71,6 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
      * @var \Phplrt\Contracts\Lexer\LexerInterface|\Phplrt\Lexer\Lexer
      */
     private $lexer;
-
-    /**
-     * @var array|\Closure[]
-     */
-    protected $reducers = [];
 <?php foreach ($this->properties as $property): ?>
 
 <?=$property; ?>
@@ -110,28 +105,23 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     /**
      * {@inheritDoc}
      */
-    public function build(\Phplrt\Parser\Rule\RuleInterface $rule, \Phplrt\Contracts\Lexer\TokenInterface $token, $state, $children)
-    {
+    public function build(
+        \Phplrt\Contracts\Source\ReadableInterface $file,
+        \Phplrt\Parser\Rule\RuleInterface $rule,
+        \Phplrt\Contracts\Lexer\TokenInterface $token,
+        $state,
+        $children
+    ) {
         $offset = $token->getOffset();
 <?php if (\count($this->analyzer->reducers)): ?>
-        try {
-            switch ((string)$state) {
+        switch ((string)$state) {
 <?php foreach ($this->analyzer->reducers as $id => $code): ?>
-                case <?=$this->value((string)$id); ?>:
-                    <?=$code; ?>
-
-                    break;
+            case <?=$this->value((string)$id); ?>:
+                <?=$code; ?>
+                break;
 <?php endforeach; ?>
-            }
-        } catch (\Throwable $e) {
-            $message = \sprintf('Error while reducing "%s" rule: ' . $e->getMessage(), $state);
-            throw new \Phplrt\Parser\Exception\ParserRuntimeException($message, $token, null, $e);
         }
 <?php endif; ?>
-
-        if (isset($this->reducers[$state])) {
-            return $this->reducers[$state]($children, $offset, $state);
-        }
 
         return null;
     }
