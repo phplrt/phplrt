@@ -125,7 +125,7 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
             }
         } catch (\Throwable $e) {
             $message = \sprintf('Error while reducing "%s" rule: ' . $e->getMessage(), $state);
-            throw new \Phplrt\Parser\Exception\ParserRuntimeException($message, $token, $e);
+            throw new \Phplrt\Parser\Exception\ParserRuntimeException($message, $token, null, $e);
         }
 <?php endif; ?>
 
