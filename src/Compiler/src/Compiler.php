@@ -25,6 +25,8 @@ use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Compiler\Generator\GeneratorInterface;
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
 
 /**
  * Class Compiler
@@ -80,11 +82,15 @@ class Compiler implements ParserInterface
     private function run(ReadableInterface $source): iterable
     {
         try {
-            return $this->preloader->traverse(
-                $this->grammar->parse($source)
-            );
+            $ast = $this->grammar->parse($source);
+
+            return $this->preloader->traverse($ast);
         } catch (GrammarException $e) {
             throw $e;
+        } catch (LexerRuntimeExceptionInterface $e) {
+            throw new GrammarException($e->getMessage(), $source, $e->getToken()->getOffset());
+        } catch (ParserRuntimeExceptionInterface $e) {
+            throw new GrammarException($e->getMessage(), $source, $e->getNode()->getOffset());
         }
     }
 
@@ -92,7 +98,6 @@ class Compiler implements ParserInterface
      * @param resource|string|ReadableInterface $source
      * @return iterable
      * @throws ParserExceptionInterface
-     * @throws RuntimeExceptionInterface
      * @throws \Throwable
      */
     public function parse($source): iterable
