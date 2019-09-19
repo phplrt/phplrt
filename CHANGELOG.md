@@ -1,5 +1,11 @@
 # Release Notes
 
+## 2.2.0
+
+- Signature of `\Phplrt\Parser\Builder\BuilderInterface` interface was changed:
+    - from `build(RuleInterface $rule, TokenInterface $token, $state, $children)`
+    - to `build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)`
+
 ## 2.1.0
 
 - The [phplrt/compiler](https://github.com/phplrt/compiler) package was unarchived and actualized.
