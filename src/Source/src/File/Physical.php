@@ -43,9 +43,9 @@ class Physical extends Readable implements FileInterface
      */
     public function __construct(string $pathname)
     {
-        $this->pathname = $pathname;
+        $this->assertValid($pathname);
 
-        $this->assertValid($this->getPathname());
+        $this->pathname = \realpath($pathname);
     }
 
     /**
@@ -56,8 +56,8 @@ class Physical extends Readable implements FileInterface
      */
     private function assertValid(string $pathname): void
     {
-        $this->assertExists($this->getPathname());
-        $this->assertIsReadable($this->getPathname());
+        $this->assertExists($pathname);
+        $this->assertIsReadable($pathname);
     }
 
     /**
