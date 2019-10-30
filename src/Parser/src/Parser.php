@@ -108,7 +108,7 @@ class Parser implements ParserInterface
      *
      * @var TokenInterface|null
      */
-    private $token;
+    protected $token;
 
     /**
      * Contains the readonly NodeInterface object which was last successfully
@@ -120,7 +120,7 @@ class Parser implements ParserInterface
      *
      * @var NodeInterface|null
      */
-    private $node;
+    protected $node;
 
     /**
      * A buffer class that allows you to iterate over the stream of tokens and
@@ -130,35 +130,35 @@ class Parser implements ParserInterface
      *
      * @var string
      */
-    private $buffer = EagerBuffer::class;
+    protected $buffer = EagerBuffer::class;
 
     /**
      * An abstract syntax tree builder.
      *
      * @var BuilderInterface
      */
-    private $builder;
+    protected $builder;
 
     /**
      * The initial state (initial rule identifier) of the parser.
      *
      * @var string|int|null
      */
-    private $initial;
+    protected $initial;
 
     /**
      * The lexer instance.
      *
      * @var LexerInterface
      */
-    private $lexer;
+    protected $lexer;
 
     /**
      * Array of transition rules for the parser.
      *
      * @var array|RuleInterface[]
      */
-    private $rules;
+    protected $rules;
 
     /**
      * Token indicating the end of parsing.
