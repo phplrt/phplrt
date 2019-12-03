@@ -31,7 +31,7 @@ class BeforeTraversingMutationsTestCase extends TestCase
      */
     public function testUpdateRootsByArrayWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
+        $actual = $this->traverse($original = $this->nodes(2), new class() extends Visitor {
             public function before(iterable $node): ?iterable
             {
                 return \is_array($node) ? [] : null;
@@ -50,7 +50,7 @@ class BeforeTraversingMutationsTestCase extends TestCase
      */
     public function testUpdateRootByArrayWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
+        $actual = $this->traverse($original = $this->node(), new class() extends Visitor {
             public function before(iterable $node): ?iterable
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
@@ -69,7 +69,7 @@ class BeforeTraversingMutationsTestCase extends TestCase
      */
     public function testUpdateRootsByNodeWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
+        $actual = $this->traverse($original = $this->nodes(2), new class() extends Visitor {
             public function before(iterable $node): ?iterable
             {
                 return \is_array($node) ? new Node(42) : null;
@@ -88,7 +88,7 @@ class BeforeTraversingMutationsTestCase extends TestCase
      */
     public function testUpdateRootByNodeWhenEntering(): void
     {
-        $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
+        $actual = $this->traverse($original = $this->node(), new class() extends Visitor {
             public function before(iterable $node): ?iterable
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
