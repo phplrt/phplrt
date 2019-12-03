@@ -48,7 +48,7 @@ class Common implements BuilderInterface
      */
     protected function terminal($state, TokenInterface $token): NodeInterface
     {
-        return new class($state, $token) implements NodeInterface {
+        return new class ($state, $token) implements NodeInterface {
             private $state;
             private $token;
 
@@ -83,7 +83,7 @@ class Common implements BuilderInterface
      */
     protected function production(string $state, array $children, int $offset): NodeInterface
     {
-        return new class($state, $children, $offset) implements NodeInterface {
+        return new class ($state, $children, $offset) implements NodeInterface {
             private $state;
             private $offset;
             public $children;

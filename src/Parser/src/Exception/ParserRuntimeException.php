@@ -57,7 +57,7 @@ class ParserRuntimeException extends ParserException implements ParserRuntimeExc
      */
     private function createNode(TokenInterface $token): NodeInterface
     {
-        return new class($token->getOffset()) implements NodeInterface {
+        return new class ($token->getOffset()) implements NodeInterface {
             /**
              * @var int
              */
