@@ -30,7 +30,7 @@
         }
     },
     "require-dev": {
-        "symfony/var-dumper": "~3.4|~4.0"
+        "symfony/var-dumper": "^4.0|^5.0"
     },
     "extra": {
         "branch-alias": {
