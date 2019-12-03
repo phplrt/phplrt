@@ -1,4 +1,7 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
+
 /** @var $this \Phplrt\Compiler\Generator\ZendGenerator */
 echo '<?php';
 ?>
@@ -6,7 +9,7 @@ echo '<?php';
 /**
  * This is an automatically generated file, which should not be manually edited.
  *
- * @created <?=\date(\DateTime::RFC3339); ?>
+ * @created <?=\date(\DateTime::RFC3339)?>
 
  *
  * @see https://github.com/phplrt/phplrt
@@ -14,41 +17,49 @@ echo '<?php';
  */
 declare(strict_types=1);
 
-<?php if ($this->namespace): ?>
-namespace <?=$this->namespace; ?>;
+<?php if ($this->namespace) : ?>
+namespace <?=$this->namespace?>;
 
 <?php endif; ?>
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Lexer;
+use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Builder\BuilderInterface;
+use Phplrt\Parser\Rule\RuleInterface;
+
 /**
  * The main class of the generated parser.
  *
- * @package <?=$this->fqn; ?>
+ * @package <?=$this->fqn?>
 
- * @generator \<?=static::class; ?>
+ * @generator \<?=static::class?>
 
  */
-class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
-    \Phplrt\Parser\Builder\BuilderInterface
+class <?=$this->class?> extends \Phplrt\Parser\Parser implements
+    BuilderInterface
 {
-<?php foreach ($this->getTokens() as $name => $value):
+<?php foreach ($this->getTokens() as $name => $value) :
     if (\is_int($name)) {
         continue;
     }
-?>
+    ?>
 
     /** @var string */
-    public const <?=$this->constantName($name); ?> = <?=$this->value($name); ?>;
+    public const <?=$this->constantName($name)?> = <?=$this->value($name)?>;
 <?php endforeach; ?>
 
     /**
      * @var string[]
      */
     private const LEXER_TOKENS = [
-<?php foreach ($this->getTokens() as $name => $value): ?>
-<?php if (\is_int($name)): ?>
-        <?=$this->value($name); ?> => <?=$this->value($value); ?>,
-<?php else: ?>
-        self::<?=$this->constantName($name); ?> => <?=$this->value($value); ?>,
-<?php endif; ?>
+<?php foreach ($this->getTokens() as $name => $value) : ?>
+    <?php if (\is_int($name)) : ?>
+        <?=$this->value($name)?> => <?=$this->value($value)?>,
+    <?php else : ?>
+        self::<?=$this->constantName($name); ?> => <?=$this->value($value)?>,
+    <?php endif; ?>
 <?php endforeach; ?>
     ];
 
@@ -56,48 +67,41 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
      * @var string[]
      */
     private const LEXER_SKIPS = [
-<?php foreach ($this->analyzer->skip as $name => $value): ?>
-        <?=$this->value($value); ?>,
+<?php foreach ($this->analyzer->skip as $name => $value) : ?>
+        <?=$this->value($value)?>,
 <?php endforeach; ?>
     ];
-<?php foreach ($this->constants as $const): ?>
+<?php foreach ($this->constants as $const) : ?>
+    <?=$const?>
 
-<?=$const; ?>
+<?php endforeach; ?>
+
+<?php foreach ($this->properties as $property) : ?>
+    <?=$property?>
 
 <?php endforeach; ?>
 
     /**
-     * A generated lexer instance.
-     * @var \Phplrt\Contracts\Lexer\LexerInterface|\Phplrt\Lexer\Lexer
-     */
-    private $lexer;
-<?php foreach ($this->properties as $property): ?>
-
-<?=$property; ?>
-
-<?php endforeach; ?>
-
-    /**
-     * <?=$this->class; ?> class constructor.
+     * <?=$this->class?> class constructor.
      */
     public function __construct()
     {
-        $this->lexer = new \Phplrt\Lexer\Lexer(self::LEXER_TOKENS, self::LEXER_SKIPS);
+        $lexer = new Lexer(self::LEXER_TOKENS, self::LEXER_SKIPS);
 
-        parent::__construct($this->lexer, $this->grammar(), [
-            self::CONFIG_INITIAL_RULE   => <?=$this->value($this->analyzer->initial); ?>,
-            self::CONFIG_AST_BUILDER    => $this,
+        parent::__construct($lexer, $this->grammar(), [
+            self::CONFIG_INITIAL_RULE   => <?=$this->value($this->analyzer->initial)?>,
+            self::CONFIG_AST_BUILDER    => $this
         ]);
     }
 
     /**
-     * @return array|\Phplrt\Parser\Rule\RuleInterface[]
+     * @return array|RuleInterface[]
      */
     private function grammar(): array
     {
         return [
-<?php foreach ($this->getRules() as $id => $rule): ?>
-            <?=$this->value($id); ?> => <?=$this->rule($rule); ?>,
+<?php foreach ($this->getRules() as $id => $rule) : ?>
+            <?=$this->value($id)?> => <?=$this->rule($rule)?>,
 <?php endforeach; ?>
         ];
     }
@@ -105,29 +109,24 @@ class <?=$this->class; ?> extends \Phplrt\Parser\Parser implements
     /**
      * {@inheritDoc}
      */
-    public function build(
-        \Phplrt\Contracts\Source\ReadableInterface $file,
-        \Phplrt\Parser\Rule\RuleInterface $rule,
-        \Phplrt\Contracts\Lexer\TokenInterface $token,
-        $state,
-        $children
-    ) {
+    public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
+    {
         $offset = $token->getOffset();
-<?php if (\count($this->analyzer->reducers)): ?>
-        switch ((string)$state) {
-<?php foreach ($this->analyzer->reducers as $id => $code): ?>
-            case <?=$this->value((string)$id); ?>:
-                <?=$code; ?>
+<?php if (\count($this->analyzer->reducers)) : ?>
+        switch (true) {
+    <?php foreach ($this->analyzer->reducers as $id => $code) : ?>
+            case $state === <?=$this->value($id)?>:
+                <?=$code?>
                 break;
-<?php endforeach; ?>
+    <?php endforeach; ?>
         }
 <?php endif; ?>
 
         return null;
     }
-<?php foreach ($this->methods as $method): ?>
 
-<?=$method; ?>
+<?php foreach ($this->methods as $method) : ?>
+    <?=$method?>
 
 <?php endforeach; ?>
 }
