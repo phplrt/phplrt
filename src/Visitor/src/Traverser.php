@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of phplrt package and is a modified/adapted version of
  * "nikic/PHP-Parser", which is distributed under the following license:
@@ -38,6 +39,7 @@
  * @see https://github.com/nikic/PHP-Parser
  * @see https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php
  */
+
 declare(strict_types=1);
 
 namespace Phplrt\Visitor;

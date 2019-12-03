@@ -1,15 +1,16 @@
 <?php
+
 /**
  * This file is part of Phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace Phplrt\Parser\Exception;
 
-use Phplrt\Compiler\Ast\Node;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
@@ -56,7 +57,7 @@ class ParserRuntimeException extends ParserException implements ParserRuntimeExc
      */
     private function createNode(TokenInterface $token): NodeInterface
     {
-        return new class($token->getOffset()) implements NodeInterface {
+        return new class ($token->getOffset()) implements NodeInterface {
             /**
              * @var int
              */

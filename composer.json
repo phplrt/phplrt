@@ -71,9 +71,7 @@
         "phplrt/source-contracts-implementation": "~2.1"
     },
     "scripts": {
-        "phpcbf": [
-            "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src"
-        ]
+        "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src tests"
     },
     "config": {
         "sort-packages": true
