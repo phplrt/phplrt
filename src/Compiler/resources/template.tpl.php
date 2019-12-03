@@ -6,6 +6,7 @@ declare(strict_types=1);
 echo '<?php';
 ?>
 
+
 /**
  * This is an automatically generated file, which should not be manually edited.
  *
@@ -15,6 +16,7 @@ echo '<?php';
  * @see https://github.com/phplrt/phplrt
  * @see https://github.com/phplrt/phplrt/blob/master/LICENSE.md
  */
+
 declare(strict_types=1);
 
 <?php if ($this->namespace): ?>
