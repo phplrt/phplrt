@@ -70,6 +70,11 @@ class Common implements BuilderInterface
             {
                 return new \EmptyIterator();
             }
+
+            public function __toString(): string
+            {
+                return \sprintf('<%s>%s</%1$s>', $this->token->getName(), $this->token->getValue());
+            }
         };
     }
 
@@ -106,6 +111,19 @@ class Common implements BuilderInterface
             public function getIterator(): \Traversable
             {
                 return new \ArrayIterator($this->children);
+            }
+
+            public function __toString(): string
+            {
+                $result = ['<' . $this->getName() . '>'];
+
+                foreach ($this->children as $child) {
+                    $result[] = '    ' . (string)$child;
+                }
+
+                $result[] = '</' . $this->getName() . '>';
+
+                return \implode("\n", $result);
             }
         };
     }
