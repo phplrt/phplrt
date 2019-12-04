@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Source;
 
-use Phplrt\Source\FileInterface;
-use Phplrt\Source\ReadableInterface;
 use PHPUnit\Framework\SkippedTestError;
+use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use PHPUnit\Framework\ExpectationFailedException;
 
 /**

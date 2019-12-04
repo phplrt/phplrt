@@ -220,7 +220,7 @@ class Parser implements ParserInterface
             return [];
         }
 
-        return $this->run($this->open($source));
+        return $this->run(File::new($source));
     }
 
     /**
@@ -425,34 +425,5 @@ class Parser implements ParserInterface
         }
 
         return '"' . $token->getValue() . '"';
-    }
-
-    /**
-     * @param string|resource|mixed $source
-     * @return ReadableInterface
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
-     */
-    private function open($source): ReadableInterface
-    {
-        return File::new($source);
-    }
-
-    /**
-     * @param mixed $result
-     * @return bool
-     */
-    private function assertResult($result): bool
-    {
-        return $result instanceof TokenInterface || $result instanceof NodeInterface || \is_array($result);
-    }
-
-    /**
-     * @param mixed $result
-     * @return string
-     */
-    private function getType($result): string
-    {
-        return \is_object($result) ? \get_class($result) : \gettype($result);
     }
 }
