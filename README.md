@@ -45,7 +45,18 @@ text analysis and so on.
 - [Abstract Syntax Tree](docs/ast.md)
     - [Builder](docs/ast.md#ast-builder)
 
-## Quickstart
+## Installation
+
+Phplrt is available as composer repository and can be 
+installed using the following command in a root of your project:
+
+```bash
+$ composer require phplrt/phplrt
+```
+
+More detailed installation instructions [are here](docs/installation.md).
+
+## Quick Start
 
 ```php
 <?php
