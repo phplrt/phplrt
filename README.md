@@ -14,10 +14,6 @@
     <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
 </p>
 
-> Please note that this is phplrt `2.0.x-dev` documentation.* 
-> The latest stable version is here: 
-> [https://github.com/phplrt/phplrt/tree/1.1.0](https://github.com/phplrt/phplrt/tree/1.1.0)
-
 ## Introduction
 
 The phplrt is a set of tools for programming languages recognition. The library 
