@@ -26,4 +26,82 @@ text analysis and so on.
 
 ## Documentation
 
-Not yet =)
+- [Installation](docs/installation.md)
+- [Compiler](docs/compiler.md)
+    - [Loading](docs/compiler.md#loading)
+    - [Compilation](docs/compiler.md#compilation)
+    - [Grammar](docs/grammar.md)
+        - [Definitions](docs/grammar.md#definitions)
+        - [Comments](docs/grammar.md#comments)
+        - [Output Control](docs/grammar.md#output-control)
+        - [Declaring Rules](docs/grammar.md#declaring-rules)
+        - [Delegates](docs/grammar.md#delegation)
+- [Lexer](docs/lexer.md)
+- [Parser](docs/parser.md#parser)
+    - [Exception Handling](docs/parser.md#exception-handling)
+    - [Rules](docs/rules.md#rules)
+        - [Alternation](docs/rules.md#alternation)
+        - [Concatenation](docs/rules.md#concatenation)
+        - [Repetition](docs/rules.md#repetition)
+        - [Optional](docs/rules.md#optional)
+        - [Lexeme](docs/rules.md#lexeme)
+- [Examples](docs/examples.md#examples)
+- [Abstract Syntax Tree](docs/ast.md)
+    - [Builder](docs/ast.md#ast-builder)
+
+## Quickstart
+
+```php
+<?php
+
+use Phplrt\Compiler\Compiler;
+
+$compiler = new Compiler();
+$compiler->load(<<<EBNF
+   
+    %token T_DIGIT          \d
+    %token T_PLUS           \+
+    %token T_MINUS          \-
+    %token T_POW            \*
+    %token T_DIV            /
+    %skip  T_WHITESPACE     \s+
+    
+    #Expression
+      : <T_DIGIT> (Operator() <T_DIGIT>)* 
+      ;
+
+    #Operator
+      : <T_PLUS>
+      | <T_MINUS>
+      | <T_POW>
+      | <T_DIV>
+      ;
+EBNF);
+```
+
+**Execution:**
+
+```php
+echo $compiler->parse('2 + 2');
+
+//
+// Output:
+//
+// <Expression offset="0">
+//     <T_DIGIT offset="0">2</T_DIGIT>
+//     <Operator offset="2">
+//         <T_PLUS offset="2">+</T_PLUS>
+//     </Operator>
+//     <T_DIGIT offset="4">2</T_DIGIT>
+// </Expression>
+//
+```
+
+**Compilation:**
+
+```php
+$compiler
+    ->build('App\\ExpressionParser')
+    ->save(__DIR__ . '/ExpressionParser.php')
+;
+```

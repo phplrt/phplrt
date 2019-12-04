@@ -66,14 +66,14 @@
         "phplrt/source-contracts": "self.version"
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "~2.1",
-        "phplrt/parser-contracts-implementation": "~2.1",
-        "phplrt/source-contracts-implementation": "~2.1"
+        "phplrt/lexer-contracts-implementation": "^2.3",
+        "phplrt/parser-contracts-implementation": "^2.3",
+        "phplrt/source-contracts-implementation": "^2.3"
     },
     "scripts": {
-        "phpcbf": [
-            "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src"
-        ]
+        "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",
+        "split": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder split",
+        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge"
     },
     "config": {
         "sort-packages": true

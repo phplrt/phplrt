@@ -25,7 +25,6 @@ abstract class Production extends Rule implements ProductionInterface
     protected function mergeWith(array $children, $result): array
     {
         if (\is_array($result)) {
-            /** @noinspection SlowArrayOperationsInLoopInspection */
             return \array_merge($children, $result);
         }
 

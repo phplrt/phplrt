@@ -51,7 +51,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
      * @param array|string[] $skip
      * @param string $driver
      */
-    public function __construct(array $tokens, array $skip = [], string $driver = Markers::class)
+    public function __construct(array $tokens = [], array $skip = [], string $driver = Markers::class)
     {
         $this->driverClass = $driver;
         $this->tokens = $tokens;
