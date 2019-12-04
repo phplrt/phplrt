@@ -1,10 +1,12 @@
 <?php
+
 /**
  * This file is part of phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace Phplrt\Source\File;
@@ -43,9 +45,9 @@ class Physical extends Readable implements FileInterface
      */
     public function __construct(string $pathname)
     {
-        $this->pathname = $pathname;
+        $this->assertValid($pathname);
 
-        $this->assertValid($this->getPathname());
+        $this->pathname = \realpath($pathname);
     }
 
     /**
@@ -56,8 +58,8 @@ class Physical extends Readable implements FileInterface
      */
     private function assertValid(string $pathname): void
     {
-        $this->assertExists($this->getPathname());
-        $this->assertIsReadable($this->getPathname());
+        $this->assertExists($pathname);
+        $this->assertIsReadable($pathname);
     }
 
     /**

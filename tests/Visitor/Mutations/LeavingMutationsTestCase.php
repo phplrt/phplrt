@@ -1,10 +1,12 @@
 <?php
+
 /**
  * This file is part of phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 declare(strict_types=1);
 
 namespace Phplrt\Tests\Visitor\Mutations;
@@ -31,7 +33,7 @@ class LeavingMutationsTestCase extends TestCase
      */
     public function testUpdateRootsByArrayWhenLeaving(): void
     {
-        $actual = $this->traverse($original = $this->nodes(2), new class() extends Visitor {
+        $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
             public function leave(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
@@ -51,7 +53,7 @@ class LeavingMutationsTestCase extends TestCase
     {
         $this->expectException(BadMethodException::class);
 
-        $this->traverse($original = $this->node(), new class() extends Visitor {
+        $this->traverse($original = $this->node(), new class () extends Visitor {
             public function leave(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
@@ -67,7 +69,7 @@ class LeavingMutationsTestCase extends TestCase
      */
     public function testUpdateRootsByNodeWhenLeaving(): void
     {
-        $actual = $this->traverse($original = $this->nodes(2), new class() extends Visitor {
+        $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
             public function leave(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
@@ -86,7 +88,7 @@ class LeavingMutationsTestCase extends TestCase
      */
     public function testUpdateRootByNodeWhenLeaving(): void
     {
-        $actual = $this->traverse($original = $this->node(), new class() extends Visitor {
+        $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
             public function leave(NodeInterface $node)
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
