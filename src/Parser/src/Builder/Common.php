@@ -126,7 +126,11 @@ class Common implements BuilderInterface
                 $result = [\sprintf('<%s offset="%d">', $this->getName(), $this->getOffset())];
 
                 foreach ($this->children as $child) {
-                    $result[] = '    ' . (string)$child;
+                    $children = \array_map(static function (string $line): string {
+                        return '    ' . $line;
+                    }, \explode("\n", (string)$child));
+
+                    $result[] = \implode("\n", $children);
                 }
 
                 $result[] = '</' . $this->getName() . '>';
