@@ -19,7 +19,7 @@ echo '<?php';
 
 declare(strict_types=1);
 
-<?php if ($this->namespace): ?>
+<?php if ($this->namespace) : ?>
 namespace <?=$this->namespace?>;
 
 <?php endif; ?>
@@ -42,7 +42,7 @@ use Phplrt\Parser\Rule\RuleInterface;
 class <?=$this->class?> extends \Phplrt\Parser\Parser implements
     BuilderInterface
 {
-<?php foreach ($this->getTokens() as $name => $value):
+<?php foreach ($this->getTokens() as $name => $value) :
     if (\is_int($name)) {
         continue;
     }
@@ -56,12 +56,12 @@ class <?=$this->class?> extends \Phplrt\Parser\Parser implements
      * @var string[]
      */
     private const LEXER_TOKENS = [
-<?php foreach ($this->getTokens() as $name => $value): ?>
-<?php if (\is_int($name)): ?>
+<?php foreach ($this->getTokens() as $name => $value) : ?>
+    <?php if (\is_int($name)) : ?>
         <?=$this->value($name)?> => <?=$this->value($value)?>,
-<?php else: ?>
+    <?php else : ?>
         self::<?=$this->constantName($name)?> => <?=$this->value($value)?>,
-<?php endif; ?>
+    <?php endif; ?>
 <?php endforeach; ?>
     ];
 
@@ -69,16 +69,16 @@ class <?=$this->class?> extends \Phplrt\Parser\Parser implements
      * @var string[]
      */
     private const LEXER_SKIPS = [
-<?php foreach ($this->analyzer->skip as $name => $value): ?>
+<?php foreach ($this->analyzer->skip as $name => $value) : ?>
         <?=$this->value($value)?>,
 <?php endforeach; ?>
     ];
-<?php foreach ($this->constants as $const): ?>
+<?php foreach ($this->constants as $const) : ?>
     <?=$const?>
 
 <?php endforeach; ?>
 
-<?php foreach ($this->properties as $property): ?>
+<?php foreach ($this->properties as $property) : ?>
     <?=$property?>
 
 <?php endforeach; ?>
@@ -102,7 +102,7 @@ class <?=$this->class?> extends \Phplrt\Parser\Parser implements
     private function grammar(): array
     {
         return [
-<?php foreach ($this->getRules() as $id => $rule): ?>
+<?php foreach ($this->getRules() as $id => $rule) : ?>
             <?=$this->value($id)?> => <?=$this->rule($rule)?>,
 <?php endforeach; ?>
         ];
@@ -114,9 +114,9 @@ class <?=$this->class?> extends \Phplrt\Parser\Parser implements
     public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
     {
         $offset = $token->getOffset();
-<?php if (\count($this->analyzer->reducers)): ?>
+<?php if (\count($this->analyzer->reducers)) : ?>
         switch (true) {
-    <?php foreach ($this->analyzer->reducers as $id => $code): ?>
+    <?php foreach ($this->analyzer->reducers as $id => $code) : ?>
             case $state === <?=$this->value($id)?>:
                 <?=$code?>
                 break;
@@ -127,7 +127,7 @@ class <?=$this->class?> extends \Phplrt\Parser\Parser implements
         return null;
     }
 
-<?php foreach ($this->methods as $method): ?>
+<?php foreach ($this->methods as $method) : ?>
     <?=$method?>
 
 <?php endforeach; ?>
