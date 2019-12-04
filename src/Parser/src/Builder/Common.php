@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of phplrt package.
  *
@@ -48,6 +49,7 @@ class Common implements BuilderInterface
     {
         return new class($state, $token) implements NodeInterface {
             private $state;
+
             private $token;
 
             public function __construct($state, TokenInterface $token)
@@ -73,7 +75,11 @@ class Common implements BuilderInterface
 
             public function __toString(): string
             {
-                return \sprintf('<%s>%s</%1$s>', $this->token->getName(), $this->token->getValue());
+                return \vsprintf('<%s offset="%d">%s</%1$s>', [
+                    $this->token->getName(),
+                    $this->getOffset(),
+                    $this->token->getValue(),
+                ]);
             }
         };
     }
@@ -88,14 +94,16 @@ class Common implements BuilderInterface
     {
         return new class($state, $children, $offset) implements NodeInterface {
             private $state;
+
             private $offset;
-            public $children;
+
+            public  $children;
 
             public function __construct($state, array $children, int $offset)
             {
-                $this->state    = $state;
+                $this->state = $state;
                 $this->children = $children;
-                $this->offset   = $offset;
+                $this->offset = $offset;
             }
 
             public function getName(): string
@@ -115,7 +123,7 @@ class Common implements BuilderInterface
 
             public function __toString(): string
             {
-                $result = ['<' . $this->getName() . '>'];
+                $result = [\sprintf('<%s offset="%d">', $this->getName(), $this->getOffset())];
 
                 foreach ($this->children as $child) {
                     $result[] = '    ' . (string)$child;
