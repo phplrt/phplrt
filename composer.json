@@ -25,7 +25,7 @@
     },
     "require-dev": {
         "brianium/paratest": "^2.1",
-        "illuminate/support": "~6.0",
+        "illuminate/support": "~6.0|~5.4",
         "laravel/helpers": "~1.1",
         "monolog/monolog": "~1.0",
         "phpunit/phpunit": "^7.5",
