@@ -36,7 +36,8 @@
     },
     "autoload": {
         "files": [
-            "src/Contracts/Grammar/src/polyfill.php"
+            "src/Contracts/Grammar/src/polyfill.php",
+            "src/Contracts/Lexer/src/polyfill.php"
         ],
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",
@@ -71,9 +72,9 @@
         "phplrt/grammar-contracts": "self.version"
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "^2.3",
-        "phplrt/parser-contracts-implementation": "^2.3",
-        "phplrt/source-contracts-implementation": "^2.3"
+        "phplrt/lexer-contracts-implementation": "~2.2",
+        "phplrt/parser-contracts-implementation": "~2.2",
+        "phplrt/source-contracts-implementation": "~2.2"
     },
     "scripts": {
         "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",

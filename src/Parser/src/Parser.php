@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of Phplrt package.
+ * This file is part of phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,19 +14,18 @@ namespace Phplrt\Parser;
 use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Parser\Builder\Common;
-use Phplrt\Parser\Buffer\EagerBuffer;
-use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Lexer\Buffer\ArrayBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\Rule\ProductionInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Grammar\TerminalInterface;
+use Phplrt\Contracts\Grammar\ProductionInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
@@ -132,7 +131,7 @@ class Parser implements ParserInterface
      *
      * @var string
      */
-    protected $buffer = EagerBuffer::class;
+    protected $buffer = ArrayBuffer::class;
 
     /**
      * An abstract syntax tree builder.

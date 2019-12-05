@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of Phplrt package.
+ * This file is part of phplrt package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,14 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Buffer;
+namespace Phplrt\Lexer\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Lexer\BufferInterface;
 
 /**
- * Class EagerBuffer
+ * Class ArrayBuffer
  */
-class EagerBuffer implements BufferInterface
+class ArrayBuffer implements BufferInterface
 {
     /**
      * @var int
@@ -41,7 +42,7 @@ class EagerBuffer implements BufferInterface
     public function __construct(\Generator $stream)
     {
         $this->buffer = \iterator_to_array($stream, false);
-        $this->size   = \count($this->buffer);
+        $this->size = \count($this->buffer);
     }
 
     /**

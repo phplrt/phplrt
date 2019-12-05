@@ -23,7 +23,6 @@ use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Parser\Builder\Expandable;
 use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
@@ -31,9 +30,10 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Stmt\Quantifier;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
 use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
 use Phplrt\Contracts\Source\ReadableInterface;
@@ -271,7 +271,7 @@ class PP2Grammar extends Parser implements GrammarInterface
 
         if ($result instanceof Node) {
             $result->offset = $offset;
-            $result->file   = $source;
+            $result->file = $source;
         }
 
         return $result;
