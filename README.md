@@ -22,28 +22,7 @@ text analysis and so on.
 
 ## Documentation
 
-- [Installation](docs/installation.md)
-- [Compiler](docs/compiler.md)
-    - [Loading](docs/compiler.md#loading)
-    - [Compilation](docs/compiler.md#compilation)
-    - [Grammar](docs/grammar.md)
-        - [Definitions](docs/grammar.md#definitions)
-        - [Comments](docs/grammar.md#comments)
-        - [Output Control](docs/grammar.md#output-control)
-        - [Declaring Rules](docs/grammar.md#declaring-rules)
-        - [Delegates](docs/grammar.md#delegation)
-- [Lexer](docs/lexer.md)
-- [Parser](docs/parser.md#parser)
-    - [Exception Handling](docs/parser.md#exception-handling)
-    - [Rules](docs/rules.md#rules)
-        - [Alternation](docs/rules.md#alternation)
-        - [Concatenation](docs/rules.md#concatenation)
-        - [Repetition](docs/rules.md#repetition)
-        - [Optional](docs/rules.md#optional)
-        - [Lexeme](docs/rules.md#lexeme)
-- [Examples](docs/examples.md#examples)
-- [Abstract Syntax Tree](docs/ast.md)
-    - [Builder](docs/ast.md#ast-builder)
+Full documentation can be found here: [https://phplrt.github.io](https://phplrt.github.io/phplrt/)
 
 ## Installation
 
@@ -54,7 +33,7 @@ installed using the following command in a root of your project:
 $ composer require phplrt/phplrt
 ```
 
-More detailed installation instructions [are here](docs/installation.md).
+More detailed installation instructions [are here](https://phplrt.github.io/phplrt/installation).
 
 ## Quick Start
 
