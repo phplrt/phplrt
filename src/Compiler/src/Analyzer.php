@@ -11,21 +11,21 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Grammar\Lexeme;
 use Phplrt\Visitor\Visitor;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Optional;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Alternation;
+use Phplrt\Grammar\Optional;
+use Phplrt\Grammar\Repetition;
+use Phplrt\Grammar\Alternation;
+use Phplrt\Grammar\Concatenation;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Parser\Rule\Concatenation;
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
 use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
@@ -130,7 +130,7 @@ class Analyzer extends Visitor
         }
 
         if ($node instanceof PatternStmt) {
-            $lexemes              = \array_reverse($this->tokens[self::STATE_DEFAULT]);
+            $lexemes = \array_reverse($this->tokens[self::STATE_DEFAULT]);
             $lexemes[$node->name] = $node->pattern;
 
             $this->tokens[self::STATE_DEFAULT] = \array_reverse($lexemes);

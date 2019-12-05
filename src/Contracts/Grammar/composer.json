@@ -31,10 +31,7 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Contracts\\Grammar\\": "src/"
-        },
-        "files": [
-            "src/polyfill.php"
-        ]
+        }
     },
     "extra": {
         "branch-alias": {

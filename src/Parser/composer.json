@@ -27,7 +27,10 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Parser\\": "src"
-        }
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
     },
     "provide": {
         "phplrt/parser-contracts-implementation": "~2.2"

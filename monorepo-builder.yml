@@ -26,6 +26,7 @@ parameters:
     directories_to_repositories:
         # Packages
         src/Compiler: 'git@github.com:phplrt/compiler.git'
+        src/Grammar: 'git@github.com:phplrt/grammar.git'
         src/Lexer: 'git@github.com:phplrt/lexer.git'
         src/Parser: 'git@github.com:phplrt/parser.git'
         src/Position: 'git@github.com:phplrt/position.git'

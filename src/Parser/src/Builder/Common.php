@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Parser\Rule\TerminalInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Grammar\TerminalInterface;
 
 /**
  * Class Common
@@ -98,7 +98,7 @@ class Common implements BuilderInterface
 
             private $offset;
 
-            public $children;
+            public  $children;
 
             public function __construct($state, array $children, int $offset)
             {

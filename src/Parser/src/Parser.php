@@ -172,17 +172,25 @@ class Parser implements ParserInterface
      * Parser constructor.
      *
      * @param LexerInterface $lexer
-     * @param array|RuleInterface[] $rules
+     * @param iterable|RuleInterface[] $grammar
      * @param array $options
      */
-    public function __construct(LexerInterface $lexer, array $rules, array $options = [])
+    public function __construct(LexerInterface $lexer, iterable $grammar, array $options = [])
     {
         $this->lexer = $lexer;
-        $this->rules = $rules;
 
+        $this->bootGrammar($grammar);
         $this->bootConfigs($options);
-
         $this->boot();
+    }
+
+    /**
+     * @param iterable|RuleInterface[] $grammar
+     * @return void
+     */
+    private function bootGrammar(iterable $grammar): void
+    {
+        $this->rules = $grammar instanceof \Traversable ? \iterator_to_array($grammar) : $grammar;
     }
 
     /**
@@ -231,11 +239,11 @@ class Parser implements ParserInterface
      */
     private function run(ReadableInterface $source): iterable
     {
-        $buffer = $this->getBuffer($this->lex($source));
+        $buffer = $this->getBuffer($this->doLex($source));
 
         $this->reset($buffer);
 
-        return $this->filter($this->parseOrFail($source, $buffer));
+        return $this->parseOrFail($source, $buffer);
     }
 
     /**
@@ -244,7 +252,10 @@ class Parser implements ParserInterface
      */
     private function getBuffer(\Generator $stream): BufferInterface
     {
-        \assert($this->assertBufferType(), \sprintf(self::ERROR_BUFFER_TYPE, BufferInterface::class));
+        \assert(
+            \is_subclass_of($this->buffer, BufferInterface::class),
+            \sprintf(self::ERROR_BUFFER_TYPE, BufferInterface::class)
+        );
 
         $class = $this->buffer;
 
@@ -252,19 +263,11 @@ class Parser implements ParserInterface
     }
 
     /**
-     * @return bool
-     */
-    private function assertBufferType(): bool
-    {
-        return \is_subclass_of($this->buffer, BufferInterface::class);
-    }
-
-    /**
      * @param ReadableInterface $source
      * @return \Generator|TokenInterface[]
      * @throws LexerRuntimeExceptionInterface
      */
-    private function lex(ReadableInterface $source): \Generator
+    private function doLex(ReadableInterface $source): \Generator
     {
         $result = $this->lexer->lex($source);
 
@@ -285,15 +288,6 @@ class Parser implements ParserInterface
     {
         $this->token = $buffer->current();
         $this->node = null;
-    }
-
-    /**
-     * @param mixed $result
-     * @return array|mixed
-     */
-    private function filter($result)
-    {
-        return \is_array($result) ? \array_filter($result, '\\is_iterable') : $result;
     }
 
     /**

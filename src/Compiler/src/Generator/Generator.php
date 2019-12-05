@@ -11,14 +11,23 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
+use PhpParser\Node\Name;
 use Phplrt\Compiler\Analyzer;
-use Phplrt\Parser\Rule\RuleInterface;
+use Phplrt\Compiler\Extractor;
+use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Source\Exception\NotFoundException;
+use Phplrt\Source\Exception\NotReadableException;
 
 /**
  * Class Generator
  */
 abstract class Generator implements GeneratorInterface
 {
+    /**
+     * @var Extractor
+     */
+    public $importer;
+
     /**
      * @var string|null
      */
@@ -55,6 +64,11 @@ abstract class Generator implements GeneratorInterface
     protected $methods = [];
 
     /**
+     * @var array
+     */
+    private $preloaded = [];
+
+    /**
      * Generator constructor.
      *
      * @param Analyzer $analyzer
@@ -63,8 +77,84 @@ abstract class Generator implements GeneratorInterface
     public function __construct(Analyzer $analyzer, string $fqn)
     {
         $this->analyzer = $analyzer;
-
         $this->bootFqn($fqn);
+
+        $this->importer = new Extractor();
+    }
+
+    /**
+     * @return iterable|string[]
+     * @throws NotFoundException
+     * @throws NotReadableException
+     * @throws \ReflectionException
+     */
+    public function getImports(): iterable
+    {
+        foreach ($this->preloaded as $item) {
+            $this->importer->loadClass($item);
+            $this->importer->replace($item, $this->classNameHash($item));
+        }
+
+        foreach ($this->preloaded as $fqn => $item) {
+            yield $fqn => $this->importer->get($item);
+        }
+    }
+
+    /**
+     * @param string $fqn
+     * @return bool
+     */
+    public function isImported(string $fqn): bool
+    {
+        return isset($this->preloaded[$fqn]);
+    }
+
+    /**
+     * @param string $fqn
+     * @return void
+     */
+    private function bootFqn(string $fqn): void
+    {
+        $this->fqn = '\\' . \trim($fqn, '\\');
+
+        $chunks = \explode('\\', \trim($this->fqn, '\\'));
+        $this->class = \array_pop($chunks);
+        $this->namespace = \implode('\\', $chunks) ?: null;
+    }
+
+    /**
+     * @param string ...$classes
+     * @return $this
+     */
+    public function preload(string ...$classes): self
+    {
+        foreach ($classes as $class) {
+            $this->preloaded[(new Name($class))->toString()] = $class;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $class
+     * @return string
+     */
+    public function classNameHash(string $class): string
+    {
+        $name = new Name($class);
+
+        return '⠀' . \end($name->parts) . '·' . \hash('sha1', $this->fqn);
+    }
+
+    /**
+     * @param string $fqn
+     * @return string
+     */
+    public function hashIfImported(string $fqn): string
+    {
+        return $this->isImported($fqn)
+            ? $this->classNameHash($fqn)
+            : $this->fqn($fqn);
     }
 
     /**
@@ -97,19 +187,6 @@ abstract class Generator implements GeneratorInterface
      * @return array|string
      */
     abstract public function getTokens(): array;
-
-    /**
-     * @param string $fqn
-     * @return void
-     */
-    private function bootFqn(string $fqn): void
-    {
-        $this->fqn = '\\' . \trim($fqn, '\\');
-
-        $chunks          = \explode('\\', \trim($this->fqn, '\\'));
-        $this->class     = \array_pop($chunks);
-        $this->namespace = \implode('\\', $chunks) ?: null;
-    }
 
     /**
      * @param string $class

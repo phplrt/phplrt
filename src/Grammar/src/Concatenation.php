@@ -9,19 +9,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Rule;
+namespace Phplrt\Grammar;
 
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
- * Class Alternation
+ * Class Concatenation
  */
-class Alternation extends Production
+class Concatenation extends Production
 {
     /**
-     * @var array|int[]|string[]
+     * @var array|int[]
      */
     public $sequence;
 
@@ -46,20 +44,22 @@ class Alternation extends Production
     /**
      * @param BufferInterface $buffer
      * @param \Closure $reduce
-     * @return TokenInterface|NodeInterface|null
+     * @return iterable|null
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce)
+    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
-        $rollback = $buffer->key();
+        [$revert, $children] = [$buffer->key(), []];
 
         foreach ($this->sequence as $rule) {
-            if (($result = $reduce($rule)) !== null) {
-                return $result;
+            if (($result = $reduce($rule)) === null) {
+                $buffer->seek($revert);
+
+                return null;
             }
 
-            $buffer->seek($rollback);
+            $children = $this->mergeWith($children, $result);
         }
 
-        return null;
+        return $children;
     }
 }

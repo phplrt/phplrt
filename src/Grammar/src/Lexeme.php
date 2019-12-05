@@ -9,10 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Rule;
+namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Lexer;
 
 /**
  * Class Lexeme
@@ -47,9 +47,9 @@ class Lexeme extends Terminal
 
     /**
      * @param BufferInterface $buffer
-     * @return TokenInterface|null
+     * @return Lexer\TokenInterface|null
      */
-    public function reduce(BufferInterface $buffer): ?TokenInterface
+    public function reduce(BufferInterface $buffer): ?Lexer\TokenInterface
     {
         $haystack = $buffer->current();
 

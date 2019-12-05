@@ -22,7 +22,9 @@
         "phplrt/lexer": "^2.3",
         "phplrt/visitor": "^2.3",
         "phplrt/position": "^2.3",
-        "phplrt/parser": "^2.3"
+        "phplrt/parser": "^2.3",
+        "phplrt/grammar": "^2.3",
+        "nikic/php-parser": "~4.3"
     },
     "autoload": {
         "psr-4": {

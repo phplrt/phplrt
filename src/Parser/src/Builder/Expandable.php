@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
-use Phplrt\Parser\Rule\RuleInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**

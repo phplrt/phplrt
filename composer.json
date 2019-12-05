@@ -20,6 +20,7 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
+        "nikic/php-parser": "~4.3",
         "symfony/polyfill-php73": "~1.12",
         "zendframework/zend-code": "~3.0"
     },
@@ -36,8 +37,7 @@
     },
     "autoload": {
         "files": [
-            "src/Contracts/Grammar/src/polyfill.php",
-            "src/Contracts/Lexer/src/polyfill.php"
+            "src/Parser/src/polyfill.php"
         ],
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",
@@ -46,6 +46,7 @@
             "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
             "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
+            "Phplrt\\Grammar\\": "src/Grammar/src",
             "Phplrt\\Lexer\\": "src/Lexer/src",
             "Phplrt\\Parser\\": "src/Parser/src",
             "Phplrt\\Position\\": "src/Position/src",
@@ -69,9 +70,11 @@
         "phplrt/parser-contracts": "self.version",
         "phplrt/source": "self.version",
         "phplrt/source-contracts": "self.version",
-        "phplrt/grammar-contracts": "self.version"
+        "phplrt/grammar-contracts": "self.version",
+        "phplrt/grammar": "self.version"
     },
     "provide": {
+        "phplrt/grammar-contracts-implementation": "~2.2",
         "phplrt/lexer-contracts-implementation": "~2.2",
         "phplrt/parser-contracts-implementation": "~2.2",
         "phplrt/source-contracts-implementation": "~2.2"

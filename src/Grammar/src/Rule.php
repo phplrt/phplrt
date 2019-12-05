@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Rule;
+namespace Phplrt\Grammar;
+
+use Phplrt\Contracts\Grammar\RuleInterface;
 
 /**
  * Class Rule

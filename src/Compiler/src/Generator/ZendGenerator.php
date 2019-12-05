@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Generator;
 
 use Phplrt\Compiler\Analyzer;
-use Phplrt\Parser\Rule\RuleInterface;
 use Zend\Code\Generator\ValueGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\PropertyGenerator;
+use Phplrt\Contracts\Grammar\RuleInterface;
 use Zend\Code\Generator\Exception\RuntimeException;
 
 /**
@@ -147,7 +147,7 @@ class ZendGenerator extends Generator
             $arguments[] = $this->value($argument, false);
         }
 
-        return 'new \\' . \get_class($rule) . '(' . \implode(', ', $arguments) . ')';
+        return 'new ' . $this->classNameHash(\get_class($rule)) . '(' . \implode(', ', $arguments) . ')';
     }
 
     /**
