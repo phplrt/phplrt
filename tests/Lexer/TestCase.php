@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Lexer;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
 use PHPUnit\Framework\TestCase as BastTestCase;
 
 /**
@@ -18,4 +19,19 @@ use PHPUnit\Framework\TestCase as BastTestCase;
  */
 abstract class TestCase extends BastTestCase
 {
+    /**
+     * @param iterable|TokenInterface[] $result
+     * @return array|TokenInterface[]
+     */
+    protected function tokensOf(iterable $result): array
+    {
+        $actual = [];
+
+        foreach ($result as $token) {
+            $token->getBytes();
+            $actual[] = $token;
+        }
+
+        return $actual;
+    }
 }

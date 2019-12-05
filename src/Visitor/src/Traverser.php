@@ -121,6 +121,25 @@ class Traverser implements TraverserInterface
     private $stop = false;
 
     /**
+     * Traverser constructor.
+     *
+     * @param array|VisitorInterface[] $visitors
+     */
+    public function __construct(array $visitors = [])
+    {
+        $this->visitors = $visitors;
+    }
+
+    /**
+     * @param VisitorInterface ...$visitors
+     * @return static
+     */
+    public static function through(VisitorInterface ...$visitors): self
+    {
+        return new static($visitors);
+    }
+
+    /**
      * @param VisitorInterface $visitor
      * @param bool $prepend
      * @return TraverserInterface|Traverser

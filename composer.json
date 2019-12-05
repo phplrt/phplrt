@@ -35,9 +35,13 @@
         "symplify/monorepo-builder": "^6.1"
     },
     "autoload": {
+        "files": [
+            "src/Contracts/Grammar/src/polyfill.php"
+        ],
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",
             "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
+            "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src/",
             "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
             "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
@@ -63,7 +67,8 @@
         "phplrt/lexer-contracts": "self.version",
         "phplrt/parser-contracts": "self.version",
         "phplrt/source": "self.version",
-        "phplrt/source-contracts": "self.version"
+        "phplrt/source-contracts": "self.version",
+        "phplrt/grammar-contracts": "self.version"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^2.3",

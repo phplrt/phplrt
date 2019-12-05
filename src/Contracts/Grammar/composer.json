@@ -1,0 +1,48 @@
+{
+    "name": "phplrt/grammar-contracts",
+    "type": "library",
+    "description": "A set of phplrt grammar abstractions",
+    "license": "MIT",
+    "keywords": [
+        "abstractions",
+        "contracts",
+        "decoupling",
+        "interfaces",
+        "interoperability",
+        "standards",
+        "grammar",
+        "rules"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/grammar-contracts/issues",
+        "source": "https://github.com/phplrt/grammar-contracts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Grammar\\": "src/"
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.3.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

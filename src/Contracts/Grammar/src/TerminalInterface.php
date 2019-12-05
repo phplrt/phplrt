@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Rule;
+namespace Phplrt\Contracts\Grammar;
 
 use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
