@@ -74,10 +74,10 @@
         "phplrt/grammar": "self.version"
     },
     "provide": {
-        "phplrt/grammar-contracts-implementation": "~2.2",
-        "phplrt/lexer-contracts-implementation": "~2.2",
-        "phplrt/parser-contracts-implementation": "~2.2",
-        "phplrt/source-contracts-implementation": "~2.2"
+        "phplrt/grammar-contracts-implementation": "~2.3",
+        "phplrt/lexer-contracts-implementation": "~2.3",
+        "phplrt/parser-contracts-implementation": "~2.3",
+        "phplrt/source-contracts-implementation": "~2.3"
     },
     "scripts": {
         "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",
