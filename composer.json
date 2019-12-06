@@ -37,7 +37,8 @@
     },
     "autoload": {
         "files": [
-            "src/Parser/src/polyfill.php"
+            "src/Parser/src/polyfill.php",
+            "src/Grammar/src/polyfill.php"
         ],
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",

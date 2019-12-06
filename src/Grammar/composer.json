@@ -22,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Grammar\\": "src"
-        }
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
     },
     "provide": {
         "phplrt/grammar-contracts-implementation": "~2.3"
