@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
+use PhpParser\Node\Name;
 use Phplrt\Compiler\Analyzer;
 use Zend\Code\Generator\ValueGenerator;
 use Zend\Code\Generator\MethodGenerator;
@@ -27,15 +28,14 @@ class ZendGenerator extends Generator
      * ZendGenerator constructor.
      *
      * @param Analyzer $analyzer
-     * @param string $fqn
      */
-    public function __construct(Analyzer $analyzer, string $fqn)
+    public function __construct(Analyzer $analyzer)
     {
         if (\count($analyzer->tokens) > 1) {
             throw new \LogicException('Multistate lexers is not supported by ' . static::class);
         }
 
-        parent::__construct($analyzer, $fqn);
+        parent::__construct($analyzer);
     }
 
     /**
@@ -48,26 +48,57 @@ class ZendGenerator extends Generator
 
     /**
      * @param string $pathname
+     * @param string $fqn
      * @return void
      * @throws \Exception
      */
-    public function save(string $pathname): void
+    public function save(string $pathname, string $fqn): void
     {
-        \file_put_contents($pathname, $this->generate());
+        \file_put_contents($pathname, $this->generate($fqn));
     }
 
     /**
+     * @param string $fqn
      * @return string
-     * @throws \Exception
      */
-    public function generate(): string
+    public function generate(string $fqn): string
     {
         \ob_start();
+        \extract($this->unpackFqn($fqn), \EXTR_OVERWRITE);
 
         require __DIR__ . '/../../resources/template.tpl.php';
 
         return \ob_get_clean();
     }
+
+    /**
+     * @param string $fqn
+     * @return string
+     */
+    public function generateGrammar(string $fqn): string
+    {
+        \ob_start();
+        \extract($this->unpackFqn($fqn), \EXTR_OVERWRITE);
+
+        require __DIR__ . '/../../resources/grammar.tpl.php';
+
+        return \ob_get_clean();
+    }
+
+    /**
+     * @param string $fqn
+     * @return string
+     */
+    public function generateBuilder(string $fqn): string
+    {
+        \ob_start();
+        \extract($this->unpackFqn($fqn), \EXTR_OVERWRITE);
+
+        require __DIR__ . '/../../resources/builder.tpl.php';
+
+        return \ob_get_clean();
+    }
+
 
     /**
      * @param PropertyGenerator $property
@@ -162,5 +193,20 @@ class ZendGenerator extends Generator
         $type = ValueGenerator::TYPE_AUTO;
 
         return (new ValueGenerator($value, $type, $output))->generate();
+    }
+
+    /**
+     * @param string $fqn
+     * @return array
+     */
+    private function unpackFqn(string $fqn): array
+    {
+        $name = new Name($fqn);
+
+        return [
+            'fqn'       => $name->toString(),
+            'class'     => \array_pop($name->parts),
+            'namespace' => $name->toString(),
+        ];
     }
 }

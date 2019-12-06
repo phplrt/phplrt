@@ -29,21 +29,6 @@ abstract class Generator implements GeneratorInterface
     public $importer;
 
     /**
-     * @var string|null
-     */
-    protected $namespace;
-
-    /**
-     * @var string
-     */
-    protected $class;
-
-    /**
-     * @var string
-     */
-    protected $fqn;
-
-    /**
      * @var Analyzer
      */
     protected $analyzer;
@@ -72,12 +57,10 @@ abstract class Generator implements GeneratorInterface
      * Generator constructor.
      *
      * @param Analyzer $analyzer
-     * @param string $fqn
      */
-    public function __construct(Analyzer $analyzer, string $fqn)
+    public function __construct(Analyzer $analyzer)
     {
         $this->analyzer = $analyzer;
-        $this->bootFqn($fqn);
 
         $this->importer = new Extractor();
     }
@@ -110,19 +93,6 @@ abstract class Generator implements GeneratorInterface
     }
 
     /**
-     * @param string $fqn
-     * @return void
-     */
-    private function bootFqn(string $fqn): void
-    {
-        $this->fqn = '\\' . \trim($fqn, '\\');
-
-        $chunks = \explode('\\', \trim($this->fqn, '\\'));
-        $this->class = \array_pop($chunks);
-        $this->namespace = \implode('\\', $chunks) ?: null;
-    }
-
-    /**
      * @param string ...$classes
      * @return $this
      */
@@ -143,7 +113,7 @@ abstract class Generator implements GeneratorInterface
     {
         $name = new Name($class);
 
-        return '⠀' . \end($name->parts) . '·' . \hash('sha1', $this->fqn);
+        return '__' . \end($name->parts) . \hash('crc32', $class);
     }
 
     /**
@@ -229,6 +199,26 @@ abstract class Generator implements GeneratorInterface
      */
     protected function constantName(string $name): string
     {
-        return \strtoupper($name);
+        $name = \preg_replace('/([a-z])([A-Z])/u', '$1 $2', $name);
+        $name = \preg_replace('/\W+/', ' ', \strtolower($name));
+        $name = \ucwords($name);
+
+        return \strtoupper(\str_replace(' ', '_', $name));
+    }
+
+    /**
+     * @param int $depth
+     * @param string $code
+     * @return string
+     */
+    protected function prefixed(int $depth, string $code): string
+    {
+        $lines = \explode("\n", \str_replace("\r", '', $code));
+
+        $lines = \array_map(static function (string $line) use ($depth): string {
+            return \str_repeat('    ', $depth) . $line;
+        }, $lines);
+
+        return \implode("\n", $lines);
     }
 }

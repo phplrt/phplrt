@@ -155,11 +155,10 @@ class Compiler implements ParserInterface
     }
 
     /**
-     * @param string $fqn
      * @return GeneratorInterface|ZendGenerator
      */
-    public function build(string $fqn): GeneratorInterface
+    public function build(): GeneratorInterface
     {
-        return new ZendGenerator($this->analyzer, $fqn);
+        return new ZendGenerator($this->analyzer);
     }
 }

@@ -55,16 +55,7 @@ class Extractor
     public function __construct()
     {
         $this->parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP7);
-        $this->printer = new class extends Standard {
-            protected function indent()
-            {
-                $this->nl .= '';
-            }
-            protected function outdent()
-            {
-                $this->nl = "\n";
-            }
-        };
+        $this->printer = new Standard();
     }
 
     /**
@@ -77,6 +68,13 @@ class Extractor
         $this->replaces[$fqn] = $alias;
     }
 
+    /**
+     * @param string $fqn
+     * @return string
+     * @throws NotFoundException
+     * @throws NotReadableException
+     * @throws \ReflectionException
+     */
     public function get(string $fqn): string
     {
         if (! isset($this->classes[$fqn = \trim($fqn, '\\')])) {

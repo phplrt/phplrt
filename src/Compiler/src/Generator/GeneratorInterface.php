@@ -17,13 +17,20 @@ namespace Phplrt\Compiler\Generator;
 interface GeneratorInterface
 {
     /**
+     * @param string $fqn
      * @return string
      */
-    public function generate(): string;
+    public function generate(string $fqn): string;
 
     /**
-     * @param string $pathname
-     * @return void
+     * @param string $fqn
+     * @return string
      */
-    public function save(string $pathname): void;
+    public function generateGrammar(string $fqn): string;
+
+    /**
+     * @param string $fqn
+     * @return string
+     */
+    public function generateBuilder(string $fqn): string;
 }

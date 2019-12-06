@@ -1,62 +1,117 @@
 <?php
-
-declare(strict_types=1);
-
 /** @var $this \Phplrt\Compiler\Generator\ZendGenerator */
-echo '<?php';
+
+require __DIR__ . '/header.tpl.php';
+require __DIR__ . '/imports.tpl.php';
 ?>
 
-/**
- * This is an automatically generated file, which should not be manually edited.
- *
- * @created <?=\date(\DateTime::RFC3339)?>
-
- *
- * @see https://github.com/phplrt/phplrt
- * @see https://github.com/phplrt/phplrt/blob/master/LICENSE.md
- */
-
-declare(strict_types=1);
-
-<?php if ($this->namespace) : ?>
-namespace <?=$this->namespace?>;
-
-<?php endif; ?>
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Grammar\RuleInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-
-
-<?php
-$this->preload(Phplrt\Grammar\Rule::class);
-$this->preload(Phplrt\Grammar\Production::class);
-$this->preload(Phplrt\Grammar\Terminal::class);
-
-foreach ($this->getRules() as $id => $rule) {
-    $this->preload(\get_class($rule));
+if (! \class_exists(<?=$this->hashIfImported(Phplrt\Parser\Parser::class)?>::class)) {
+    throw new \LogicException('You need to set up the parser runtime (phplrt/parser) dependency using Composer');
 }
 
-foreach ($this->getImports() as $fqn => $import):?>
+if (! \class_exists(<?=$this->hashIfImported(Phplrt\Lexer\Lexer::class)?>::class)) {
+    throw new \LogicException('You need to set up the lexer runtime (phplrt/lexer) dependency using Composer');
+}
+
+if (! \class_exists(<?=$this->hashIfImported(Phplrt\Source\File::class)?>::class)) {
+    throw new \LogicException('You need to set up the source (phplrt/source) dependency using Composer');
+}
+
 
 /**
- * Note: This class was automatically imported from <?=$fqn?>
-
- * @created <?=\date(\DateTime::RFC3339)?>
-
+ * The main generated lexer class.
+ *
+ * @package <?=$fqn . "\n"?>
+ * @generator \<?=static::class . "\n"?>
  */
-<?=$import?>
+final class <?=$this->classNameHash($class)?>Lexer extends <?=$this->hashIfImported(Phplrt\Lexer\Lexer::class)?>
+{
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct()
+    {
+        parent::__construct([
+<?php foreach ($this->getTokens() as $name => $value) : ?>
+<?php if (\is_int($name)) : ?>
+            <?=$this->value($name)?> => <?=$this->value($value)?>,
+<?php else : ?>
+            <?=$class?>::<?=$this->constantName($name)?> => <?=$this->value($value)?>,
+<?php endif; ?>
+<?php endforeach; ?>
+        ], [
+<?php foreach ($this->analyzer->skip as $name => $value) : ?>
+            <?=$this->value($value)?>,
+<?php endforeach; ?>
+        ]);
+    }
+}
+
+/**
+ * The main AST Builder class.
+ *
+ * @package <?=$fqn . "\n"?>
+ * @generator \<?=static::class . "\n"?>
+ */
+final class <?=$this->classNameHash($class)?>Builder extends <?=$this->hashIfImported(Phplrt\Lexer\Lexer::class)?> implements
+    <?=$this->hashIfImported(Phplrt\Parser\Builder\BuilderInterface::class) . "\n"?>
+{
+    /** {@inheritDoc} */
+    public function build(
+        \Phplrt\Contracts\Source\ReadableInterface $file,
+        \Phplrt\Contracts\Grammar\RuleInterface $rule,
+        \Phplrt\Contracts\Lexer\TokenInterface $token,
+        $state,
+        $children
+    ) {
+        if (\is_int($state)) {
+<?php if (\count($this->analyzer->reducers)) : ?>
+            switch (true) {
+<?php foreach ($this->analyzer->reducers as $id => $code) : ?>
+<?php if (! \is_int($id)) { continue; } ?>
+                case $state === <?=$this->value($id)?>:
+                    return $this->state·<?=$id?>($file, $token->getOffset(), $children);
+<?php endforeach; ?>
+            }
+<?php endif; ?>
+        }
+
+<?php if (\count($this->analyzer->reducers)) : ?>
+        switch ($state) {
+<?php foreach ($this->analyzer->reducers as $id => $code) : ?>
+<?php if (\is_int($id)) { continue; } ?>
+            case <?=$this->value($id)?>:
+                return $this->state·<?=$id?>($file, $token->getOffset(), $children);
+<?php endforeach; ?>
+        }
+<?php endif; ?>
+
+        return null;
+    }
+
+<?php foreach ($this->analyzer->reducers as $id => $code) : ?>
+    /**
+     * @param \Phplrt\Contracts\Source\ReadableInterface $file
+     * @param int $offset
+     * @param array|mixed $children
+     * @return mixed|void
+     */
+    private function state·<?=$id?>(\Phplrt\Contracts\Source\ReadableInterface $file, int $offset, $children)
+    {
+        <?=$code?>
+
+    }
 
 <?php endforeach; ?>
+}
 
 /**
- * The main class of the generated parser.
+ * The main generated parser class.
  *
- * @package <?=$this->fqn?>
-
- * @generator \<?=static::class?>
-
+ * @package <?=$fqn . "\n"?>
+ * @generator \<?=static::class . "\n"?>
  */
-class <?=$this->class?> extends <?=$this->hashIfImported(Phplrt\Parser\Parser::class)?>
+class <?=$class?> extends <?=$this->hashIfImported(Phplrt\Parser\Parser::class)?>
 
 {
 <?php foreach ($this->getTokens() as $name => $value) :
@@ -68,28 +123,6 @@ class <?=$this->class?> extends <?=$this->hashIfImported(Phplrt\Parser\Parser::c
     /** @var string */
     public const <?=$this->constantName($name)?> = <?=$this->value($name)?>;
 <?php endforeach; ?>
-
-    /**
-     * @var string[]
-     */
-    private const LEXER_TOKENS = [
-<?php foreach ($this->getTokens() as $name => $value) : ?>
-<?php if (\is_int($name)) : ?>
-        <?=$this->value($name)?> => <?=$this->value($value)?>,
-<?php else : ?>
-        self::<?=$this->constantName($name)?> => <?=$this->value($value)?>,
-<?php endif; ?>
-<?php endforeach; ?>
-    ];
-
-    /**
-     * @var string[]
-     */
-    private const LEXER_SKIPS = [
-<?php foreach ($this->analyzer->skip as $name => $value) : ?>
-        <?=$this->value($value)?>,
-<?php endforeach; ?>
-    ];
 
     // --------------- Extra Constants -----------------------------------------
 <?php foreach ($this->constants as $const) : ?>
@@ -104,40 +137,18 @@ class <?=$this->class?> extends <?=$this->hashIfImported(Phplrt\Parser\Parser::c
 <?php endforeach; ?>
 
     /**
-     * <?=$this->class?> class constructor.
+     * <?=$class?> class constructor.
      */
     public function __construct()
     {
-        $lexer = new <?=$this->hashIfImported(Phplrt\Lexer\Lexer::class)?>(self::LEXER_TOKENS, self::LEXER_SKIPS);
-
-        parent::__construct($lexer, $this->grammar(), [
-            self::CONFIG_INITIAL_RULE   => <?=$this->value($this->analyzer->initial)?>,
-            self::CONFIG_AST_BUILDER    => new class implements <?=$this->hashIfImported(Phplrt\Parser\Builder\BuilderInterface::class)?>
-
-            {
-                /** {@inheritDoc} */
-                public function build(ReadableInterface $file, RuleInterface $rule, TokenInterface $token, $state, $children)
-                {
-                    $offset = $token->getOffset();
-
-<?php if (\count($this->analyzer->reducers)) : ?>
-                    switch (true) {
-<?php foreach ($this->analyzer->reducers as $id => $code) : ?>
-                        case $state === <?=$this->value($id)?>:
-                            <?=$code?>
-                        break;
-<?php endforeach; ?>
-                    }
-<?php endif; ?>
-
-                    return null;
-                }
-            },
+        parent::__construct(new <?=$this->classNameHash($class)?>Lexer(), $this->grammar(), [
+            self::CONFIG_INITIAL_RULE => <?=$this->value($this->analyzer->initial)?>,
+            self::CONFIG_AST_BUILDER  => new <?=$this->classNameHash($class)?>Builder()
         ]);
     }
 
     /**
-     * @return array|RuleInterface[]
+     * @return array|\Phplrt\Contracts\Grammar\RuleInterface[]
      */
     private function grammar(): array
     {
