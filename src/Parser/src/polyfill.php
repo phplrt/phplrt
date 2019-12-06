@@ -39,7 +39,6 @@ namespace Phplrt\Parser\Rule {
     }
 
 }
-
 namespace Phplrt\Parser\Buffer {
 
     if (! \interface_exists(BufferInterface::class)) {

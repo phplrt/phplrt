@@ -98,7 +98,7 @@ class Common implements BuilderInterface
 
             private $offset;
 
-            public  $children;
+            public $children;
 
             public function __construct($state, array $children, int $offset)
             {
