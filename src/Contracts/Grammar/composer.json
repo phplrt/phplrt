@@ -3,16 +3,7 @@
     "type": "library",
     "description": "A set of phplrt grammar abstractions",
     "license": "MIT",
-    "keywords": [
-        "abstractions",
-        "contracts",
-        "decoupling",
-        "interfaces",
-        "interoperability",
-        "standards",
-        "grammar",
-        "rules"
-    ],
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "grammar", "rules"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/grammar-contracts/issues",
