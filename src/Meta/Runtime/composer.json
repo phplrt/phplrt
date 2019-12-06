@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/visitor",
-    "type": "library",
-    "description": "The phplrt visitor package",
+    "name": "phplrt/runtime",
+    "type": "metapackage",
+    "description": "A set of phplrt runtime libraries",
     "license": "MIT",
-    "keywords": ["ast", "tree", "traverser", "visitor"],
+    "keywords": ["runtime"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/visitor"
+        "issues": "https://github.com/phplrt/runtime/issues",
+        "source": "https://github.com/phplrt/runtime"
     },
     "authors": [
         {
@@ -17,12 +17,8 @@
     ],
     "require": {
         "php": ">=7.1.3",
-        "phplrt/ast-contracts": "^2.3"
-    },
-    "autoload": {
-        "psr-4": {
-            "Phplrt\\Visitor\\": "src"
-        }
+        "phplrt/lexer": "^2.3",
+        "phplrt/parser": "^2.3"
     },
     "extra": {
         "branch-alias": {

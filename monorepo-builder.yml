@@ -38,3 +38,6 @@ parameters:
         src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
         src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'
         src/Contracts/Source: 'git@github.com:phplrt/source-contracts.git'
+        # Metapackages
+        src/Meta/Runtime: 'git@github.com:phplrt/runtime.git'
+        src/Meta/Contracts: 'git@github.com:phplrt/contracts.git'

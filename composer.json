@@ -71,7 +71,9 @@
         "phplrt/source": "self.version",
         "phplrt/source-contracts": "self.version",
         "phplrt/grammar-contracts": "self.version",
-        "phplrt/grammar": "self.version"
+        "phplrt/grammar": "self.version",
+        "phplrt/contracts": "self.version",
+        "phplrt/runtime": "self.version"
     },
     "provide": {
         "phplrt/grammar-contracts-implementation": "~2.3",
