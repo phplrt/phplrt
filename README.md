@@ -86,8 +86,6 @@ echo $compiler->parse('2 + 2');
 **Compilation:**
 
 ```php
-$compiler
-    ->build('App\\ExpressionParser')
-    ->save(__DIR__ . '/ExpressionParser.php')
-;
+$assembly = $compiler->build();
+$assembly->save(__DIR__ . '/ExpressionParser.php', 'App\\ExpressionParser');
 ```
