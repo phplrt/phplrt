@@ -13,9 +13,9 @@ namespace Phplrt\Tests\Parser;
 
 use Phplrt\Lexer\Lexer;
 use Phplrt\Parser\Parser;
-use Phplrt\Parser\Rule\Lexeme;
-use Phplrt\Parser\Rule\Repetition;
-use Phplrt\Parser\Rule\Concatenation;
+use Phplrt\Grammar\Lexeme;
+use Phplrt\Grammar\Repetition;
+use Phplrt\Grammar\Concatenation;
 use PHPUnit\Framework\ExpectationFailedException;
 use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
 
