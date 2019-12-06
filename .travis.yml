@@ -34,4 +34,5 @@ after_script:
   - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
 
 script:
-  - vendor/bin/paratest --testdox --coverage-clover clover.xml
+  - composer run security
+  - vendor/bin/phpunit --testdox --coverage-clover clover.xml
