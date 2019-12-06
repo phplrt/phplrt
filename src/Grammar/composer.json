@@ -30,7 +30,7 @@
         }
     },
     "provide": {
-        "phplrt/grammar-contracts-implementation": "~2.2"
+        "phplrt/grammar-contracts-implementation": "~2.3"
     },
     "extra": {
         "branch-alias": {
