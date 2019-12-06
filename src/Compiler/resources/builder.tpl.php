@@ -52,7 +52,7 @@ final class <?=$class?> implements <?=$this->hashIfImported(Phplrt\Parser\Builde
 
             return ($this->after)($file, $rule, $token, $state, $children);
         } catch (\Throwable $error) {
-            throw ($this->onError)($error);
+            throw ($this->onError)($error, $file, $rule, $token, $state, $children);
         }
     }
 
