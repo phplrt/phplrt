@@ -50,7 +50,7 @@ final class <?=$class?> implements <?=$this->hashIfImported(Phplrt\Parser\Builde
         try {
             $result = $this->reduce($file, $rule, $token, $state, $children);
 
-            return ($this->after)($file, $rule, $token, $state, $children) ?? $result;
+            return $result ?? ($this->after)($file, $rule, $token, $state, $children);
         } catch (\Throwable $error) {
             throw (($this->onError)($error, $file, $rule, $token, $state, $children)) ?? $error;
         }
