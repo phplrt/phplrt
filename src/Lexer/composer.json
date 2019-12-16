@@ -21,8 +21,8 @@
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "symfony/polyfill-php73": "~1.12",
-        "phplrt/source": "^2.4",
-        "phplrt/lexer-contracts": "^2.4"
+        "phplrt/source": "^2.3.5",
+        "phplrt/lexer-contracts": "^2.3.5"
     },
     "autoload": {
         "psr-4": {
