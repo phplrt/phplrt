@@ -33,8 +33,8 @@ final class <?=$class?> implements <?=$this->hashIfImported(Phplrt\Parser\Builde
      */
     public function __construct(\Closure $onError = null, \Closure $after = null)
     {
-        $this->after = $after ?? static function ($node) {
-            return $node;
+        $this->after = $after ?? static function ($file, $rule, $token, $state, $children) {
+            return $children;
         };
 
         $this->onError = $onError ?? static function (\Throwable $error): \Throwable {
@@ -50,7 +50,7 @@ final class <?=$class?> implements <?=$this->hashIfImported(Phplrt\Parser\Builde
         try {
             $result = $this->reduce($file, $rule, $token, $state, $children);
 
-            return ($this->after)($file, $rule, $token, $state, $children);
+            return ($this->after)($file, $rule, $token, $state, $children) ?? $result;
         } catch (\Throwable $error) {
             throw (($this->onError)($error, $file, $rule, $token, $state, $children)) ?? $error;
         }
