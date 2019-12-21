@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Driver;
 
 use Phplrt\Lexer\Exception\LexerException;
+use Phplrt\Lexer\Compiler\CompilerInterface;
 
 /**
  * Class Driver
@@ -19,64 +20,60 @@ use Phplrt\Lexer\Exception\LexerException;
 abstract class Driver implements DriverInterface
 {
     /**
-     * @var array|string[]
+     * @var string|null
      */
-    protected $tokens;
+    private ?string $pattern = null;
 
     /**
-     * @var mixed[]
+     * @var CompilerInterface
      */
-    protected $map = [];
+    private CompilerInterface $compiler;
 
     /**
      * State constructor.
      *
-     * @param array|string[] $tokens
+     * @param CompilerInterface $compiler
      */
-    public function __construct(array $tokens)
+    public function __construct(CompilerInterface $compiler)
     {
-        foreach ($tokens as $name => $pattern) {
-            $pattern = (string)$pattern;
-
-            $this->tokens[$this->createName($name, $pattern)] = $pattern;
-        }
+        $this->compiler = $compiler;
     }
 
     /**
-     * @param mixed $name
-     * @param string $pattern
+     * @return void
+     */
+    public function reset(): void
+    {
+        $this->pattern = null;
+    }
+
+    /**
+     * @return CompilerInterface
+     */
+    public function getCompiler(): CompilerInterface
+    {
+        return $this->compiler;
+    }
+
+    /**
+     * @param array $tokens
      * @return string
      */
-    private function createName($name, string $pattern): string
+    protected function getPattern(array $tokens): string
     {
-        if (\is_string($name) && $name !== '') {
-            return $name;
+        if ($this->pattern === null) {
+            $this->pattern = $this->compile($tokens);
         }
 
-        if (\is_int($name) || $name === '') {
-            $this->map[$alias = $this->generate($pattern)] = $name;
-
-            return $alias;
-        }
-
-        throw new LexerException('Type ' . \gettype($name) . ' can not be used as token name');
+        return $this->pattern;
     }
 
     /**
-     * @param string $token
-     * @return mixed|string
-     */
-    protected function name(string $token)
-    {
-        return $this->map[$token] ?? $token;
-    }
-
-    /**
-     * @param string $pattern
+     * @param array $tokens
      * @return string
      */
-    private function generate(string $pattern): string
+    protected function compile(array $tokens): string
     {
-        return 'T' . \hash('crc32', $pattern);
+        return $this->compiler->compile($tokens);
     }
 }

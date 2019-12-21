@@ -21,7 +21,7 @@ class Concatenation extends Production
     /**
      * @var array|int[]
      */
-    public $sequence;
+    public array $sequence;
 
     /**
      * Rule constructor.

@@ -16,10 +16,11 @@
         }
     ],
     "require": {
-        "php": ">=7.1.3",
-        "phplrt/ast-contracts": "^2.4",
-        "phplrt/lexer-contracts": "^2.4",
-        "phplrt/source-contracts": "^2.4"
+        "php": ">=7.4",
+        "phplrt/ast-contracts": "^3.0",
+        "phplrt/lexer-contracts": "^3.0",
+        "phplrt/source-contracts": "^3.0",
+        "phplrt/grammar-contracts": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -28,7 +29,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.4.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "config": {

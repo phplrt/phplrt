@@ -16,23 +16,20 @@
         }
     ],
     "require": {
-        "php": ">=7.1.3",
-        "phplrt/grammar-contracts": "^2.4"
+        "php": ">=7.4",
+        "phplrt/grammar-contracts": "^3.0"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Grammar\\": "src"
-        },
-        "files": [
-            "src/polyfill.php"
-        ]
+        }
     },
     "provide": {
         "phplrt/grammar-contracts-implementation": "~2.3"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.4.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "config": {

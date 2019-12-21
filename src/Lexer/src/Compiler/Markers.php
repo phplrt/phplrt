@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Driver;
+namespace Phplrt\Lexer\Compiler;
 
 /**
  * Class MarkersCompiler
  */
-class MarkersCompiler extends PCRECompiler
+class Markers extends PCRECompiler
 {
     /**
      * @var string

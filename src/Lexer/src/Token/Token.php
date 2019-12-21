@@ -22,12 +22,12 @@ class Token extends BaseToken
     /**
      * @var int
      */
-    private $offset;
+    private int $offset;
 
     /**
      * @var string
      */
-    private $value;
+    private string $value;
 
     /**
      * @var string|int

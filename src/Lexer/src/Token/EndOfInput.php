@@ -24,7 +24,7 @@ final class EndOfInput extends BaseToken
     /**
      * @var int
      */
-    private $offset;
+    private int $offset;
 
     /**
      * EndOfInput constructor.

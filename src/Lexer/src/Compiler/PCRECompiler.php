@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Driver;
+namespace Phplrt\Lexer\Compiler;
 
 use Phplrt\Lexer\Exception\CompilationException;
 
@@ -156,7 +156,7 @@ abstract class PCRECompiler implements CompilerInterface
     protected const DEFAULT_DELIMITER = '/';
 
     /**
-     * @var string
+     * @var string[]
      */
     protected const DEFAULT_FLAGS = [
         self::FLAG_COMPILED,
@@ -168,25 +168,28 @@ abstract class PCRECompiler implements CompilerInterface
     /**
      * @var array|string[]
      */
-    protected $flags = self::DEFAULT_FLAGS;
+    protected array $flags;
 
     /**
      * @var string
      */
-    protected $delimiter = self::DEFAULT_DELIMITER;
+    protected string $delimiter = self::DEFAULT_DELIMITER;
 
     /**
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * PCRECompiler constructor.
      *
+     * @param array|string[]|null $flags
      * @param bool|null $debug
      */
-    public function __construct(bool $debug = null)
+    public function __construct(array $flags = null, bool $debug = null)
     {
+        $this->flags = $flags ?? self::DEFAULT_FLAGS;
+
         if ($debug === null) {
             // Hack: Enable debug mode if assertions is enabled
             \assert($this->debug = true);

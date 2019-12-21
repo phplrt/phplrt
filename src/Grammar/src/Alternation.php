@@ -23,7 +23,7 @@ class Alternation extends Production
     /**
      * @var array|int[]|string[]
      */
-    public $sequence;
+    public array $sequence;
 
     /**
      * Rule constructor.

@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Driver;
+namespace Phplrt\Lexer\Compiler;
 
 /**
  * Interface CompilerInterface

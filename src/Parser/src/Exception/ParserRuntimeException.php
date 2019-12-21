@@ -28,12 +28,12 @@ class ParserRuntimeException extends ParserException implements ParserRuntimeExc
     /**
      * @var TokenInterface
      */
-    private $token;
+    private TokenInterface $token;
 
     /**
      * @var NodeInterface
      */
-    private $node;
+    private NodeInterface $node;
 
     /**
      * LexerRuntimeException constructor.
@@ -61,7 +61,7 @@ class ParserRuntimeException extends ParserException implements ParserRuntimeExc
             /**
              * @var int
              */
-            private $offset;
+            private int $offset;
 
             /**
              * @param int $offset

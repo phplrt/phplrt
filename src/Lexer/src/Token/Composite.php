@@ -21,7 +21,7 @@ class Composite extends Token implements CompositeTokenInterface
     /**
      * @var array|TokenInterface[]
      */
-    private $children;
+    private array $children;
 
     /**
      * BaseToken constructor.

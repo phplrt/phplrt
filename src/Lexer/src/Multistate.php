@@ -25,7 +25,7 @@ class Multistate implements LexerInterface
     /**
      * @var array|LexerInterface[]
      */
-    private $states;
+    private array $states;
 
     /**
      * @var int|string
@@ -35,7 +35,7 @@ class Multistate implements LexerInterface
     /**
      * @var array
      */
-    private $transitions;
+    private array $transitions;
 
     /**
      * Multistate constructor.

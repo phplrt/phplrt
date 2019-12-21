@@ -21,7 +21,7 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable
     /**
      * @var int|null
      */
-    private $bytes;
+    private ?int $bytes = null;
 
     /**
      * @return array

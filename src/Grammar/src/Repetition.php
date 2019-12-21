@@ -21,7 +21,7 @@ class Repetition extends Production
     /**
      * @var int
      */
-    public $gte;
+    public int $gte;
 
     /**
      * @var int|float

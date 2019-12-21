@@ -113,12 +113,12 @@ class Traverser implements TraverserInterface
     /**
      * @var VisitorInterface[]
      */
-    private $visitors = [];
+    private array $visitors = [];
 
     /**
      * @var bool
      */
-    private $stop = false;
+    private bool $stop = false;
 
     /**
      * Traverser constructor.

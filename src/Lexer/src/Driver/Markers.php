@@ -11,12 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
 
 /**
  * Class Markers
@@ -29,47 +28,30 @@ class Markers extends Driver
     private const UNKNOWN_PATTERN = '.+?';
 
     /**
-     * @var string|null
-     */
-    private $pattern;
-
-    /**
-     * @var MarkersCompiler|CompilerInterface
-     */
-    private $compiler;
-
-    /**
      * Markers constructor.
      *
-     * @param array|string[] $tokens
+     * @param MarkersCompiler|null $compiler
      */
-    public function __construct(array $tokens)
+    public function __construct(MarkersCompiler $compiler = null)
     {
-        parent::__construct($tokens);
-
-        $this->compiler = new MarkersCompiler();
+        parent::__construct($compiler ?? new MarkersCompiler());
     }
 
     /**
-     * @return CompilerInterface
-     */
-    public function getCompiler(): CompilerInterface
-    {
-        return $this->compiler;
-    }
-
-    /**
+     * @param array $tokens
      * @param ReadableInterface $source
      * @param int $offset
      * @return iterable|TokenInterface[]|string
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
      */
-    public function lex($source, int $offset = 0): iterable
+    public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable
     {
-        $tokens = $this->match($this->getPattern(), File::new($source)->getContents(), $offset);
+        $pattern = $this->getPattern(\array_merge($tokens, [
+            self::UNKNOWN_TOKEN_NAME => self::UNKNOWN_PATTERN,
+        ]));
 
-        foreach ($tokens as $index => $payload) {
+        $result = $this->match($pattern, $source->getContents(), $offset);
+
+        foreach ($result as $index => $payload) {
             $name = \array_pop($payload);
 
             yield $this->make($name, $payload);
@@ -90,37 +72,6 @@ class Markers extends Driver
     }
 
     /**
-     * @return string
-     */
-    public function getPattern(): string
-    {
-        if ($this->pattern === null) {
-            $this->pattern = $this->compile($this->getTokens());
-        }
-
-        return $this->pattern;
-    }
-
-    /**
-     * @param array $tokens
-     * @return string
-     */
-    public function compile(array $tokens): string
-    {
-        return $this->compiler->compile($tokens);
-    }
-
-    /**
-     * @return array|string[]
-     */
-    private function getTokens(): array
-    {
-        return \array_merge($this->tokens, [
-            self::UNKNOWN_TOKEN_NAME => self::UNKNOWN_PATTERN,
-        ]);
-    }
-
-    /**
      * @param string $name
      * @param array $payload
      * @return TokenInterface
@@ -131,7 +82,7 @@ class Markers extends Driver
             return Composite::fromArray($this->transform($name, $payload));
         }
 
-        return new Token($this->name($name), ...$payload[0]);
+        return new Token($name, ...$payload[0]);
     }
 
     /**
@@ -144,7 +95,7 @@ class Markers extends Driver
         $result = [];
 
         foreach ($payload as $index => $value) {
-            $result[] = new Token(\is_int($index) ? $this->name($name) : $index, ...$value);
+            $result[] = new Token(\is_int($index) ? $name : $index, ...$value);
         }
 
         return $result;

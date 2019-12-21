@@ -22,17 +22,17 @@ class ArrayBuffer implements BufferInterface
     /**
      * @var int
      */
-    private $current = 0;
+    private int $current = 0;
 
     /**
      * @var array|TokenInterface[]
      */
-    private $buffer;
+    private array $buffer;
 
     /**
      * @var int
      */
-    private $size;
+    private int $size;
 
     /**
      * Buffer constructor.

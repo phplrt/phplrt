@@ -30,7 +30,7 @@ final class Renderer
     private const DEFAULT_WRAP = '"';
 
     /**
-     * @var array[]
+     * @var array
      */
     private const DEFAULT_REPLACEMENTS = [
         ["\0", "\n", "\t"],
@@ -45,22 +45,22 @@ final class Renderer
     /**
      * @var int
      */
-    private $length = self::DEFAULT_LENGTH;
+    private int $length = self::DEFAULT_LENGTH;
 
     /**
      * @var string
      */
-    private $wrap = self::DEFAULT_WRAP;
+    private string $wrap = self::DEFAULT_WRAP;
 
     /**
-     * @var array[]
+     * @var array
      */
-    private $replacements = self::DEFAULT_REPLACEMENTS;
+    private array $replacements = self::DEFAULT_REPLACEMENTS;
 
     /**
      * @var string
      */
-    private $suffix = self::DEFAULT_OVERFLOW_SUFFIX;
+    private string $suffix = self::DEFAULT_OVERFLOW_SUFFIX;
 
     /**
      * @param TokenInterface $token

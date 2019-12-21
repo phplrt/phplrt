@@ -21,7 +21,7 @@ abstract class Terminal extends Rule implements TerminalInterface
     /**
      * @var bool
      */
-    protected $keep = true;
+    protected bool $keep = true;
 
     /**
      * Terminal constructor.
