@@ -34,7 +34,7 @@ class Physical extends Readable implements FileInterface
     /**
      * @var string
      */
-    private $pathname;
+    private string $pathname;
 
     /**
      * Physical constructor.

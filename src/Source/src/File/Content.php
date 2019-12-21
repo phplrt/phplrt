@@ -22,7 +22,7 @@ class Content implements ReadableInterface
     /**
      * @var string
      */
-    private $content;
+    private string $content;
 
     /**
      * Content constructor.

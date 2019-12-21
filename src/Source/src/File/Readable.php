@@ -22,7 +22,7 @@ abstract class Readable implements ReadableInterface, MemoizableInterface
     /**
      * @var string|null
      */
-    private $content;
+    private ?string $content = null;
 
     /**
      * @return string

@@ -21,7 +21,7 @@ class VirtualContent extends Content implements FileInterface
     /**
      * @var string
      */
-    private $pathname;
+    private string $pathname;
 
     /**
      * VirtualContent constructor.

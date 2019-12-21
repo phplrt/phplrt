@@ -21,7 +21,7 @@ class VirtualStream extends Stream implements FileInterface
     /**
      * @var string
      */
-    private $pathname;
+    private string $pathname;
 
     /**
      * VirtualStream constructor.
