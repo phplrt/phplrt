@@ -9,15 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Extractor;
+namespace Phplrt\Extractor\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\NodeTraverser;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Node\Identifier;
-use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\GroupUse;
+use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Expr\ConstFetch;
@@ -31,22 +31,22 @@ class DependenciesVisitor extends NodeVisitorAbstract
     /**
      * @var array
      */
-    private $contexts = [];
+    private array $contexts = [];
 
     /**
      * @var array|string[]
      */
-    private $currentNamespace = [];
+    private array $currentNamespace = [];
 
     /**
      * @var bool
      */
-    private $skipNextName = false;
+    private bool $skipNextName = false;
 
     /**
      * @var array|ClassLike[]
      */
-    private $classes = [];
+    private array $classes = [];
 
     /**
      * @param Node $node

@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Extractor;
+namespace Phplrt\Extractor\Visitor;
 
 use PhpParser\Node;
 use PhpParser\Node\Name;
@@ -24,7 +24,7 @@ class AliasVisitor extends NodeVisitorAbstract
     /**
      * @var array|Name[]
      */
-    private $replaces = [];
+    private array $replaces = [];
 
     /**
      * AliasVisitor constructor.

@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/compiler",
+    "name": "phplrt/extractor",
     "type": "library",
-    "description": "The phplrt compiler package.",
+    "description": "The phplrt extractor package.",
     "license": "MIT",
-    "keywords": ["compiler", "builder", "grammar", "language"],
+    "keywords": ["compiler", "extractor", "reader", "package", "bundler"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/compiler"
+        "source": "https://github.com/phplrt/extractor"
     },
     "authors": [
         {
@@ -17,18 +17,12 @@
     ],
     "require": {
         "php": ">=7.4",
-        "zendframework/zend-code": "~3.0",
-        "phplrt/lexer": "^3.0",
-        "phplrt/visitor": "^3.0",
-        "phplrt/position": "^3.0",
-        "phplrt/extractor": "^3.0",
-        "phplrt/parser": "^3.0",
-        "phplrt/grammar": "^3.0",
+        "phplrt/source": "^3.0",
         "nikic/php-parser": "~4.3"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\": "src"
+            "Phplrt\\Extractor\\": "src"
         }
     },
     "extra": {

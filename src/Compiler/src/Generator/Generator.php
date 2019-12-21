@@ -13,7 +13,7 @@ namespace Phplrt\Compiler\Generator;
 
 use PhpParser\Node\Name;
 use Phplrt\Compiler\Analyzer;
-use Phplrt\Compiler\Extractor;
+use Phplrt\Extractor\Extractor;
 use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
@@ -74,7 +74,7 @@ abstract class Generator implements GeneratorInterface
     public function getImports(): iterable
     {
         foreach ($this->preloaded as $item) {
-            $this->importer->loadClass($item);
+            $this->importer->addClass($item);
             $this->importer->replace($item, $this->classNameHash($item));
         }
 
