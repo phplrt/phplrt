@@ -41,17 +41,17 @@ class Position implements PositionInterface
     /**
      * @var int
      */
-    private $offset;
+    private int $offset;
 
     /**
      * @var int
      */
-    private $line;
+    private int $line;
 
     /**
      * @var int
      */
-    private $column;
+    private int $column;
 
     /**
      * Position constructor.

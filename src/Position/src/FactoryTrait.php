@@ -55,8 +55,8 @@ trait FactoryTrait
         // column.
         //
         if ($column !== 1) {
-            $last              = (string)@\fread($stream, $column - 1);
-            $lines             = \explode(static::LINE_DELIMITER, $last);
+            $last = (string)@\fread($stream, $column - 1);
+            $lines = \explode(static::LINE_DELIMITER, $last);
             $offset += $column = \strlen((string)\reset($lines));
         }
 
