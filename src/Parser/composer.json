@@ -21,8 +21,7 @@
         "phplrt/parser-contracts": "^3.0",
         "phplrt/lexer-contracts": "^3.0",
         "phplrt/ast-contracts": "^3.0",
-        "phplrt/grammar-contracts": "^3.0",
-        "phplrt/builder-contracts": "^3.0"
+        "phplrt/grammar-contracts": "^3.0"
     },
     "autoload": {
         "psr-4": {

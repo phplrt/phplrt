@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": ">=7.4",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
         "nikic/php-parser": "~4.3",
-        "phplrt/builder-contracts": "^3.0",
         "zendframework/zend-code": "~3.0"
     },
     "require-dev": {
@@ -31,7 +31,7 @@
         "squizlabs/php_codesniffer": "~3.0",
         "symfony/var-dumper": "~3.4|~4.0|~5.0",
         "symplify/monorepo-builder": "^6.0|^7.0",
-        "vimeo/paslm": "^3.6"
+        "vimeo/psalm": "^3.6"
     },
     "autoload": {
         "psr-4": {
@@ -68,8 +68,7 @@
         "phplrt/grammar-contracts": "self.version",
         "phplrt/grammar": "self.version",
         "phplrt/contracts": "self.version",
-        "phplrt/runtime": "self.version",
-        "phplrt/builder-contracts": "self.version"
+        "phplrt/runtime": "self.version"
     },
     "provide": {
         "phplrt/grammar-contracts-implementation": "~2.3",

@@ -14,7 +14,7 @@ parameters:
             psr-4:
                 'Phplrt\Tests\': 'tests'
         require-dev:
-            vimeo/paslm: '^3.6'
+            vimeo/psalm: '^3.6'
             phpunit/phpunit: '^7.5|^8.0'
             psr/http-message: '~1.0'
             squizlabs/php_codesniffer: '~3.0'
@@ -32,7 +32,6 @@ parameters:
         src/Visitor: 'git@github.com:phplrt/visitor.git'
         # Contracts
         src/Contracts/Ast: 'git@github.com:phplrt/ast-contracts.git'
-        src/Contracts/Builder: 'git@github.com:phplrt/buidler-contracts.git'
         src/Contracts/Grammar: 'git@github.com:phplrt/grammar-contracts.git'
         src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
         src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'
