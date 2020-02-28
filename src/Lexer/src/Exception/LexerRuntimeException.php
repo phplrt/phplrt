@@ -11,39 +11,28 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Exception\RuntimeException;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
- * Class LexerException
+ * Class LexerRuntimeException
  */
-class LexerRuntimeException extends LexerException implements LexerRuntimeExceptionInterface
+abstract class LexerRuntimeException extends RuntimeException implements LexerExceptionInterface
 {
-    /**
-     * @var TokenInterface
-     */
-    private $token;
-
     /**
      * LexerRuntimeException constructor.
      *
      * @param string $message
-     * @param TokenInterface|null $token
+     * @param ReadableInterface $src
+     * @param TokenInterface|null $tok
      * @param \Throwable|null $prev
      */
-    public function __construct(string $message, TokenInterface $token = null, \Throwable $prev = null)
+    public function __construct(string $message, ReadableInterface $src, ?TokenInterface $tok, \Throwable $prev = null)
     {
         parent::__construct($message, 0, $prev);
 
-        $this->token = $token ?? Token::empty();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getToken(): TokenInterface
-    {
-        return $this->token;
+        $this->setSource($src);
+        $this->setToken($tok);
     }
 }

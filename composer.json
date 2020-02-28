@@ -20,9 +20,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-spl": "*",
-        "nikic/php-parser": "~4.3",
-        "zendframework/zend-code": "~3.0"
+        "ext-spl": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5|^8.0",
@@ -34,14 +32,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\": "src/Compiler/src",
             "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
+            "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src/",
             "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src/",
             "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
             "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
-            "Phplrt\\Extractor\\": "src/Extractor/src",
-            "Phplrt\\Grammar\\": "src/Grammar/src",
+            "Phplrt\\Exception\\": "src/Exception/src",
             "Phplrt\\Lexer\\": "src/Lexer/src",
             "Phplrt\\Parser\\": "src/Parser/src",
             "Phplrt\\Position\\": "src/Position/src",
@@ -51,31 +48,35 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Tests\\": "tests"
+            "Phplrt\\Lexer\\Tests\\": "src/Lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "src/Parser/tests",
+            "Phplrt\\Position\\Tests\\": "src/Position/tests",
+            "Phplrt\\Source\\Tests\\": "src/Source/tests",
+            "Phplrt\\Visitor\\Tests\\": "src/Visitor/tests"
         }
     },
     "replace": {
-        "phplrt/lexer": "self.version",
-        "phplrt/parser": "self.version",
-        "phplrt/position": "self.version",
-        "phplrt/visitor": "self.version",
         "phplrt/ast-contracts": "self.version",
-        "phplrt/compiler": "self.version",
+        "phplrt/contracts": "self.version",
+        "phplrt/exception": "self.version",
+        "phplrt/exception-contracts": "self.version",
+        "phplrt/grammar-contracts": "self.version",
+        "phplrt/lexer": "self.version",
         "phplrt/lexer-contracts": "self.version",
+        "phplrt/parser": "self.version",
         "phplrt/parser-contracts": "self.version",
+        "phplrt/position": "self.version",
+        "phplrt/runtime": "self.version",
         "phplrt/source": "self.version",
         "phplrt/source-contracts": "self.version",
-        "phplrt/grammar-contracts": "self.version",
-        "phplrt/grammar": "self.version",
-        "phplrt/contracts": "self.version",
-        "phplrt/runtime": "self.version",
-        "phplrt/extractor": "self.version"
+        "phplrt/visitor": "self.version"
     },
     "provide": {
-        "phplrt/grammar-contracts-implementation": "~2.3",
-        "phplrt/lexer-contracts-implementation": "~2.3",
-        "phplrt/parser-contracts-implementation": "~2.3",
-        "phplrt/source-contracts-implementation": "~2.3"
+        "phplrt/exception-contracts-implementation": "^3.0",
+        "phplrt/grammar-contracts-implementation": "^3.0",
+        "phplrt/lexer-contracts-implementation": "^3.0",
+        "phplrt/parser-contracts-implementation": "^3.0",
+        "phplrt/source-contracts-implementation": "^3.0"
     },
     "scripts": {
         "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",

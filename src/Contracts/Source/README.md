@@ -6,4 +6,9 @@
 
 A set of interfaces for abstraction over sources.
 
-*// TBD*
+### Resources
+
+- [Documentation](https://github.com/phplrt/phplrt/blob/master/README.md)
+- [Repository](https://github.com/phplrt/phplrt)
+    - [Issues](https://github.com/phplrt/phplrt/issues)
+    - [Pull Requests](https://github.com/phplrt/phplrt/pulls)

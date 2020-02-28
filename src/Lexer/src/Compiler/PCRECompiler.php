@@ -270,7 +270,9 @@ abstract class PCRECompiler implements CompilerInterface
         if ($this->debug) {
             \error_clear_last();
 
-            @\preg_match_all($this->wrap($pattern), '', $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE);
+            $flags = \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE;
+
+            @\preg_match_all($this->wrap($pattern), '', $matches, $flags);
 
             if ($error = \error_get_last()) {
                 throw new CompilationException($this->formatException($error['message'], $original));

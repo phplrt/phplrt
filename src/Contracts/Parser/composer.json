@@ -3,7 +3,19 @@
     "type": "library",
     "description": "A set of phplrt parser abstractions",
     "license": "MIT",
-    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "parser", "syntax", "analysis", "language", "php"],
+    "keywords": [
+        "abstractions",
+        "contracts",
+        "decoupling",
+        "interfaces",
+        "interoperability",
+        "standards",
+        "parser",
+        "syntax",
+        "analysis",
+        "language",
+        "php"
+    ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/parser-contracts/issues",
@@ -16,11 +28,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
-        "phplrt/ast-contracts": "^3.0",
-        "phplrt/lexer-contracts": "^3.0",
-        "phplrt/source-contracts": "^3.0",
-        "phplrt/grammar-contracts": "^3.0"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {

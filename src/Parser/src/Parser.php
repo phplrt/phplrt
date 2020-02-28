@@ -11,22 +11,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Source\File;
-use Phplrt\Lexer\Token\Renderer;
-use Phplrt\Lexer\Buffer\ArrayBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Grammar\ProductionInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Contracts\Grammar\TerminalInterface;
+use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Grammar\RuleInterface;
-use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Parser\BuilderInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Grammar\TerminalInterface;
-use Phplrt\Contracts\Grammar\ProductionInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
+use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Parser\Exception\UnrecognizedTokenException;
+use Phplrt\Source\File;
 
 /**
  * A recurrence recursive descent parser implementation.
@@ -61,27 +59,13 @@ use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
  *      *)
  * </code>
  */
-final class Parser implements ParserInterface
+final class Parser implements
+    ParserInterface,
+    ParserConfigsInterface,
+    BuilderInterface,
+    LexerInterface
 {
-    /**
-     * @var string
-     */
-    public const CONFIG_INITIAL_RULE = 'initial';
-
-    /**
-     * @var string
-     */
-    public const CONFIG_AST_BUILDER = 'builder';
-
-    /**
-     * @var string
-     */
-    public const CONFIG_BUFFER = 'buffer';
-
-    /**
-     * @var string
-     */
-    public const CONFIG_EOI = 'eoi';
+    use ParserConfigsTrait;
 
     /**
      * @var string
@@ -95,30 +79,6 @@ final class Parser implements ParserInterface
      * @var string
      */
     private const ERROR_BUFFER_TYPE = 'Buffer class should implement %s interface';
-
-    /**
-     * A buffer class that allows you to iterate over the stream of tokens and
-     * return to the selected position.
-     *
-     * Initialized by the generator with tokens during parser launch.
-     *
-     * @var string
-     */
-    private string $buffer = ArrayBuffer::class;
-
-    /**
-     * An abstract syntax tree builder.
-     *
-     * @var BuilderInterface|null
-     */
-    private ?BuilderInterface $builder = null;
-
-    /**
-     * The initial state (initial rule identifier) of the parser.
-     *
-     * @var string|int|null
-     */
-    private $initial;
 
     /**
      * The lexer instance.
@@ -135,13 +95,6 @@ final class Parser implements ParserInterface
     private array $rules;
 
     /**
-     * Token indicating the end of parsing.
-     *
-     * @var string
-     */
-    private string $eoi = TokenInterface::END_OF_INPUT;
-
-    /**
      * Parser constructor.
      *
      * @param LexerInterface $lexer
@@ -150,20 +103,38 @@ final class Parser implements ParserInterface
      */
     public function __construct(LexerInterface $lexer, iterable $grammar = [], array $options = [])
     {
+        $this->initializeLexer($lexer);
+        $this->initializeGrammar($grammar);
+        $this->initializeOptions($options);
+    }
+
+    /**
+     * @param LexerInterface $lexer
+     * @return void
+     */
+    private function initializeLexer(LexerInterface $lexer): void
+    {
         $this->lexer = $lexer;
+    }
 
-        //
-        // Initialize parser's grammar
-        //
+    /**
+     * Initialize parser's grammar
+     *
+     * @param iterable $grammar
+     * @return void
+     */
+    private function initializeGrammar(iterable $grammar): void
+    {
         $this->rules = $grammar instanceof \Traversable ? \iterator_to_array($grammar) : $grammar;
+    }
 
-        //
-        // Initialize parser's configuration options
-        //
-        $this->eoi = $options[static::CONFIG_EOI] ?? $this->eoi;
-        $this->buffer = $options[static::CONFIG_BUFFER] ?? $this->buffer;
-        $this->initial = $options[static::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules);
-        $this->builder = $options[static::CONFIG_AST_BUILDER] ?? null;
+    /**
+     * @param array $options
+     * @return void
+     */
+    private function initializeOptions(array $options): void
+    {
+        $this->bootParserConfigsTrait($options);
 
         //
         // In the case that the xdebug is enabled, then the parser may return
@@ -197,12 +168,11 @@ final class Parser implements ParserInterface
      * @param ReadableInterface $source
      * @param array $options
      * @return iterable
-     * @throws LexerRuntimeExceptionInterface
      * @throws \Throwable
      */
     private function run(ReadableInterface $source, array $options): iterable
     {
-        $buffer = $this->createBuffer($this->doLex($source));
+        $buffer = $this->createBuffer($this->lex($source));
 
         $context = $this->createExecutionContext($buffer, $source, $options);
 
@@ -227,18 +197,18 @@ final class Parser implements ParserInterface
 
     /**
      * @param ReadableInterface $source
+     * @param int $offset
      * @return \Generator|TokenInterface[]
-     * @throws LexerRuntimeExceptionInterface
      */
-    private function doLex(ReadableInterface $source): \Generator
+    public function lex($source, int $offset = 0): \Generator
     {
-        $result = $this->lexer->lex($source);
-
-        if ($result instanceof \Generator) {
-            return $result;
+        try {
+            foreach ($this->lexer->lex(File::new($source)) as $token) {
+                yield $token;
+            }
+        } catch (RuntimeExceptionInterface $e) {
+            throw UnrecognizedTokenException::fromLexerException($e);
         }
-
-        return (fn(): \Generator => yield from $result)();
     }
 
     /**
@@ -247,15 +217,18 @@ final class Parser implements ParserInterface
      * @param array $options
      * @return Context
      */
-    private function createExecutionContext(BufferInterface $buffer, ReadableInterface $source, array $options): Context
-    {
+    protected function createExecutionContext(
+        BufferInterface $buffer,
+        ReadableInterface $source,
+        array $options
+    ): Context {
         return new Context($buffer, $source, $this->initial, $options);
     }
 
     /**
      * @param Context $context
      * @return iterable
-     * @throws ParserRuntimeExceptionInterface
+     * @throws ParserRuntimeException
      */
     private function parseOrFail(Context $context): iterable
     {
@@ -265,22 +238,9 @@ final class Parser implements ParserInterface
             return $result;
         }
 
-        throw $this->createParserError($context);
-    }
+        $token = $context->lastOrdinalToken ?? $context->buffer->current();
 
-    /**
-     * @param Context $context
-     * @return ParserRuntimeExceptionInterface|ParserRuntimeException
-     */
-    private function createParserError(Context $context): ParserRuntimeExceptionInterface
-    {
-        $message = \vsprintf(ParserRuntimeException::ERROR_UNEXPECTED_TOKEN, [
-            $this->render($context->lastOrdinalToken ?? $context->buffer->current()),
-        ]);
-
-        $lastToken = $context->lastOrdinalToken ?? $context->lastProcessedToken;
-
-        return new ParserRuntimeException($message, $lastToken, $context->node);
+        throw UnexpectedTokenException::fromToken($context->getSource(), $token);
     }
 
     /**
@@ -289,14 +249,37 @@ final class Parser implements ParserInterface
      */
     private function next(Context $context)
     {
+        if ($this->step) {
+            return ($this->step)($context, function () use ($context) {
+                return $this->runNextStep($context);
+            });
+        }
+
+        return $this->runNextStep($context);
+    }
+
+    /**
+     * @param Context $context
+     * @return array|mixed|null
+     */
+    private function runNextStep(Context $context)
+    {
         [$context->rule, $result] = [$this->rules[$context->state], null];
 
         switch (true) {
             case $context->rule instanceof ProductionInterface:
                 $result = $context->rule->reduce($context->buffer, function ($state) use ($context) {
+                    // Keep current state
+                    $before = $context->state;
+                    // Update state
                     $context->state = $state;
 
-                    return $this->next($context);
+                    $result = $this->next($context);
+
+                    // Rollback previous state
+                    $context->state = $before;
+
+                    return $result;
                 });
 
                 break;
@@ -323,9 +306,7 @@ final class Parser implements ParserInterface
             return null;
         }
 
-        if ($this->builder) {
-            $result = $this->builder->build($context, $result) ?? $result;
-        }
+        $result = $this->builder->build($context, $result) ?? $result;
 
         if ($result instanceof NodeInterface) {
             $context->node = $result;
@@ -348,15 +329,10 @@ final class Parser implements ParserInterface
     }
 
     /**
-     * @param TokenInterface $token
-     * @return string
+     * {@inheritDoc}
      */
-    private function render(TokenInterface $token): string
+    public function build(ContextInterface $context, $result)
     {
-        if (\class_exists(Renderer::class)) {
-            return (new Renderer())->render($token);
-        }
-
-        return '"' . $token->getValue() . '"';
+        return $result;
     }
 }

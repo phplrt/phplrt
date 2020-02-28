@@ -11,13 +11,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class EndlessRecursionException
  */
-class EndlessRecursionException extends LexerRuntimeException
+class EndlessRecursionException extends UnexpectedStateException
 {
     /**
      * @var string
@@ -25,16 +26,12 @@ class EndlessRecursionException extends LexerRuntimeException
     private const ERROR_ENDLESS_TRANSITIONS = 'An unsolvable infinite lexer state transitions was found at %s';
 
     /**
-     * EndlessRecursionException constructor.
-     *
-     * @param $state
-     * @param TokenInterface|null $token
-     * @param \Throwable|null $prev
+     * {@inheritDoc}
      */
-    public function __construct($state, TokenInterface $token = null, \Throwable $prev = null)
+    public static function fromState($state, ReadableInterface $src, ?TokenInterface $tok, \Throwable $e = null): self
     {
-        $token = $token ?? Token::empty();
+        $message = \sprintf(self::ERROR_ENDLESS_TRANSITIONS, $state);
 
-        parent::__construct(\sprintf(static::ERROR_ENDLESS_TRANSITIONS, $token ?? $state), $token, $prev);
+        return new static($message, $src, $tok, $e);
     }
 }

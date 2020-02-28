@@ -6,21 +6,9 @@
 
 A set of interfaces for abstraction over parsers.
 
-The main parser interface is described in a single method `parse($source)` 
-which can receive an arbitrary data type as a source and return a list of 
-[AST nodes](https://github.com/phplrt/ast-contracts).
+### Resources
 
-```php
-namespace Phplrt\Contracts\Parser;
-
-interface ParserInterface
-{
-    public function parse($source): iterable;
-}
-```
-
-In the case that an error occurred in parser initialization, it should 
-throw a general `Phplrt\Contracts\Parser\ParserExceptionInterface` exception.
-
-In case an exception occurred while the parser is running, a 
-`Phplrt\Contracts\Parser\RuntimeExceptionInterface` error should be raised.
+- [Documentation](https://github.com/phplrt/phplrt/blob/master/README.md)
+- [Repository](https://github.com/phplrt/phplrt)
+    - [Issues](https://github.com/phplrt/phplrt/issues)
+    - [Pull Requests](https://github.com/phplrt/phplrt/pulls)

@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
 
 /**
  * An interface that implements methods for parsing source code.
@@ -25,8 +25,9 @@ interface ParserInterface
      *
      * @param string|resource|ReadableInterface $source
      * @param array $options
-     * @return iterable|array|NodeInterface[]|NodeInterface
-     * @throws ParserRuntimeExceptionInterface
+     * @return iterable|array|mixed|NodeInterface[]|NodeInterface
+     *
+     * @throws RuntimeExceptionInterface
      */
     public function parse($source, array $options = []): iterable;
 }

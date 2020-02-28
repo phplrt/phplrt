@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
  * An interface that is an abstract implementation of a lexer.
@@ -26,7 +26,7 @@ interface LexerInterface
      * @param int $offset
      * @return iterable|TokenInterface[]
      *
-     * @throws LexerRuntimeExceptionInterface
+     * @throws RuntimeExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable;
 }

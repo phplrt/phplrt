@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Renderer;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
@@ -25,17 +26,17 @@ class UnrecognizedTokenException extends LexerRuntimeException
     private const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized %s';
 
     /**
-     * UnrecognizedTokenException constructor.
-     *
-     * @param TokenInterface $token
+     * @param ReadableInterface $src
+     * @param TokenInterface $tok
      * @param \Throwable|null $prev
+     * @return static
      */
-    public function __construct(TokenInterface $token, \Throwable $prev = null)
+    public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
     {
         $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
-            (new Renderer())->render($token),
+            (new Renderer())->render($tok),
         ]);
 
-        parent::__construct($message, $token, $prev);
+        return new static($message, $src, $tok, $prev);
     }
 }

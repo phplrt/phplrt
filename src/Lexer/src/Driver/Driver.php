@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Lexer\Exception\LexerException;
 use Phplrt\Lexer\Compiler\CompilerInterface;
 
 /**

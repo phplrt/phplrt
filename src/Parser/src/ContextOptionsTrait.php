@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Contracts\Parser\ContextOptionsInterface;
-
 /**
  * Trait ContextOptionsTrait
  *

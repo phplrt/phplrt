@@ -20,8 +20,6 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
-use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 
 /**
  * Class Lexer
@@ -140,13 +138,19 @@ class Lexer implements LexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param resource|string|ReadableInterface $source
-     * @param int $offset
-     * @return iterable
-     * @throws LexerExceptionInterface
-     * @throws LexerRuntimeExceptionInterface
+     * {@inheritDoc}
      */
     public function lex($source, int $offset = 0): iterable
+    {
+        return $this->run(File::new($source), $offset);
+    }
+
+    /**
+     * @param ReadableInterface $source
+     * @param int $offset
+     * @return \Generator
+     */
+    private function run(ReadableInterface $source, int $offset): \Generator
     {
         $unknown = [];
 
@@ -161,14 +165,14 @@ class Lexer implements LexerInterface, MutableLexerInterface
             }
 
             if (\count($unknown) && $token->getName() !== $this->driver::UNKNOWN_TOKEN_NAME) {
-                throw new UnrecognizedTokenException($this->reduce($unknown));
+                throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
             }
 
             yield $token;
         }
 
         if (\count($unknown)) {
-            throw new UnrecognizedTokenException($this->reduce($unknown));
+            throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
         }
 
         yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
@@ -178,7 +182,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
      * @param array|TokenInterface[] $tokens
      * @return TokenInterface
      */
-    private function reduce(array $tokens): TokenInterface
+    private function reduceUnknownToken(array $tokens): TokenInterface
     {
         $concat = static function (string $data, TokenInterface $token): string {
             return $data . $token->getValue();

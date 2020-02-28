@@ -16,7 +16,18 @@ namespace Phplrt\Position;
  */
 interface PositionInterface
 {
-    public function getLine();
+    /**
+     * @return int
+     */
+    public function getOffset(): int;
 
+    /**
+     * @return int
+     */
+    public function getLine(): int;
+
+    /**
+     * @return int
+     */
     public function getColumn(): int;
 }

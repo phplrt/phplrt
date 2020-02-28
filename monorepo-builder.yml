@@ -10,9 +10,6 @@ parameters:
     package_directories:
         - 'src'
     data_to_append:
-        autoload-dev:
-            psr-4:
-                'Phplrt\Tests\': 'tests'
         require-dev:
             phpunit/phpunit: '^7.5|^8.0'
             psr/http-message: '~1.0'
@@ -22,9 +19,6 @@ parameters:
             sensiolabs/security-checker: '^6.0'
     directories_to_repositories:
         # Packages
-        src/Compiler: 'git@github.com:phplrt/compiler.git'
-        src/Extractor: 'git@github.com:phplrt/extractor.git'
-        src/Grammar: 'git@github.com:phplrt/grammar.git'
         src/Lexer: 'git@github.com:phplrt/lexer.git'
         src/Parser: 'git@github.com:phplrt/parser.git'
         src/Position: 'git@github.com:phplrt/position.git'
@@ -32,6 +26,7 @@ parameters:
         src/Visitor: 'git@github.com:phplrt/visitor.git'
         # Contracts
         src/Contracts/Ast: 'git@github.com:phplrt/ast-contracts.git'
+        src/Contracts/Exception: 'git@github.com:phplrt/exception-contracts.git'
         src/Contracts/Grammar: 'git@github.com:phplrt/grammar-contracts.git'
         src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
         src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'

@@ -11,11 +11,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
-use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Source\File;
 
 /**
  * Class Multistate
@@ -70,12 +72,20 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param resource|string $source
-     * @param int $offset
-     * @return iterable|TokenInterface[]
-     * @throws LexerExceptionInterface
+     * {@inheritDoc}
      */
     public function lex($source, int $offset = 0): iterable
+    {
+        return $this->run(File::new($source), $offset);
+    }
+
+    /**
+     * @param ReadableInterface $source
+     * @param int $offset
+     * @return \Generator
+     * @throws RuntimeExceptionInterface
+     */
+    private function run(ReadableInterface $source, int $offset): \Generator
     {
         execution:
 
@@ -92,7 +102,7 @@ class Multistate implements LexerInterface
          */
         if (! isset($this->states[$state])) {
             /** @noinspection IssetArgumentExistenceInspection */
-            throw new UnexpectedStateException($state, $token ?? null);
+            throw UnexpectedStateException::fromState($state, $source, $token ?? null);
         }
 
         $stream = $this->states[$state]->lex($source, $offset);
@@ -130,7 +140,7 @@ class Multistate implements LexerInterface
                  * then at this stage there was an entrance to an endless cycle.
                  */
                 if (($states[$state] ?? null) === $offset) {
-                    throw new EndlessRecursionException($state, $token ?? null);
+                    throw EndlessRecursionException::fromState($state, $source, $token ?? null);
                 }
 
                 /**

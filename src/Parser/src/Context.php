@@ -12,10 +12,9 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Contracts\Parser\ContextInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -112,6 +111,7 @@ class Context implements ContextInterface
         $this->source = $source;
         $this->buffer = $buffer;
         $this->options = $options;
+
         $this->lastOrdinalToken = $this->lastProcessedToken = $this->buffer->current();
     }
 

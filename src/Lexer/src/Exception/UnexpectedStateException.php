@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
@@ -25,16 +25,16 @@ class UnexpectedStateException extends LexerRuntimeException
     private const ERROR_UNEXPECTED_STATE = 'Unrecognized token state #%s';
 
     /**
-     * UnexpectedStateException constructor.
-     *
-     * @param int|string $state
-     * @param TokenInterface $token
-     * @param \Throwable|null $prev
+     * @param $state
+     * @param ReadableInterface $src
+     * @param TokenInterface|null $tok
+     * @param \Throwable|null $e
+     * @return static
      */
-    public function __construct($state, TokenInterface $token = null, \Throwable $prev = null)
+    public static function fromState($state, ReadableInterface $src, ?TokenInterface $tok, \Throwable $e = null): self
     {
-        $token = $token ?? new Token('', '', 0);
+        $message = \sprintf(self::ERROR_UNEXPECTED_STATE, $state);
 
-        parent::__construct(\sprintf(static::ERROR_UNEXPECTED_STATE, $state), $token, $prev);
+        return new static($message, $src, $tok, $e);
     }
 }

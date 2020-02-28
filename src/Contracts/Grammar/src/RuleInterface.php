@@ -16,22 +16,4 @@ namespace Phplrt\Contracts\Grammar;
  */
 interface RuleInterface
 {
-    /**
-     * Returns an array of constructor arguments for subsequent generation of
-     * the rule using compiler-compilers.
-     *
-     * For example:
-     *
-     * <code>
-     *  $token = new Token('\d+', true);
-     *  $token->getConstructorArguments();
-     *  //
-     *  // Expected Output:
-     *  // >  array(2) { '\d+', true }
-     *  //
-     * </code>
-     *
-     * @return array
-     */
-    public function getConstructorArguments(): array;
 }

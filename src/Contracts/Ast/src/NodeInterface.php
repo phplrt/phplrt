@@ -27,13 +27,6 @@ namespace Phplrt\Contracts\Ast;
 interface NodeInterface extends \IteratorAggregate
 {
     /**
-     * Returns offset in bytes the node started in.
-     *
-     * @return int
-     */
-    public function getOffset(): int;
-
-    /**
      * Returns the list of children nodes.
      *
      * @see \IteratorAggregate::getIterator()
