@@ -60,6 +60,14 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     }
 
     /**
+     * @return string
+     */
+    public function getOriginalMessage(): string
+    {
+        return $this->original;
+    }
+
+    /**
      * @param ReadableInterface|null $source
      * @return void
      */
