@@ -25,4 +25,9 @@ interface ReadableInterface
      * @return string
      */
     public function getContents(): string;
+
+    /**
+     * @return string
+     */
+    public function getHash(): string;
 }

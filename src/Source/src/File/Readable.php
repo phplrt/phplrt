@@ -25,12 +25,17 @@ abstract class Readable implements ReadableInterface, MemoizableInterface
     private ?string $content = null;
 
     /**
+     * @var string|null
+     */
+    protected ?string $hash = null;
+
+    /**
      * @return string
      */
     abstract protected function read(): string;
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getContents(): string
     {
@@ -42,10 +47,22 @@ abstract class Readable implements ReadableInterface, MemoizableInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
+     */
+    public function getHash(): string
+    {
+        if ($this->hash === null) {
+            $this->hash = \hash('crc32', $this->getContents());
+        }
+
+        return $this->hash;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function refresh(): void
     {
-        $this->content = null;
+        $this->hash = $this->content = null;
     }
 }

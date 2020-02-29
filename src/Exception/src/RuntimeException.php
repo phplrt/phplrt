@@ -18,6 +18,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionInterface;
 use Phplrt\Source\File;
+use Phplrt\Source\Util;
 
 /**
  * Class RuntimeException
@@ -33,6 +34,30 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
      * @var ReadableInterface|null
      */
     private ?ReadableInterface $source = null;
+
+    /**
+     * @var string
+     */
+    private string $original;
+
+    /**
+     * @var string
+     */
+    protected const ERROR_SOURCE_TEMPLATE = ' %4s | %s';
+
+    /**
+     * RuntimeException constructor.
+     *
+     * @param string $message
+     * @param int $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
+    {
+        $this->original = $message;
+
+        parent::__construct($message, $code, $previous);
+    }
 
     /**
      * @param ReadableInterface|null $source
@@ -67,6 +92,32 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
             $this->file = $file->getPathname();
             $this->line = $this->getPosition()->getLine();
         }
+
+        if ($this->source && $this->token) {
+            $this->message = $this->original . $this->getMessageSuffix($this->source, $this->token);
+        }
+    }
+
+    /**
+     * @param ReadableInterface $src
+     * @param TokenInterface $token
+     * @return string
+     */
+    private function getMessageSuffix(ReadableInterface $src, TokenInterface $token): string
+    {
+        $position = Position::fromOffset($src, $token->getOffset());
+
+        return \PHP_EOL . \implode(\PHP_EOL, [
+            \vsprintf(static::ERROR_SOURCE_TEMPLATE, [
+                $position->getLine() . '.',
+                (new Util($src))->readLine($position->getLine())
+            ]),
+            \vsprintf(static::ERROR_SOURCE_TEMPLATE, [
+                '',
+                \str_repeat(' ', $position->getColumn() - 1) .
+                \str_repeat('^', $token->getBytes())
+            ])
+        ]);
     }
 
     /**

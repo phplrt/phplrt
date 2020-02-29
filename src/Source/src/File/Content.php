@@ -35,8 +35,7 @@ class Content implements ReadableInterface
     }
 
     /**
-     * @return resource
-     * @throws NotAccessibleException
+     * {@inheritDoc}
      */
     public function getStream()
     {
@@ -56,6 +55,14 @@ class Content implements ReadableInterface
         }
 
         return $memory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash(): string
+    {
+        return \hash('crc32', $this->content);
     }
 
     /**

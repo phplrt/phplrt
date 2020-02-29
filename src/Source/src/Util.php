@@ -9,19 +9,19 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Position;
+namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Class Content
+ * Class Util
  */
-class Content implements ContentInterface
+class Util
 {
     /**
-     * @var array|null
+     * @var array|string[]
      */
-    private ?array $lines = null;
+    private array $lines = [];
 
     /**
      * @var ReadableInterface
@@ -36,6 +36,8 @@ class Content implements ContentInterface
     public function __construct(ReadableInterface $source)
     {
         $this->source = $source;
+
+        $this->lines = \array_map($this->filter(), \explode("\n", $source->getContents()));
     }
 
     /**
@@ -47,38 +49,28 @@ class Content implements ContentInterface
     }
 
     /**
-     * @return void
+     * @param int $line
+     * @return string
      */
-    private function boot(): void
+    public function readLine(int $line): string
     {
-        if ($this->lines === null) {
-            $this->lines = \array_map($this->filter(), \explode("\n", $this->source->getContents()));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function line(int $line): string
-    {
-        $this->boot();
-
         return $this->lines[$line - 1] ?? '';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function lines(int $line, int $before = 0, int $after = 0): iterable
+    public function readLines(int $from, int $to): iterable
     {
-        $this->boot();
+        $from = \max(1, $from);
+        $to = \max($from, $to);
 
-        for ($from = \max(1, $line - $before), $to = $line + $after + 1; $from < $to; ++$from) {
-            if (! isset($this->lines[$from])) {
+        for ($i = $from; $i <= $to; ++$i) {
+            if (! isset($this->lines[$i - 1])) {
                 break;
             }
 
-            yield $this->line($from);
+            yield $i => $this->readLine($i);
         }
     }
 }

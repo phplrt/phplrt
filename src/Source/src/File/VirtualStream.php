@@ -27,7 +27,7 @@ class VirtualStream extends Stream implements FileInterface
      * VirtualStream constructor.
      *
      * @param string $pathname
-     * @param $stream
+     * @param resource $stream
      */
     public function __construct(string $pathname, $stream)
     {

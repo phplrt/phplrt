@@ -14,7 +14,6 @@ namespace Phplrt\Source\File;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\Exception\NotAccessibleException;
 
 /**
  * Class Physical
@@ -63,46 +62,6 @@ class Physical extends Readable implements FileInterface
     }
 
     /**
-     * @return resource
-     * @throws NotAccessibleException
-     */
-    public function getStream()
-    {
-        $this->assertValid($this->getPathname());
-
-        return \fopen($this->getPathname(), 'rb');
-    }
-
-    /**
-     * @return string
-     * @throws NotReadableException
-     */
-    protected function read(): string
-    {
-        $this->assertValid($this->getPathname());
-
-        return \file_get_contents($this->getPathname());
-    }
-
-    /**
-     * @param string $pathname
-     * @return bool
-     */
-    private function exists(string $pathname): bool
-    {
-        return \is_file($pathname);
-    }
-
-    /**
-     * @param string $pathname
-     * @return bool
-     */
-    private function isReadable(string $pathname): bool
-    {
-        return \is_readable($pathname);
-    }
-
-    /**
      * @param string $pathname
      * @throws NotFoundException
      */
@@ -116,11 +75,12 @@ class Physical extends Readable implements FileInterface
     }
 
     /**
-     * @return string
+     * @param string $pathname
+     * @return bool
      */
-    public function getPathname(): string
+    private function exists(string $pathname): bool
     {
-        return $this->pathname;
+        return \is_file($pathname);
     }
 
     /**
@@ -135,5 +95,55 @@ class Physical extends Readable implements FileInterface
 
             throw new NotReadableException($message);
         }
+    }
+
+    /**
+     * @param string $pathname
+     * @return bool
+     */
+    private function isReadable(string $pathname): bool
+    {
+        return \is_readable($pathname);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStream()
+    {
+        $this->assertValid($this->getPathname());
+
+        return \fopen($this->getPathname(), 'rb');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPathname(): string
+    {
+        return $this->pathname;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    final public function getHash(): string
+    {
+        if ($this->hash === null) {
+            $this->hash = \hash_file('crc32', $this->getPathname());
+        }
+
+        return $this->hash;
+    }
+
+    /**
+     * @return string
+     * @throws NotReadableException
+     */
+    protected function read(): string
+    {
+        $this->assertValid($this->getPathname());
+
+        return \file_get_contents($this->getPathname());
     }
 }

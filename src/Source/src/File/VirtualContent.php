@@ -37,7 +37,7 @@ class VirtualContent extends Content implements FileInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getPathname(): string
     {
