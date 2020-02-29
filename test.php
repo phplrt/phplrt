@@ -1,26 +1,29 @@
 <?php
 
-use Phplrt\Parser\Grammar\Concatenation;
-use Phplrt\Parser\Grammar\Lexeme;
-use Phplrt\Parser\Grammar\Repetition;
-use Phplrt\Lexer\Lexer;
-use Phplrt\Parser\Context;
-use Phplrt\Parser\Parser;
-use Phplrt\Position\Content;
-use Phplrt\Source\File;
+
+use Phplrt\Compiler\Compiler;
 
 require __DIR__ . '/vendor/autoload.php';
 
+$c = new Compiler();
+$c->load(/** @lang PHPT */'
+    %token d \d+
+    %token p \+
+    %skip ws \s+ 
+    
+    sum -> {
+        dump($offset);
+        
+        foreach ($children as $child) {
+            dump($child);
+        }
 
-$c = new Content(File::fromSources('
-2.
-3.
-4.
-5.
-6.
-'));
+        return $children;
+    } = <d> sfx()+;
+    sfx -> { dump($children); } = ::p:: <d>;
+');
 
-foreach ($c->lines(4, 0, 2) as $line) {
-    dump($line);
-}
+$generator = $c->build();
+$generator->withClassUsage(\Phplrt\Parser\Parser::class);
 
+echo $generator;

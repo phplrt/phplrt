@@ -20,7 +20,8 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-spl": "*"
+        "ext-spl": "*",
+        "laminas/laminas-code": "~3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5|^8.0",
@@ -32,6 +33,7 @@
     },
     "autoload": {
         "psr-4": {
+            "Phplrt\\Compiler\\": "src/Compiler/src",
             "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
             "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src/",
             "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src/",
@@ -39,6 +41,7 @@
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
             "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
             "Phplrt\\Exception\\": "src/Exception/src",
+            "Phplrt\\Grammar\\": "src/Grammar/src",
             "Phplrt\\Lexer\\": "src/Lexer/src",
             "Phplrt\\Parser\\": "src/Parser/src",
             "Phplrt\\Position\\": "src/Position/src",
@@ -48,6 +51,8 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Compiler\\Tests\\": "src/Compiler/tests",
+            "Phplrt\\Grammar\\Tests\\": "src/Grammar/tests",
             "Phplrt\\Lexer\\Tests\\": "src/Lexer/tests",
             "Phplrt\\Parser\\Tests\\": "src/Parser/tests",
             "Phplrt\\Position\\Tests\\": "src/Position/tests",
@@ -69,7 +74,9 @@
         "phplrt/runtime": "self.version",
         "phplrt/source": "self.version",
         "phplrt/source-contracts": "self.version",
-        "phplrt/visitor": "self.version"
+        "phplrt/visitor": "self.version",
+        "phplrt/compiler": "self.version",
+        "phplrt/grammar": "self.version"
     },
     "provide": {
         "phplrt/exception-contracts-implementation": "^3.0",

@@ -26,7 +26,7 @@ class PhpLexer implements LexerInterface
     /**
      * @var bool
      */
-    private $inline;
+    private bool $inline;
 
     /**
      * PhpLexer constructor.

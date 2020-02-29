@@ -11,23 +11,22 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Lexer\Lexer;
-use Phplrt\Source\File;
-use Phplrt\Parser\Parser;
-use Phplrt\Lexer\Multistate;
-use Phplrt\Visitor\Traverser;
-use Phplrt\Visitor\TraverserInterface;
-use Phplrt\Compiler\Grammar\PP2Grammar;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Compiler\Generator\ZendGenerator;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Compiler\Grammar\GrammarInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Compiler\Generator\GeneratorInterface;
-use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\Exception\ParserRuntimeExceptionInterface;
+use Phplrt\Compiler\Generator\LaminasGenerator;
+use Phplrt\Compiler\Grammar\GrammarInterface;
+use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Compiler\Renderer\LaminasRenderer;
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Lexer;
+use Phplrt\Lexer\Multistate;
+use Phplrt\Parser\Parser;
+use Phplrt\Source\File;
+use Phplrt\Visitor\Traverser;
+use Phplrt\Visitor\TraverserInterface;
 
 /**
  * Class Compiler
@@ -37,12 +36,12 @@ class Compiler implements ParserInterface
     /**
      * @var GrammarInterface
      */
-    private $grammar;
+    private GrammarInterface $grammar;
 
     /**
      * @var Analyzer
      */
-    private $analyzer;
+    private Analyzer $analyzer;
 
     /**
      * @var Traverser
@@ -59,7 +58,7 @@ class Compiler implements ParserInterface
         $this->grammar = $grammar ?? new PP2Grammar();
 
         $this->preloader = $this->bootPreloader($ids = new IdCollection());
-        $this->analyzer  = new Analyzer($ids);
+        $this->analyzer = new Analyzer($ids);
     }
 
     /**
@@ -88,20 +87,19 @@ class Compiler implements ParserInterface
             return $this->preloader->traverse($ast);
         } catch (GrammarException $e) {
             throw $e;
-        } catch (LexerRuntimeExceptionInterface $e) {
+        } catch (RuntimeExceptionInterface $e) {
             throw new GrammarException($e->getMessage(), $source, $e->getToken()->getOffset());
-        } catch (ParserRuntimeExceptionInterface $e) {
-            throw new GrammarException($e->getMessage(), $source, $e->getNode()->getOffset());
         }
     }
 
     /**
      * @param resource|string|ReadableInterface $source
+     * @param array $options
      * @return iterable
-     * @throws ParserExceptionInterface
+     * @throws RuntimeExceptionInterface
      * @throws \Throwable
      */
-    public function parse($source): iterable
+    public function parse($source, array $options = []): iterable
     {
         $lexer = $this->createLexer();
 
@@ -155,10 +153,10 @@ class Compiler implements ParserInterface
     }
 
     /**
-     * @return GeneratorInterface|ZendGenerator
+     * @return Generator
      */
-    public function build(): GeneratorInterface
+    public function build(): Generator
     {
-        return new ZendGenerator($this->analyzer);
+        return new Generator($this->analyzer, new LaminasRenderer());
     }
 }

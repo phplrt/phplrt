@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Tests;
 
-use Phplrt\Parser\Grammar\Concatenation;
+use Phplrt\Grammar\Concatenation;
+use Phplrt\Grammar\Lexeme;
+use Phplrt\Grammar\Repetition;
 use Phplrt\Parser\Grammar;
-use Phplrt\Parser\Grammar\Lexeme;
-use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Tests\Stub\Rule;
 
 /**

@@ -51,29 +51,29 @@ class Analyzer extends Visitor
     /**
      * @var array|RuleInterface
      */
-    public $rules = [];
+    public array $rules = [];
 
     /**
      * @var array|string[]
      */
-    public $reducers = [];
+    public array $reducers = [];
 
     /**
      * @var array|string[]
      */
-    public $tokens = [
+    public array $tokens = [
         self::STATE_DEFAULT => [],
     ];
 
     /**
      * @var array|string[]
      */
-    public $transitions = [];
+    public array $transitions = [];
 
     /**
      * @var array|string[]
      */
-    public $skip = [];
+    public array $skip = [];
 
     /**
      * @var string|int|null
@@ -83,17 +83,17 @@ class Analyzer extends Visitor
     /**
      * @var int
      */
-    private $counter = 0;
+    private int $counter = 0;
 
     /**
      * @var array
      */
-    private $aliases = [];
+    private array $aliases = [];
 
     /**
      * @var IdCollection
      */
-    private $ids;
+    private IdCollection $ids;
 
     /**
      * ParserBuilder constructor.

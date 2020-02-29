@@ -9,11 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Grammar;
+namespace Phplrt\Grammar;
 
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * Class Alternation

@@ -24,12 +24,12 @@ class PP2PHPLexer implements LexerInterface
     /**
      * @var PhpLexer
      */
-    private $lexer;
+    private PhpLexer $lexer;
 
     /**
      * @var int
      */
-    private $depth = 0;
+    private int $depth = 0;
 
     /**
      * PP2PHPLexer constructor.

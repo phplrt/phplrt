@@ -1,13 +1,18 @@
 {
-    "name": "phplrt/parser",
+    "name": "phplrt/grammar",
     "type": "library",
-    "description": "The phplrt Parser package.",
+    "description": "The phplrt grammar package.",
     "license": "MIT",
-    "keywords": ["parser", "llk", "ll1", "lr", "slr", "language", "php"],
+    "keywords": [
+        "parser",
+        "grammar",
+        "rules",
+        "asserts"
+    ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/parser"
+        "source": "https://github.com/phplrt/grammar"
     },
     "authors": [
         {
@@ -17,17 +22,11 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/source": "^3.0",
-        "phplrt/exception": "^3.0",
-        "phplrt/grammar": "^3.0",
-        "phplrt/parser-contracts": "^3.0",
-        "phplrt/lexer-contracts": "^3.0",
-        "phplrt/ast-contracts": "^3.0",
         "phplrt/grammar-contracts": "^3.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Parser\\": "src"
+            "Phplrt\\Grammar\\": "src"
         }
     },
     "require-dev": {
@@ -35,11 +34,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Parser\\Tests\\": "tests"
+            "Phplrt\\Grammar\\Tests\\": "tests"
         }
     },
     "provide": {
-        "phplrt/parser-contracts-implementation": "^3.0"
+        "phplrt/grammar-contracts-implementation": "^3.0"
     },
     "extra": {
         "branch-alias": {

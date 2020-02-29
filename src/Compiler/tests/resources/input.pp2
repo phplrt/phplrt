@@ -1,0 +1,14 @@
+%token d \d+
+%token p \+
+%skip ws \s+
+
+sum -> {
+    dump($offset);
+
+    foreach ($children as $child) {
+        dump($child);
+    }
+
+    return $children;
+} = <d> sfx()+;
+sfx -> { dump($children); } = ::p:: <d>;

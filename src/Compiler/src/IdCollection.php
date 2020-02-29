@@ -24,12 +24,12 @@ class IdCollection extends Visitor
     /**
      * @var array|bool[]
      */
-    private $rules = [];
+    private array $rules = [];
 
     /**
      * @var array|bool[]
      */
-    private $tokens = [];
+    private array $tokens = [];
 
     /**
      * @param NodeInterface $node

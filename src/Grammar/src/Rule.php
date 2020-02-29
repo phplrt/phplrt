@@ -9,13 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Grammar;
 
-use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
 
 /**
- * Interface GrammarInterface
+ * Class Rule
  */
-interface GrammarInterface extends ParserInterface
+abstract class Rule implements RuleInterface
 {
 }

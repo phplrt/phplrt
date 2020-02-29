@@ -9,13 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Grammar;
+namespace Phplrt\Compiler\Tests;
 
-use Phplrt\Contracts\Grammar\RuleInterface;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
- * Class Rule
+ * Class TestCase
  */
-abstract class Rule implements RuleInterface
+abstract class TestCase extends BaseTestCase
 {
+
 }

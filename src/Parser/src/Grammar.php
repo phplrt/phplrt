@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
-use Phplrt\Parser\Grammar\Alternation;
-use Phplrt\Parser\Grammar\Concatenation;
-use Phplrt\Parser\Grammar\Lexeme;
-use Phplrt\Parser\Grammar\Optional;
-use Phplrt\Parser\Grammar\Repetition;
+use Phplrt\Grammar\Alternation;
+use Phplrt\Grammar\Concatenation;
+use Phplrt\Grammar\Lexeme;
+use Phplrt\Grammar\Optional;
+use Phplrt\Grammar\Repetition;
 
 /**
  * Class Generator
