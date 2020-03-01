@@ -9,19 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser;
+namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
-use Phplrt\Grammar\Alternation;
-use Phplrt\Grammar\Concatenation;
-use Phplrt\Grammar\Lexeme;
-use Phplrt\Grammar\Optional;
-use Phplrt\Grammar\Repetition;
 
 /**
  * Class Generator
  */
-class Grammar implements \IteratorAggregate
+class Builder implements \IteratorAggregate
 {
     /**
      * @var string

@@ -9,13 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Tests;
+namespace Phplrt\Grammar\Tests;
 
 use Phplrt\Grammar\Concatenation;
 use Phplrt\Grammar\Lexeme;
 use Phplrt\Grammar\Repetition;
-use Phplrt\Parser\Grammar;
+use Phplrt\Grammar\Builder;
 use Phplrt\Parser\Tests\Stub\Rule;
+use Phplrt\Parser\Tests\TestCase;
 
 /**
  * Class GrammarGeneratorTestCase
@@ -27,7 +28,7 @@ class GrammarGeneratorTestCase extends TestCase
      */
     public function testNamedRuleReturnsName(): void
     {
-        new Grammar(function () {
+        new Builder(function () {
             $this->assertSame('Name', yield 'Name' => Rule::new());
         });
     }
@@ -37,7 +38,7 @@ class GrammarGeneratorTestCase extends TestCase
      */
     public function testAnonymousRuleReturnsIndex(): void
     {
-        new Grammar(function () {
+        new Builder(function () {
             $this->assertSame(0, yield Rule::new());
             $this->assertSame(1, yield Rule::new());
         });
@@ -48,7 +49,7 @@ class GrammarGeneratorTestCase extends TestCase
      */
     public function testRuleUsage(): void
     {
-        new Grammar(function () {
+        new Builder(function () {
             $this->assertSame(0, yield Rule::new());
             $this->assertSame(0, yield 0);
         });
@@ -59,7 +60,7 @@ class GrammarGeneratorTestCase extends TestCase
      */
     public function testHelpers(): void
     {
-        $generator = new Grammar(static function (Grammar $c) {
+        $generator = new Builder(static function (Builder $c) {
             yield 'sum' => $c->concat(
                 $digit = yield $c->token('digit'),
                 yield $c->repeat(
