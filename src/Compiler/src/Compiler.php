@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Compiler\Generator\GeneratorInterface;
-use Phplrt\Compiler\Generator\LaminasGenerator;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Renderer\LaminasRenderer;
