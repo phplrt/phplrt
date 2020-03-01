@@ -61,7 +61,7 @@ class ArrayBuffer implements BufferInterface
      */
     public function next(): void
     {
-        if ($this->current < $this->size - 1) {
+        if ($this->current < $this->size) {
             ++$this->current;
         }
     }
