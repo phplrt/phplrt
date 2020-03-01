@@ -37,11 +37,14 @@ class ArrayBuffer implements BufferInterface
     /**
      * Buffer constructor.
      *
-     * @param \Generator $stream
+     * @param iterable|TokenInterface[] $stream
      */
-    public function __construct(\Generator $stream)
+    public function __construct(iterable $stream)
     {
-        $this->buffer = \iterator_to_array($stream, false);
+        $this->buffer = $stream instanceof \Traversable
+            ? \iterator_to_array($stream, false)
+            : $stream;
+
         $this->size = \count($this->buffer);
     }
 
