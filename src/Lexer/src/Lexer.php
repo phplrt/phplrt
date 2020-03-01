@@ -175,7 +175,9 @@ class Lexer implements LexerInterface, MutableLexerInterface
             throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
         }
 
-        yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
+        if (! \in_array(EndOfInput::END_OF_INPUT, $this->skip, true)) {
+            yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
+        }
     }
 
     /**
