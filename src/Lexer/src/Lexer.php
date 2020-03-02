@@ -129,7 +129,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function prependMany(array $tokens, bool $reverseOrder = true): self
+    public function prependMany(array $tokens, bool $reverseOrder = false): self
     {
         $this->reset();
         $this->tokens = \array_merge($reverseOrder ? \array_reverse($tokens) : $tokens, $this->tokens);
