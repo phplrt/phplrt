@@ -44,8 +44,14 @@ interface MutableLexerInterface
     public function prependMany(array $tokens, bool $reverseOrder = true): self;
 
     /**
-     * @param string ...$names
+     * @param string ...$tokens
      * @return MutableLexerInterface|$this
      */
-    public function skip(string ...$names): self;
+    public function skip(string ...$tokens): self;
+
+    /**
+     * @param string $tokens
+     * @return MutableLexerInterface|$this
+     */
+    public function remove(string ...$tokens): self;
 }

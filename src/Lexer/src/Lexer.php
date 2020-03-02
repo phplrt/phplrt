@@ -75,14 +75,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
     }
 
     /**
-     * @return void
-     */
-    private function reset(): void
-    {
-        $this->driver->reset();
-    }
-
-    /**
      * @param string ...$names
      * @return MutableLexerInterface|$this
      */
@@ -102,6 +94,14 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->tokens[$token] = $pattern;
 
         return $this;
+    }
+
+    /**
+     * @return void
+     */
+    private function reset(): void
+    {
+        $this->driver->reset();
     }
 
     /**
@@ -133,6 +133,22 @@ class Lexer implements LexerInterface, MutableLexerInterface
     {
         $this->reset();
         $this->tokens = \array_merge($reverseOrder ? \array_reverse($tokens) : $tokens, $this->tokens);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function remove(string ...$tokens): self
+    {
+        $this->reset();
+
+        foreach ($tokens as $token) {
+            unset($this->tokens[$token]);
+
+            $this->skip = \array_filter($this->skip, fn(string $haystack): bool => $haystack !== $token);
+        }
 
         return $this;
     }
