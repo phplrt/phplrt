@@ -31,11 +31,13 @@ class Builder implements \IteratorAggregate
     /**
      * Builder constructor.
      *
-     * @param \Closure $generator
+     * @param \Closure|null $generator
      */
-    public function __construct(\Closure $generator)
+    public function __construct(\Closure $generator = null)
     {
-        $this->extend($generator);
+        if ($generator) {
+            $this->extend($generator);
+        }
     }
 
     /**
