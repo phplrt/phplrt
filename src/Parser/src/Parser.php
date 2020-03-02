@@ -270,14 +270,14 @@ final class Parser implements
             case $context->rule instanceof ProductionInterface:
                 $result = $context->rule->reduce($context->buffer, function ($state) use ($context) {
                     // Keep current state
-                    $before = $context->state;
+                    $before = [$context->state, $context->lastProcessedToken];
                     // Update state
-                    $context->state = $state;
+                    [$context->state, $context->lastProcessedToken] = [$state, $context->buffer->current()];
 
                     $result = $this->next($context);
 
                     // Rollback previous state
-                    $context->state = $before;
+                    [$context->state, $context->lastProcessedToken] = $before;
 
                     return $result;
                 });
