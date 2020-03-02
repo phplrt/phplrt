@@ -86,7 +86,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
      * @param string ...$names
      * @return MutableLexerInterface|$this
      */
-    public function skip(string ...$names): MutableLexerInterface
+    public function skip(string ...$names): self
     {
         $this->skip = \array_merge($this->skip, $names);
 
@@ -96,7 +96,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function append(string $token, string $pattern): MutableLexerInterface
+    public function append(string $token, string $pattern): self
     {
         $this->reset();
         $this->tokens[$token] = $pattern;
@@ -107,7 +107,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function appendMany(array $tokens): MutableLexerInterface
+    public function appendMany(array $tokens): self
     {
         $this->reset();
         $this->tokens = \array_merge($this->tokens, $tokens);
@@ -118,7 +118,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function prepend(string $token, string $pattern): MutableLexerInterface
+    public function prepend(string $token, string $pattern): self
     {
         $this->reset();
         $this->tokens = \array_merge([$token, $pattern], $this->tokens);
@@ -129,7 +129,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function prependMany(array $tokens, bool $reverseOrder = true): MutableLexerInterface
+    public function prependMany(array $tokens, bool $reverseOrder = true): self
     {
         $this->reset();
         $this->tokens = \array_merge($reverseOrder ? \array_reverse($tokens) : $tokens, $this->tokens);
