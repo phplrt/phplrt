@@ -121,7 +121,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     public function prepend(string $token, string $pattern): self
     {
         $this->reset();
-        $this->tokens = \array_merge([$token, $pattern], $this->tokens);
+        $this->tokens = \array_merge([$token => $pattern], $this->tokens);
 
         return $this;
     }
