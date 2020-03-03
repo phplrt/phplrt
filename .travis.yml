@@ -19,7 +19,7 @@ before_script:
   - composer global require hirak/prestissimo
 
   # Installing Composer dependencies
-  - composer install --no-interaction --no-suggest --optimize-autoloader
+  - composer install --no-interaction --ignore-platform-reqs --no-suggest --optimize-autoloader
 
   # Installing code coverage tools
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
