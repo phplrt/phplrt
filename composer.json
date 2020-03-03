@@ -91,8 +91,7 @@
         "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",
         "security": "@php vendor/sensiolabs/security-checker/security-checker security:check ./composer.lock",
         "split": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder split",
-        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge",
-        "psalm": "@php vendor/vimeo/psalm/psalm"
+        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge"
     },
     "config": {
         "sort-packages": true
