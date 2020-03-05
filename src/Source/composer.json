@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/source-contracts": "^3.0"
+        "phplrt/source-contracts": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +39,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0.x-dev"
+            "dev-master": "3.1.x-dev"
         }
     },
     "config": {
