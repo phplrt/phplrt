@@ -49,8 +49,9 @@ class LineReader
      */
     public function readLines(int $from, int $to): iterable
     {
-        $from = \max(1, $from);
-        $to = \max($from, $to);
+        [$from, $to] = [\max(1, $from), \max(1, $to)];
+
+        [$from, $to] = $from > $to ? [$to, $from] : [$from, $to];
 
         for ($i = $from; $i <= $to; ++$i) {
             if (! isset($this->lines[$i - 1])) {

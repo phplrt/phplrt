@@ -15,7 +15,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Position\PositionInterface;
 
 /**
- * Class UndefinedToken
+ * @internal This class can be used for internal representation of exceptions
  */
 final class UndefinedToken implements TokenInterface
 {

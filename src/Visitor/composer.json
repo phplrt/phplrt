@@ -3,12 +3,7 @@
     "type": "library",
     "description": "The phplrt visitor package",
     "license": "MIT",
-    "keywords": [
-        "ast",
-        "tree",
-        "traverser",
-        "visitor"
-    ],
+    "keywords": ["ast", "tree", "traverser", "visitor"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
@@ -22,7 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/ast-contracts": "^3.0"
+        "phplrt/ast-contracts": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0.x-dev"
+            "dev-master": "3.1.x-dev"
         }
     },
     "config": {

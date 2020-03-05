@@ -32,7 +32,31 @@ class FileTestCase extends TestCase
         $readable = $factory();
 
         $this->assertSame($this->getSources(), $readable->getContents());
+    }
+
+    /**
+     * @dataProvider provider
+     *
+     * @param \Closure $factory
+     * @throws ExpectationFailedException
+     */
+    public function testCloneable(\Closure $factory): void
+    {
+        $readable = $factory();
+
         $this->assertSame($this->getSources(), (clone $readable)->getContents());
+    }
+
+    /**
+     * @dataProvider provider
+     *
+     * @param \Closure $factory
+     * @return void
+     */
+    public function testSerializable(\Closure $factory): void
+    {
+        $readable = $factory();
+
         $this->assertSame($this->getSources(), \unserialize(\serialize($readable))->getContents());
     }
 
