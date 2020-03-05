@@ -130,7 +130,13 @@ trait FactoryTrait
      */
     public static function fromResource($resource, string $pathname = null): ReadableInterface
     {
-        if (self::isClosedResource($resource)) {
+        if (! StreamUtil::isStream($resource)) {
+            $message = 'First argument must be a valid resource, but %s given';
+
+            throw new \InvalidArgumentException(\sprintf($message, \gettype($resource)));
+        }
+
+        if (StreamUtil::isClosedStream($resource)) {
             throw new NotReadableException('Can not open for reading already closed resource');
         }
 
@@ -142,14 +148,5 @@ trait FactoryTrait
         }
 
         return new Readable($stream, $content);
-    }
-
-    /**
-     * @param resource $resource
-     * @return bool
-     */
-    private static function isClosedResource($resource): bool
-    {
-        return \gettype($resource) === 'resource (closed)';
     }
 }
