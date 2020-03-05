@@ -3,19 +3,7 @@
     "type": "library",
     "description": "A set of phplrt parser abstractions",
     "license": "MIT",
-    "keywords": [
-        "abstractions",
-        "contracts",
-        "decoupling",
-        "interfaces",
-        "interoperability",
-        "standards",
-        "parser",
-        "syntax",
-        "analysis",
-        "language",
-        "php"
-    ],
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "parser", "syntax", "analysis", "language", "php"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/parser-contracts/issues",

@@ -3,12 +3,7 @@
     "type": "library",
     "description": "The phplrt grammar package.",
     "license": "MIT",
-    "keywords": [
-        "parser",
-        "grammar",
-        "rules",
-        "asserts"
-    ],
+    "keywords": ["parser", "grammar", "rules", "asserts"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",

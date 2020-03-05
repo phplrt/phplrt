@@ -3,12 +3,7 @@
     "type": "library",
     "description": "The phplrt visitor package",
     "license": "MIT",
-    "keywords": [
-        "ast",
-        "tree",
-        "traverser",
-        "visitor"
-    ],
+    "keywords": ["ast", "tree", "traverser", "visitor"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
