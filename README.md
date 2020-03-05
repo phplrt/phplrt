@@ -22,7 +22,7 @@ text analysis and so on.
 
 ## Documentation
 
-Full documentation can be found here: [https://phplrt.github.io](https://phplrt.github.io/phplrt/)
+Full documentation can be found here: [https://phplrt.org/](https://phplrt.org/docs/index)
 
 ## Installation
 
@@ -33,7 +33,7 @@ installed using the following command in a root of your project:
 $ composer require phplrt/phplrt
 ```
 
-More detailed installation instructions [are here](https://phplrt.github.io/phplrt/installation).
+More detailed installation instructions [are here](https://phplrt.org/docs/installation).
 
 ## Quick Start
 

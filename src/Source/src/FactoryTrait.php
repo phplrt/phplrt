@@ -11,17 +11,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\File\Stream;
-use Phplrt\Source\File\Content;
-use Phplrt\Source\File\Physical;
-use Phplrt\Source\File\VirtualStream;
-use Psr\Http\Message\StreamInterface;
-use Phplrt\Source\File\VirtualContent;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Source\ContentReader\ContentReader;
+use Phplrt\Source\ContentReader\StreamContentReader;
+use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Source\StreamReader\ContentStreamReader;
+use Phplrt\Source\StreamReader\StreamReader;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Trait FactoryTrait
@@ -44,7 +43,14 @@ trait FactoryTrait
      */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
     {
-        return $pathname ? new VirtualContent($pathname, $sources) : new Content($sources);
+        $stream = new ContentStreamReader($sources);
+        $content = new ContentReader($sources);
+
+        if ($pathname !== null) {
+            return new File($pathname, $stream, $content);
+        }
+
+        return new Readable($stream, $content);
     }
 
     /**
@@ -96,7 +102,9 @@ trait FactoryTrait
      */
     public static function fromPathname(string $pathname): FileInterface
     {
-        return new Physical($pathname);
+        File::assertValidPathname($pathname);
+
+        return new File($pathname);
     }
 
     /**
@@ -126,7 +134,14 @@ trait FactoryTrait
             throw new NotReadableException('Can not open for reading already closed resource');
         }
 
-        return $pathname ? new VirtualStream($pathname, $resource) : new Stream($resource);
+        $stream = new StreamReader($resource);
+        $content = new StreamContentReader($resource);
+
+        if ($pathname !== null) {
+            return new File($pathname, $stream, $content);
+        }
+
+        return new Readable($stream, $content);
     }
 
     /**
@@ -135,10 +150,6 @@ trait FactoryTrait
      */
     private static function isClosedResource($resource): bool
     {
-        if (\version_compare(\PHP_VERSION, '7.2') >= 1) {
-            return \gettype($resource) === 'resource (closed)';
-        }
-
-        return \gettype($resource) === 'unknown type';
+        return \gettype($resource) === 'resource (closed)';
     }
 }

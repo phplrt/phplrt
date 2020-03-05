@@ -14,7 +14,7 @@ namespace Phplrt\Contracts\Lexer;
 /**
  * Interface BufferInterface
  */
-interface BufferInterface extends \Iterator
+interface BufferInterface extends \SeekableIterator
 {
     /**
      * Rewind the BufferInterface to the target token element.
@@ -22,7 +22,7 @@ interface BufferInterface extends \Iterator
      * @param int $position
      * @return void
      */
-    public function seek(int $position): void;
+    public function seek($position): void;
 
     /**
      * Return the current token.

@@ -18,7 +18,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionInterface;
 use Phplrt\Source\File;
-use Phplrt\Source\Util;
 
 /**
  * Class RuntimeException
@@ -39,11 +38,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
      * @var string
      */
     private string $original;
-
-    /**
-     * @var string
-     */
-    protected const ERROR_SOURCE_TEMPLATE = ' %4s | %s';
 
     /**
      * RuntimeException constructor.
@@ -68,23 +62,24 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     }
 
     /**
+     * @return ReadableInterface
+     */
+    public function getSource(): ReadableInterface
+    {
+        if ($this->source === null) {
+            return File::fromPathname($this->getFile());
+        }
+
+        return $this->source;
+    }
+
+    /**
      * @param ReadableInterface|null $source
      * @return void
      */
     public function setSource(?ReadableInterface $source): void
     {
         $this->source = $source;
-
-        $this->sync();
-    }
-
-    /**
-     * @param TokenInterface|null $token
-     * @return void
-     */
-    public function setToken(?TokenInterface $token): void
-    {
-        $this->token = $token;
 
         $this->sync();
     }
@@ -107,45 +102,11 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     }
 
     /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $token
-     * @return string
-     */
-    private function getMessageSuffix(ReadableInterface $src, TokenInterface $token): string
-    {
-        $position = Position::fromOffset($src, $token->getOffset());
-
-        return \PHP_EOL . \implode(\PHP_EOL, [
-            \vsprintf(static::ERROR_SOURCE_TEMPLATE, [
-                $position->getLine() . '.',
-                (new Util($src))->readLine($position->getLine())
-            ]),
-            \vsprintf(static::ERROR_SOURCE_TEMPLATE, [
-                '',
-                \str_repeat(' ', $position->getColumn() - 1) .
-                \str_repeat('^', $token->getBytes())
-            ])
-        ]);
-    }
-
-    /**
      * @return PositionInterface
      */
     public function getPosition(): PositionInterface
     {
         return Position::fromOffset($this->getSource(), $this->getToken()->getOffset());
-    }
-
-    /**
-     * @return ReadableInterface
-     */
-    public function getSource(): ReadableInterface
-    {
-        if ($this->source === null) {
-            return File::fromPathname($this->getFile());
-        }
-
-        return $this->source;
     }
 
     /**
@@ -156,54 +117,32 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         if ($this->token === null) {
             $position = Position::fromPosition($this->getSource(), $this->getLine());
 
-            return new class($position) implements TokenInterface {
-                /**
-                 * @var PositionInterface
-                 */
-                private PositionInterface $position;
-
-                /**
-                 * @param PositionInterface $position
-                 */
-                public function __construct(PositionInterface $position)
-                {
-                    $this->position = $position;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public function getName(): string
-                {
-                    return TokenInterface::END_OF_INPUT;
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public function getOffset(): int
-                {
-                    return $this->position->getOffset();
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public function getValue(): string
-                {
-                    return '';
-                }
-
-                /**
-                 * {@inheritDoc}
-                 */
-                public function getBytes(): int
-                {
-                    return 0;
-                }
-            };
+            return new UndefinedToken($position);
         }
 
         return $this->token;
+    }
+
+    /**
+     * @param TokenInterface|null $token
+     * @return void
+     */
+    public function setToken(?TokenInterface $token): void
+    {
+        $this->token = $token;
+
+        $this->sync();
+    }
+
+    /**
+     * @param ReadableInterface $src
+     * @param TokenInterface $token
+     * @return string
+     */
+    private function getMessageSuffix(ReadableInterface $src, TokenInterface $token): string
+    {
+        $renderer = new ErrorInformationRenderer($src, $token);
+
+        return \PHP_EOL . $renderer->render();
     }
 }

@@ -1,20 +1,22 @@
 {
-    "support": {
-        "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/phplrt"
-    },
     "name": "phplrt/phplrt",
     "type": "library",
     "description": "PHP Language Recognition Tool",
     "keywords": ["compiler", "parser", "ast", "trace", "llk", "ll1", "lookahead", "buffer", "grammar"],
-    "homepage": "https://github.com/phplrt",
+    "homepage": "https://phplrt.org",
     "license": "MIT",
     "authors": [
         {
             "name": "Kirill Nesmeyanov",
-            "email": "nesk@xakep.ru"
+            "email": "nesk@xakep.ru",
+            "homepage": "https://serafimarts.ru"
         }
     ],
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/phplrt",
+        "docs": "https://phplrt.org"
+    },
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
@@ -89,8 +91,7 @@
         "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",
         "security": "@php vendor/sensiolabs/security-checker/security-checker security:check ./composer.lock",
         "split": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder split",
-        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge",
-        "psalm": "@php vendor/vimeo/psalm/psalm"
+        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge"
     },
     "config": {
         "sort-packages": true

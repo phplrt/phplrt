@@ -9,43 +9,30 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source;
+namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Class Util
+ * Class LineReader
  */
-class Util
+class LineReader
 {
     /**
      * @var array|string[]
      */
-    private array $lines = [];
+    private array $lines;
 
     /**
-     * @var ReadableInterface
-     */
-    private ReadableInterface $source;
-
-    /**
-     * Content constructor.
+     * LineReader constructor.
      *
      * @param ReadableInterface $source
      */
     public function __construct(ReadableInterface $source)
     {
-        $this->source = $source;
+        $filter = fn (string $line) => \trim($line, "\r\0");
 
-        $this->lines = \array_map($this->filter(), \explode("\n", $source->getContents()));
-    }
-
-    /**
-     * @return \Closure
-     */
-    private function filter(): \Closure
-    {
-        return fn (string $line) => \trim($line, "\r\0");
+        $this->lines = \array_map($filter, \explode("\n", $source->getContents()));
     }
 
     /**

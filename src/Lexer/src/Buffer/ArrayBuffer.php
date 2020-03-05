@@ -12,18 +12,12 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Lexer\BufferInterface;
 
 /**
  * Class ArrayBuffer
  */
-class ArrayBuffer implements BufferInterface
+class ArrayBuffer extends Buffer
 {
-    /**
-     * @var int
-     */
-    private int $current = 0;
-
     /**
      * @var array|TokenInterface[]
      */
@@ -46,6 +40,30 @@ class ArrayBuffer implements BufferInterface
             : $stream;
 
         $this->size = \count($this->buffer);
+
+        if (\count($this->buffer)) {
+            $this->initial = $this->current = \array_key_first($this->buffer);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function seek($position): void
+    {
+        if ($position < $this->initial) {
+            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $position, $this->current());
+
+            throw new \OutOfRangeException($message);
+        }
+
+        if ($position > ($last = \array_key_last($this->buffer))) {
+            $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $position, $last);
+
+            throw new \OutOfRangeException($message);
+        }
+
+        parent::seek($position);
     }
 
     /**
@@ -53,7 +71,7 @@ class ArrayBuffer implements BufferInterface
      */
     public function current(): TokenInterface
     {
-        return $this->buffer[$this->current] ?? $this->buffer[\array_key_last($this->buffer)];
+        return $this->currentFrom($this->buffer);
     }
 
     /**
@@ -69,32 +87,8 @@ class ArrayBuffer implements BufferInterface
     /**
      * {@inheritDoc}
      */
-    public function key(): int
-    {
-        return $this->current;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function valid(): bool
     {
         return $this->current < $this->size;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function rewind(): void
-    {
-        $this->current = 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function seek(int $position): void
-    {
-        $this->current = $position;
     }
 }
