@@ -21,9 +21,9 @@
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "phplrt/source": "^3.0.1",
-        "phplrt/position": "^3.0.1",
-        "phplrt/exception-contracts": "^3.0.1"
+        "phplrt/source": "^3.1",
+        "phplrt/position": "^3.1",
+        "phplrt/exception-contracts": "^3.1"
     },
     "autoload": {
         "psr-4": {
