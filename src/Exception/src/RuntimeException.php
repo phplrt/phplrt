@@ -91,7 +91,7 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     {
         $file = $this->getSource();
 
-        if ($this->file instanceof FileInterface && $this->token) {
+        if ($file instanceof FileInterface && $this->token) {
             $this->file = $file->getPathname();
             $this->line = $this->getPosition()->getLine();
         }
