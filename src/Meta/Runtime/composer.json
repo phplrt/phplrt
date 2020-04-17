@@ -17,10 +17,10 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/lexer": "^3.0.2",
-        "phplrt/parser": "^3.0.2",
-        "phplrt/position": "^3.0.2",
-        "phplrt/visitor": "^3.0.2"
+        "phplrt/lexer": "^3.1",
+        "phplrt/parser": "^3.1",
+        "phplrt/position": "^3.1",
+        "phplrt/visitor": "^3.1"
     },
     "extra": {
         "branch-alias": {
