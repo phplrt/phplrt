@@ -64,6 +64,16 @@ interface TraverserInterface
     public const DONT_TRAVERSE_CURRENT_AND_CHILDREN = 0x04;
 
     /**
+     * If VisitorInterface::leave() returns LOOP_ON_CURRENT,
+     * child nodes of the current node will not be traversed for any visitors.
+     *
+     * For subsequent visitors VisitorInterface::enter() will not be called as
+     * well. VisitorInterface::leave() will be invoked for visitors that has
+     * VisitorInterface::enter() method invoked.
+     */
+    public const LOOP_ON_CURRENT = 0x05;
+
+    /**
      * Adds a visitor.
      *
      * @param VisitorInterface $visitor

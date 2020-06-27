@@ -278,77 +278,84 @@ class Executor implements ExecutorInterface
                     return $node;
                 }
             } elseif ($child instanceof NodeInterface) {
-                $traverseChildren = true;
-                $breakVisitorIndex = null;
+                do {
+                    $loop = false;
+                    $traverseChildren = true;
+                    $breakVisitorIndex = null;
 
-                foreach ($this->visitors as $index => $visitor) {
-                    $return = $visitor->enter($child);
+                    foreach ($this->visitors as $index => $visitor) {
+                        $return = $visitor->enter($child);
 
-                    switch (true) {
-                        case $return === null:
-                            break;
+                        switch (true) {
+                            case $return === null:
+                                break;
 
-                        case $return === TraverserInterface::DONT_TRAVERSE_CHILDREN:
-                            $traverseChildren = false;
-                            break;
+                            case $return === TraverserInterface::DONT_TRAVERSE_CHILDREN:
+                                $traverseChildren = false;
+                                break;
 
-                        case $return === TraverserInterface::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
-                            $traverseChildren = false;
-                            $breakVisitorIndex = $index;
+                            case $return === TraverserInterface::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
+                                $traverseChildren = false;
+                                $breakVisitorIndex = $index;
+                                break 3;
+
+                            case TraverserInterface::STOP_TRAVERSAL === $return:
+                                $this->stop = true;
+                                break 4;
+
+                            default:
+                                $error = self::ERROR_ENTER_RETURN_TYPE;
+                                $error = \sprintf($error, \get_class($visitor), \gettype($return));
+
+                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_ENTERING);
+                        }
+                    }
+
+                    if ($traverseChildren) {
+                        $this->updateNodeValue($node, $name, $child = $this->traverseNode($child));
+
+                        if ($this->stop) {
                             break 2;
-
-                        case TraverserInterface::STOP_TRAVERSAL === $return:
-                            $this->stop = true;
-                            break 3;
-
-                        default:
-                            $error = self::ERROR_ENTER_RETURN_TYPE;
-                            $error = \sprintf($error, \get_class($visitor), \gettype($return));
-
-                            throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_ENTERING);
+                        }
                     }
-                }
 
-                if ($traverseChildren) {
-                    $this->updateNodeValue($node, $name, $child = $this->traverseNode($child));
+                    foreach ($this->visitors as $index => $visitor) {
+                        $return = $visitor->leave($child);
 
-                    if ($this->stop) {
-                        break;
-                    }
-                }
+                        switch (true) {
+                            case $return === null:
+                                break;
 
-                foreach ($this->visitors as $index => $visitor) {
-                    $return = $visitor->leave($child);
+                            case $return instanceof NodeInterface:
+                                $this->updateNodeValue($node, $name, $child = $return);
+                                break;
 
-                    switch (true) {
-                        case $return === null:
+                            case $return === TraverserInterface::STOP_TRAVERSAL:
+                                $this->stop = true;
+                                break 4;
+
+                            case $return === TraverserInterface::LOOP_ON_CURRENT:
+                                $loop = true;
+                                break;
+
+                            case \is_array($return):
+                                $error = self::ERROR_MODIFY_BY_ARRAY;
+                                $error = \sprintf($error, \get_class($visitor));
+
+                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
+
+                            default:
+                                $error = self::ERROR_LEAVE_RETURN_TYPE;
+                                $error = \sprintf($error, \get_class($visitor), \gettype($return));
+
+                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
+                        }
+
+                        if ($breakVisitorIndex === $index) {
                             break;
-
-                        case $return instanceof NodeInterface:
-                            $this->updateNodeValue($node, $name, $child = $return);
-                            break;
-
-                        case $return === TraverserInterface::STOP_TRAVERSAL:
-                            $this->stop = true;
-                            break 3;
-
-                        case \is_array($return):
-                            $error = self::ERROR_MODIFY_BY_ARRAY;
-                            $error = \sprintf($error, \get_class($visitor));
-
-                            throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
-
-                        default:
-                            $error = self::ERROR_LEAVE_RETURN_TYPE;
-                            $error = \sprintf($error, \get_class($visitor), \gettype($return));
-
-                            throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
+                        }
                     }
-
-                    if ($breakVisitorIndex === $index) {
-                        break;
-                    }
-                }
+                } while ($loop);
             }
         }
 
