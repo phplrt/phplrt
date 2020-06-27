@@ -151,7 +151,8 @@ abstract class BufferTestCase extends TestCase
 
         $buffer->rewind();
 
-        foreach ($buffer as $item) {}
+        foreach ($buffer as $item) {
+        }
 
         $this->assertSame($buffer->current(), $needle);
     }

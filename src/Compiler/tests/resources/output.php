@@ -1,6 +1,6 @@
 <?php
 
-use \Phplrt\Parser\Parser;
+use Phplrt\Parser\Parser;
 
 return [
     'initial' => 3,
