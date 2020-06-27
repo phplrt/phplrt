@@ -299,7 +299,7 @@ class Executor implements ExecutorInterface
                                 $breakVisitorIndex = $index;
                                 break 3;
 
-                            case TraverserInterface::STOP_TRAVERSAL === $return:
+                            case $return === TraverserInterface::STOP_TRAVERSAL:
                                 $this->stop = true;
                                 break 4;
 
