@@ -1,5 +1,7 @@
 <p align="center">
-    <a href="https://railt.org"><img src="https://avatars2.githubusercontent.com/u/49816277?s=128" width="128" alt="Phplrt" /></a>
+    <a href="https://phplrt.org/">
+        <img src="https://avatars2.githubusercontent.com/u/49816277?s=128" width="128" alt="Phplrt" />
+    </a>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/phplrt/phplrt"><img src="https://travis-ci.org/phplrt/phplrt.svg?branch=master" alt="Travis CI" /></a>
@@ -7,11 +9,32 @@
     <a href="https://codeclimate.com/github/phplrt/phplrt/maintainability"><img src="https://api.codeclimate.com/v1/badges/90ee68ef959f72fe7bf6/maintainability" /></a>
 </p>
 <p align="center">
-    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://img.shields.io/badge/PHP-7.4+-ff0140.svg" alt="PHP 7.4+"></a>
+    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://img.shields.io/badge/PHP-7.4+-ff0140.svg" alt="PHP 7.1+"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/version" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/v/unstable" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/downloads" alt="Total Downloads"></a>
     <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
+</p>
+
+<a href="https://opencollective.com/phplrt/donate?" target="_blank">
+  <img src="https://opencollective.com/phplrt/donate/button@2x.png" width="300" />
+</a>
+
+## Thanks To
+
+<p align="center">
+    <a href="https://www.antlr.org/" target="_blank" rel="nofollow">
+        <img src="/img/thanks/antlr-logo.png" alt="Antlr" height="48" />
+    </a>
+    <a href="https://hoa-project.net/" target="_blank" rel="nofollow">
+        <img src="/img/thanks/hoa.svg" alt="Hoa Project" height="48" />
+    </a>
+    <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="nofollow">
+        <img src="/img/thanks/php-parser.png" alt="nikic/PHP-Parser" height="48" />
+    </a>
+    <a href="https://www.jetbrains.com/" target="_blank" rel="nofollow">
+        <img src="/img/thanks/jetbrains.svg" alt="JetBrains" height="64" />
+    </a>
 </p>
 
 ## Introduction
@@ -19,10 +42,6 @@
 The phplrt is a set of tools for programming languages recognition. The library 
 provides lexer, parser, grammar compiler, library for working with errors, 
 text analysis and so on.
-
-## Documentation
-
-Full documentation can be found here: [https://phplrt.org/](https://phplrt.org/docs/index)
 
 ## Installation
 
@@ -33,7 +52,7 @@ installed using the following command in a root of your project:
 $ composer require phplrt/phplrt
 ```
 
-More detailed installation instructions [are here](https://phplrt.org/docs/installation).
+More detailed installation instructions [are here](/docs/installation).
 
 ## Quick Start
 
@@ -65,7 +84,7 @@ $compiler->load(<<<EBNF
 EBNF);
 ```
 
-**Execution:**
+### Execution
 
 ```php
 echo $compiler->parse('2 + 2');
@@ -83,10 +102,8 @@ echo $compiler->parse('2 + 2');
 //
 ```
 
-**Compilation:**
+### Compilation
 
 ```php
-
-
-echo $compiler->build();
+\file_put_contents(__DIR__ . '/grammar.php', (string)$compiler->build());
 ```
