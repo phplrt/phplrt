@@ -13,22 +13,21 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-before_script:
+install:
   # Initialise Composer
-  - composer self-update -q
   - composer global require hirak/prestissimo
 
   # Installing Composer dependencies
-  - composer install --no-interaction --ignore-platform-reqs --no-suggest --optimize-autoloader
+  - composer update --no-interaction --ignore-platform-reqs --no-suggest --optimize-autoloader
 
   # Installing code coverage tools
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
-after_script:
-  - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
-
 script:
   - composer run security
   - vendor/bin/phpunit --testdox --coverage-clover clover.xml
+
+after_script:
+  - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
