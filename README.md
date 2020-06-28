@@ -28,12 +28,15 @@
     <a href="https://www.antlr.org/" target="_blank" rel="nofollow">
         <img src="https://phplrt.org/img/thanks/antlr-logo.png" alt="Antlr" height="48" />
     </a>
+
     <a href="https://hoa-project.net/" target="_blank" rel="nofollow">
         <img src="https://phplrt.org/img/thanks/hoa.svg" alt="Hoa Project" height="48" />
     </a>
+
     <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="nofollow">
         <img src="https://phplrt.org/img/thanks/php-parser.png" alt="nikic/PHP-Parser" height="48" />
     </a>
+
     <a href="https://www.jetbrains.com/" target="_blank" rel="nofollow">
         <img src="https://phplrt.org/img/thanks/jetbrains.svg" alt="JetBrains" height="64" />
     </a>
