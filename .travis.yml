@@ -24,10 +24,12 @@ install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  - composer require --dev phpstan/phpstan
 
 script:
   - composer run security
   - vendor/bin/phpunit --testdox --coverage-clover clover.xml
+  - vendor/bin/phpstan analyze -l 4 src/Compiler/src src/Grammar/src src/Parser/src src/Source/src src/Exception/src src/Lexer/src src/Position/src src/Visitor/src
 
 after_script:
   - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
