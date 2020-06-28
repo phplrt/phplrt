@@ -65,7 +65,7 @@ installed using the following command in a root of your project:
 $ composer require phplrt/phplrt
 ```
 
-More detailed installation instructions [are here](/docs/installation).
+More detailed installation instructions [are here](https://phplrt.org/#/installation).
 
 ## Quick Start
 
@@ -120,3 +120,7 @@ echo $compiler->parse('2 + 2');
 ```php
 \file_put_contents(__DIR__ . '/grammar.php', (string)$compiler->build());
 ```
+
+## Documentation
+
+- https://phplrt.org/
