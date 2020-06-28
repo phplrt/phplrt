@@ -16,24 +16,26 @@
     <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
 </p>
 
-<a href="https://opencollective.com/phplrt/donate?" target="_blank">
-  <img src="https://opencollective.com/phplrt/donate/button@2x.png" width="300" />
-</a>
+<p align="center">
+    <a href="https://opencollective.com/phplrt/donate?" target="_blank">
+      <img src="https://opencollective.com/phplrt/donate/button@2x.png" width="200" />
+    </a>
+</p>
 
 ## Thanks To
 
 <p align="center">
     <a href="https://www.antlr.org/" target="_blank" rel="nofollow">
-        <img src="/img/thanks/antlr-logo.png" alt="Antlr" height="48" />
+        <img src="https://phplrt.org/img/thanks/antlr-logo.png" alt="Antlr" height="48" />
     </a>
     <a href="https://hoa-project.net/" target="_blank" rel="nofollow">
-        <img src="/img/thanks/hoa.svg" alt="Hoa Project" height="48" />
+        <img src="https://phplrt.org/img/thanks/hoa.svg" alt="Hoa Project" height="48" />
     </a>
     <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="nofollow">
-        <img src="/img/thanks/php-parser.png" alt="nikic/PHP-Parser" height="48" />
+        <img src="https://phplrt.org/img/thanks/php-parser.png" alt="nikic/PHP-Parser" height="48" />
     </a>
     <a href="https://www.jetbrains.com/" target="_blank" rel="nofollow">
-        <img src="/img/thanks/jetbrains.svg" alt="JetBrains" height="64" />
+        <img src="https://phplrt.org/img/thanks/jetbrains.svg" alt="JetBrains" height="64" />
     </a>
 </p>
 
