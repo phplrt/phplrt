@@ -25,6 +25,21 @@ class UnexpectedStateException extends LexerRuntimeException
     private const ERROR_UNEXPECTED_STATE = 'Unrecognized token state #%s';
 
     /**
+     * @var string
+     */
+    private const ERROR_NO_STATES = 'No state defined for the selected multistate lexer';
+
+    /**
+     * @param ReadableInterface $src
+     * @param \Throwable|null $e
+     * @return static
+     */
+    public static function fromEmptyStates(ReadableInterface $src, \Throwable $e = null): self
+    {
+        return new static(self::ERROR_NO_STATES, $src, null, $e);
+    }
+
+    /**
      * @param $state
      * @param ReadableInterface $src
      * @param TokenInterface|null $tok

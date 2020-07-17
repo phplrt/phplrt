@@ -19,18 +19,15 @@ use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
 use Phplrt\Source\File;
 
-/**
- * Class Multistate
- */
 class Multistate implements LexerInterface
 {
     /**
      * @var array|LexerInterface[]
      */
-    private array $states;
+    private array $states = [];
 
     /**
-     * @var int|string
+     * @var int|string|null
      */
     private $state;
 
@@ -40,22 +37,57 @@ class Multistate implements LexerInterface
     private array $transitions;
 
     /**
-     * Multistate constructor.
-     *
      * @param array|LexerInterface[] $states
      * @param array $transitions
      * @param int|string|null $state
      */
     public function __construct(array $states, array $transitions = [], $state = null)
     {
-        $mapper = static function ($data) {
-            return $data instanceof LexerInterface ? $data : new Lexer($data);
-        };
-
-        $this->states = \array_map($mapper, $states);
+        foreach ($states as $name => $data) {
+            $this->withState($name, $data);
+        }
 
         $this->transitions = $transitions;
-        $this->state = $state ?? \count($states) ? \array_key_first($states) : 0;
+        $this->state = $state;
+    }
+
+    /**
+     * @param string|int|null $state
+     * @return $this
+     */
+    public function startsWith($state): self
+    {
+        assert(\is_string($state) || \is_int($state) || $state === null);
+
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * @param string|int $name
+     * @param array|LexerInterface $data
+     * @return $this
+     */
+    public function withState($name, $data): self
+    {
+        assert(\is_string($name) || \is_int($name));
+        assert(\is_array($data) || $data instanceof LexerInterface);
+
+        $this->states[$name] = $data instanceof LexerInterface ? $data : new Lexer($data);
+
+        return $this;
+    }
+
+    /**
+     * @param string|int $name
+     * @return $this
+     */
+    public function withoutState($name): self
+    {
+        unset($this->states[$name]);
+
+        return $this;
     }
 
     /**
@@ -81,12 +113,29 @@ class Multistate implements LexerInterface
 
     /**
      * @param ReadableInterface $source
+     * @return void
+     */
+    private function boot(ReadableInterface $source): void
+    {
+        if (\count($this->states) === 0) {
+            throw UnexpectedStateException::fromEmptyStates($source);
+        }
+
+        if ($this->state === null) {
+            $this->state = \array_key_first($this->states);
+        }
+    }
+
+    /**
+     * @param ReadableInterface $source
      * @param int $offset
      * @return \Generator
      * @throws RuntimeExceptionInterface
      */
     private function run(ReadableInterface $source, int $offset): \Generator
     {
+        $this->boot($source);
+
         execution:
 
         /**
