@@ -108,7 +108,9 @@ class Multistate implements LexerInterface
      */
     public function lex($source, int $offset = 0): iterable
     {
-        return $this->run(File::new($source), $offset);
+        $this->boot($source = File::new($source));
+
+        yield from $this->run($source, $offset);
     }
 
     /**
@@ -134,77 +136,66 @@ class Multistate implements LexerInterface
      */
     private function run(ReadableInterface $source, int $offset): \Generator
     {
-        $this->boot($source);
-
-        execution:
-
-        /**
-         * We save the offset for the state to prevent endless transitions
-         * in the future.
-         *
-         * @noinspection IssetArgumentExistenceInspection
-         */
-        $states[$state ?? $state = $this->state] = $offset;
-
-        /**
-         * Checking the existence of the current state.
-         */
-        if (! isset($this->states[$state])) {
-            /** @noinspection IssetArgumentExistenceInspection */
-            throw UnexpectedStateException::fromState($state, $source, $token ?? null);
-        }
-
-        $stream = $this->states[$state]->lex($source, $offset);
-
-        /**
-         * This cycle is necessary in order to capture the last token,
-         * because in PHP, "local "loop variables have a function scope.
-         *
-         * That is, the "$token" variable will be available in the future.
-         */
-        foreach ($stream as $token) {
-            yield $token;
-
-            if ($token->getName() === TokenInterface::END_OF_INPUT) {
-                return;
-            }
+        do {
+            $completed = true;
 
             /**
-             * If there is a transition, then update the data and start lexing again.
-             *
-             * @var int|string $next
+             * We save the offset for the state to prevent endless transitions
+             * in the future.
              */
-            if (($next = ($this->transitions[$state][$token->getName()] ?? null)) !== null) {
-                /**
-                 * If at least one token has been returned at the moment, then
-                 * further analysis should be continued already from the
-                 * desired offset and state.
-                 */
-                $state = $next;
+            $states[$state ?? $state = $this->state] = $offset;
 
-                $offset = $token->getBytes() + $token->getOffset();
+            /**
+             * Checking the existence of the current state.
+             */
+            if (! isset($this->states[$state])) {
+                /** @noinspection IssetArgumentExistenceInspection */
+                throw UnexpectedStateException::fromState($state, $source, $token ?? null);
+            }
 
-                /**
-                 * If the same offset is repeatedly detected for this state,
-                 * then at this stage there was an entrance to an endless cycle.
-                 */
-                if (($states[$state] ?? null) === $offset) {
-                    throw EndlessRecursionException::fromState($state, $source, $token ?? null);
+            $stream = $this->states[$state]->lex($source, $offset);
+
+            /**
+             * This cycle is necessary in order to capture the last token,
+             * because in PHP, "local "loop variables have a function scope.
+             *
+             * That is, the "$token" variable will be available in the future.
+             */
+            foreach ($stream as $token) {
+                yield $token;
+
+                if ($token->getName() === TokenInterface::END_OF_INPUT) {
+                    return;
                 }
 
                 /**
-                 * The label expression used to reduce recursive invocation, like:
+                 * If there is a transition, then update the data and start lexing again.
                  *
-                 * <code>
-                 *  yield from $this->execute($src, $state, $content, $offset);
-                 * </code>
-                 *
-                 * In this case, the call stack remains unchanged and cannot be
-                 * overflowed. Otherwise, you may get an error like:
-                 * "Maximum function nesting level of '100' reached, aborting!".
+                 * @var int|string $next
                  */
-                goto execution;
+                if (($next = ($this->transitions[$state][$token->getName()] ?? null)) !== null) {
+                    /**
+                     * If at least one token has been returned at the moment, then
+                     * further analysis should be continued already from the
+                     * desired offset and state.
+                     */
+                    $state = $next;
+
+                    $offset = $token->getBytes() + $token->getOffset();
+
+                    /**
+                     * If the same offset is repeatedly detected for this state,
+                     * then at this stage there was an entrance to an endless cycle.
+                     */
+                    if (($states[$state] ?? null) === $offset) {
+                        throw EndlessRecursionException::fromState($state, $source, $token ?? null);
+                    }
+
+                    $completed = false;
+
+                    continue 2;
+                }
             }
-        }
+        } while (! $completed);
     }
 }
