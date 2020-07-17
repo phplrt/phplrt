@@ -50,7 +50,7 @@ interface MutableLexerInterface
     public function skip(string ...$tokens): self;
 
     /**
-     * @param string $tokens
+     * @param string ...$tokens
      * @return MutableLexerInterface|$this
      */
     public function remove(string ...$tokens): self;
