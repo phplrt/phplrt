@@ -18,6 +18,8 @@ parameters:
             symplify/monorepo-builder: '^6.0|^7.0'
             sensiolabs/security-checker: '^6.0'
     directories_to_repositories:
+        # Docs
+        docs: 'git@github.com:phplrt/docs.git'
         # Packages
         src/Compiler: 'git@github.com:phplrt/compiler.git'
         src/Exception: 'git@github.com:phplrt/exception.git'

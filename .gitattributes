@@ -1,10 +1,12 @@
-* text=auto
-*.pp linguist-language=EBNF
-*.pp2 linguist-language=EBNF
+* text=auto eol=lf
+*.pp eol=lf linguist-language=EBNF
+*.pp2 eol=lf linguist-language=EBNF
 
+*.php text eol=lf
 
 /.github export-ignore
 /tests export-ignore
+/docs export-ignore
 
 .editorconfig export-ignore
 .gitattributes export-ignore
