@@ -9,15 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests;
+namespace Phplrt\Lexer\Tests\Buffer;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Lexer\Token\Token;
 
-/**
- * Class BufferTestCase
- */
 abstract class BufferTestCase extends TestCase
 {
     /**

@@ -9,15 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests;
+namespace Phplrt\Lexer\Tests\Buffer;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Lexer\Buffer\LazyBuffer;
+use Phplrt\Lexer\Buffer\ArrayBuffer;
 
-/**
- * Class LazyBufferTestCase
- */
-class LazyBufferTestCase extends BufferTestCase
+class ArrayBufferTestCase extends BufferTestCase
 {
     /**
      * @param iterable $tokens
@@ -25,6 +22,6 @@ class LazyBufferTestCase extends BufferTestCase
      */
     protected function create(iterable $tokens): BufferInterface
     {
-        return new LazyBuffer($tokens);
+        return new ArrayBuffer($tokens);
     }
 }

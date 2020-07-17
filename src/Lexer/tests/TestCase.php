@@ -14,9 +14,6 @@ namespace Phplrt\Lexer\Tests;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use PHPUnit\Framework\TestCase as BastTestCase;
 
-/**
- * Class TestCase
- */
 abstract class TestCase extends BastTestCase
 {
     /**

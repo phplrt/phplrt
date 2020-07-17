@@ -16,9 +16,6 @@ use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\EndOfInput;
 
-/**
- * Class SimpleLexerTestCase
- */
 class SimpleLexerTestCase extends TestCase
 {
     /**
