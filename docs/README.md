@@ -20,17 +20,17 @@
 
 <p align="center">
     <a href="https://www.antlr.org/" target="_blank" rel="nofollow">
-        <img src="/img/thanks/antlr-logo.png" alt="Antlr" style="height: 48px; margin: 0 20px" />
+        <img src="https://phplrt.org/img/thanks/antlr-logo.png" alt="Antlr" style="height: 48px; margin: 0 20px" />
     </a>
     <a href="https://hoa-project.net/" target="_blank" rel="nofollow">
-        <img src="/img/thanks/hoa.svg" alt="Hoa Project" style="height: 48px; margin: 0 20px" />
+        <img src="https://phplrt.org/img/thanks/hoa.svg" alt="Hoa Project" style="height: 48px; margin: 0 20px" />
     </a>
     <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="nofollow">
-        <img src="/img/thanks/php-parser.png" alt="nikic/PHP-Parser" style="height: 48px; margin: 0 20px" />
+        <img src="https://phplrt.org/img/thanks/php-parser.png" alt="nikic/PHP-Parser" style="height: 48px; margin: 0 20px" />
     </a>
     <a href="https://www.jetbrains.com/" target="_blank" rel="nofollow">
-            <img src="/img/thanks/jetbrains.svg" alt="JetBrains" style="height: 64px; margin: 0 20px" />
-        </a>
+        <img src="https://phplrt.org/img/thanks/jetbrains.svg" alt="JetBrains" style="height: 64px; margin: 0 20px" />
+    </a>
 </p>
 
 ## Introduction
@@ -48,7 +48,7 @@ installed using the following command in a root of your project:
 $ composer require phplrt/phplrt
 ```
 
-More detailed installation instructions [are here](/docs/installation).
+More detailed installation instructions [are here](/installation).
 
 ## Quick Start
 
