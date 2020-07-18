@@ -40,7 +40,7 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param array|TokenInterface[] $tokens
-     * @return static
+     * @return self
      */
     public static function fromArray(array $tokens): self
     {
@@ -48,7 +48,7 @@ class Composite extends Token implements CompositeTokenInterface
 
         $first = \array_shift($tokens);
 
-        return new static($first->getName(), $first->getValue(), $first->getOffset(), $tokens);
+        return new self($first->getName(), $first->getValue(), $first->getOffset(), $tokens);
     }
 
     /**

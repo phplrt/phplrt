@@ -44,7 +44,7 @@ class Multistate implements LexerInterface
     public function __construct(array $states, array $transitions = [], $state = null)
     {
         foreach ($states as $name => $data) {
-            $this->withState($name, $data);
+            $this->setState($name, $data);
         }
 
         $this->transitions = $transitions;
@@ -57,7 +57,7 @@ class Multistate implements LexerInterface
      */
     public function startsWith($state): self
     {
-        assert(\is_string($state) || \is_int($state) || $state === null);
+        assert(\is_string($state) || \is_int($state) || $state === null); /** @phpstan-ignore-line */
 
         $this->state = $state;
 
@@ -69,10 +69,10 @@ class Multistate implements LexerInterface
      * @param array|LexerInterface $data
      * @return $this
      */
-    public function withState($name, $data): self
+    public function setState($name, $data): self
     {
-        assert(\is_string($name) || \is_int($name));
-        assert(\is_array($data) || $data instanceof LexerInterface);
+        assert(\is_string($name) || \is_int($name)); /** @phpstan-ignore-line */
+        assert(\is_array($data) || $data instanceof LexerInterface); /** @phpstan-ignore-line */
 
         $this->states[$name] = $data instanceof LexerInterface ? $data : new Lexer($data);
 
@@ -83,7 +83,7 @@ class Multistate implements LexerInterface
      * @param string|int $name
      * @return $this
      */
-    public function withoutState($name): self
+    public function removeState($name): self
     {
         unset($this->states[$name]);
 
@@ -136,6 +136,8 @@ class Multistate implements LexerInterface
      */
     private function run(ReadableInterface $source, int $offset): \Generator
     {
+        $state = null; // PHPStan bugfix
+
         do {
             $completed = true;
 

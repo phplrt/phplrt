@@ -21,7 +21,6 @@ use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Multistate;
-use Phplrt\Parser\BuilderInterface;
 use Phplrt\Parser\Parser;
 use Phplrt\Source\File;
 use Phplrt\Visitor\Traverser;
@@ -43,9 +42,9 @@ class Compiler implements ParserInterface
     private Analyzer $analyzer;
 
     /**
-     * @var Traverser
+     * @var TraverserInterface
      */
-    private $preloader;
+    private TraverserInterface $preloader;
 
     /**
      * Compiler constructor.

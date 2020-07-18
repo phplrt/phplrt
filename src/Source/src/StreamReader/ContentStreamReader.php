@@ -64,11 +64,7 @@ class ContentStreamReader implements StreamReaderInterface
     public function getStream()
     {
         /** @var resource $memory */
-        $memory = @\fopen(self::MEMORY_FILENAME, self::MEMORY_MODE);
-
-        if ($memory === false) {
-            throw new NotAccessibleException(self::ERROR_MEMORY_OPENING);
-        }
+        $memory = \fopen(self::MEMORY_FILENAME, self::MEMORY_MODE);
 
         if (@\fwrite($memory, $this->content) === false) {
             throw new NotAccessibleException(self::ERROR_MEMORY_WRITING);

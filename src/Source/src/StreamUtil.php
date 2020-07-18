@@ -49,9 +49,11 @@ final class StreamUtil
      */
     public static function serialize($resource): array
     {
-        $meta = \stream_get_meta_data($resource);
+        \error_clear_last();
 
-        if ($meta === false) {
+        $meta = @\stream_get_meta_data($resource);
+
+        if (\error_get_last()) {
             return [];
         }
 

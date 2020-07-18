@@ -12,6 +12,7 @@
     },
     "require-dev": {
         "laminas/laminas-diactoros": "~2.2",
+        "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^7.5|^8.0",
         "psr/http-message": "~1.0",
         "sensiolabs/security-checker": "^6.0",
@@ -68,10 +69,11 @@
         "phplrt/visitor": "self.version"
     },
     "scripts": {
-        "phpcbf": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf -p --standard=PSR12 src",
-        "security": "@php vendor/sensiolabs/security-checker/security-checker security:check ./composer.lock",
-        "split": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder split",
-        "merge": "@php vendor/symplify/monorepo-builder/bin/monorepo-builder merge"
+        "phpcbf": "phpcbf -p --standard=PSR12 src",
+        "security": "security-checker security:check ./composer.lock",
+        "split": "monorepo-builder split",
+        "merge": "monorepo-builder merge",
+        "phpstan": "phpstan analyze -l 4 src/Compiler/src src/Grammar/src src/Parser/src src/Source/src src/Exception/src src/Lexer/src src/Position/src src/Visitor/src"
     },
     "config": {
         "sort-packages": true

@@ -30,7 +30,7 @@ interface NodeInterface extends \IteratorAggregate
      * Returns the list of children nodes.
      *
      * @see \IteratorAggregate::getIterator()
-     * @return \Traversable|NodeInterface[]
+     * @return \Traversable|NodeInterface[]|array[]
      */
     public function getIterator(): \Traversable;
 }

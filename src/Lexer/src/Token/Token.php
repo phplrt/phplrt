@@ -53,7 +53,7 @@ class Token extends BaseToken
      */
     public static function empty(): TokenInterface
     {
-        return new static(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
+        return new self(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
     }
 
     /**

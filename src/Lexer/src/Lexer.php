@@ -75,8 +75,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param string ...$names
-     * @return MutableLexerInterface|$this
+     * {@inheritDoc}
      */
     public function skip(string ...$names): self
     {

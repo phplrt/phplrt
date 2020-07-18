@@ -58,9 +58,9 @@ class IdCollection extends Visitor
 
     /**
      * @param string $name
-     * @return int|string|null
+     * @return bool|null
      */
-    public function rule(string $name)
+    public function rule(string $name): ?bool
     {
         return $this->rules[$name] ?? null;
     }

@@ -73,7 +73,7 @@ trait FactoryTrait
 
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @return Position
+     * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */

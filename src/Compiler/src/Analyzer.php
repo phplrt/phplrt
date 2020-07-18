@@ -49,7 +49,7 @@ class Analyzer extends Visitor
     public const PRAGMA_ROOT = 'root';
 
     /**
-     * @var array|RuleInterface
+     * @var array|RuleInterface[]
      */
     public array $rules = [];
 
@@ -59,14 +59,14 @@ class Analyzer extends Visitor
     public array $reducers = [];
 
     /**
-     * @var array|string[]
+     * @var array|string[][]
      */
     public array $tokens = [
         self::STATE_DEFAULT => [],
     ];
 
     /**
-     * @var array|string[]
+     * @var array|string[][]
      */
     public array $transitions = [];
 
@@ -256,7 +256,7 @@ class Analyzer extends Visitor
                 return $this->ruleRelation($statement);
 
             default:
-                $error = \sprintf('Unsupported statement %s', \class_basename($statement));
+                $error = \sprintf('Unsupported statement %s', \get_class($statement));
 
                 throw new GrammarException($error, $statement->file, $statement->offset);
         }

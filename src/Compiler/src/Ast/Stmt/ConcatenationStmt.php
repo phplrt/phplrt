@@ -22,12 +22,12 @@ class ConcatenationStmt extends Statement
     /**
      * @var Statement[]
      */
-    public $statements = [];
+    public array $statements = [];
 
     /**
      * Sequence constructor.
      *
-     * @param array $statements
+     * @param array|Statement[] $statements
      */
     public function __construct(array $statements)
     {
@@ -35,10 +35,12 @@ class ConcatenationStmt extends Statement
     }
 
     /**
-     * @return \Traversable|NodeInterface[]
+     * @return \Traversable|NodeInterface[][]|Statement[][]
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator(['statements' => $this->statements]);
+        return new \ArrayIterator([
+            'statements' => $this->statements
+        ]);
     }
 }

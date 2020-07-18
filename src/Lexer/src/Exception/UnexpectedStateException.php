@@ -40,7 +40,7 @@ class UnexpectedStateException extends LexerRuntimeException
     }
 
     /**
-     * @param $state
+     * @param string|int $state
      * @param ReadableInterface $src
      * @param TokenInterface|null $tok
      * @param \Throwable|null $e

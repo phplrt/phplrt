@@ -30,7 +30,7 @@ class SampleNode implements NodeInterface
     private string $state;
 
     /**
-     * @var array|SampleNode[]
+     * @var array|SampleNode[]|TokenInterface[]
      */
     public array $children;
 
@@ -49,7 +49,7 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @return \Traversable|SampleNode[][]
+     * @return \Traversable|SampleNode[][]|TokenInterface[][]
      */
     public function getIterator(): \Traversable
     {

@@ -37,10 +37,10 @@ class Repetition extends Production
      * Repetition constructor.
      *
      * @param int|string $rule
-     * @param int|float $gte
+     * @param int $gte
      * @param int|float $lte
      */
-    public function __construct($rule, int $gte = 0, float $lte = \INF)
+    public function __construct($rule, int $gte = 0, $lte = \INF)
     {
         \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
 

@@ -23,7 +23,7 @@ abstract class Production extends Rule implements ProductionInterface
     /**
      * @param array|NodeInterface[] $children
      * @param iterable|NodeInterface|TokenInterface $result
-     * @return array|NodeInterface[]
+     * @return array|NodeInterface[]|TokenInterface[]
      */
     protected function mergeWith(array $children, $result): array
     {

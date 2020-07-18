@@ -17,6 +17,7 @@ parameters:
             symfony/var-dumper: '~3.4|~4.0|~5.0'
             symplify/monorepo-builder: '^6.0|^7.0'
             sensiolabs/security-checker: '^6.0'
+            phpstan/phpstan: '^0.12'
     directories_to_repositories:
         # Docs
         docs: 'git@github.com:phplrt/docs.git'

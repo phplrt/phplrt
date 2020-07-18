@@ -41,7 +41,7 @@ class Markers extends Driver
      * @param array $tokens
      * @param ReadableInterface $source
      * @param int $offset
-     * @return iterable|TokenInterface[]|string
+     * @return iterable|TokenInterface[]
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable
     {

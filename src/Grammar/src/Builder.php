@@ -158,7 +158,7 @@ class Builder implements \IteratorAggregate
      */
     public function add(RuleInterface $rule, $id = null)
     {
-        \assert($id === null || \is_int($id) || \is_string($id));
+        \assert($id === null || \is_int($id) || \is_string($id)); /** @phpstan-ignore-line */
 
         if ($id === null) {
             $this->grammar[] = $rule;

@@ -61,7 +61,7 @@ class Traverser implements TraverserInterface
      *
      * @param array|VisitorInterface[] $visitors
      */
-    public function __construct(array $visitors = [])
+    final public function __construct(array $visitors = [])
     {
         $this->visitors = $visitors;
     }
