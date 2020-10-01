@@ -12,10 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Renderer;
 
 use Laminas\Code\Generator\ValueGenerator;
-
-/**
- * Class LaminasRenderer
- */
 class LaminasRenderer extends Renderer
 {
     /**

@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Compiler;
 
 use Phplrt\Lexer\Exception\CompilationException;
 
-/**
- * Class PCRECompiler
- */
 abstract class PCRECompiler implements CompilerInterface
 {
     /**

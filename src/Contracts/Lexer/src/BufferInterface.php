@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
-/**
- * Interface BufferInterface
- */
 interface BufferInterface extends \SeekableIterator
 {
     /**

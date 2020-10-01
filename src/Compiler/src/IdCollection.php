@@ -15,10 +15,6 @@ use Phplrt\Visitor\Visitor;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Contracts\Ast\NodeInterface;
-
-/**
- * Class IdCollection
- */
 class IdCollection extends Visitor
 {
     /**

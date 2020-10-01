@@ -17,9 +17,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
 
-/**
- * Class Markers
- */
 class Markers extends Driver
 {
     /**

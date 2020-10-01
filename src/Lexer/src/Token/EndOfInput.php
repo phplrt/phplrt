@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-/**
- * Class EndOfInput
- */
 final class EndOfInput extends BaseToken
 {
     /**

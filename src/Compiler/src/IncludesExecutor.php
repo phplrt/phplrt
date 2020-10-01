@@ -18,10 +18,6 @@ use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Source\Exception\NotAccessibleException;
-
-/**
- * Class IncludesExecutor
- */
 class IncludesExecutor extends Visitor
 {
     /**

@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Buffer;
 
-/**
- * Class ExtrusiveBuffer
- */
 class ExtrusiveBuffer extends LazyBuffer
 {
     /**

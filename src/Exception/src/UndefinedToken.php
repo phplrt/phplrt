@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Position\PositionInterface;
+use Phplrt\Contracts\Position\PositionInterface;
 
 /**
  * @internal This class can be used for internal representation of exceptions

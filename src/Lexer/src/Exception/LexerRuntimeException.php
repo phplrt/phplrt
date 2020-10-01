@@ -15,9 +15,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\RuntimeException;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class LexerRuntimeException
- */
 abstract class LexerRuntimeException extends RuntimeException implements LexerExceptionInterface
 {
     /**

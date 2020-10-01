@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class BaseToken
- */
 abstract class BaseToken implements TokenInterface, \JsonSerializable
 {
     /**

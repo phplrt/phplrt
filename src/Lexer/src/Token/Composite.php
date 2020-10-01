@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class Composite
- */
 class Composite extends Token implements CompositeTokenInterface
 {
     /**

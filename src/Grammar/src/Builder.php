@@ -13,9 +13,6 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
 
-/**
- * Class Generator
- */
 class Builder implements \IteratorAggregate
 {
     /**

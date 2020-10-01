@@ -13,9 +13,6 @@ namespace Phplrt\Source\StreamReader;
 
 use Phplrt\Source\StreamUtil;
 
-/**
- * Class StreamReader
- */
 class StreamReader implements StreamReaderInterface
 {
     /**

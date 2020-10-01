@@ -15,10 +15,6 @@ use Phplrt\Position\Position;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
-
-/**
- * Class GrammarException
- */
 class GrammarException extends \LogicException
 {
     /**

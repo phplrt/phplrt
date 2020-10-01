@@ -13,9 +13,6 @@ namespace Phplrt\Source\StreamReader;
 
 use Phplrt\Source\Exception\NotAccessibleException;
 
-/**
- * Class ContentStreamReader
- */
 class ContentStreamReader implements StreamReaderInterface
 {
     /**

@@ -11,23 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
+use Phplrt\Contracts\Position\PositionInterface as PositionContract;
+
 /**
- * Interface PositionInterface
+ * @deprecated since 3.2 and will be removed in 4.0. Please use {@see PositionContract} instead.
  */
-interface PositionInterface
+interface PositionInterface extends PositionContract
 {
-    /**
-     * @return int
-     */
-    public function getOffset(): int;
-
-    /**
-     * @return int
-     */
-    public function getLine(): int;
-
-    /**
-     * @return int
-     */
-    public function getColumn(): int;
 }

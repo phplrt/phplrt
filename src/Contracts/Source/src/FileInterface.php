@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Source;
 
-/**
- * Interface FileInterface
- */
 interface FileInterface extends ReadableInterface
 {
     /**

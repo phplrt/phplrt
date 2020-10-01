@@ -15,9 +15,6 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Grammar\ProductionInterface;
 
-/**
- * Class Production
- */
 abstract class Production extends Rule implements ProductionInterface
 {
     /**

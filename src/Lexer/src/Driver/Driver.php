@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Driver;
 
 use Phplrt\Lexer\Compiler\CompilerInterface;
 
-/**
- * Class Driver
- */
 abstract class Driver implements DriverInterface
 {
     /**

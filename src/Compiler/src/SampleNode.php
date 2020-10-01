@@ -13,10 +13,6 @@ namespace Phplrt\Compiler;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-
-/**
- * Class SampleNode
- */
 class SampleNode implements NodeInterface
 {
     /**

@@ -15,9 +15,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class EndlessRecursionException
- */
 class EndlessRecursionException extends UnexpectedStateException
 {
     /**

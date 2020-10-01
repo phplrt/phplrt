@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Contracts\\Exception\\": "src/"
+            "Phplrt\\Contracts\\Exception\\": "src"
         }
     },
     "extra": {

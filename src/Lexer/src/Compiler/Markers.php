@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Compiler;
 
-/**
- * Class MarkersCompiler
- */
 class Markers extends PCRECompiler
 {
     /**

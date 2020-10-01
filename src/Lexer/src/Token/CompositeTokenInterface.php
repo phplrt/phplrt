@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Interface CompositeTokenInterface
- */
 interface CompositeTokenInterface extends TokenInterface, \IteratorAggregate, \Countable, \ArrayAccess
 {
 }

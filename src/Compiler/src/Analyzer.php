@@ -32,10 +32,6 @@ use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Source\Exception\NotAccessibleException;
-
-/**
- * Class Analyzer
- */
 class Analyzer extends Visitor
 {
     /**

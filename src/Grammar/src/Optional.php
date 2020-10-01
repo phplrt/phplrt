@@ -13,9 +13,6 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
 
-/**
- * Class Optional
- */
 class Optional extends Production
 {
     /**

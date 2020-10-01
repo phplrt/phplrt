@@ -13,9 +13,6 @@ namespace Phplrt\Lexer\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class LazyBuffer
- */
 class LazyBuffer extends Buffer
 {
     /**

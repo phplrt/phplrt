@@ -15,9 +15,6 @@ use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\MemoizableInterface;
 use Phplrt\Source\StreamUtil;
 
-/**
- * Class StreamContentReader
- */
 class StreamContentReader implements ContentReaderInterface, MemoizableInterface
 {
     /**

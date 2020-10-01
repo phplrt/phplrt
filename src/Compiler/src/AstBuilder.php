@@ -15,10 +15,6 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\BuilderInterface;
 use Phplrt\Parser\ContextInterface;
-
-/**
- * Class AstBuilder
- */
 class AstBuilder implements BuilderInterface
 {
     /**

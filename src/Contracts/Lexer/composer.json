@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Contracts\\Lexer\\": "src/"
+            "Phplrt\\Contracts\\Lexer\\": "src"
         }
     },
     "extra": {

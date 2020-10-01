@@ -14,9 +14,6 @@ namespace Phplrt\Source\ContentReader;
 use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\MemoizableInterface;
 
-/**
- * Class FileContentReader
- */
 class FileContentReader implements ContentReaderInterface, MemoizableInterface
 {
     /**

@@ -13,9 +13,6 @@ namespace Phplrt\Exception\Tests;
 
 use PHPUnit\Framework\TestCase as BastTestCase;
 
-/**
- * Class TestCase
- */
 abstract class TestCase extends BastTestCase
 {
 

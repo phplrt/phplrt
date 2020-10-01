@@ -14,9 +14,6 @@ namespace Phplrt\Lexer\Driver;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-/**
- * Interface DriverInterface
- */
 interface DriverInterface
 {
     /**

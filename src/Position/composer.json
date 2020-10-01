@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
+        "phplrt/position-contracts": "^3.2",
         "phplrt/source": "^3.2"
     },
     "autoload": {
@@ -31,6 +32,9 @@
         "psr-4": {
             "Phplrt\\Position\\Tests\\": "tests"
         }
+    },
+    "provide": {
+        "phplrt/position-contracts-implementation": "^3.0"
     },
     "extra": {
         "branch-alias": {

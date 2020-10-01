@@ -14,9 +14,6 @@ namespace Phplrt\Contracts\Exception;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-/**
- * Interface RuntimeExceptionInterface
- */
 interface RuntimeExceptionInterface extends \Throwable
 {
     /**

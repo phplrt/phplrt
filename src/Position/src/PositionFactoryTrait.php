@@ -11,14 +11,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
+use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Source\File;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 
-/**
- * Trait FactoryTrait
- */
-trait FactoryTrait
+trait PositionFactoryTrait
 {
     /**
      * @param ReadableInterface|string|resource|mixed $source

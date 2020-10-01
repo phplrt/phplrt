@@ -13,9 +13,6 @@ namespace Phplrt\Position\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
-/**
- * Class TestCase
- */
 abstract class TestCase extends BaseTestCase
 {
     /**

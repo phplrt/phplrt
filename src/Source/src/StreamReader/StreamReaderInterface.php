@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\StreamReader;
 
-/**
- * Interface StreamReaderInterface
- */
 interface StreamReaderInterface
 {
     /**

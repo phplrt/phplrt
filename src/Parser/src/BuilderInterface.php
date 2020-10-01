@@ -14,9 +14,6 @@ namespace Phplrt\Parser;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Interface BuilderInterface
- */
 interface BuilderInterface
 {
     /**

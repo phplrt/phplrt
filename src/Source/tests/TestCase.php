@@ -15,9 +15,6 @@ use Laminas\Diactoros\StreamFactory;
 use Phplrt\Source\File;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
-/**
- * Class TestCase
- */
 abstract class TestCase extends BaseTestCase
 {
     /**

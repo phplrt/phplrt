@@ -15,9 +15,6 @@ use Phplrt\Position\Position;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-/**
- * Class OffsetTestCase
- */
 class OffsetTestCase extends TestCase
 {
     /**

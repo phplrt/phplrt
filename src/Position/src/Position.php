@@ -11,12 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
-/**
- * Class Position
- */
+use Phplrt\Contracts\Position\PositionInterface;
+
 class Position implements PositionInterface
 {
-    use FactoryTrait;
+    use PositionFactoryTrait;
 
     /**
      * @var int
@@ -71,7 +70,7 @@ class Position implements PositionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function getOffset(): int
     {
@@ -79,7 +78,7 @@ class Position implements PositionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function getLine(): int
     {
@@ -87,7 +86,7 @@ class Position implements PositionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritDoc}
      */
     public function getColumn(): int
     {

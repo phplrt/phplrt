@@ -13,9 +13,6 @@ namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
-/**
- * Class LineReader
- */
 class LineReader
 {
     /**

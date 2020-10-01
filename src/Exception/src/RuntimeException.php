@@ -16,12 +16,9 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
-use Phplrt\Position\PositionInterface;
+use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Source\File;
 
-/**
- * Class RuntimeException
- */
 abstract class RuntimeException extends \RuntimeException implements RuntimeExceptionInterface
 {
     /**

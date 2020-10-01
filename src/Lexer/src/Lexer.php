@@ -21,9 +21,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 
-/**
- * Class Lexer
- */
 class Lexer implements LexerInterface, MutableLexerInterface
 {
     /**

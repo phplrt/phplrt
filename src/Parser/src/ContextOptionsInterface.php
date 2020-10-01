@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-/**
- * Interface ContextOptionsInterface
- */
 interface ContextOptionsInterface
 {
     /**

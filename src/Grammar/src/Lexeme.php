@@ -14,9 +14,6 @@ namespace Phplrt\Grammar;
 use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer;
 
-/**
- * Class Lexeme
- */
 class Lexeme extends Terminal
 {
     /**

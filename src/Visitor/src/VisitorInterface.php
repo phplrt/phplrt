@@ -13,9 +13,6 @@ namespace Phplrt\Visitor;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 
-/**
- * Interface VisitorInterface
- */
 interface VisitorInterface
 {
     /**

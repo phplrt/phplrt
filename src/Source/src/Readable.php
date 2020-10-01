@@ -15,9 +15,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\ContentReader\ContentReaderInterface;
 use Phplrt\Source\StreamReader\StreamReaderInterface;
 
-/**
- * Class Readable
- */
 class Readable implements ReadableInterface, MemoizableInterface
 {
     use FactoryTrait;

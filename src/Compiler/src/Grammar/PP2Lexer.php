@@ -12,10 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Grammar;
 
 use Phplrt\Lexer\Lexer;
-
-/**
- * Class PP2Lexer
- */
 final class PP2Lexer extends Lexer
 {
     /**

@@ -14,9 +14,7 @@ namespace Phplrt\Exception\Tests;
 use Phplrt\Exception\LineReader;
 use Phplrt\Source\File;
 
-/**
- * Class LineReaderTestCase
- */
+
 class LineReaderTestCase extends TestCase
 {
     /**

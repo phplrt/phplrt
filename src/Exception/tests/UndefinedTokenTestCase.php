@@ -15,9 +15,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Exception\UndefinedToken;
 use Phplrt\Position\Position;
 
-/**
- * Class UndefinedTokenTestCase
- */
 class UndefinedTokenTestCase extends TestCase
 {
     /**

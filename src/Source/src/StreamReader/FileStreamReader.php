@@ -13,9 +13,6 @@ namespace Phplrt\Source\StreamReader;
 
 use Phplrt\Source\Exception\NotReadableException;
 
-/**
- * Class FileStreamReader
- */
 class FileStreamReader implements StreamReaderInterface
 {
     /**

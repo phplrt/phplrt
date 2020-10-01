@@ -17,9 +17,6 @@ use Phplrt\Visitor\VisitorInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use PHPUnit\Framework\TestCase as BastTestCase;
 
-/**
- * Class TestCase
- */
 abstract class TestCase extends BastTestCase
 {
     /**

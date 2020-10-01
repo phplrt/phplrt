@@ -13,9 +13,6 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
 
-/**
- * Class Repetition
- */
 class Repetition extends Production
 {
     /**

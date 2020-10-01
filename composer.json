@@ -72,8 +72,7 @@
         "phpcbf": "phpcbf -p --standard=PSR12 src",
         "security": "security-checker security:check ./composer.lock",
         "split": "monorepo-builder split",
-        "merge": "monorepo-builder merge",
-        "phpstan": "phpstan analyze -l 4 src/Compiler/src src/Grammar/src src/Parser/src src/Source/src src/Exception/src src/Lexer/src src/Position/src src/Visitor/src"
+        "merge": "monorepo-builder merge"
     },
     "config": {
         "sort-packages": true

@@ -22,9 +22,6 @@ use Phplrt\Source\StreamReader\ContentStreamReader;
 use Phplrt\Source\StreamReader\StreamReader;
 use Psr\Http\Message\StreamInterface;
 
-/**
- * Trait FactoryTrait
- */
 trait FactoryTrait
 {
     /**

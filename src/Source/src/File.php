@@ -19,9 +19,6 @@ use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\StreamReader\FileStreamReader;
 use Phplrt\Source\StreamReader\StreamReaderInterface;
 
-/**
- * Class File
- */
 class File extends Readable implements FileInterface
 {
     /**

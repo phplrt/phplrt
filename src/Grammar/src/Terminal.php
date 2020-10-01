@@ -13,9 +13,6 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Grammar\TerminalInterface;
 
-/**
- * Class Terminal
- */
 abstract class Terminal extends Rule implements TerminalInterface
 {
     /**

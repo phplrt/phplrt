@@ -16,9 +16,6 @@ use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use PHPUnit\Framework\ExpectationFailedException;
 
-/**
- * Class FactoryTestCase
- */
 class FileTestCase extends TestCase
 {
     /**

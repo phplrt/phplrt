@@ -15,9 +15,6 @@ use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 
-/**
- * Class Buffer
- */
 abstract class Buffer implements BufferInterface
 {
     /**

@@ -15,9 +15,6 @@ use Phplrt\Source\File;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
 
-/**
- * Class ErrorsTestCase
- */
 class ErrorsTestCase extends TestCase
 {
     /**

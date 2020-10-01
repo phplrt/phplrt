@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-/**
- * Class CompilationException
- */
 class CompilationException extends LexerException
 {
 }

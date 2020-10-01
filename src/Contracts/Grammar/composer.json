@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Contracts\\Grammar\\": "src/"
+            "Phplrt\\Contracts\\Grammar\\": "src"
         }
     },
     "extra": {

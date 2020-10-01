@@ -15,9 +15,6 @@ use Phplrt\Position\Position;
 use PHPUnit\Framework\ExpectationFailedException;
 use Phplrt\Source\Exception\NotAccessibleException;
 
-/**
- * Class LinesTestCase
- */
 class LinesTestCase extends TestCase
 {
     /**

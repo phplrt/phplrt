@@ -14,9 +14,6 @@ namespace Phplrt\Lexer\Exception;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * Class UnrecognizedStateException
- */
 class UnexpectedStateException extends LexerRuntimeException
 {
     /**

@@ -17,9 +17,6 @@ use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Exception\BadReturnTypeException;
 use Phplrt\Visitor\Exception\BrokenTreeException;
 
-/**
- * Class Executor
- */
 class Executor implements ExecutorInterface
 {
     /**

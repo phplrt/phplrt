@@ -16,9 +16,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Renderer;
 
-/**
- * Class UnrecognizedTokenException
- */
 class UnrecognizedTokenException extends ParserRuntimeException
 {
     /**

@@ -13,9 +13,6 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
 
-/**
- * Class Concatenation
- */
 class Concatenation extends Production
 {
     /**

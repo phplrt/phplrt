@@ -18,9 +18,6 @@ use Phplrt\Grammar\Builder;
 use Phplrt\Parser\Tests\Stub\Rule;
 use Phplrt\Parser\Tests\TestCase;
 
-/**
- * Class GrammarGeneratorTestCase
- */
 class GrammarGeneratorTestCase extends TestCase
 {
     /**

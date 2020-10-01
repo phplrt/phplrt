@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Visitor\Exception;
 
-/**
- * Class BrokenTreeException
- */
 class BrokenTreeException extends \InvalidArgumentException
 {
 }

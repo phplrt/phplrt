@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Renderer;
 
-/**
- * Interface RendererInterface
- */
 interface RendererInterface
 {
     /**

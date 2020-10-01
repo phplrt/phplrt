@@ -14,11 +14,8 @@ namespace Phplrt\Exception;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
-use Phplrt\Position\PositionInterface;
+use Phplrt\Contracts\Position\PositionInterface;
 
-/**
- * Class ErrorInformationRenderer
- */
 class ErrorInformationRenderer
 {
     /**

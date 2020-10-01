@@ -19,10 +19,6 @@ use Phplrt\Grammar\Concatenation;
 use Phplrt\Grammar\Lexeme;
 use Phplrt\Grammar\Optional;
 use Phplrt\Grammar\Repetition;
-
-/**
- * Class Generator
- */
 class Generator
 {
     /**

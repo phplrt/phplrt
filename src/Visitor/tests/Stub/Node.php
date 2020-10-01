@@ -13,9 +13,6 @@ namespace Phplrt\Visitor\Tests\Stub;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 
-/**
- * Class Node
- */
 class Node implements NodeInterface
 {
     /**

@@ -25,9 +25,6 @@ use Phplrt\Parser\Parser;
 use Phplrt\Parser\Tests\Stub\AstNode;
 use PHPUnit\Framework\ExpectationFailedException;
 
-/**
- * Class SimpleSumParserTestCase
- */
 class SimpleSumParserTestCase extends TestCase implements BuilderInterface
 {
     /**
