@@ -11,24 +11,44 @@
         "laminas/laminas-code": "~3.0"
     },
     "require-dev": {
-        "laminas/laminas-diactoros": "~2.2",
+        "laminas/laminas-diactoros": "^2.2",
         "phpstan/phpstan": "^0.12",
-        "phpunit/phpunit": "^7.5|^8.0",
+        "phpunit/phpunit": "^9.0",
         "psr/http-message": "^1.0",
         "sensiolabs/security-checker": "^6.0",
-        "squizlabs/php_codesniffer": "~3.0",
-        "symfony/var-dumper": "~3.4|~4.0|~5.0",
-        "symplify/monorepo-builder": "^6.0|^7.0"
+        "squizlabs/php_codesniffer": "^3.0",
+        "symfony/var-dumper": "^3.4|^4.0|^5.0",
+        "symplify/monorepo-builder": "^6.0|^7.0",
+        "vimeo/psalm": "^3.14"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",
-            "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src/",
-            "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src/",
-            "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src/",
-            "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src/",
-            "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src/",
-            "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src/",
+            "Phplrt\\Contracts\\Ast\\": [
+                "src/Contracts/Ast/src",
+                "src/Contracts/Ast/src/"
+            ],
+            "Phplrt\\Contracts\\Exception\\": [
+                "src/Contracts/Exception/src",
+                "src/Contracts/Exception/src/"
+            ],
+            "Phplrt\\Contracts\\Grammar\\": [
+                "src/Contracts/Grammar/src",
+                "src/Contracts/Grammar/src/"
+            ],
+            "Phplrt\\Contracts\\Lexer\\": [
+                "src/Contracts/Lexer/src",
+                "src/Contracts/Lexer/src/"
+            ],
+            "Phplrt\\Contracts\\Parser\\": [
+                "src/Contracts/Parser/src",
+                "src/Contracts/Parser/src/"
+            ],
+            "Phplrt\\Contracts\\Position\\": "src/Contracts/Position/src",
+            "Phplrt\\Contracts\\Source\\": [
+                "src/Contracts/Source/src",
+                "src/Contracts/Source/src/"
+            ],
             "Phplrt\\Exception\\": "src/Exception/src",
             "Phplrt\\Grammar\\": "src/Grammar/src",
             "Phplrt\\Lexer\\": "src/Lexer/src",
@@ -63,6 +83,7 @@
         "phplrt/parser": "self.version",
         "phplrt/parser-contracts": "self.version",
         "phplrt/position": "self.version",
+        "phplrt/position-contracts": "self.version",
         "phplrt/runtime": "self.version",
         "phplrt/source": "self.version",
         "phplrt/source-contracts": "self.version",
