@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/ast-contracts": "^3.1.2"
+        "phplrt/ast-contracts": "^3.2"
     },
     "autoload": {
         "psr-4": {
