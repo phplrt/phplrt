@@ -103,12 +103,23 @@ trait ParserConfigsTrait
     }
 
     /**
-     * @param \Closure|null $step
+     * Allows to add an interceptor to each step of the parser. May be required
+     * for debugging.
+     *
+     * <code>
+     *  $parser->eachStepThrough(function (Context $ctx, \Closure $next) {
+     *      echo $ctx->getState() . ':' . $ctx->getToken() . "\n";
+     *
+     *      return $next($ctx);
+     *  });
+     * </code>
+     *
+     * @param callable|null $step
      * @return $this
      */
-    public function eachStepThrough(?\Closure $step): self
+    public function eachStepThrough(?callable $step): self
     {
-        $this->step = $step;
+        $this->step = \Closure::fromCallable($step);
 
         return $this;
     }
