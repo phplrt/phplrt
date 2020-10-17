@@ -24,31 +24,13 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Compiler\\": "src/Compiler/src",
-            "Phplrt\\Contracts\\Ast\\": [
-                "src/Contracts/Ast/src",
-                "src/Contracts/Ast/src/"
-            ],
-            "Phplrt\\Contracts\\Exception\\": [
-                "src/Contracts/Exception/src",
-                "src/Contracts/Exception/src/"
-            ],
-            "Phplrt\\Contracts\\Grammar\\": [
-                "src/Contracts/Grammar/src",
-                "src/Contracts/Grammar/src/"
-            ],
-            "Phplrt\\Contracts\\Lexer\\": [
-                "src/Contracts/Lexer/src",
-                "src/Contracts/Lexer/src/"
-            ],
-            "Phplrt\\Contracts\\Parser\\": [
-                "src/Contracts/Parser/src",
-                "src/Contracts/Parser/src/"
-            ],
+            "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src",
+            "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src",
+            "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src",
+            "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src",
             "Phplrt\\Contracts\\Position\\": "src/Contracts/Position/src",
-            "Phplrt\\Contracts\\Source\\": [
-                "src/Contracts/Source/src",
-                "src/Contracts/Source/src/"
-            ],
+            "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src",
             "Phplrt\\Exception\\": "src/Exception/src",
             "Phplrt\\Grammar\\": "src/Grammar/src",
             "Phplrt\\Lexer\\": "src/Lexer/src",
