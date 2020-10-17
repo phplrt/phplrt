@@ -119,7 +119,7 @@ trait ParserConfigsTrait
      */
     public function eachStepThrough(?callable $step): self
     {
-        $this->step = \Closure::fromCallable($step);
+        $this->step = $step === null ? null : \Closure::fromCallable($step);
 
         return $this;
     }
