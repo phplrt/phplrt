@@ -18,7 +18,7 @@
         "sensiolabs/security-checker": "^6.0",
         "squizlabs/php_codesniffer": "^3.0",
         "symfony/var-dumper": "^3.4|^4.0|^5.0",
-        "symplify/monorepo-builder": "^6.0|^7.0",
+        "symplify/monorepo-builder": "^8.3.40",
         "vimeo/psalm": "^3.14"
     },
     "autoload": {
