@@ -275,7 +275,7 @@ class Executor implements ExecutorInterface
     {
         foreach ($node as $name => $child) {
             if (\is_array($child)) {
-                $this->updateNodeValue($node, $name, $child = $this->traverseArray($child));
+                $this->updateNodeValue($node, $name, $this->traverseArray($child));
 
                 if ($this->stop) {
                     return $node;

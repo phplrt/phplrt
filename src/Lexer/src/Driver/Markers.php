@@ -48,7 +48,7 @@ class Markers extends Driver
 
         $result = $this->match($pattern, $source->getContents(), $offset);
 
-        foreach ($result as $index => $payload) {
+        foreach ($result as $payload) {
             $name = \array_pop($payload);
 
             yield $this->make($name, $payload);

@@ -16,6 +16,14 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="src/Compiler/tests" />
+            <directory name="src/Exception/tests" />
+            <directory name="src/Grammar/tests" />
+            <directory name="src/Lexer/tests" />
+            <directory name="src/Parser/tests" />
+            <directory name="src/Position/tests" />
+            <directory name="src/Source/tests" />
+            <directory name="src/Visitor/tests" />
         </ignoreFiles>
     </projectFiles>
 </psalm>

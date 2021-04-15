@@ -145,13 +145,16 @@ class Multistate implements LexerInterface
              * We save the offset for the state to prevent endless transitions
              * in the future.
              */
-            $states[$state ?? $state = $this->state] = $offset;
+            $states[$state ??= $this->state] = $offset;
 
             /**
              * Checking the existence of the current state.
              */
             if (! isset($this->states[$state])) {
-                /** @noinspection IssetArgumentExistenceInspection */
+                /**
+                 * @noinspection IssetArgumentExistenceInspection
+                 * @psalm-suppress UndefinedVariable
+                 */
                 throw UnexpectedStateException::fromState($state, $source, $token ?? null);
             }
 
