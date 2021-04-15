@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 namespace Phplrt\Compiler\Renderer;
+
 abstract class Renderer implements RendererInterface
 {
     /**

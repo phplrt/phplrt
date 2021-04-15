@@ -39,6 +39,7 @@ use Phplrt\Grammar\Lexeme;
 use Phplrt\Grammar\Optional;
 use Phplrt\Grammar\Repetition;
 use Phplrt\Parser\Parser;
+
 class PP2Grammar implements GrammarInterface, BuilderInterface
 {
     /**

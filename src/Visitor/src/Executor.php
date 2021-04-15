@@ -42,37 +42,44 @@ class Executor implements ExecutorInterface
     /**
      * @var string
      */
-    private const ERROR_ENTER_RETURN_TYPE = '%s::enter() returns an invalid value of type %s';
+    private const ERROR_ENTER_RETURN_TYPE =
+        '%s::enter() returns an invalid value of type %s';
 
     /**
      * @var string
      */
-    private const ERROR_ENTER_RETURN_ARRAY = '%s::enter() cannot modify parent structure, use %s::leave() method instead';
+    private const ERROR_ENTER_RETURN_ARRAY =
+        '%s::enter() cannot modify parent structure, use %s::leave() method instead';
 
     /**
      * @var string
      */
-    private const ERROR_ROOT_REMOVING = 'Visitor::leave() caused the removal of the root node that cannot be deleted';
+    private const ERROR_ROOT_REMOVING =
+        'Visitor::leave() caused the removal of the root node that cannot be deleted';
 
     /**
      * @var string
      */
-    private const ERROR_LEAVE_RETURN_TYPE = '%s::leave() returns an invalid value of type %s';
+    private const ERROR_LEAVE_RETURN_TYPE =
+        '%s::leave() returns an invalid value of type %s';
 
     /**
      * @var string
      */
-    private const ERROR_MODIFY_BY_ARRAY = '%s::leave() may modify parent structure by an array if the parent is an array';
+    private const ERROR_MODIFY_BY_ARRAY =
+        '%s::leave() may modify parent structure by an array if the parent is an array';
 
     /**
      * @var string
      */
-    private const ERROR_READONLY_MODIFY = 'Can not modify the readonly "%s" attribute of %s node';
+    private const ERROR_READONLY_MODIFY =
+        'Can not modify the readonly "%s" attribute of %s node';
 
     /**
      * @var string
      */
-    private const ERROR_NESTED_ARRAY = 'Nested arrays are not a valid traversable AST structure';
+    private const ERROR_NESTED_ARRAY =
+        'Nested arrays are not a valid traversable AST structure';
 
     /**
      * @var array|VisitorInterface[]

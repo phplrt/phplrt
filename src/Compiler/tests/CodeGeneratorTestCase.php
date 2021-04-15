@@ -13,6 +13,7 @@ namespace Phplrt\Compiler\Tests;
 
 use Phplrt\Compiler\Compiler;
 use Phplrt\Parser\Parser;
+
 class CodeGeneratorTestCase extends TestCase
 {
     /**

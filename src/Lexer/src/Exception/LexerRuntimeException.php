@@ -18,15 +18,17 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 abstract class LexerRuntimeException extends RuntimeException implements LexerExceptionInterface
 {
     /**
-     * LexerRuntimeException constructor.
-     *
      * @param string $message
      * @param ReadableInterface $src
      * @param TokenInterface|null $tok
      * @param \Throwable|null $prev
      */
-    final public function __construct(string $message, ReadableInterface $src, ?TokenInterface $tok, \Throwable $prev = null)
-    {
+    final public function __construct(
+        string $message,
+        ReadableInterface $src,
+        ?TokenInterface $tok,
+        \Throwable $prev = null
+    ) {
         parent::__construct($message, 0, $prev);
 
         $this->setSource($src);

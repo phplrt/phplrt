@@ -25,6 +25,7 @@ use Phplrt\Parser\Parser;
 use Phplrt\Source\File;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Visitor\TraverserInterface;
+
 class Compiler implements ParserInterface
 {
     /**

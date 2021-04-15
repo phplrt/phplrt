@@ -17,6 +17,7 @@ use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
+
 class PhpLexer implements LexerInterface
 {
     /**

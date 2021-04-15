@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Grammar;
 
 use Phplrt\Lexer\Lexer;
+
 final class PP2Lexer extends Lexer
 {
     /**

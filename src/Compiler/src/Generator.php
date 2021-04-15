@@ -19,6 +19,7 @@ use Phplrt\Grammar\Concatenation;
 use Phplrt\Grammar\Lexeme;
 use Phplrt\Grammar\Optional;
 use Phplrt\Grammar\Repetition;
+
 class Generator
 {
     /**
@@ -55,7 +56,7 @@ class Generator
      */
     public function withClassUsage(string $class, string $alias = null): self
     {
-        $class = '\\' . \ltrim($class, '\\');
+        $class = \trim($class, '\\');
 
         $this->declarations[$class] = $alias;
 
