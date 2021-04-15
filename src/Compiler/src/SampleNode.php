@@ -74,7 +74,10 @@ class SampleNode implements NodeInterface
         foreach ($this->children as $child) {
             switch (true) {
                 case $child instanceof self:
-                    $result = [...$result, ...$child->render($depth + 1)];
+                    $result = [
+                        ...\array_values($result),
+                        ...\array_values($child->render($depth + 1))
+                    ];
                     break;
 
                 case $child instanceof TokenInterface:

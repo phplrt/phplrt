@@ -85,11 +85,9 @@ class Generator
             'reducers'    => $this->renderer->fromString($this->getReducers(1), 1),
         ]);
 
-        $uses = $this->getUses();
-
         return \implode("\n", [
             '<?php',
-            ...$uses,
+            ...\array_values($this->getUses()),
             "return $result;",
         ]);
     }
@@ -233,7 +231,7 @@ class Generator
             }
         }
 
-        return [...$append, ...$lines];
+        return [...$append, ...\array_values($lines)];
     }
 
     /**

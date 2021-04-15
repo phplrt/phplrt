@@ -104,7 +104,8 @@ class Repetition extends Production
             }
 
             $children = $this->mergeWith($children, $result);
-        } while ($result !== null && ++$iterations);
+            ++$iterations;
+        } while ($result !== null);
 
         return $children;
     }
