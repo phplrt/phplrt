@@ -196,7 +196,6 @@ class Multistate implements LexerInterface
                         throw EndlessRecursionException::fromState($state, $source, $token ?? null);
                     }
 
-                    /** @psalm-suppress UnusedVariable */
                     $completed = false;
 
                     continue 2;

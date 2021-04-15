@@ -12,6 +12,13 @@
     ensureArrayStringOffsetsExist="true"
     addParamDefaultToDocblockType="true"
 >
+    <issueHandlers>
+        <UnusedVariable>
+            <errorLevel type="suppress">
+                <file name="src/Lexer/src/Multistate.php"/>
+            </errorLevel>
+        </UnusedVariable>
+    </issueHandlers>
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>
