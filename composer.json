@@ -8,7 +8,7 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
-        "laminas/laminas-code": "^3.0|^4.0"
+        "laminas/laminas-code": "^4.0"
     },
     "require-dev": {
         "laminas/laminas-diactoros": "^2.2",
