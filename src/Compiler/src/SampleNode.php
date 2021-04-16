@@ -94,4 +94,12 @@ class SampleNode implements NodeInterface
 
         return $result;
     }
+
+    /**
+     * @return string
+     */
+    public function getState(): string
+    {
+        return $this->state;
+    }
 }
