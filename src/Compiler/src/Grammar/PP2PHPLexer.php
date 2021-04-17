@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Composite;
 use Phplrt\Source\Exception\NotAccessibleException;
 
 class PP2PHPLexer implements LexerInterface

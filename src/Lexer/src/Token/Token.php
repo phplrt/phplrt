@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Driver\DriverInterface;
 
 class Token extends BaseToken
 {

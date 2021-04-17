@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Buffer;
+namespace Phplrt\Parser\Buffer;
 
 class ExtrusiveBuffer extends LazyBuffer
 {

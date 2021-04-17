@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 class UnexpectedStateException extends LexerRuntimeException
 {

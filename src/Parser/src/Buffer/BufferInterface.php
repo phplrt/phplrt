@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Lexer;
+namespace Phplrt\Parser\Buffer;
+
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 interface BufferInterface extends \SeekableIterator
 {

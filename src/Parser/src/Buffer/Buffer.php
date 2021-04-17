@@ -9,9 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Buffer;
+namespace Phplrt\Parser\Buffer;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 

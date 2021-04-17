@@ -12,9 +12,9 @@ declare(strict_types=1);
 namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
-use Phplrt\Contracts\Position\PositionInterface;
 
 class ErrorInformationRenderer
 {

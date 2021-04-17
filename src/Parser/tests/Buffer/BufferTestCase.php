@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests\Buffer;
+namespace Phplrt\Parser\Tests\Buffer;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Tests\TestCase;
+use Phplrt\Parser\Tests\TestCase;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Parser\Buffer\BufferInterface;
 
 abstract class BufferTestCase extends TestCase
 {
@@ -98,7 +98,7 @@ abstract class BufferTestCase extends TestCase
      */
     public function testCurrentSameWithIteratorState(BufferInterface $buffer): void
     {
-        foreach ($buffer as $index => $token) {
+        foreach ($buffer as $token) {
             $this->assertSame($token, $buffer->current());
         }
     }
@@ -127,7 +127,7 @@ abstract class BufferTestCase extends TestCase
         $needle = $buffer->current();
 
         // Iterate
-        foreach ($buffer as $index => $token) {
+        foreach ($buffer as $token) {
         }
 
         $this->assertNotSame($needle, $buffer->current());

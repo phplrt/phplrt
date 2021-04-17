@@ -9,10 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests\Buffer;
+namespace Phplrt\Parser\Tests\Buffer;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Lexer\Buffer\ExtrusiveBuffer;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\ExtrusiveBuffer;
 
 class ExtrusiveBufferTestCase extends BufferTestCase
 {

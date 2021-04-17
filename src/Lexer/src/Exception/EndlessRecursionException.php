@@ -11,9 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Token\Token;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 class EndlessRecursionException extends UnexpectedStateException
 {

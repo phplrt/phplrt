@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\RuntimeException;
-use Phplrt\Contracts\Lexer\TokenInterface;
 
 abstract class LexerRuntimeException extends RuntimeException implements LexerExceptionInterface
 {

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
+use Phplrt\Parser\Buffer\BufferInterface;
 
 class Optional extends Production
 {

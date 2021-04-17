@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Lexer\Token\Token;
 
 class Markers extends Driver
 {

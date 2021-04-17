@@ -9,10 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests\Buffer;
+namespace Phplrt\Parser\Tests\Buffer;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Lexer\Buffer\LazyBuffer;
+use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Parser\Buffer\LazyBuffer;
 
 class LazyBufferTestCase extends BufferTestCase
 {

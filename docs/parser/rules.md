@@ -28,8 +28,7 @@ on which we will further check the rules:
 ```php
 <?php
 
-use Phplrt\Lexer\Buffer\ArrayBuffer;
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\Token;use Phplrt\Parser\Buffer\ArrayBuffer;
 
 $buffer = new ArrayBuffer([
     new Token('T_DIGIT', '2', 0),

@@ -20,6 +20,7 @@ parameters:
         # Docs
         docs: 'git@github.com:phplrt/docs.git'
         # Packages
+        src/Buffer: 'git@github.com:phplrt/buffer.git'
         src/Compiler: 'git@github.com:phplrt/compiler.git'
         src/Exception: 'git@github.com:phplrt/exception.git'
         src/Lexer: 'git@github.com:phplrt/lexer.git'
@@ -29,6 +30,7 @@ parameters:
         src/Visitor: 'git@github.com:phplrt/visitor.git'
         # Contracts
         src/Contracts/Ast: 'git@github.com:phplrt/ast-contracts.git'
+        src/Contracts/Buffer: 'git@github.com:phplrt/buffer-contracts.git'
         src/Contracts/Exception: 'git@github.com:phplrt/exception-contracts.git'
         src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
         src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'

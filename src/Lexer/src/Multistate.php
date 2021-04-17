@@ -15,8 +15,8 @@ use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
+use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Source\File;
 
 class Multistate implements LexerInterface

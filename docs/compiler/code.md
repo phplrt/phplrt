@@ -21,8 +21,7 @@ In this case, the rule class can look like this:
 ```php
 <?php
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Ast\NodeInterface;use Phplrt\Contracts\Lexer\TokenInterface;
 
 class ExampleAstNode implements NodeInterface
 {
