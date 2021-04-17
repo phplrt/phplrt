@@ -25,7 +25,6 @@
             <directory name="vendor" />
             <directory name="src/Compiler/tests" />
             <directory name="src/Exception/tests" />
-            <directory name="src/Grammar/tests" />
             <directory name="src/Lexer/tests" />
             <directory name="src/Parser/tests" />
             <directory name="src/Position/tests" />

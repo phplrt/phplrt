@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Tests\Stub;
 
-use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Parser\Grammar\RuleInterface;
 
 class Rule implements RuleInterface
 {

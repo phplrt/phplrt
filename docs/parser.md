@@ -34,9 +34,7 @@ inside the product, this is the [concatenation](https://en.wikipedia.org/wiki/Co
 and definitions of the tokens.
 
 ```php
-use Phplrt\Parser\Parser;
-use Phplrt\Grammar\Concatenation;
-use Phplrt\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Concatenation;use Phplrt\Parser\Grammar\Lexeme;use Phplrt\Parser\Parser;
 
 $options = [Parser::CONFIG_INITIAL_RULE => 'expression'];
 

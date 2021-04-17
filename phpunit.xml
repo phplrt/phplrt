@@ -15,9 +15,6 @@
         <testsuite name="phplrt/exception">
             <directory suffix="TestCase.php">src/Exception/tests</directory>
         </testsuite>
-        <testsuite name="phplrt/grammar">
-            <directory suffix="TestCase.php">src/Grammar/tests</directory>
-        </testsuite>
         <testsuite name="phplrt/lexer">
             <directory suffix="TestCase.php">src/Lexer/tests</directory>
         </testsuite>

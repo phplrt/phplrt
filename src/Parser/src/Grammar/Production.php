@@ -9,11 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar;
+namespace Phplrt\Parser\Grammar;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Grammar\ProductionInterface;
 
 abstract class Production extends Rule implements ProductionInterface
 {

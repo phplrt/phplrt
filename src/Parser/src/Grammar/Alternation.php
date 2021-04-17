@@ -9,14 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar;
+namespace Phplrt\Parser\Grammar;
 
 use Phplrt\Contracts\Lexer\BufferInterface;
 
-class Concatenation extends Production
+class Alternation extends Production
 {
     /**
-     * @var array|int[]
+     * @var array|int[]|string[]
      */
     public array $sequence;
 
@@ -33,20 +33,18 @@ class Concatenation extends Production
     /**
      * {@inheritDoc}
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
+    public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
-        [$revert, $children] = [$buffer->key(), []];
+        $rollback = $buffer->key();
 
         foreach ($this->sequence as $rule) {
-            if (($result = $reduce($rule)) === null) {
-                $buffer->seek($revert);
-
-                return null;
+            if (($result = $reduce($rule)) !== null) {
+                return $result;
             }
 
-            $children = $this->mergeWith($children, $result);
+            $buffer->seek($rollback);
         }
 
-        return $children;
+        return null;
     }
 }

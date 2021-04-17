@@ -22,7 +22,7 @@ And example of equivalent built using the grammar builder class.
 ```php
 <?php
 
-use Phplrt\Grammar\Builder;
+use Phplrt\Parser\Grammar\Builder;
 
 $grammar = new Builder(function (Builder $ctx) {
     yield $ctx->concat(
@@ -41,9 +41,7 @@ to the parser.
 ```php
 <?php
 
-use Phplrt\Grammar\Builder;
-use Phplrt\Lexer\Lexer;
-use Phplrt\Parser\Parser;
+use Phplrt\Lexer\Lexer;use Phplrt\Parser\Grammar\Builder;use Phplrt\Parser\Parser;
 
 $lexer = new Lexer(...);
 

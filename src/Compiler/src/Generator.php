@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Renderer\RendererInterface;
-use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Grammar\Alternation;
-use Phplrt\Grammar\Concatenation;
-use Phplrt\Grammar\Lexeme;
-use Phplrt\Grammar\Optional;
-use Phplrt\Grammar\Repetition;
+use Phplrt\Parser\Grammar\Alternation;
+use Phplrt\Parser\Grammar\Concatenation;
+use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Repetition;
+use Phplrt\Parser\Grammar\RuleInterface;
 
 class Generator
 {

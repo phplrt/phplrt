@@ -19,7 +19,6 @@
         "php": ">=7.4",
         "phplrt/source": "^3.2",
         "phplrt/exception": "^3.2",
-        "phplrt/grammar": "^3.2",
         "phplrt/parser-contracts": "^3.2",
         "phplrt/lexer-contracts": "^3.2",
         "phplrt/ast-contracts": "^3.2"

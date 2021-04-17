@@ -22,7 +22,6 @@ parameters:
         # Packages
         src/Compiler: 'git@github.com:phplrt/compiler.git'
         src/Exception: 'git@github.com:phplrt/exception.git'
-        src/Grammar: 'git@github.com:phplrt/grammar.git'
         src/Lexer: 'git@github.com:phplrt/lexer.git'
         src/Parser: 'git@github.com:phplrt/parser.git'
         src/Position: 'git@github.com:phplrt/position.git'
@@ -31,7 +30,6 @@ parameters:
         # Contracts
         src/Contracts/Ast: 'git@github.com:phplrt/ast-contracts.git'
         src/Contracts/Exception: 'git@github.com:phplrt/exception-contracts.git'
-        src/Contracts/Grammar: 'git@github.com:phplrt/grammar-contracts.git'
         src/Contracts/Lexer: 'git@github.com:phplrt/lexer-contracts.git'
         src/Contracts/Parser: 'git@github.com:phplrt/parser-contracts.git'
         src/Contracts/Position: 'git@github.com:phplrt/position-contracts.git'
