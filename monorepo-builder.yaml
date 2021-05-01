@@ -17,8 +17,6 @@ parameters:
             symplify/monorepo-builder: '^8.3.40'
             vimeo/psalm: '^4.0'
     directories_to_repositories:
-        # Docs
-        docs: 'git@github.com:phplrt/docs.git'
         # Packages
         src/Buffer: 'git@github.com:phplrt/buffer.git'
         src/Compiler: 'git@github.com:phplrt/compiler.git'
