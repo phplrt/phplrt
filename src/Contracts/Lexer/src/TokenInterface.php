@@ -33,7 +33,7 @@ interface TokenInterface
     /**
      * Token position in bytes
      *
-     * @return int
+     * @return positive-int|0
      */
     public function getOffset(): int;
 
@@ -47,7 +47,7 @@ interface TokenInterface
     /**
      * The token value size in bytes
      *
-     * @return int
+     * @return positive-int|0
      */
     public function getBytes(): int;
 }

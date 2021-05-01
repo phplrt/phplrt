@@ -13,7 +13,7 @@ namespace Phplrt\Lexer\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Lexer\Renderer\Renderer;
 
 class UnrecognizedTokenException extends LexerRuntimeException
 {

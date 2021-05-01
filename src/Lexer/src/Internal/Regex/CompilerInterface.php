@@ -9,12 +9,16 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Compiler;
+namespace Phplrt\Lexer\Internal\Regex;
 
+/**
+ * @internal CompilerInterface is an internal library interface, please do not use it in your code.
+ * @psalm-internal Phplrt\Lexer
+ */
 interface CompilerInterface
 {
     /**
-     * @param array $tokens
+     * @param array<string, string> $tokens
      * @return string
      */
     public function compile(array $tokens): string;

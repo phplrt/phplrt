@@ -9,13 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Token;
+namespace Phplrt\Lexer\Renderer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * @template-implements \IteratorAggregate<array-key, TokenInterface>
- */
-interface CompositeTokenInterface extends TokenInterface, \IteratorAggregate, \Countable, \ArrayAccess
+interface RendererInterface
 {
+    /**
+     * @param TokenInterface $token
+     * @return string
+     */
+    public function render(TokenInterface $token): string;
 }

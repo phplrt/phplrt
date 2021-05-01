@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Lexer\Compiler\CompilerInterface;
+use Phplrt\Lexer\Internal\Regex\CompilerInterface;
 
 abstract class Driver implements DriverInterface
 {

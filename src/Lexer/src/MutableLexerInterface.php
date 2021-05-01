@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
+use JetBrains\PhpStorm\Language;
+
 interface MutableLexerInterface
 {
     /**
@@ -18,27 +20,22 @@ interface MutableLexerInterface
      * @param string $pattern
      * @return MutableLexerInterface|$this
      */
-    public function append(string $token, string $pattern): self;
-
-    /**
-     * @param array|string[] $tokens
-     * @return MutableLexerInterface|$this
-     */
-    public function appendMany(array $tokens): self;
+    public function append(
+        string $token,
+        #[Language("RegExp")]
+        string $pattern
+    ): self;
 
     /**
      * @param string $token
      * @param string $pattern
      * @return MutableLexerInterface|$this
      */
-    public function prepend(string $token, string $pattern): self;
-
-    /**
-     * @param array|string[] $tokens
-     * @param bool $reverseOrder
-     * @return MutableLexerInterface|$this
-     */
-    public function prependMany(array $tokens, bool $reverseOrder = true): self;
+    public function prepend(
+        string $token,
+        #[Language("RegExp")]
+        string $pattern
+    ): self;
 
     /**
      * @param string ...$tokens

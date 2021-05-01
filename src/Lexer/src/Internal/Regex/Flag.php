@@ -9,17 +9,21 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Compiler;
+namespace Phplrt\Lexer\Internal\Regex;
 
-use Phplrt\Lexer\Exception\CompilationException;
-
-abstract class PCRECompiler implements CompilerInterface
+/**
+ * @internal Flag is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Lexer
+ *
+ * @psalm-type FlagType = Flag::FLAG_*
+ */
+final class Flag
 {
     /**
      * If this modifier is set, letters in the pattern match both upper
      * and lower case letters.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_CASELESS = 'i';
 
@@ -37,7 +41,7 @@ abstract class PCRECompiler implements CompilerInterface
      * modifier. If there are no "\n" characters in a subject string, or no
      * occurrences of ^ or $ in a pattern, setting this modifier has no effect.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_MULTILINE = 'm';
 
@@ -48,7 +52,7 @@ abstract class PCRECompiler implements CompilerInterface
      * such as [^a] always matches a newline character, independent of the
      * setting of this modifier.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_DOTALL = 's';
 
@@ -63,7 +67,7 @@ abstract class PCRECompiler implements CompilerInterface
      * character sequences in a pattern, for example within the sequence
      * (?( which introduces a conditional subpattern.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_EXTENDED = 'x';
 
@@ -74,7 +78,7 @@ abstract class PCRECompiler implements CompilerInterface
      * by appropriate constructs in the pattern itself, which is the only way
      * to do it in Perl.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_ANCHORED = 'A';
 
@@ -85,7 +89,7 @@ abstract class PCRECompiler implements CompilerInterface
      * (but not before any other newlines). This modifier is ignored if m
      * modifier is set. There is no equivalent to this modifier in Perl.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_DOLLAR_ENDONLY = 'D';
 
@@ -96,7 +100,7 @@ abstract class PCRECompiler implements CompilerInterface
      * present, studying a pattern is useful only for non-anchored patterns
      * that do not have a single fixed starting character.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_COMPILED = 'S';
 
@@ -106,7 +110,7 @@ abstract class PCRECompiler implements CompilerInterface
      * not compatible with Perl. It can also be set by a (?U) modifier setting
      * within the pattern or by a question mark behind a quantifier (e.g. .*?).
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_UNGREEDY = 'U';
 
@@ -119,7 +123,7 @@ abstract class PCRECompiler implements CompilerInterface
      * literal. There are at present no other features controlled by this
      * modifier.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_EXTRA = 'X';
 
@@ -128,7 +132,7 @@ abstract class PCRECompiler implements CompilerInterface
      * Allow duplicate names for subpatterns. As of PHP 7.2.0 J is supported
      * as modifier as well.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_INFO_JCHANGED = 'X';
 
@@ -141,164 +145,7 @@ abstract class PCRECompiler implements CompilerInterface
      * (resp. PCRE 7.3 2007-08-28); formerly those have been regarded as
      * valid UTF-8.
      *
-     * @var string
+     * @var FlagType
      */
     public const FLAG_UTF8 = 'u';
-
-    /**
-     * Default pcre delimiter.
-     *
-     * @var string
-     */
-    protected const DEFAULT_DELIMITER = '/';
-
-    /**
-     * @var string[]
-     */
-    protected const DEFAULT_FLAGS = [
-        self::FLAG_COMPILED,
-        self::FLAG_DOTALL,
-        self::FLAG_UTF8,
-        self::FLAG_MULTILINE,
-    ];
-
-    /**
-     * @var array|string[]
-     */
-    protected array $flags;
-
-    /**
-     * @var string
-     */
-    protected string $delimiter = self::DEFAULT_DELIMITER;
-
-    /**
-     * @var bool
-     */
-    private bool $debug = false;
-
-    /**
-     * PCRECompiler constructor.
-     *
-     * @param array|string[]|null $flags
-     * @param bool|null $debug
-     */
-    public function __construct(array $flags = null, bool $debug = null)
-    {
-        $this->flags = $flags ?? self::DEFAULT_FLAGS;
-
-        if ($debug === null) {
-            // Hack: Enable debug mode if assertions is enabled
-            \assert($this->debug = true);
-        } else {
-            $this->debug = $debug;
-        }
-    }
-
-    /**
-     * @param array $tokens
-     * @return string
-     * @throws CompilationException
-     */
-    public function compile(array $tokens): string
-    {
-        $body = $this->buildTokens($this->buildChunks($tokens));
-
-        $this->test($body);
-
-        return $this->wrap($body);
-    }
-
-    /**
-     * @param array|string[] $chunks
-     * @return string
-     */
-    abstract protected function buildTokens(array $chunks): string;
-
-    /**
-     * @param array $tokens
-     * @return array
-     */
-    private function buildChunks(array $tokens): array
-    {
-        $chunks = [];
-
-        foreach ($tokens as $name => $pcre) {
-            $chunks[] = $chunk = $this->buildToken($this->name($name), $this->pattern($pcre));
-
-            $this->test($chunk, $name);
-        }
-
-        return $chunks;
-    }
-
-    /**
-     * @param string $name
-     * @param string $pattern
-     * @return string
-     */
-    abstract protected function buildToken(string $name, string $pattern): string;
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    protected function name(string $name): string
-    {
-        return \preg_quote($name, $this->delimiter);
-    }
-
-    /**
-     * @param string $pattern
-     * @return string
-     */
-    protected function pattern(string $pattern): string
-    {
-        return \addcslashes($pattern, $this->delimiter);
-    }
-
-    /**
-     * @param string $pattern
-     * @param string|null $original
-     * @return void
-     */
-    protected function test(string $pattern, string $original = null): void
-    {
-        if ($this->debug) {
-            \error_clear_last();
-
-            $flags = \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE;
-
-            @\preg_match_all($this->wrap($pattern), '', $matches, $flags);
-
-            if ($error = \error_get_last()) {
-                throw new CompilationException($this->formatException($error['message'], $original));
-            }
-        }
-    }
-
-    /**
-     * @param string $pcre
-     * @return string
-     */
-    protected function wrap(string $pcre): string
-    {
-        return $this->delimiter . $pcre . $this->delimiter . \implode('', $this->flags);
-    }
-
-    /**
-     * @param string $message
-     * @param string|null $token
-     * @return string
-     */
-    protected function formatException(string $message, string $token = null): string
-    {
-        $suffix = \sprintf(' in %s token definition', $token);
-
-        $message = \str_replace('Compilation failed: ', '', $message);
-        $message = \preg_replace('/([\w_]+\(\):\h+)/', '', $message);
-        $message = \preg_replace('/\h*at\h+offset\h+\d+/', '', $message);
-
-        return \ucfirst($message) . (\is_string($token) ? $suffix : '');
-    }
 }

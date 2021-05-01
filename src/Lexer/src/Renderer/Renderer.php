@@ -9,15 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Token;
+namespace Phplrt\Lexer\Renderer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Driver\DriverInterface;
 
-final class Renderer
+final class Renderer implements RendererInterface
 {
     /**
-     * @var int
+     * @var positive-int
      */
     private const DEFAULT_LENGTH = 30;
 
@@ -27,11 +27,12 @@ final class Renderer
     private const DEFAULT_WRAP = '"';
 
     /**
-     * @var array
+     * @var array { 0: array<string>, 1: array<string> }
+     * @see https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.double
      */
     private const DEFAULT_REPLACEMENTS = [
-        ["\0", "\n", "\t"],
-        ['\0', '\n', '\t'],
+        ["\n", "\r", "\t", "\v", "\e", "\f"],
+        ['\n', '\r', '\t', '\v', '\e', '\f'],
     ];
 
     /**
@@ -40,9 +41,9 @@ final class Renderer
     private const DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
 
     /**
-     * @var int
+     * @var positive-int
      */
-    private int $length = self::DEFAULT_LENGTH;
+    private int $length;
 
     /**
      * @var string
@@ -50,7 +51,7 @@ final class Renderer
     private string $wrap = self::DEFAULT_WRAP;
 
     /**
-     * @var array
+     * @var array { 0: array<string>, 1: array<string> }
      */
     private array $replacements = self::DEFAULT_REPLACEMENTS;
 
@@ -58,6 +59,50 @@ final class Renderer
      * @var string
      */
     private string $suffix = self::DEFAULT_OVERFLOW_SUFFIX;
+
+    /**
+     * @param positive-int $length
+     */
+    public function __construct(int $length = self::DEFAULT_LENGTH)
+    {
+        $this->length = \max(1, $length);
+    }
+
+    /**
+     * @param positive-int $length
+     * @return $this
+     */
+    public function withLength(int $length): self
+    {
+        $self = clone $this;
+        $self->length = \max(1, $length);
+
+        return $self;
+    }
+
+    /**
+     * @param string $char
+     * @return $this
+     */
+    public function withWrapCharacter(string $char): self
+    {
+        $self = clone $this;
+        $self->wrap = $char;
+
+        return $self;
+    }
+
+    /**
+     * @param string $suffix
+     * @return $this
+     */
+    public function withSuffix(string $suffix): self
+    {
+        $self = clone $this;
+        $self->suffix = $suffix;
+
+        return $self;
+    }
 
     /**
      * @param TokenInterface $token
@@ -80,22 +125,13 @@ final class Renderer
      */
     public function value(TokenInterface $token): string
     {
-        $value = $this->escape($this->inline($token->getValue()));
+        $value = $this->inline($token->getValue());
 
         if ($this->shouldBeShorten($value)) {
             return $this->shorten($value);
         }
 
-        return $this->wrap . $this->replace($value) . $this->wrap;
-    }
-
-    /**
-     * @param string $value
-     * @return string
-     */
-    private function escape(string $value): string
-    {
-        return \addcslashes($value, $this->wrap);
+        return $this->wrap($value);
     }
 
     /**
@@ -104,7 +140,7 @@ final class Renderer
      */
     private function inline(string $value): string
     {
-        return (string)(\preg_replace('/\h+/u', ' ', $value) ?? $value);
+        return \preg_replace('/\h+/u', ' ', $value) ?? $value;
     }
 
     /**
@@ -144,18 +180,69 @@ final class Renderer
      */
     private function wrap(string $value): string
     {
-        return $this->wrap . $this->replace($value) . $this->wrap;
+        return $this->wrap . $this->escape($value) . $this->wrap;
     }
 
     /**
      * @param string $value
      * @return string
      */
-    private function replace(string $value): string
+    private function escape(string $value): string
     {
+        /**
+         * @psalm-var array<string> $from
+         * @psalm-var array<string> $to
+         */
         [$from, $to] = $this->replacements;
 
-        return \str_replace($from, $to, $value);
+        $result = '';
+
+        foreach (\mb_str_split(\str_replace($from, $to, $value)) as $char) {
+            switch (true) {
+                case $char === $this->wrap:
+                    $result .= "\\$char";
+                    break;
+
+                case ! $this->isPrintable($char):
+                    $result .= $this->toEscapedSequence($char);
+                    break;
+
+                default:
+                    $result .= $char;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $char
+     * @return string
+     */
+    private function toEscapedSequence(string $char): string
+    {
+        $result = '';
+
+        foreach (\mb_str_split($char) as $byte) {
+            $hex = \dechex(\mb_ord($byte));
+
+            $result .= '\u{' . \str_pad($hex, 4, '0', \STR_PAD_LEFT) . '}';
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $char
+     * @return bool
+     */
+    private function isPrintable(string $char): bool
+    {
+        if (\function_exists('\\ctype_print')) {
+            return \ctype_print($char);
+        }
+
+        return true;
     }
 
     /**

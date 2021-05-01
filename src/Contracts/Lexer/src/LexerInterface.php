@@ -17,11 +17,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 /**
  * An interface that is an abstract implementation of a lexer.
  *
- * @psalm-type SourceType = ReadableInterface
- *                        | StreamInterface
- *                        | \SplFileInfo
- *                        | string
- *                        | resource
+ * @psalm-type SourceType = ReadableInterface|StreamInterface|\SplFileInfo|string|resource
  */
 interface LexerInterface
 {

@@ -13,7 +13,7 @@ namespace Phplrt\Lexer\Driver;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
+use Phplrt\Lexer\Internal\Regex\MarkersCompiler as MarkersCompiler;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Lexer\Token\Token;
 

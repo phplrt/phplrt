@@ -18,6 +18,7 @@
                 <file name="src/Lexer/src/Multistate.php"/>
             </errorLevel>
         </UnusedVariable>
+        <RedundantCondition errorLevel="suppress" />
     </issueHandlers>
     <projectFiles>
         <directory name="src" />

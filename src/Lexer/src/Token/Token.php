@@ -13,6 +13,7 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Driver\DriverInterface;
+use Phplrt\Lexer\Renderer\Renderer;
 
 class Token extends BaseToken
 {
@@ -27,18 +28,16 @@ class Token extends BaseToken
     private string $value;
 
     /**
-     * @var string|int
+     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
-     * BaseToken constructor.
-     *
-     * @param string|int $name
+     * @param string $name
      * @param string $value
      * @param int $offset
      */
-    public function __construct($name, string $value, int $offset)
+    public function __construct(string $name, string $value, int $offset)
     {
         $this->name   = $name;
         $this->value  = $value;
@@ -58,7 +57,7 @@ class Token extends BaseToken
      */
     public function getName(): string
     {
-        return $this->containsValidName() ? $this->name : $this->value;
+        return $this->name;
     }
 
     /**
@@ -82,20 +81,6 @@ class Token extends BaseToken
      */
     public function __toString(): string
     {
-        $renderer = new Renderer();
-
-        if ($this->containsValidName()) {
-            return $renderer->render($this);
-        }
-
-        return $renderer->value($this);
-    }
-
-    /**
-     * @return bool
-     */
-    private function containsValidName(): bool
-    {
-        return \is_string($this->name) && \trim($this->name) !== '';
+        return (new Renderer())->render($this);
     }
 }

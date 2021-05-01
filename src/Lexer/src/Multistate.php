@@ -68,11 +68,12 @@ class Multistate implements LexerInterface
      * @param string|int $name
      * @param array|LexerInterface $data
      * @return $this
+     * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function setState($name, $data): self
     {
-        assert(\is_string($name) || \is_int($name)); /** @phpstan-ignore-line */
-        assert(\is_array($data) || $data instanceof LexerInterface); /** @phpstan-ignore-line */
+        assert(\is_string($name) || \is_int($name));
+        assert(\is_array($data) || $data instanceof LexerInterface);
 
         $this->states[$name] = $data instanceof LexerInterface ? $data : new Lexer($data);
 

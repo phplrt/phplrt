@@ -21,6 +21,7 @@
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
+        "symfony/polyfill-php80": "v1.22",
         "phplrt/source": "^4.0",
         "phplrt/lexer-contracts": "^4.0",
         "phplrt/exception": "^4.0"
@@ -31,6 +32,7 @@
         }
     },
     "require-dev": {
+        "jetbrains/phpstorm-attributes": "^1.0",
         "phpunit/phpunit": "^9.0"
     },
     "autoload-dev": {

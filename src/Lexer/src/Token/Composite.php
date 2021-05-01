@@ -13,22 +13,20 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-class Composite extends Token implements CompositeTokenInterface
+final class Composite extends Token implements CompositeTokenInterface
 {
     /**
-     * @var array|TokenInterface[]
+     * @var array<TokenInterface>
      */
     private array $children;
 
     /**
-     * BaseToken constructor.
-     *
-     * @param string|int $name
+     * @param string $name
      * @param string $value
-     * @param int $offset
-     * @param array|TokenInterface[] $children
+     * @param positive-int|0 $offset
+     * @param array<TokenInterface> $children
      */
-    public function __construct($name, string $value, int $offset, array $children)
+    public function __construct(string $name, string $value, int $offset, array $children)
     {
         $this->children = $children;
 
@@ -36,12 +34,12 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @param array|TokenInterface[] $tokens
+     * @param non-empty-array<TokenInterface> $tokens
      * @return self
      */
     public static function fromArray(array $tokens): self
     {
-        \assert(\count($tokens) > 0);
+        assert(count($tokens) > 0);
 
         $first = \array_shift($tokens);
 
@@ -59,7 +57,7 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @return \Traversable|TokenInterface[]
+     * @return \Traversable<array-key, TokenInterface>
      */
     public function getIterator(): \Traversable
     {
@@ -67,56 +65,60 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @return bool
      */
     public function offsetExists($offset): bool
     {
-        \assert(\is_int($offset));
+        assert(is_int($offset) && $offset >= 0);
 
         return isset($this->children[$offset]);
     }
 
     /**
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @return TokenInterface|null
      */
     public function offsetGet($offset): ?TokenInterface
     {
-        \assert(\is_int($offset));
+        assert(is_int($offset) && $offset >= 0);
 
         return $this->children[$offset] ?? null;
     }
 
     /**
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @param TokenInterface $value
      * @return void
      */
     public function offsetSet($offset, $value): void
     {
-        \assert(\is_int($offset));
-        \assert($value instanceof TokenInterface);
+        assert(is_int($offset) && $offset >= 0);
+        assert($value instanceof TokenInterface);
 
         $this->children[$offset] = $value;
     }
 
     /**
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @return void
      */
     public function offsetUnset($offset): void
     {
-        \assert(\is_int($offset));
+        assert(is_int($offset) && $offset >= 0);
 
         unset($this->children[$offset]);
     }
 
     /**
-     * @return int
+     * @return positive-int
+     * @psalm-suppress InvalidReturnType (Count of children tokens greater than 0)
      */
     public function count(): int
     {
+        /**
+         * @psalm-suppress InvalidReturnStatement (Count of children tokens greater than 0)
+         */
         return \count($this->children);
     }
 }

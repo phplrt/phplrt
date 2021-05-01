@@ -9,9 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Compiler;
+namespace Phplrt\Lexer\Internal\Regex;
 
-class Markers extends PCRECompiler
+/**
+ * @internal MarkersCompiler is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Lexer
+ */
+final class MarkersCompiler extends PCRECompiler
 {
     /**
      * @var string
@@ -27,7 +31,7 @@ class Markers extends PCRECompiler
      * @param array $chunks
      * @return string
      */
-    protected function buildTokens(array $chunks): string
+    protected function implodeAllTokens(array $chunks): string
     {
         return \sprintf(self::FORMAT_BODY, \implode('|', $chunks));
     }
@@ -37,7 +41,7 @@ class Markers extends PCRECompiler
      * @param string $pattern
      * @return string
      */
-    protected function buildToken(string $name, string $pattern): string
+    protected function implodeToken(string $name, string $pattern): string
     {
         return \sprintf(self::FORMAT_MARKER, $pattern, $name);
     }

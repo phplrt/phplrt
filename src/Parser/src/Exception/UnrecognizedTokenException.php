@@ -14,7 +14,7 @@ namespace Phplrt\Parser\Exception;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface as ExceptionContract;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Token\Renderer;
+use Phplrt\Lexer\Renderer\Renderer;
 
 class UnrecognizedTokenException extends ParserRuntimeException
 {
