@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
-    errorLevel="8"
+    errorLevel="1"
     hoistConstants="true"
     resolveFromConfigFile="true"
     allowPhpStormGenerics="true"
@@ -23,6 +23,7 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="src/Buffer/tests" />
             <directory name="src/Compiler/tests" />
             <directory name="src/Exception/tests" />
             <directory name="src/Lexer/tests" />

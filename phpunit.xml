@@ -9,6 +9,9 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
+        <testsuite name="phplrt/buffer">
+            <directory suffix="TestCase.php">src/Buffer/tests</directory>
+        </testsuite>
         <testsuite name="phplrt/compiler">
             <directory suffix="TestCase.php">src/Compiler/tests</directory>
         </testsuite>

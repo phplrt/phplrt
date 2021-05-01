@@ -17,16 +17,17 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/ast-contracts": "^3.2",
-        "phplrt/exception-contracts": "^3.2",
-        "phplrt/lexer-contracts": "^3.2",
-        "phplrt/parser-contracts": "^3.2",
-        "phplrt/position-contracts": "^3.2",
-        "phplrt/source-contracts": "^3.2"
+        "phplrt/ast-contracts": "^4.0",
+        "phplrt/buffer-contracts": "^4.0",
+        "phplrt/exception-contracts": "^4.0",
+        "phplrt/lexer-contracts": "^4.0",
+        "phplrt/parser-contracts": "^4.0",
+        "phplrt/position-contracts": "^4.0",
+        "phplrt/source-contracts": "^4.0"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.2.x-dev"
+            "dev-master": "4.0.x-dev"
         }
     },
     "config": {

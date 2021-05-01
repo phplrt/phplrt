@@ -29,12 +29,18 @@ interface ParserConfigsInterface
     public const CONFIG_AST_BUILDER = 'builder';
 
     /**
-     * Configuration option key for an implementation of tokens buffer
-     * (subclass of \Phplrt\Contracts\Lexer\BufferInterface).
+     * Configuration option key for an implementation of tokens buffer factory.
      *
      * @var string
      */
     public const CONFIG_BUFFER = 'buffer';
+
+    /**
+     * Configuration option key for an implementation of tokens buffer size.
+     *
+     * @var string
+     */
+    public const CONFIG_BUFFER_SIZE = 'buffer_size';
 
     /**
      * Configuration option key for token indicating the end of parsing.

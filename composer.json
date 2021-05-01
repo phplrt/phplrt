@@ -21,8 +21,10 @@
     },
     "autoload": {
         "psr-4": {
+            "Phplrt\\Buffer\\": "src/Buffer/src",
             "Phplrt\\Compiler\\": "src/Compiler/src",
             "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src",
+            "Phplrt\\Contracts\\Buffer\\": "src/Contracts/Buffer/src",
             "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src",
             "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src",
             "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src",
@@ -38,6 +40,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Buffer\\Tests\\": "src/Buffer/tests",
             "Phplrt\\Compiler\\Tests\\": "src/Compiler/tests",
             "Phplrt\\Exception\\Tests\\": "src/Exception/tests",
             "Phplrt\\Lexer\\Tests\\": "src/Lexer/tests",
@@ -49,6 +52,8 @@
     },
     "replace": {
         "phplrt/ast-contracts": "self.version",
+        "phplrt/buffer": "self.version",
+        "phplrt/buffer-contracts": "self.version",
         "phplrt/compiler": "self.version",
         "phplrt/contracts": "self.version",
         "phplrt/exception": "self.version",
@@ -66,10 +71,13 @@
     },
     "scripts": {
         "test": [
-            "phpcs --standard=phpcs.xml",
-            "phpunit",
-            "psalm --no-cache"
+            "@phpcs",
+            "@phpunit",
+            "@psalm"
         ],
+        "psalm": "psalm --no-cache",
+        "phpcs": "phpcs --standard=phpcs.xml",
+        "phpunit": "phpunit --testox",
         "phpcbf": "phpcbf -p --standard=PSR12 src",
         "split": "monorepo-builder split",
         "merge": "monorepo-builder merge"
@@ -79,7 +87,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.2.x-dev"
+            "dev-master": "4.0.x-dev"
         }
     },
     "minimum-stability": "dev",

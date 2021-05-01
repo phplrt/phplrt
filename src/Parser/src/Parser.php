@@ -12,12 +12,11 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Contracts\Buffer\BufferInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
@@ -95,37 +94,16 @@ final class Parser implements
     private array $rules;
 
     /**
-     * Parser constructor.
-     *
      * @param LexerInterface $lexer
      * @param iterable|RuleInterface[] $grammar
      * @param array $options
      */
     public function __construct(LexerInterface $lexer, iterable $grammar = [], array $options = [])
     {
-        $this->initializeLexer($lexer);
-        $this->initializeGrammar($grammar);
-        $this->initializeOptions($options);
-    }
-
-    /**
-     * @param LexerInterface $lexer
-     * @return void
-     */
-    private function initializeLexer(LexerInterface $lexer): void
-    {
         $this->lexer = $lexer;
-    }
-
-    /**
-     * Initialize parser's grammar
-     *
-     * @param iterable $grammar
-     * @return void
-     */
-    private function initializeGrammar(iterable $grammar): void
-    {
         $this->rules = $grammar instanceof \Traversable ? \iterator_to_array($grammar) : $grammar;
+
+        $this->initializeOptions($options);
     }
 
     /**
@@ -172,7 +150,7 @@ final class Parser implements
      */
     private function run(ReadableInterface $source, array $options): iterable
     {
-        $buffer = $this->createBuffer($this->lex($source));
+        $buffer = $this->buffer->create($this->lex($source), $this->bufferSize);
 
         $context = $this->createExecutionContext($buffer, $source, $options);
 
@@ -180,30 +158,12 @@ final class Parser implements
     }
 
     /**
-     * @param \Generator $stream
-     * @return BufferInterface
+     * {@inheritDoc}
      */
-    private function createBuffer(\Generator $stream): BufferInterface
-    {
-        \assert(
-            \is_subclass_of($this->buffer, BufferInterface::class),
-            \sprintf(self::ERROR_BUFFER_TYPE, BufferInterface::class)
-        );
-
-        $class = $this->buffer;
-
-        return new $class($stream);
-    }
-
-    /**
-     * @param ReadableInterface $source
-     * @param int $offset
-     * @return \Generator|TokenInterface[]
-     */
-    public function lex($source, int $offset = 0): \Generator
+    public function lex($source): iterable
     {
         try {
-            foreach ($this->lexer->lex(File::new($source)) as $token) {
+            foreach ($this->lexer->lex($source) as $token) {
                 yield $token;
             }
         } catch (RuntimeExceptionInterface $e) {
@@ -249,7 +209,7 @@ final class Parser implements
      */
     private function next(Context $context)
     {
-        if ($this->step) {
+        if ($this->step !== null) {
             return ($this->step)($context, function () use ($context) {
                 return $this->runNextStep($context);
             });

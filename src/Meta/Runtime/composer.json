@@ -17,14 +17,14 @@
     ],
     "require": {
         "php": ">=7.4",
-        "phplrt/lexer": "^3.2",
-        "phplrt/parser": "^3.2",
-        "phplrt/position": "^3.2",
-        "phplrt/visitor": "^3.2"
+        "phplrt/lexer": "^4.0",
+        "phplrt/parser": "^4.0",
+        "phplrt/position": "^4.0",
+        "phplrt/visitor": "^4.0"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.2.x-dev"
+            "dev-master": "4.0.x-dev"
         }
     },
     "config": {

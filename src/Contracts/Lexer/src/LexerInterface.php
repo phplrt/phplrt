@@ -16,14 +16,21 @@ use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * An interface that is an abstract implementation of a lexer.
+ *
+ * @psalm-type SourceType = ReadableInterface
+ *                        | StreamInterface
+ *                        | \SplFileInfo
+ *                        | string
+ *                        | resource
  */
 interface LexerInterface
 {
     /**
      * Returns a set of token objects from the passed source.
      *
-     * @param string|resource|ReadableInterface $source
-     * @return iterable|TokenInterface[]
+     * @param ReadableInterface|string $source
+     * @psalm-param SourceType $source
+     * @return iterable<TokenInterface>
      *
      * @throws RuntimeExceptionInterface
      */

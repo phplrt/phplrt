@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/exception",
+    "name": "phplrt/buffer",
     "type": "library",
-    "description": "The phplrt exception package",
+    "description": "The phplrt buffer library",
     "license": "MIT",
-    "keywords": ["exception", "parsing", "errors", "helpers"],
+    "keywords": ["token", "stream", "buffer"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/exception"
+        "source": "https://github.com/phplrt/buffer"
     },
     "authors": [
         {
@@ -18,16 +18,11 @@
     "require": {
         "php": ">=7.4",
         "ext-spl": "*",
-        "ext-pcre": "*",
-        "ext-json": "*",
-        "ext-mbstring": "*",
-        "phplrt/source": "^4.0",
-        "phplrt/position": "^4.0",
-        "phplrt/exception-contracts": "^4.0"
+        "phplrt/buffer-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Exception\\": "src"
+            "Phplrt\\Buffer\\": "src"
         }
     },
     "require-dev": {
@@ -35,11 +30,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Exception\\Tests\\": "tests"
+            "Phplrt\\Buffer\\Tests\\": "tests"
         }
     },
     "provide": {
-        "phplrt/exception-contracts-implementation": "^3.0"
+        "phplrt/buffer-contracts-implementation": "^3.0"
     },
     "extra": {
         "branch-alias": {

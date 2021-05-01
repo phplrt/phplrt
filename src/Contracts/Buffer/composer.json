@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/exception-contracts",
+    "name": "phplrt/buffer-contracts",
     "type": "library",
-    "description": "A set of phplrt exception abstractions",
+    "description": "A set of phplrt buffer abstractions",
     "license": "MIT",
-    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "exception"],
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "buffer"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/exception-contracts"
+        "source": "https://github.com/phplrt/buffer-contracts"
     },
     "authors": [
         {
@@ -16,13 +16,11 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
-        "phplrt/lexer-contracts": "^4.0",
-        "phplrt/source-contracts": "^4.0"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Contracts\\Exception\\": "src"
+            "Phplrt\\Contracts\\Buffer\\": "src"
         }
     },
     "extra": {

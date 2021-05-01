@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Buffer\Factory;
+use Phplrt\Contracts\Buffer\FactoryInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Buffer\ArrayBuffer;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\ParserConfigsInterface as Config;
 
 /**
@@ -34,9 +34,16 @@ trait ParserConfigsTrait
      *
      * Initialized by the generator with tokens during parser launch.
      *
-     * @var string
+     * @var FactoryInterface
      */
-    private string $buffer = ArrayBuffer::class;
+    private FactoryInterface $buffer;
+
+    /**
+     * Buffer size.
+     *
+     * @var positive-int|null
+     */
+    private ?int $bufferSize = null;
 
     /**
      * The initial state (initial rule identifier) of the parser.
@@ -83,7 +90,8 @@ trait ParserConfigsTrait
         $this
             ->startsAt($options[Config::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules))
             ->completeAt($options[Config::CONFIG_EOI] ?? $this->eoi)
-            ->withBuffer($options[Config::CONFIG_BUFFER] ?? $this->buffer)
+            ->withBuffer($options[Config::CONFIG_BUFFER] ?? new Factory())
+            ->withBufferSize($options[Config::CONFIG_BUFFER_SIZE] ?? $this->bufferSize)
             ->buildUsing($options[Config::CONFIG_AST_BUILDER] ?? $this)
             ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
         ;
@@ -125,16 +133,27 @@ trait ParserConfigsTrait
     }
 
     /**
-     * Sets a tokens buffer class.
+     * Sets a tokens buffer factory.
      *
-     * @param string $class
+     * @param FactoryInterface $buffer
      * @return $this
      */
-    public function withBuffer(string $class): self
+    public function withBuffer(FactoryInterface $buffer): self
     {
-        \assert(\is_subclass_of($class, BufferInterface::class));
+        $this->buffer = $buffer;
 
-        $this->buffer = $class;
+        return $this;
+    }
+
+    /**
+     * Sets a tokens buffer size.
+     *
+     * @param int|null $size
+     * @return $this
+     */
+    public function withBufferSize(int $size = null): self
+    {
+        $this->bufferSize = $size;
 
         return $this;
     }

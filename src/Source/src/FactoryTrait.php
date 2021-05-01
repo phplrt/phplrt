@@ -18,6 +18,7 @@ use Phplrt\Source\ContentReader\StreamContentReader;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Internal\Util;
 use Phplrt\Source\StreamReader\ContentStreamReader;
 use Phplrt\Source\StreamReader\StreamReader;
 use Psr\Http\Message\StreamInterface;
@@ -35,7 +36,7 @@ trait FactoryTrait
 
     /**
      * @param string $sources
-     * @param string $pathname
+     * @param string|null $pathname
      * @return ReadableInterface|FileInterface
      */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
@@ -51,28 +52,28 @@ trait FactoryTrait
     }
 
     /**
-     * @param mixed $sources
+     * @param mixed $source
      * @return ReadableInterface|FileInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public static function new($sources): ReadableInterface
+    public static function new($source): ReadableInterface
     {
         switch (true) {
-            case $sources instanceof ReadableInterface:
-                return $sources;
+            case $source instanceof ReadableInterface:
+                return $source;
 
-            case $sources instanceof \SplFileInfo:
-                return static::fromSplFileInfo($sources);
+            case $source instanceof \SplFileInfo:
+                return static::fromSplFileInfo($source);
 
-            case \is_string($sources):
-                return static::fromSources($sources);
+            case \is_string($source):
+                return static::fromSources($source);
 
-            case $sources instanceof StreamInterface:
-                return static::fromPsrStream($sources);
+            case $source instanceof StreamInterface:
+                return static::fromPsrStream($source);
 
-            case \is_resource($sources):
-                return static::fromResource($sources);
+            case \is_resource($source):
+                return static::fromResource($source);
 
             default:
                 $message = 'Unrecognized readable file type "%s"';
@@ -127,13 +128,13 @@ trait FactoryTrait
      */
     public static function fromResource($resource, string $pathname = null): ReadableInterface
     {
-        if (! StreamUtil::isStream($resource)) {
+        if (! Util::isStream($resource)) {
             $message = 'First argument must be a valid resource, but %s given';
 
             throw new \InvalidArgumentException(\sprintf($message, \gettype($resource)));
         }
 
-        if (StreamUtil::isClosedStream($resource)) {
+        if (Util::isClosedStream($resource)) {
             throw new NotReadableException('Can not open for reading already closed resource');
         }
 

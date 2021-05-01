@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-use Phplrt\Parser\Buffer\BufferInterface;
+use Phplrt\Contracts\Buffer\BufferInterface;
 
 class Repetition extends Production
 {

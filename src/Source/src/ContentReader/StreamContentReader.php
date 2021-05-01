@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Phplrt\Source\ContentReader;
 
 use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Source\Internal\Util;
 use Phplrt\Source\MemoizableInterface;
-use Phplrt\Source\StreamUtil;
 
 class StreamContentReader implements ContentReaderInterface, MemoizableInterface
 {
@@ -45,7 +45,7 @@ class StreamContentReader implements ContentReaderInterface, MemoizableInterface
      */
     public function __construct($stream)
     {
-        \assert(StreamUtil::isNonClosedStream($stream));
+        \assert(Util::isNonClosedStream($stream));
 
         $this->stream = $stream;
     }
@@ -98,7 +98,7 @@ class StreamContentReader implements ContentReaderInterface, MemoizableInterface
      */
     public function __serialize(): array
     {
-        return StreamUtil::serialize($this->stream);
+        return Util::serialize($this->stream);
     }
 
     /**
@@ -107,6 +107,6 @@ class StreamContentReader implements ContentReaderInterface, MemoizableInterface
      */
     public function __unserialize(array $data): void
     {
-        $this->stream = StreamUtil::unserialize($data);
+        $this->stream = Util::unserialize($data);
     }
 }
