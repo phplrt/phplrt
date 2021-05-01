@@ -38,7 +38,7 @@ class Markers extends Driver
      * @param array $tokens
      * @param ReadableInterface $source
      * @param int $offset
-     * @return iterable|TokenInterface[]
+     * @return iterable<TokenInterface>
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable
     {
@@ -48,11 +48,39 @@ class Markers extends Driver
 
         $result = $this->match($pattern, $source->getContents(), $offset);
 
+        /** @var array<string> $payload */
         foreach ($result as $payload) {
             $name = \array_pop($payload);
 
-            yield $this->make($name, $payload);
+            if (\count($payload) > 1) {
+                $tokens = [];
+
+                foreach ($payload as $value) {
+                    $tokens[] = new Token($name, $value, $offset);
+                }
+
+                yield Composite::fromArray($tokens);
+            } else {
+                yield new Token($name, $payload[0], $offset);
+            }
+
+            $offset += \strlen($payload[0]);
         }
+    }
+
+    private function make(string $name, array $values, int $offset): TokenInterface
+    {
+        if (\count($values) > 1) {
+            $tokens = [];
+
+            foreach ($values as $value) {
+                $tokens[] = new Token($name, $value, $offset);
+            }
+
+            return Composite::fromArray($tokens);
+        }
+
+        return new Token($name, $values[0], $offset);
     }
 
     /**
@@ -63,38 +91,8 @@ class Markers extends Driver
      */
     private function match(string $pattern, string $source, int $offset): array
     {
-        \preg_match_all($pattern, $source, $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE, $offset);
+        \preg_match_all($pattern, $source, $matches, \PREG_SET_ORDER, $offset);
 
         return $matches;
-    }
-
-    /**
-     * @param string $name
-     * @param array $payload
-     * @return TokenInterface
-     */
-    private function make(string $name, array $payload): TokenInterface
-    {
-        if (\count($payload) > 1) {
-            return Composite::fromArray($this->transform($name, $payload));
-        }
-
-        return new Token($name, ...$payload[0]);
-    }
-
-    /**
-     * @param string $name
-     * @param array $payload
-     * @return array|TokenInterface[]
-     */
-    private function transform(string $name, array $payload): array
-    {
-        $result = [];
-
-        foreach ($payload as $index => $value) {
-            $result[] = new Token(\is_int($index) ? $name : $index, ...$value);
-        }
-
-        return $result;
     }
 }
