@@ -18,17 +18,17 @@ class Position implements PositionInterface
     use PositionFactoryTrait;
 
     /**
-     * @var int
+     * @var positive-int
      */
     public const MIN_LINE = 1;
 
     /**
-     * @var int
+     * @var positive-int
      */
     public const MIN_COLUMN = 1;
 
     /**
-     * @var int
+     * @var positive-int|0
      */
     public const MIN_OFFSET = 0;
 
@@ -38,26 +38,25 @@ class Position implements PositionInterface
     protected const LINE_DELIMITER = "\n";
 
     /**
-     * @var int
+     * @var positive-int|0
      */
     private int $offset;
 
     /**
-     * @var int
+     * @var positive-int
      */
     private int $line;
 
     /**
-     * @var int
+     * @var positive-int
      */
     private int $column;
 
     /**
-     * Position constructor.
-     *
-     * @param int $offset
-     * @param int $line
-     * @param int $column
+     * @param positive-int|0 $offset
+     * @param positive-int $line
+     * @param positive-int $column
+     * @psalm-suppress MixedAssignment
      */
     public function __construct(
         int $offset = self::MIN_OFFSET,
@@ -65,7 +64,7 @@ class Position implements PositionInterface
         int $column = self::MIN_COLUMN
     ) {
         $this->offset = $offset;
-        $this->line   = \max($line, static::MIN_LINE);
+        $this->line = \max($line, static::MIN_LINE);
         $this->column = \max($column, static::MIN_COLUMN);
     }
 

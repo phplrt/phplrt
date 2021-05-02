@@ -9,12 +9,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source\ContentReader;
+namespace Phplrt\Source\Internal\ContentReader;
 
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Internal\ContentReaderInterface;
 use Phplrt\Source\MemoizableInterface;
 
-class FileContentReader implements ContentReaderInterface, MemoizableInterface
+/**
+ * @internal FileContentReader is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
+ */
+final class FileContentReader implements ContentReaderInterface, MemoizableInterface
 {
     /**
      * @var string

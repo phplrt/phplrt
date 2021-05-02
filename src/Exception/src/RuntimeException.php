@@ -13,9 +13,9 @@ namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Position\PositionInterface;
-use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Exception\Renderer\ConsoleRenderer;
+use Phplrt\Position\Interval;
 use Phplrt\Position\Position;
 use Phplrt\Source\File;
 
@@ -32,11 +32,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     private ?ReadableInterface $source = null;
 
     /**
-     * @var string
-     */
-    private string $original;
-
-    /**
      * RuntimeException constructor.
      *
      * @param string $message
@@ -45,17 +40,16 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
      */
     public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
     {
-        $this->original = $message;
-
         parent::__construct($message, $code, $previous);
     }
 
     /**
      * @return string
+     * @deprecated This class is deprecated since 4.0. Please use {@see RendererInterface} implementation instead.
      */
     public function getOriginalMessage(): string
     {
-        return $this->original;
+        return $this->message;
     }
 
     /**
@@ -64,7 +58,11 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function getSource(): ReadableInterface
     {
         if ($this->source === null) {
-            return File::fromPathname($this->getFile());
+            if (\is_file($this->getFile())) {
+                return File::fromPathname($this->getFile());
+            }
+
+            return File::empty();
         }
 
         return $this->source;
@@ -77,33 +75,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function setSource(?ReadableInterface $source): void
     {
         $this->source = $source;
-
-        $this->sync();
-    }
-
-    /**
-     * @return void
-     */
-    protected function sync(): void
-    {
-        $file = $this->getSource();
-
-        if ($file instanceof FileInterface && $this->token) {
-            $this->file = $file->getPathname();
-            $this->line = $this->getPosition()->getLine();
-        }
-
-        if ($this->source && $this->token) {
-            $this->message = $this->original . $this->getMessageSuffix($this->source, $this->token);
-        }
-    }
-
-    /**
-     * @return PositionInterface
-     */
-    public function getPosition(): PositionInterface
-    {
-        return Position::fromOffset($this->getSource(), $this->getToken()->getOffset());
     }
 
     /**
@@ -112,7 +83,7 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function getToken(): TokenInterface
     {
         if ($this->token === null) {
-            $position = Position::fromPosition($this->getSource(), $this->getLine());
+            $position = Position::fromLineAndColumn($this->getSource(), $this->getLine());
 
             return new UndefinedToken($position);
         }
@@ -127,19 +98,23 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function setToken(?TokenInterface $token): void
     {
         $this->token = $token;
-
-        $this->sync();
     }
 
     /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $token
      * @return string
      */
-    private function getMessageSuffix(ReadableInterface $src, TokenInterface $token): string
+    public function __toString(): string
     {
-        $renderer = new ErrorInformationRenderer($src, $token);
+        $renderer = new ConsoleRenderer();
 
-        return \PHP_EOL . $renderer->render();
+        $token = $this->getToken();
+        $source = $this->getSource();
+
+        $interval = new Interval(
+            Position::fromOffset($source, $token->getOffset()),
+            Position::fromOffset($source, $token->getOffset() + $token->getBytes())
+        );
+
+        return $renderer->renderIn($this, $source, $interval);
     }
 }

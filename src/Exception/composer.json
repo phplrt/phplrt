@@ -23,6 +23,7 @@
         "ext-mbstring": "*",
         "phplrt/source": "^4.0",
         "phplrt/position": "^4.0",
+        "sebastian/environment": ">=5.0",
         "phplrt/exception-contracts": "^4.0"
     },
     "autoload": {

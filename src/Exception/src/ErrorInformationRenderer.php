@@ -16,6 +16,9 @@ use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
 
+/**
+ * @deprecated This class is deprecated since 4.0. Please use {@see RendererInterface} implementation instead.
+ */
 class ErrorInformationRenderer
 {
     /**

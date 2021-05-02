@@ -13,14 +13,14 @@ namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\ContentReader\ContentReader;
-use Phplrt\Source\ContentReader\StreamContentReader;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Internal\ContentReader\ContentReader;
+use Phplrt\Source\Internal\ContentReader\StreamContentReader;
+use Phplrt\Source\Internal\StreamReader\ContentStreamReader;
+use Phplrt\Source\Internal\StreamReader\StreamReader;
 use Phplrt\Source\Internal\Util;
-use Phplrt\Source\StreamReader\ContentStreamReader;
-use Phplrt\Source\StreamReader\StreamReader;
 use Psr\Http\Message\StreamInterface;
 
 trait FactoryTrait
@@ -77,7 +77,7 @@ trait FactoryTrait
 
             default:
                 $message = 'Unrecognized readable file type "%s"';
-                throw new \InvalidArgumentException(\sprintf($message, \gettype($sources)));
+                throw new \InvalidArgumentException(\sprintf($message, \get_debug_type($source)));
         }
     }
 

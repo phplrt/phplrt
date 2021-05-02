@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\ContentReader\ContentReaderInterface;
-use Phplrt\Source\StreamReader\StreamReaderInterface;
+use Phplrt\Source\Internal\ContentReaderInterface;
+use Phplrt\Source\Internal\StreamReaderInterface;
 
 class Readable implements ReadableInterface, MemoizableInterface
 {
@@ -35,8 +35,11 @@ class Readable implements ReadableInterface, MemoizableInterface
     private ContentReaderInterface $content;
 
     /**
-     * Readable constructor.
-     *
+     * @var string|null
+     */
+    protected ?string $hash = null;
+
+    /**
      * @param StreamReaderInterface $stream
      * @param ContentReaderInterface $content
      */
@@ -51,6 +54,8 @@ class Readable implements ReadableInterface, MemoizableInterface
      */
     public function refresh(): void
     {
+        $this->hash = null;
+
         if ($this->stream instanceof MemoizableInterface) {
             $this->stream->refresh();
         }
@@ -77,10 +82,12 @@ class Readable implements ReadableInterface, MemoizableInterface
     }
 
     /**
+     * @param string $algo
+     * @param bool $binary
      * @return string
      */
-    public function getHash(): string
+    public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {
-        return \hash(static::HASH_ALGORITHM, $this->getContents());
+        return $this->hash ??= \hash($algo, $this->getContents(), $binary);
     }
 }

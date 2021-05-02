@@ -24,7 +24,7 @@ interface IntervalInterface
     public function getTo(): PositionInterface;
 
     /**
-     * @return int
+     * @return positive-int
      */
     public function getLength(): int;
 }

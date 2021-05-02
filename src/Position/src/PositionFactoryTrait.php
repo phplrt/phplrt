@@ -25,11 +25,26 @@ trait PositionFactoryTrait
      * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
+     *
+     * @deprecated Since phplrt 4.0. Please use {@see PositionFactoryTrait::fromLineAndColumn()} instead.
      */
     public static function fromPosition($source, int $line = 1, int $column = 1): PositionInterface
     {
-        \assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
-        \assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
+        return static::fromLineAndColumn($source, $line, $column);
+    }
+
+    /**
+     * @param ReadableInterface|string|resource|mixed $source
+     * @param int $line
+     * @param int $column
+     * @return PositionInterface
+     * @throws NotAccessibleException
+     * @throws \RuntimeException
+     */
+    public static function fromLineAndColumn($source, int $line = 1, int $column = 1): PositionInterface
+    {
+        assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
+        assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
 
         if ($line === Position::MIN_LINE && $column === Position::MIN_COLUMN) {
             return static::start();

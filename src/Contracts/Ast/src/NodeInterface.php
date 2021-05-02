@@ -23,6 +23,8 @@ namespace Phplrt\Contracts\Ast;
  * It often serves as an intermediate representation of the program
  * through several stages that the parser\compiler requires, and has a
  * strong impact on the final output of the parser\compiler.
+ *
+ * @template-extends \IteratorAggregate<NodeInterface|array<NodeInterface>>
  */
 interface NodeInterface extends \IteratorAggregate
 {
@@ -30,7 +32,7 @@ interface NodeInterface extends \IteratorAggregate
      * Returns the list of children nodes.
      *
      * @see \IteratorAggregate::getIterator()
-     * @return \Traversable|NodeInterface[]|array[]
+     * @return \Traversable<NodeInterface|array<NodeInterface>>
      */
     public function getIterator(): \Traversable;
 }

@@ -9,8 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source\StreamReader;
+namespace Phplrt\Source\Internal;
 
+/**
+ * @internal StreamReaderInterface is an internal library interface, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
+ */
 interface StreamReaderInterface
 {
     /**

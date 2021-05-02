@@ -12,12 +12,12 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Source\ContentReader\ContentReaderInterface;
-use Phplrt\Source\ContentReader\FileContentReader;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\StreamReader\FileStreamReader;
-use Phplrt\Source\StreamReader\StreamReaderInterface;
+use Phplrt\Source\Internal\ContentReader\FileContentReader;
+use Phplrt\Source\Internal\ContentReaderInterface;
+use Phplrt\Source\Internal\StreamReader\FileStreamReader;
+use Phplrt\Source\Internal\StreamReaderInterface;
 
 class File extends Readable implements FileInterface
 {
@@ -37,8 +37,6 @@ class File extends Readable implements FileInterface
     private string $pathname;
 
     /**
-     * File constructor.
-     *
      * @param string $pathname
      * @param StreamReaderInterface|null $stream
      * @param ContentReaderInterface|null $content
@@ -86,10 +84,12 @@ class File extends Readable implements FileInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $algo
+     * @param bool $binary
+     * @return string
      */
-    final public function getHash(): string
+    final public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {
-        return \hash_file(static::HASH_ALGORITHM, $this->pathname);
+        return $this->hash ??= \hash_file($algo, $this->pathname, $binary);
     }
 }

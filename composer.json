@@ -9,6 +9,7 @@
         "ext-pcre": "*",
         "ext-spl": "*",
         "laminas/laminas-code": "^4.0",
+        "sebastian/environment": ">=5.0",
         "symfony/polyfill-php80": "v1.22"
     },
     "require-dev": {

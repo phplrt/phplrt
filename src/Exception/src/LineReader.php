@@ -12,50 +12,47 @@ declare(strict_types=1);
 namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Source\Reader;
+use Phplrt\Source\ReaderInterface;
 
+/**
+ * @deprecated This class is deprecated since 4.0. Please use {@see ReaderInterface} implementation instead.
+ */
 class LineReader
 {
     /**
-     * @var array|string[]
+     * @var ReaderInterface
      */
-    private array $lines;
+    private ReaderInterface $reader;
 
     /**
-     * LineReader constructor.
-     *
      * @param ReadableInterface $source
      */
     public function __construct(ReadableInterface $source)
     {
-        $filter = fn (string $line) => \trim($line, "\r\0");
-
-        $this->lines = \array_map($filter, \explode("\n", $source->getContents()));
+        $this->reader = new Reader($source);
     }
 
     /**
-     * @param int $line
+     * @param positive-int $line
      * @return string
+     *
+     * @deprecated This method is deprecated since 4.0. Please use {@see ReaderInterface::line()} instead.
      */
     public function readLine(int $line): string
     {
-        return $this->lines[$line - 1] ?? '';
+        return $this->reader->line($line);
     }
 
     /**
-     * {@inheritDoc}
+     * @param positive-int $from
+     * @param positive-int $to
+     * @return iterable<positive-int, string>
+     *
+     * @deprecated This method is deprecated since 4.0. Please use {@see ReaderInterface::lines()} instead.
      */
     public function readLines(int $from, int $to): iterable
     {
-        [$from, $to] = [\max(1, $from), \max(1, $to)];
-
-        [$from, $to] = $from > $to ? [$to, $from] : [$from, $to];
-
-        for ($i = $from; $i <= $to; ++$i) {
-            if (! isset($this->lines[$i - 1])) {
-                break;
-            }
-
-            yield $i => $this->readLine($i);
-        }
+        return $this->reader->lines($from, $to);
     }
 }

@@ -9,11 +9,16 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source\StreamReader;
+namespace Phplrt\Source\Internal\StreamReader;
 
+use Phplrt\Source\Internal\StreamReaderInterface;
 use Phplrt\Source\Internal\Util;
 
-class StreamReader implements StreamReaderInterface
+/**
+ * @internal StreamReader is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
+ */
+final class StreamReader implements StreamReaderInterface
 {
     /**
      * @var resource
@@ -21,8 +26,6 @@ class StreamReader implements StreamReaderInterface
     private $stream;
 
     /**
-     * StreamReader constructor.
-     *
      * @param resource $stream
      */
     public function __construct($stream)

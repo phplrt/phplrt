@@ -9,9 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source\ContentReader;
+namespace Phplrt\Source\Internal\ContentReader;
 
-class ContentReader implements ContentReaderInterface
+use Phplrt\Source\Internal\ContentReaderInterface;
+
+/**
+ * @internal ContentReader is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
+ */
+final class ContentReader implements ContentReaderInterface
 {
     /**
      * @var string

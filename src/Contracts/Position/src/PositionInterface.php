@@ -14,17 +14,17 @@ namespace Phplrt\Contracts\Position;
 interface PositionInterface
 {
     /**
-     * @return int
+     * @return positive-int|0
      */
     public function getOffset(): int;
 
     /**
-     * @return int
+     * @return positive-int
      */
     public function getLine(): int;
 
     /**
-     * @return int
+     * @return positive-int
      */
     public function getColumn(): int;
 }

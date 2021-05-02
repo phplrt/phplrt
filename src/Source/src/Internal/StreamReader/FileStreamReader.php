@@ -9,11 +9,16 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Source\StreamReader;
+namespace Phplrt\Source\Internal\StreamReader;
 
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Internal\StreamReaderInterface;
 
-class FileStreamReader implements StreamReaderInterface
+/**
+ * @internal FileStreamReader is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
+ */
+final class FileStreamReader implements StreamReaderInterface
 {
     /**
      * @var string

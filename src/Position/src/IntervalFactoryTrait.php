@@ -36,12 +36,32 @@ trait IntervalFactoryTrait
      * @param int $column
      * @param int $length
      * @return IntervalInterface
+     *
+     * @deprecated Since phplrt 4.0. Please use {@see IntervalFactoryTrait::fromLineAndColumn()} instead.
      */
     public static function fromPosition($source, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
     {
+        return static::fromLineAndColumn($source, $line, $column, $length);
+    }
+
+    /**
+     * @param ReadableInterface|string|resource|mixed $source
+     * @param int $line
+     * @param int $column
+     * @param int $length
+     * @return IntervalInterface
+     */
+    public static function fromLineAndColumn(
+        $source,
+        int $line = 1,
+        int $column = 1,
+        int $length = 0
+    ): IntervalInterface {
         return new Interval(
-            $from = Position::fromPosition($source, $line, $column),
+            $from = Position::fromLineAndColumn($source, $line, $column),
             Position::fromOffset($source, $from->getOffset() + $length)
         );
     }
+
+
 }

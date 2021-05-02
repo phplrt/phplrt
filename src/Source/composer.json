@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=7.4",
+        "symfony/polyfill-php80": "^1.22",
         "phplrt/source-contracts": "^4.0"
     },
     "autoload": {

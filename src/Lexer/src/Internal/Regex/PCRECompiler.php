@@ -51,7 +51,7 @@ abstract class PCRECompiler implements CompilerInterface
     /**
      * @var bool
      */
-    private bool $debug;
+    private bool $debug = false;
 
     /**
      * @param array<FlagType>|null $flags
