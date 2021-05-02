@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Compiler\Grammar\PP2Grammar;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
@@ -18,7 +18,7 @@ use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\File;
 
-class PhpLexer implements LexerInterface
+final class PhpLexer implements LexerInterface
 {
     /**
      * @var bool

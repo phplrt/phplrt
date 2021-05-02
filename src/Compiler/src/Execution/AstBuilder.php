@@ -9,19 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler;
+namespace Phplrt\Compiler\Execution;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\BuilderInterface;
 use Phplrt\Parser\ContextInterface;
 
 class AstBuilder implements BuilderInterface
 {
     /**
-     * @param ContextInterface $context
-     * @param array|iterable|NodeInterface|TokenInterface $result
-     * @return mixed
+     * {@inheritDoc}
      */
     public function build(ContextInterface $context, $result)
     {
@@ -30,8 +26,8 @@ class AstBuilder implements BuilderInterface
         }
 
         $token = $context->getToken();
-        $result = \is_array($result) ? $result : [$result];
+        $children = \is_array($result) ? $result : [$result];
 
-        return new SampleNode($token->getOffset(), (string)$context->getState(), $result);
+        return new SampleNode($token->getOffset(), $context->getState(), $children);
     }
 }

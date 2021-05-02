@@ -12,30 +12,27 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class PatternStmt
- *
- * @internal Compiler's grammar AST node class
+ * @internal PatternStmt is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class PatternStmt extends Statement
 {
     /**
-     * @var array
+     * @var array<string, int>
      */
     private static $identifiers = [];
 
     /**
      * @var string
      */
-    public $pattern;
+    public string $pattern;
 
     /**
      * @var int
      */
-    public $name;
+    public int $name;
 
     /**
-     * TokenDefinition constructor.
-     *
      * @param string $pattern
      */
     public function __construct(string $pattern)
@@ -49,6 +46,6 @@ class PatternStmt extends Statement
      */
     private function getId(): int
     {
-        return self::$identifiers[$this->pattern] ?? self::$identifiers[$this->pattern] = \count(self::$identifiers);
+        return self::$identifiers[$this->pattern] ??= \count(self::$identifiers);
     }
 }

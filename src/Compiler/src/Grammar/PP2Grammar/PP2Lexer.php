@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Compiler\Grammar\PP2Grammar;
 
 use Phplrt\Lexer\Lexer;
 

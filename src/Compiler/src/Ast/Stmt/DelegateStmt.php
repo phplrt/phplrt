@@ -12,15 +12,15 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class DelegateStmt
- * @internal Compiler's grammar AST node class
+ * @internal DelegateStmt is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class DelegateStmt extends Statement
 {
     /**
      * @var string|null
      */
-    public $code;
+    public ?string $code;
 
     /**
      * DelegateStmt constructor.

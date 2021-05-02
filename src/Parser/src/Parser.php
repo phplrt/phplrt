@@ -95,7 +95,7 @@ final class Parser implements
 
     /**
      * @param LexerInterface $lexer
-     * @param iterable|RuleInterface[] $grammar
+     * @param iterable<RuleInterface> $grammar
      * @param array $options
      */
     public function __construct(LexerInterface $lexer, iterable $grammar = [], array $options = [])

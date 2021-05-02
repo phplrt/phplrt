@@ -14,8 +14,8 @@ namespace Phplrt\Compiler\Ast\Def;
 use Phplrt\Compiler\Ast\Node;
 
 /**
- * Class Definition
- * @internal Compiler's grammar AST node class
+ * @internal Definition is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 abstract class Definition extends Node
 {

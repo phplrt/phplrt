@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Execution\AstBuilder;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Renderer\LaminasRenderer;
@@ -44,8 +45,6 @@ class Compiler implements ParserInterface
     private TraverserInterface $preloader;
 
     /**
-     * Compiler constructor.
-     *
      * @param GrammarInterface|null $grammar
      */
     public function __construct(GrammarInterface $grammar = null)

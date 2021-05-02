@@ -12,25 +12,23 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Class Node
- *
- * @internal Compiler's grammar AST node class
+ * @internal Node is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 abstract class Node implements NodeInterface
 {
     /**
-     * @var ReadableInterface|FileInterface
+     * @var ReadableInterface
      */
-    public $file;
+    public ReadableInterface $file;
 
     /**
      * @var int
      */
-    public $offset = 0;
+    public int $offset = 0;
 
     /**
      * @return int
@@ -41,7 +39,7 @@ abstract class Node implements NodeInterface
     }
 
     /**
-     * @return \Traversable
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {

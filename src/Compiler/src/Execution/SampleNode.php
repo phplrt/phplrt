@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler;
+namespace Phplrt\Compiler\Execution;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-class SampleNode implements NodeInterface
+final class SampleNode implements NodeInterface, \Stringable
 {
     /**
      * @var int
@@ -22,23 +22,21 @@ class SampleNode implements NodeInterface
     private int $offset;
 
     /**
-     * @var string
+     * @var string|int
      */
-    private string $state;
+    private $state;
 
     /**
-     * @var array|SampleNode[]|TokenInterface[]
+     * @var array<SampleNode|TokenInterface>
      */
     public array $children;
 
     /**
-     * SampleNode constructor.
-     *
      * @param int $offset
-     * @param string $state
-     * @param array $children
+     * @param string|int $state
+     * @param array<SampleNode|TokenInterface> $children
      */
-    public function __construct(int $offset, string $state, array $children)
+    public function __construct(int $offset, $state, array $children)
     {
         $this->offset = $offset;
         $this->state = $state;
@@ -46,7 +44,7 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @return \Traversable|SampleNode[][]|TokenInterface[][]
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {
@@ -54,7 +52,7 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function __toString(): string
     {
@@ -62,14 +60,14 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @param int $depth
-     * @return array|string[]
+     * @param positive-int|0 $depth
+     * @return non-empty-array<string>
      */
     public function render(int $depth): array
     {
         $prefix = \str_repeat('    ', $depth);
 
-        $result[] = $prefix . '<' . $this->state . ' offset="' . $this->offset . '">';
+        $result = [$prefix . '<' . $this->state . ' offset="' . $this->offset . '">'];
 
         foreach ($this->children as $child) {
             switch (true) {
@@ -96,10 +94,18 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @return string
+     * @return string|int
      */
-    public function getState(): string
+    public function getState()
     {
         return $this->state;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
     }
 }

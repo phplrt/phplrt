@@ -14,8 +14,8 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class ConcatenationStmt
- * @internal Compiler's grammar AST node class
+ * @internal ConcatenationStmt is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class ConcatenationStmt extends Statement
 {
@@ -35,7 +35,7 @@ class ConcatenationStmt extends Statement
     }
 
     /**
-     * @return \Traversable|NodeInterface[][]|Statement[][]
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {

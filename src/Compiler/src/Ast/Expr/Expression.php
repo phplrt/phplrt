@@ -14,8 +14,8 @@ namespace Phplrt\Compiler\Ast\Expr;
 use Phplrt\Compiler\Ast\Node;
 
 /**
- * Class Expression
- * @internal Compiler's grammar AST node class
+ * @internal Expression is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 abstract class Expression extends Node
 {

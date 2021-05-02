@@ -14,20 +14,17 @@ namespace Phplrt\Compiler\Ast\Expr;
 use Phplrt\Contracts\Source\FileInterface;
 
 /**
- * Class IncludeExpr
- *
- * @internal Compiler's grammar AST node class
+ * @internal IncludeExpr is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class IncludeExpr extends Expression
 {
     /**
      * @var string
      */
-    private $target;
+    private string $target;
 
     /**
-     * Inclusion constructor.
-     *
      * @param string $file
      */
     public function __construct(string $file)

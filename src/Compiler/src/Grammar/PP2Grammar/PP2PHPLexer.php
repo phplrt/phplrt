@@ -9,14 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Compiler\Grammar\PP2Grammar;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Source\Exception\NotAccessibleException;
 
-class PP2PHPLexer implements LexerInterface
+final class PP2PHPLexer implements LexerInterface
 {
     /**
      * @var PhpLexer

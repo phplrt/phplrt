@@ -11,34 +11,34 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast\Def;
 
-use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
+use Phplrt\Compiler\Ast\Stmt\Statement;
 
 /**
- * Class RuleDef
- * @internal Compiler's grammar AST node class
+ * @internal RuleDef is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class RuleDef extends Definition
 {
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var DelegateStmt|null
      */
-    public $delegate;
+    public ?DelegateStmt $delegate = null;
 
     /**
      * @var Statement
      */
-    public $body;
+    public Statement $body;
 
     /**
      * @var bool
      */
-    public $keep;
+    public bool $keep;
 
     /**
      * Rule constructor.
@@ -50,14 +50,14 @@ class RuleDef extends Definition
      */
     public function __construct(string $name, DelegateStmt $delegate, Statement $body, bool $keep = true)
     {
-        $this->name     = $name;
-        $this->body     = $body;
+        $this->name = $name;
+        $this->body = $body;
         $this->delegate = $delegate;
-        $this->keep     = $keep;
+        $this->keep = $keep;
     }
 
     /**
-     * @return \Traversable
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {

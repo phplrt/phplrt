@@ -12,24 +12,22 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Def;
 
 /**
- * Class PragmaDef
- * @internal Compiler's grammar AST node class
+ * @internal PragmaDef is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class PragmaDef extends Definition
 {
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var string
      */
-    public $value;
+    public string $value;
 
     /**
-     * Pragma constructor.
-     *
      * @param string $name
      * @param string $value
      */

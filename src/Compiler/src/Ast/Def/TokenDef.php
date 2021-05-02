@@ -12,39 +12,37 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Def;
 
 /**
- * Class TokenDef
- * @internal Compiler's grammar AST node class
+ * @internal TokenDef is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class TokenDef extends Definition
 {
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var string
      */
-    public $value;
+    public string $value;
 
     /**
      * @var bool
      */
-    public $keep;
+    public bool $keep;
 
     /**
      * @var string|null
      */
-    public $state;
+    public ?string $state = null;
 
     /**
      * @var string|null
      */
-    public $next;
+    public ?string $next = null;
 
     /**
-     * Pragma constructor.
-     *
      * @param string $name
      * @param string $value
      * @param bool $keep

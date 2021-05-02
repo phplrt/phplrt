@@ -14,15 +14,15 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Compiler\Ast\Node;
 
 /**
- * Class Quantifier
- * @internal Compiler's grammar AST node class
+ * @internal Quantifier is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
  */
 class Quantifier extends Node
 {
     /**
      * @var int
      */
-    public $from;
+    public int $from;
 
     /**
      * @var int|float
@@ -30,8 +30,6 @@ class Quantifier extends Node
     public $to;
 
     /**
-     * Quantifier constructor.
-     *
      * @param int $from
      * @param float $to
      */

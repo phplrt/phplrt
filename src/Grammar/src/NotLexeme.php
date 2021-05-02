@@ -14,7 +14,7 @@ namespace Phplrt\Grammar;
 use Phplrt\Contracts\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer;
 
-class Lexeme extends Terminal
+class NotLexeme extends Terminal
 {
     /**
      * @var string
@@ -39,7 +39,7 @@ class Lexeme extends Terminal
     {
         $haystack = $buffer->current();
 
-        if ($haystack->getName() === $this->token) {
+        if ($haystack->getName() !== $this->token) {
             return $haystack;
         }
 
