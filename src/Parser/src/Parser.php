@@ -20,9 +20,9 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
-use Phplrt\Parser\Grammar\ProductionInterface;
-use Phplrt\Parser\Grammar\RuleInterface;
-use Phplrt\Parser\Grammar\TerminalInterface;
+use Phplrt\Contracts\Grammar\ProductionInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
+use Phplrt\Contracts\Grammar\TerminalInterface;
 use Phplrt\Source\File;
 
 /**

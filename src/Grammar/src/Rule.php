@@ -9,14 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Tests\Stub;
+namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
 
-class Rule implements RuleInterface
+abstract class Rule implements RuleInterface
 {
-    public static function new(): self
-    {
-        return new self();
-    }
 }

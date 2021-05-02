@@ -9,9 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Grammar;
+namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Buffer\BufferInterface;
+use Phplrt\Contracts\Lexer;
 
 class Lexeme extends Terminal
 {
@@ -36,7 +37,7 @@ class Lexeme extends Terminal
     /**
      * {@inheritDoc}
      */
-    public function reduce(BufferInterface $buffer): ?\Phplrt\Contracts\Lexer\TokenInterface
+    public function reduce(BufferInterface $buffer): ?Lexer\TokenInterface
     {
         $haystack = $buffer->current();
 

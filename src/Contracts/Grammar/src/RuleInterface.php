@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Grammar;
+namespace Phplrt\Contracts\Grammar;
 
 /**
  * The base interface of all parser rules.

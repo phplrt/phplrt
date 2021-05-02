@@ -15,7 +15,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Parser\Grammar\RuleInterface;
+use Phplrt\Contracts\Grammar\RuleInterface;
 
 /**
  * Interface provides full information about execution context

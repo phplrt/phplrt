@@ -9,8 +9,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Grammar;
+namespace Phplrt\Grammar\Tests;
 
-abstract class Rule implements RuleInterface
+use PHPUnit\Framework\TestCase as BastTestCase;
+
+abstract class TestCase extends BastTestCase
 {
+
 }
