@@ -13,13 +13,11 @@ namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Buffer\BufferInterface;
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Parser\Exception\UnrecognizedTokenException;
 use Phplrt\Contracts\Grammar\ProductionInterface;
 use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Grammar\TerminalInterface;
@@ -162,12 +160,8 @@ final class Parser implements
      */
     public function lex($source): iterable
     {
-        try {
-            foreach ($this->lexer->lex($source) as $token) {
-                yield $token;
-            }
-        } catch (RuntimeExceptionInterface $e) {
-            throw UnrecognizedTokenException::fromLexerException($e);
+        foreach ($this->lexer->lex($source) as $token) {
+            yield $token;
         }
     }
 
