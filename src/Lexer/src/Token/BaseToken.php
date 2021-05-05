@@ -41,14 +41,10 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable, \Stringab
 
     /**
      * {@inheritDoc}
-     * @psalm-suppress MoreSpecificReturnType
      */
     public function getBytes(): int
     {
-        /**
-         * @psalm-suppress PropertyTypeCoercion
-         * @psalm-suppress LessSpecificReturnStatement
-         */
+        /** @psalm-suppress PropertyTypeCoercion */
         return $this->bytes ?? $this->bytes = \strlen($this->getValue());
     }
 
