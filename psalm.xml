@@ -19,6 +19,8 @@
             </errorLevel>
         </UnusedVariable>
         <RedundantCondition errorLevel="suppress" />
+        <MoreSpecificReturnType errorLevel="suppress" />
+        <LessSpecificReturnStatement errorLevel="suppress" />
     </issueHandlers>
     <projectFiles>
         <directory name="src" />
