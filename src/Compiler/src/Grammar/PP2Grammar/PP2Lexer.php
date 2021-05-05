@@ -180,7 +180,7 @@ final class PP2Lexer extends Lexer
         self::T_REPEAT_ZERO_TO_M    => '{\\h*,\\h*(\\-?\\d+)\\h*}',
         self::T_REPEAT_EXACTLY_N    => '{\\h*(\\-?\\d+)\\h*}',
         self::T_KEPT_NAME           => '#',
-        self::T_NAME                => '\\\\?[a-zA-Z0-9_]+(?:\\\\[a-zA-Z0-9_]+)*',
+        self::T_NAME                => '[a-zA-Z0-9_]+(?:[a-zA-Z0-9_]*)',
         self::T_EQ                  => '(?:\\:\\:=|\\:|=)',
         self::T_END_OF_RULE         => ';',
         self::T_PHP_OPEN            => '\->\h*{',
