@@ -14,8 +14,6 @@ namespace Phplrt\Exception;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\Renderer\ConsoleRenderer;
-use Phplrt\Position\Interval;
 use Phplrt\Position\Position;
 use Phplrt\Source\File;
 
@@ -45,7 +43,7 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
 
     /**
      * @return string
-     * @deprecated This class is deprecated since 4.0. Please use {@see RendererInterface} implementation instead.
+     * @deprecated This class is deprecated since 4.0.
      */
     public function getOriginalMessage(): string
     {
@@ -98,23 +96,5 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function setToken(?TokenInterface $token): void
     {
         $this->token = $token;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        $renderer = new ConsoleRenderer();
-
-        $token = $this->getToken();
-        $source = $this->getSource();
-
-        $interval = new Interval(
-            Position::fromOffset($source, $token->getOffset()),
-            Position::fromOffset($source, $token->getOffset() + $token->getBytes())
-        );
-
-        return $renderer->renderIn($this, $source, $interval);
     }
 }
