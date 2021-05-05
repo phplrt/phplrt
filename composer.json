@@ -10,7 +10,7 @@
         "ext-spl": "*",
         "laminas/laminas-code": "^4.0",
         "sebastian/environment": ">=5.0",
-        "symfony/polyfill-php80": "v1.22"
+        "symfony/polyfill-php80": "^1.22"
     },
     "require-dev": {
         "jetbrains/phpstorm-attributes": "^1.0",
