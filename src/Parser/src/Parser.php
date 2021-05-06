@@ -56,11 +56,7 @@ use Phplrt\Source\File;
  *      *)
  * </code>
  */
-final class Parser implements
-    ParserInterface,
-    ParserConfigsInterface,
-    BuilderInterface,
-    LexerInterface
+final class Parser implements ParserInterface, ParserConfigsInterface
 {
     use ParserConfigsTrait;
 
@@ -148,35 +144,11 @@ final class Parser implements
      */
     private function run(ReadableInterface $source, array $options): iterable
     {
-        $buffer = $this->buffer->create($this->lex($source), $this->bufferSize);
+        $buffer = $this->buffer->create($this->lexer->lex($source), $this->bufferSize);
 
-        $context = $this->createExecutionContext($buffer, $source, $options);
+        $context = new Context($buffer, $source, $this->initial, $options);
 
         return $this->parseOrFail($context);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lex($source): iterable
-    {
-        foreach ($this->lexer->lex($source) as $token) {
-            yield $token;
-        }
-    }
-
-    /**
-     * @param BufferInterface $buffer
-     * @param ReadableInterface $source
-     * @param array $options
-     * @return Context
-     */
-    protected function createExecutionContext(
-        BufferInterface $buffer,
-        ReadableInterface $source,
-        array $options
-    ): Context {
-        return new Context($buffer, $source, $this->initial, $options);
     }
 
     /**
@@ -280,13 +252,5 @@ final class Parser implements
         $current = $buffer->current();
 
         return $current->getName() === $this->eoi;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function build(ContextInterface $context, $result)
-    {
-        return $result;
     }
 }
