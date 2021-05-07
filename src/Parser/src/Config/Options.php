@@ -9,9 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser;
+namespace Phplrt\Parser\Config;
 
-interface ParserConfigsInterface
+/**
+ * @psalm-type ConfigOptionsKey = ConfigInterface::CONFIG_*
+ */
+interface Options
 {
     /**
      * The initial state (initial rule identifier) of the parser

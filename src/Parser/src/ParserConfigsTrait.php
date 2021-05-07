@@ -14,10 +14,9 @@ namespace Phplrt\Parser;
 use Phplrt\Buffer\Factory;
 use Phplrt\Contracts\Buffer\FactoryInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\ParserConfigsInterface as Config;
 
 /**
- * @mixin ParserConfigsInterface
+ * @mixin ConfigInterface
  */
 trait ParserConfigsTrait
 {
@@ -88,12 +87,12 @@ trait ParserConfigsTrait
     protected function bootParserConfigsTrait(array $options): void
     {
         $this
-            ->startsAt($options[Config::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules))
-            ->completeAt($options[Config::CONFIG_EOI] ?? $this->eoi)
-            ->withBuffer($options[Config::CONFIG_BUFFER] ?? new Factory())
-            ->withBufferSize($options[Config::CONFIG_BUFFER_SIZE] ?? $this->bufferSize)
-            ->buildUsing($options[Config::CONFIG_AST_BUILDER] ?? $this)
-            ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
+            ->startsAt($options[ConfigInterface::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules))
+            ->completeAt($options[ConfigInterface::CONFIG_EOI] ?? $this->eoi)
+            ->withBuffer($options[ConfigInterface::CONFIG_BUFFER] ?? new Factory())
+            ->withBufferSize($options[ConfigInterface::CONFIG_BUFFER_SIZE] ?? $this->bufferSize)
+            ->buildUsing($options[ConfigInterface::CONFIG_AST_BUILDER] ?? $this)
+            ->eachStepThrough($options[ConfigInterface::CONFIG_STEP_REDUCER] ?? null)
         ;
     }
 
