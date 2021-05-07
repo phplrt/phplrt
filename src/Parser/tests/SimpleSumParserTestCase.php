@@ -115,11 +115,9 @@ class SimpleSumParserTestCase extends TestCase implements BuilderInterface
             ]),
             new AstNode('suffix', [
                 new Token('T_PLUS', '+', 6),
-                $last = new Token('T_DIGIT', '4', 8),
+                new Token('T_DIGIT', '4', 8),
             ]),
         ]);
-
-        $last->getBytes();
 
         $actual = $this->parseSum('2 + 2 + 4');
 
