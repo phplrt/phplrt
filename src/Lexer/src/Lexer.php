@@ -12,18 +12,25 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use JetBrains\PhpStorm\Language;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Lexer\Driver\Markers;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
+use Phplrt\Lexer\Internal\Regex\MarkersCompiler;
+use Phplrt\Lexer\Token\Composite;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\File;
 
-class Lexer implements LexerInterface, MutableLexerInterface
+class Lexer implements MutableLexerInterface
 {
+    /**
+     * @var string
+     */
+    private const T_UNKNOWN_NAME = 'T_UNKNOWN';
+
+    /**
+     * @var string
+     */
+    private const T_UNKNOWN_PATTERN = '.+?';
+
     /**
      * @var array<string, string>
      */
@@ -35,9 +42,9 @@ class Lexer implements LexerInterface, MutableLexerInterface
     protected array $skip;
 
     /**
-     * @var DriverInterface
+     * @var string|null
      */
-    private DriverInterface $driver;
+    private ?string $pattern = null;
 
     /**
      * @param array<string, string> $tokens
@@ -45,7 +52,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
      */
     public function __construct(array $tokens = [], array $skip = [])
     {
-        $this->driver = new Markers();
         $this->tokens = $tokens;
         $this->skip = $skip;
     }
@@ -75,14 +81,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
     }
 
     /**
-     * @return void
-     */
-    private function reset(): void
-    {
-        $this->driver->reset();
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function prepend(
@@ -94,6 +92,14 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->tokens = \array_merge([$token => $pattern], $this->tokens);
 
         return $this;
+    }
+
+    /**
+     * @return void
+     */
+    private function reset(): void
+    {
+        $this->pattern = null;
     }
 
     /**
@@ -114,60 +120,84 @@ class Lexer implements LexerInterface, MutableLexerInterface
 
     /**
      * {@inheritDoc}
-     * @param positive-int|0 $offset
      */
     public function lex($source, int $offset = 0): iterable
     {
-        return $this->run(File::new($source), $offset);
-    }
+        $source = File::new($source);
+        $result = $this->match($source->getContents(), $offset);
+        $error = null;
 
-    /**
-     * @param ReadableInterface $source
-     * @param positive-int|0 $offset
-     * @return \Generator
-     */
-    private function run(ReadableInterface $source, int $offset): \Generator
-    {
-        $unknown = [];
+        /** @var array<string> $payload */
+        foreach ($result as $payload) {
+            $name = \array_pop($payload);
 
-        foreach ($this->driver->run($this->tokens, File::new($source), $offset) as $token) {
-            if (\in_array($token->getName(), $this->skip, true)) {
+            // Capture offset
+            $previous = $offset;
+            $offset += \strlen($payload[0]);
+
+            // Skip non-captured tokens
+            if (\in_array($name, $this->skip, true)) {
                 continue;
             }
 
-            if ($token->getName() === $this->driver::UNKNOWN_TOKEN_NAME) {
-                $unknown[] = $token;
+            // Capture error token
+            if ($name === self::T_UNKNOWN_NAME) {
+                $error ??= new Token(self::T_UNKNOWN_NAME, '', $previous);
+                $error->value .= $payload[0];
                 continue;
             }
 
-            if (\count($unknown) && $token->getName() !== $this->driver::UNKNOWN_TOKEN_NAME) {
-                throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+            // Transition to a known token from error token
+            if ($error !== null) {
+                throw UnrecognizedTokenException::fromToken($source, $error);
             }
 
-            yield $token;
+            if (\count($payload) > 1) {
+                $tokens = [];
+
+                foreach ($payload as $value) {
+                    $tokens[] = new Token($name, $value, $previous);
+                }
+
+                yield Composite::fromArray($tokens);
+                continue;
+            }
+
+            yield new Token($name, $payload[0], $previous);
         }
 
-        if ($unknown !== []) {
-            throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+        if ($error !== null) {
+            throw UnrecognizedTokenException::fromToken($source, $error);
         }
 
         if (! \in_array(EndOfInput::END_OF_INPUT, $this->skip, true)) {
-            yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
+            yield new EndOfInput($offset);
         }
     }
 
     /**
-     * @param array|TokenInterface[] $tokens
-     * @return TokenInterface
+     * @return string
      */
-    private function reduceUnknownToken(array $tokens): TokenInterface
+    private function compile(): string
     {
-        $concat = static function (string $data, TokenInterface $token): string {
-            return $data . $token->getValue();
-        };
+        $compiler = new MarkersCompiler();
 
-        $value = \array_reduce($tokens, $concat, '');
+        return $compiler->compile(\array_merge($this->tokens, [
+            self::T_UNKNOWN_NAME => self::T_UNKNOWN_PATTERN,
+        ]));
+    }
 
-        return new Token(\reset($tokens)->getName(), $value, \reset($tokens)->getOffset());
+    /**
+     * @param string $source
+     * @param int $offset
+     * @return array
+     */
+    private function match(string $source, int $offset): array
+    {
+        $this->pattern ??= $this->compile();
+
+        \preg_match_all($this->pattern, $source, $matches, \PREG_SET_ORDER, $offset);
+
+        return $matches;
     }
 }

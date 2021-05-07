@@ -12,8 +12,9 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use JetBrains\PhpStorm\Language;
+use Phplrt\Contracts\Lexer\LexerInterface;
 
-interface MutableLexerInterface
+interface MutableLexerInterface extends LexerInterface
 {
     /**
      * @param string $token

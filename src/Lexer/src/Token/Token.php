@@ -12,48 +12,42 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Lexer\Renderer\Renderer;
 
 class Token extends BaseToken
 {
     /**
-     * @var int
+     * @var positive-int|0
+     * @psalm-readonly
      */
-    private int $offset;
+    public int $offset;
 
     /**
      * @var string
+     * @psalm-readonly
      */
-    private string $value;
+    public string $value;
 
     /**
      * @var string
+     * @psalm-readonly
      */
-    private string $name;
+    public string $name;
 
     /**
      * @param string $name
      * @param string $value
-     * @param int $offset
+     * @param positive-int|0 $offset
      */
     public function __construct(string $name, string $value, int $offset)
     {
-        $this->name   = $name;
-        $this->value  = $value;
+        $this->name = $name;
+        $this->value = $value;
         $this->offset = $offset;
     }
 
     /**
-     * @return TokenInterface
-     */
-    public static function empty(): TokenInterface
-    {
-        return new self(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
-    }
-
-    /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getName(): string
     {
@@ -61,7 +55,7 @@ class Token extends BaseToken
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getValue(): string
     {
@@ -69,7 +63,7 @@ class Token extends BaseToken
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getOffset(): int
     {
@@ -77,7 +71,7 @@ class Token extends BaseToken
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function __toString(): string
     {
