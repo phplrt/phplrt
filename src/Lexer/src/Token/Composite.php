@@ -16,15 +16,20 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 final class Composite extends Token implements CompositeTokenInterface
 {
     /**
-     * @var array<TokenInterface>
+     * @var array<string>
      */
     private array $children;
+
+    /**
+     * @var array<TokenInterface>
+     */
+    private array $initialized = [];
 
     /**
      * @param string $name
      * @param string $value
      * @param positive-int|0 $offset
-     * @param array<TokenInterface> $children
+     * @param array<string> $children
      */
     public function __construct(string $name, string $value, int $offset, array $children)
     {
@@ -34,16 +39,17 @@ final class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @param non-empty-array<TokenInterface> $tokens
-     * @return self
+     * @param string $name
+     * @param array<string> $groups
+     * @param positive-int|0 $offset
+     * @return static
      */
-    public static function fromArray(array $tokens): self
+    public static function fromArray(string $name, array $groups, int $offset): self
     {
-        assert(count($tokens) > 0);
+        /** @var string $body */
+        $body = \array_shift($groups);
 
-        $first = \array_shift($tokens);
-
-        return new self($first->getName(), $first->getValue(), $first->getOffset(), $tokens);
+        return new self($name, $body, $offset, $groups);
     }
 
     /**
@@ -52,16 +58,30 @@ final class Composite extends Token implements CompositeTokenInterface
     public function jsonSerialize(): array
     {
         return \array_merge(parent::jsonSerialize(), [
-            'children' => $this->children,
+            'children' => $this->getChildren(),
         ]);
     }
 
     /**
-     * @return \Traversable<array-key, TokenInterface>
+     * @return array<TokenInterface>
+     */
+    private function getChildren(): array
+    {
+        if ($this->initialized === []) {
+            foreach ($this->children as $child) {
+                $this->initialized[] = new Token($this->name, $child, $this->offset);
+            }
+        }
+
+        return $this->initialized;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->children);
+        return new \ArrayIterator($this->getChildren());
     }
 
     /**
@@ -72,7 +92,7 @@ final class Composite extends Token implements CompositeTokenInterface
     {
         assert(is_int($offset) && $offset >= 0);
 
-        return isset($this->children[$offset]);
+        return isset($this->getChildren()[$offset]);
     }
 
     /**
@@ -83,7 +103,7 @@ final class Composite extends Token implements CompositeTokenInterface
     {
         assert(is_int($offset) && $offset >= 0);
 
-        return $this->children[$offset] ?? null;
+        return $this->getChildren()[$offset] ?? null;
     }
 
     /**
@@ -96,7 +116,7 @@ final class Composite extends Token implements CompositeTokenInterface
         assert(is_int($offset) && $offset >= 0);
         assert($value instanceof TokenInterface);
 
-        $this->children[$offset] = $value;
+        $this->getChildren()[$offset] = $value;
     }
 
     /**
@@ -107,7 +127,7 @@ final class Composite extends Token implements CompositeTokenInterface
     {
         assert(is_int($offset) && $offset >= 0);
 
-        unset($this->children[$offset]);
+        unset($this->getChildren()[$offset]);
     }
 
     /**
