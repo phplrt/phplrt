@@ -24,7 +24,7 @@ class Lexer implements MutableLexerInterface
     /**
      * @var string
      */
-    private const T_UNKNOWN_NAME = 'T_UNKNOWN';
+    public const T_UNKNOWN_NAME = 'T_UNKNOWN';
 
     /**
      * @var string
@@ -152,18 +152,10 @@ class Lexer implements MutableLexerInterface
                 throw UnrecognizedTokenException::fromToken($source, $error);
             }
 
-            if (\count($payload) > 1) {
-                $tokens = [];
-
-                foreach ($payload as $value) {
-                    $tokens[] = new Token($name, $value, $previous);
-                }
-
-                yield Composite::fromArray($tokens);
-                continue;
-            }
-
-            yield new Token($name, $payload[0], $previous);
+            yield \count($payload) > 1
+                ? Composite::fromArray($name, $payload, $previous)
+                : new Token($name, $payload[0], $previous)
+            ;
         }
 
         if ($error !== null) {
