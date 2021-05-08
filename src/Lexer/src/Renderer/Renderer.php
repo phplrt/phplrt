@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Renderer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Driver\DriverInterface;
+use Phplrt\Lexer\Lexer;
 
 final class Renderer implements RendererInterface
 {
@@ -111,7 +111,7 @@ final class Renderer implements RendererInterface
     public function render(TokenInterface $token): string
     {
         switch (true) {
-            case $token->getName() === DriverInterface::UNKNOWN_TOKEN_NAME:
+            case $token->getName() === Lexer::T_UNKNOWN_NAME:
             case $token->getName() === $token->getValue():
                 return $this->value($token);
         }
