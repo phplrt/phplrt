@@ -30,5 +30,5 @@ interface LexerInterface
      *
      * @throws RuntimeExceptionInterface
      */
-    public function lex($source): iterable;
+    public function lex(mixed $source): iterable;
 }

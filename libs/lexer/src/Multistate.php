@@ -107,7 +107,7 @@ class Multistate implements LexerInterface
     /**
      * {@inheritDoc}
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $this->boot($source = File::new($source));
 

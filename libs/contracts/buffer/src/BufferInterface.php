@@ -22,17 +22,17 @@ interface BufferInterface extends \SeekableIterator
     /**
      * Rewind the BufferInterface to the target token element.
      *
-     * @param TokenPosition $position
+     * @param TokenPosition $offset
      * @return void
      */
-    public function seek($position): void;
+    public function seek(int $offset): void;
 
     /**
      * Return the current token.
      *
      * @see \Iterator::current()
      * @return TokenInterface
-     * @see https://php.net/manual/en/iterator.current.php
+     * @link https://php.net/manual/en/iterator.current.php
      */
     public function current(): TokenInterface;
 
@@ -41,7 +41,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @see \Iterator::key()
      * @return TokenPosition
-     * @see https://php.net/manual/en/iterator.key.php
+     * @link https://php.net/manual/en/iterator.key.php
      */
     public function key(): int;
 
@@ -50,7 +50,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @see \Iterator::valid()
      * @return bool
-     * @see https://php.net/manual/en/iterator.valid.php
+     * @link https://php.net/manual/en/iterator.valid.php
      */
     public function valid(): bool;
 
@@ -59,7 +59,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @see \Iterator::rewind()
      * @return void
-     * @see https://php.net/manual/en/iterator.rewind.php
+     * @link https://php.net/manual/en/iterator.rewind.php
      */
     public function rewind(): void;
 
@@ -68,7 +68,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @see \Iterator::next()
      * @return void
-     * @see https://php.net/manual/en/iterator.next.php
+     * @link https://php.net/manual/en/iterator.next.php
      */
     public function next(): void;
 }

@@ -45,7 +45,7 @@ final class PP2PHPLexer implements LexerInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $this->depth = 0;
         $children    = [];

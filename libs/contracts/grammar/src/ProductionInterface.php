@@ -15,6 +15,8 @@ use Phplrt\Contracts\Buffer\BufferInterface;
 
 /**
  * Interface denoting a production (that is a non-terminal) rule.
+ *
+ * @psalm-type NextStep = \Closure(int|string): mixed
  */
 interface ProductionInterface extends RuleInterface
 {
@@ -45,8 +47,8 @@ interface ProductionInterface extends RuleInterface
      * </code>
      *
      * @param BufferInterface $buffer
-     * @param \Closure $reduce
-     * @return mixed|iterable|null
+     * @param NextStep $reduce
+     * @return mixed
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce);
+    public function reduce(BufferInterface $buffer, \Closure $reduce): mixed;
 }

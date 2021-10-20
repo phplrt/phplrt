@@ -62,10 +62,10 @@ class LazyBuffer extends Buffer
     /**
      * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek(int $offset): void
     {
-        if ($position < $this->initial) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $position, $this->current());
+        if ($offset < $this->initial) {
+            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $offset, $this->current());
 
             throw new \OutOfRangeException($message);
         }
@@ -75,9 +75,9 @@ class LazyBuffer extends Buffer
         // into the buffer, then it must be loaded into the memory of the
         // buffer.
         //
-        while ($position > ($last = \array_key_last($this->buffer))) {
+        while ($offset > ($last = \array_key_last($this->buffer))) {
             if (! $this->valid()) {
-                $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $position, $last);
+                $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $offset, $last);
 
                 throw new \OutOfRangeException($message);
             }
@@ -85,7 +85,7 @@ class LazyBuffer extends Buffer
             $this->next();
         }
 
-        $this->current = $position;
+        $this->current = $offset;
     }
 
     /**

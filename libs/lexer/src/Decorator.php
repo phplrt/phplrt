@@ -36,7 +36,7 @@ abstract class Decorator implements LexerInterface
     /**
      * {@inheritDoc}
      */
-    public function lex($source): iterable
+    public function lex(mixed $source): iterable
     {
         return $this->lexer->lex($source);
     }

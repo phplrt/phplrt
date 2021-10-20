@@ -24,7 +24,7 @@ interface ReadableInterface
     public function getContents(): string;
 
     /**
-     * @return string
+     * @return non-empty-string
      */
     public function getHash(): string;
 }

@@ -121,7 +121,7 @@ class Lexer implements MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $source = File::new($source);
         $result = $this->match($source->getContents(), $offset);

@@ -33,7 +33,7 @@ class Alternation extends Production
     /**
      * {@inheritDoc}
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce)
+    public function reduce(BufferInterface $buffer, \Closure $reduce): mixed
     {
         $rollback = $buffer->key();
 

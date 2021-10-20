@@ -86,7 +86,7 @@ class File extends Readable implements FileInterface
     /**
      * @param string $algo
      * @param bool $binary
-     * @return string
+     * @return non-empty-string
      */
     final public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {

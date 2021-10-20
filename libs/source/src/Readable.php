@@ -84,7 +84,7 @@ class Readable implements ReadableInterface, MemoizableInterface
     /**
      * @param string $algo
      * @param bool $binary
-     * @return string
+     * @return non-empty-string
      */
     public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {

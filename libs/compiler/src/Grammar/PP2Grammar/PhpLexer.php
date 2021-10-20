@@ -42,7 +42,7 @@ final class PhpLexer implements LexerInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $tokens = \token_get_all($this->read(File::new($source), $offset));
 

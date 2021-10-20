@@ -44,21 +44,21 @@ class ArrayBuffer extends Buffer
     /**
      * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek(int $offset): void
     {
-        if ($position < $this->initial) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $position, $this->current());
+        if ($offset < $this->initial) {
+            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $offset, $this->current());
 
             throw new \OutOfRangeException($message);
         }
 
-        if ($position > ($last = \array_key_last($this->buffer))) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $position, $last);
+        if ($offset > ($last = \array_key_last($this->buffer))) {
+            $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $offset, $last);
 
             throw new \OutOfRangeException($message);
         }
 
-        parent::seek($position);
+        parent::seek($offset);
     }
 
     /**

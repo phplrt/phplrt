@@ -59,11 +59,11 @@ abstract class Buffer implements BufferInterface
     /**
      * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek(int $offset): void
     {
-        \assert(\is_int($position));
+        \assert($offset >= 0);
 
-        $this->current = $position;
+        $this->current = $offset;
     }
 
     /**

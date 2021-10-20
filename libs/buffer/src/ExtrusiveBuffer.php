@@ -57,18 +57,17 @@ class ExtrusiveBuffer extends LazyBuffer
     }
 
     /**
-     * @param int $position
-     * @return void
+     * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek(int $offset): void
     {
-        if ($position < \array_key_first($this->buffer)) {
-            $message = \sprintf(self::ERROR_BUFFER_MEMORY_ALREADY_FREED, $position, $this->size);
+        if ($offset < \array_key_first($this->buffer)) {
+            $message = \sprintf(self::ERROR_BUFFER_MEMORY_ALREADY_FREED, $offset, $this->size);
 
             throw new \OutOfBoundsException($message);
         }
 
-        parent::seek($position);
+        parent::seek($offset);
     }
 
     /**

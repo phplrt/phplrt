@@ -24,9 +24,8 @@ interface ParserInterface
      * Parses sources into an abstract source tree (AST) or list of AST nodes.
      *
      * @param string|resource|ReadableInterface $source
-     * @return iterable|array|mixed|NodeInterface[]|NodeInterface
-     *
+     * @return iterable
      * @throws RuntimeExceptionInterface
      */
-    public function parse($source): iterable;
+    public function parse(mixed $source): iterable;
 }
