@@ -1,7 +1,19 @@
 {
     "name": "phplrt/phplrt",
+    "type": "library",
     "description": "PHP Language Recognition Tool",
+    "homepage": "https://phplrt.org",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/phplrt"
+    },
+    "authors": [
+        {
+            "name": "SerafimArts",
+            "email": "nesk@xakep.ru"
+        }
+    ],
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
@@ -11,16 +23,6 @@
         "laminas/laminas-code": "^4.0",
         "sebastian/environment": ">=5.0",
         "symfony/polyfill-php80": "^1.22"
-    },
-    "require-dev": {
-        "jetbrains/phpstorm-attributes": "^1.0",
-        "laminas/laminas-diactoros": "^2.2",
-        "phpunit/phpunit": "^9.5",
-        "psr/http-message": "^1.0",
-        "squizlabs/php_codesniffer": "^3.0",
-        "symfony/var-dumper": "^3.4|^4.0|^5.0",
-        "symplify/monorepo-builder": "^8.3.40",
-        "vimeo/psalm": "^4.7"
     },
     "autoload": {
         "psr-4": {
@@ -42,6 +44,16 @@
             "Phplrt\\Source\\": "src/Source/src",
             "Phplrt\\Visitor\\": "src/Visitor/src"
         }
+    },
+    "require-dev": {
+        "jetbrains/phpstorm-attributes": "^1.0",
+        "laminas/laminas-diactoros": "^2.2",
+        "phpunit/phpunit": "^9.5",
+        "psr/http-message": "^1.0",
+        "squizlabs/php_codesniffer": "^3.6",
+        "symfony/var-dumper": "^4.3|^5.0|^6.0",
+        "symplify/monorepo-builder": "^9.4",
+        "vimeo/psalm": "^4.10"
     },
     "autoload-dev": {
         "psr-4": {
@@ -90,13 +102,13 @@
         "split": "monorepo-builder split",
         "merge": "monorepo-builder merge"
     },
-    "config": {
-        "sort-packages": true
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true
