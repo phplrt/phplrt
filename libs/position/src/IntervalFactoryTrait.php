@@ -22,7 +22,7 @@ trait IntervalFactoryTrait
      * @param int $length
      * @return IntervalInterface
      */
-    public static function fromOffset($source, int $offset = 0, int $length = 0): IntervalInterface
+    public static function fromOffset(mixed $source, int $offset = 0, int $length = 0): IntervalInterface
     {
         return new Interval(
             Position::fromOffset($source, $offset),
@@ -36,26 +36,16 @@ trait IntervalFactoryTrait
      * @param int $column
      * @param int $length
      * @return IntervalInterface
-     *
-     * @deprecated Since phplrt 4.0. Please use {@see IntervalFactoryTrait::fromLineAndColumn()} instead.
      */
-    public static function fromPosition($source, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
-    {
-        return static::fromLineAndColumn($source, $line, $column, $length);
-    }
-
-    /**
-     * @param ReadableInterface|string|resource|mixed $src
-     * @param int $line
-     * @param int $column
-     * @param int $length
-     * @return IntervalInterface
-     */
-    public static function fromLineAndColumn($src, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
-    {
+    public static function fromLineAndColumn(
+        mixed $source,
+        int $line = 1,
+        int $column = 1,
+        int $length = 0
+    ): IntervalInterface {
         return new Interval(
-            $from = Position::fromLineAndColumn($src, $line, $column),
-            Position::fromOffset($src, $from->getOffset() + $length)
+            $from = Position::fromLineAndColumn($source, $line, $column),
+            Position::fromOffset($source, $from->getOffset() + $length)
         );
     }
 }

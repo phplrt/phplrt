@@ -25,24 +25,12 @@ trait PositionFactoryTrait
      * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
-     *
-     * @deprecated Since phplrt 4.0. Please use {@see PositionFactoryTrait::fromLineAndColumn()} instead.
      */
-    public static function fromPosition($source, int $line = 1, int $column = 1): PositionInterface
-    {
-        return static::fromLineAndColumn($source, $line, $column);
-    }
-
-    /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @param int $line
-     * @param int $column
-     * @return PositionInterface
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
-     */
-    public static function fromLineAndColumn($source, int $line = 1, int $column = 1): PositionInterface
-    {
+    public static function fromLineAndColumn(
+        mixed $source,
+        int $line = Position::MIN_LINE,
+        int $column = Position::MIN_COLUMN
+    ): PositionInterface {
         assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
         assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
 
@@ -57,7 +45,7 @@ trait PositionFactoryTrait
         // Calculate the number of bytes that the transmitted
         // number of lines takes.
         //
-        while (! \feof($stream) && $cursor++ + 1 < $line) {
+        while (!\feof($stream) && $cursor++ + 1 < $line) {
             $offset += \strlen((string)\fgets($stream));
         }
 
@@ -90,7 +78,7 @@ trait PositionFactoryTrait
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public static function end($source): PositionInterface
+    public static function end(mixed $source): PositionInterface
     {
         $source = File::new($source);
 
@@ -104,7 +92,7 @@ trait PositionFactoryTrait
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public static function fromOffset($source, int $offset = 0): PositionInterface
+    public static function fromOffset(mixed $source, int $offset = Position::MIN_OFFSET): PositionInterface
     {
         if ($offset <= Position::MIN_OFFSET) {
             return static::start();
@@ -146,7 +134,7 @@ trait PositionFactoryTrait
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    private static function length($source): int
+    private static function length(mixed $source): int
     {
         return \strlen(File::new($source)->getContents());
     }

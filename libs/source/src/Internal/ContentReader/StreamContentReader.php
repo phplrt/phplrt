@@ -93,7 +93,7 @@ final class StreamContentReader implements ContentReaderInterface, MemoizableInt
     /**
      * @return void
      */
-    public function refresh(): void
+    public function free(): void
     {
         $this->content = null;
     }

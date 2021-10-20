@@ -75,7 +75,7 @@ final class FileContentReader implements ContentReaderInterface, MemoizableInter
     /**
      * @return void
      */
-    public function refresh(): void
+    public function free(): void
     {
         $this->content = null;
     }

@@ -52,16 +52,16 @@ class Readable implements ReadableInterface, MemoizableInterface
     /**
      * @return void
      */
-    public function refresh(): void
+    public function free(): void
     {
         $this->hash = null;
 
         if ($this->stream instanceof MemoizableInterface) {
-            $this->stream->refresh();
+            $this->stream->free();
         }
 
         if ($this->content instanceof MemoizableInterface) {
-            $this->content->refresh();
+            $this->content->free();
         }
     }
 
