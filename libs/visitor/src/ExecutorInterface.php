@@ -11,11 +11,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Visitor;
 
+use Phplrt\Contracts\Ast\NodeInterface;
+
 interface ExecutorInterface
 {
     /**
-     * @param iterable $ast
-     * @return iterable
+     * @param iterable<NodeInterface> $ast
+     * @return iterable<NodeInterface>
      */
     public function execute(iterable $ast): iterable;
 }

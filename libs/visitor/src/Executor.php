@@ -17,6 +17,45 @@ use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Exception\BadReturnTypeException;
 use Phplrt\Visitor\Exception\BrokenTreeException;
 
+/**
+ * This file is part of phplrt package and is a modified/adapted version of
+ * "nikic/PHP-parser", which is distributed under the following license:
+ *
+ * Copyright (c) 2011-2018 by Nikita Popov.
+ *
+ * Some rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ *
+ *  * The names of the contributors may not be used to endorse or
+ * promote products derived from this software without specific
+ * prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @see https://github.com/nikic/PHP-Parser
+ * @see https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php
+ */
 class Executor implements ExecutorInterface
 {
     /**
@@ -102,23 +141,23 @@ class Executor implements ExecutorInterface
     /**
      * Traverses an array of nodes using the registered visitors.
      *
-     * @param NodeInterface[] $nodes Array of nodes
-     * @return NodeInterface[] Traversed array of nodes
+     * @param iterable<NodeInterface> $ast Array of nodes
+     * @return iterable<NodeInterface> Traversed array of nodes
      */
-    public function execute(iterable $nodes): iterable
+    public function execute(iterable $ast): iterable
     {
         $this->stop = false;
 
-        $nodes = $this->before($nodes);
-        $nodes = $this->each($nodes);
-        $nodes = $this->after($nodes);
+        $ast = $this->before($ast);
+        $ast = $this->each($ast);
+        $ast = $this->after($ast);
 
-        return $nodes;
+        return $ast;
     }
 
     /**
-     * @param iterable $ast
-     * @return iterable
+     * @param iterable<NodeInterface> $ast
+     * @return iterable<NodeInterface>
      */
     private function before(iterable $ast): iterable
     {
@@ -182,16 +221,16 @@ class Executor implements ExecutorInterface
                             $node = $return;
                             break;
 
-                        case $return === TraverserInterface::DONT_TRAVERSE_CHILDREN:
+                        case $return === Control::DONT_TRAVERSE_CHILDREN:
                             $traverseChildren = false;
                             break;
 
-                        case $return === TraverserInterface::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
+                        case $return === Control::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
                             $traverseChildren = false;
                             $breakVisitorIndex = $index;
                             break 2;
 
-                        case $return === TraverserInterface::STOP_TRAVERSAL:
+                        case $return === Control::STOP_TRAVERSAL:
                             $this->stop = true;
                             break 3;
 
@@ -232,11 +271,11 @@ class Executor implements ExecutorInterface
                             $replacements[] = [$i, $return];
                             break 2;
 
-                        case $return === TraverserInterface::REMOVE_NODE:
+                        case $return === Control::REMOVE_NODE:
                             $replacements[] = [$i, []];
                             break 2;
 
-                        case $return === TraverserInterface::STOP_TRAVERSAL:
+                        case $return === Control::STOP_TRAVERSAL:
                             $this->stop = true;
                             break 3;
 
@@ -293,16 +332,16 @@ class Executor implements ExecutorInterface
                             case $return === null:
                                 break;
 
-                            case $return === TraverserInterface::DONT_TRAVERSE_CHILDREN:
+                            case $return === Control::DONT_TRAVERSE_CHILDREN:
                                 $traverseChildren = false;
                                 break;
 
-                            case $return === TraverserInterface::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
+                            case $return === Control::DONT_TRAVERSE_CURRENT_AND_CHILDREN:
                                 $traverseChildren = false;
                                 $breakVisitorIndex = $index;
                                 break 3;
 
-                            case $return === TraverserInterface::STOP_TRAVERSAL:
+                            case $return === Control::STOP_TRAVERSAL:
                                 $this->stop = true;
                                 break 4;
 
@@ -333,11 +372,11 @@ class Executor implements ExecutorInterface
                                 $this->updateNodeValue($node, $name, $child = $return);
                                 break;
 
-                            case $return === TraverserInterface::STOP_TRAVERSAL:
+                            case $return === Control::STOP_TRAVERSAL:
                                 $this->stop = true;
                                 break 4;
 
-                            case $return === TraverserInterface::LOOP_ON_CURRENT:
+                            case $return === Control::LOOP_ON_CURRENT:
                                 $loop = true;
                                 break;
 

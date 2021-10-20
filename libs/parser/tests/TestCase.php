@@ -27,7 +27,7 @@ abstract class TestCase extends BastTestCase
     {
         $result = [];
 
-        Traverser::through(new class ($result) extends Visitor {
+        Traverser::create(new class ($result) extends Visitor {
             private $result;
 
             public function __construct(array &$result)
