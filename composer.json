@@ -10,7 +10,7 @@
     },
     "authors": [
         {
-            "name": "SerafimArts",
+            "name": "Kirill Nesmeyanov",
             "email": "nesk@xakep.ru"
         }
     ],
@@ -26,23 +26,22 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Buffer\\": "src/Buffer/src",
-            "Phplrt\\Compiler\\": "src/Compiler/src",
-            "Phplrt\\Contracts\\Ast\\": "src/Contracts/Ast/src",
-            "Phplrt\\Contracts\\Buffer\\": "src/Contracts/Buffer/src",
-            "Phplrt\\Contracts\\Exception\\": "src/Contracts/Exception/src",
-            "Phplrt\\Contracts\\Grammar\\": "src/Contracts/Grammar/src",
-            "Phplrt\\Contracts\\Lexer\\": "src/Contracts/Lexer/src",
-            "Phplrt\\Contracts\\Parser\\": "src/Contracts/Parser/src",
-            "Phplrt\\Contracts\\Position\\": "src/Contracts/Position/src",
-            "Phplrt\\Contracts\\Source\\": "src/Contracts/Source/src",
-            "Phplrt\\Exception\\": "src/Exception/src",
-            "Phplrt\\Grammar\\": "src/Grammar/src",
-            "Phplrt\\Lexer\\": "src/Lexer/src",
-            "Phplrt\\Parser\\": "src/Parser/src",
-            "Phplrt\\Position\\": "src/Position/src",
-            "Phplrt\\Source\\": "src/Source/src",
-            "Phplrt\\Visitor\\": "src/Visitor/src"
+            "Phplrt\\Buffer\\": "libs/buffer/src",
+            "Phplrt\\Compiler\\": "libs/compiler/src",
+            "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
+            "Phplrt\\Contracts\\Buffer\\": "libs/contracts/buffer/src",
+            "Phplrt\\Contracts\\Grammar\\": "libs/contracts/grammar/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
+            "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
+            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Exception\\": "libs/exception/src",
+            "Phplrt\\Grammar\\": "libs/grammar/src",
+            "Phplrt\\Lexer\\": "libs/lexer/src",
+            "Phplrt\\Parser\\": "libs/parser/src",
+            "Phplrt\\Position\\": "libs/position/src",
+            "Phplrt\\Source\\": "libs/source/src",
+            "Phplrt\\Visitor\\": "libs/visitor/src"
         }
     },
     "require-dev": {
@@ -57,36 +56,36 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Buffer\\Tests\\": "src/Buffer/tests",
-            "Phplrt\\Compiler\\Tests\\": "src/Compiler/tests",
-            "Phplrt\\Exception\\Tests\\": "src/Exception/tests",
-            "Phplrt\\Grammar\\Tests\\": "src/Grammar/tests",
-            "Phplrt\\Lexer\\Tests\\": "src/Lexer/tests",
-            "Phplrt\\Parser\\Tests\\": "src/Parser/tests",
-            "Phplrt\\Position\\Tests\\": "src/Position/tests",
-            "Phplrt\\Source\\Tests\\": "src/Source/tests",
-            "Phplrt\\Visitor\\Tests\\": "src/Visitor/tests"
+            "Phplrt\\Buffer\\Tests\\": "libs/buffer/tests",
+            "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
+            "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
+            "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
+            "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
+            "Phplrt\\Position\\Tests\\": "libs/position/tests",
+            "Phplrt\\Source\\Tests\\": "libs/source/tests",
+            "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
         }
     },
     "replace": {
-        "phplrt/ast-contracts": "self.version",
-        "phplrt/buffer": "self.version",
-        "phplrt/buffer-contracts": "self.version",
-        "phplrt/compiler": "self.version",
-        "phplrt/contracts": "self.version",
-        "phplrt/exception": "self.version",
-        "phplrt/grammar": "self.version",
-        "phplrt/grammar-contracts": "self.version",
-        "phplrt/lexer": "self.version",
-        "phplrt/lexer-contracts": "self.version",
-        "phplrt/parser": "self.version",
-        "phplrt/parser-contracts": "self.version",
-        "phplrt/position": "self.version",
-        "phplrt/position-contracts": "self.version",
-        "phplrt/runtime": "self.version",
-        "phplrt/source": "self.version",
-        "phplrt/source-contracts": "self.version",
-        "phplrt/visitor": "self.version"
+        "phplrt/ast-contracts": "*",
+        "phplrt/buffer": "*",
+        "phplrt/buffer-contracts": "*",
+        "phplrt/compiler": "*",
+        "phplrt/contracts": "*",
+        "phplrt/exception": "*",
+        "phplrt/grammar": "*",
+        "phplrt/grammar-contracts": "*",
+        "phplrt/lexer": "*",
+        "phplrt/lexer-contracts": "*",
+        "phplrt/parser": "*",
+        "phplrt/parser-contracts": "*",
+        "phplrt/position": "*",
+        "phplrt/position-contracts": "*",
+        "phplrt/runtime": "*",
+        "phplrt/source": "*",
+        "phplrt/source-contracts": "*",
+        "phplrt/visitor": "*"
     },
     "scripts": {
         "test": [
@@ -97,7 +96,7 @@
         "psalm": "psalm --no-cache",
         "phpcs": "phpcs --standard=phpcs.xml",
         "phpunit": "phpunit --testox",
-        "phpcbf": "phpcbf -p --standard=PSR12 src",
+        "phpcbf": "phpcbf -p --standard=PSR12 libs",
         "split": "monorepo-builder split",
         "merge": "monorepo-builder merge"
     },

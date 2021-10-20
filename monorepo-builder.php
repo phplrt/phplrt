@@ -59,7 +59,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
 
     $parameters->set(Option::PACKAGE_ALIAS_FORMAT, '<major>.<minor>.x-dev');
-    $parameters->set(Option::PACKAGE_DIRECTORIES, ['src']);
+    $parameters->set(Option::PACKAGE_DIRECTORIES, ['libs']);
 
     $parameters->set(Option::DATA_TO_APPEND, [
         'require-dev' => [

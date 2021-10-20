@@ -48,13 +48,13 @@
 
 ## Introduction
 
-The phplrt is a set of tools for programming languages recognition. The library 
-provides lexer, parser, grammar compiler, library for working with errors, 
+The phplrt is a set of tools for programming languages recognition. The library
+provides lexer, parser, grammar compiler, library for working with errors,
 text analysis and so on.
 
 ## Installation
 
-Phplrt is available as composer repository and can be 
+Phplrt is available as composer repository and can be
 installed using the following command in a root of your project:
 
 ```bash
@@ -69,7 +69,7 @@ More detailed installation instructions [are here](https://phplrt.org/docs/insta
 
 ## Quick Start
 
-First, we will create the grammar for our parser. 
+First, we will create the grammar for our parser.
 
 > You can read more about the grammar syntax [here](https://phplrt.org/docs/compiler/grammar).
 
@@ -80,16 +80,16 @@ use Phplrt\Compiler\Compiler;
 
 $compiler = new Compiler();
 $compiler->load(<<<EBNF
-   
+
     %token T_DIGIT          \d
     %token T_PLUS           \+
     %token T_MINUS          \-
     %token T_POW            \*
     %token T_DIV            /
     %skip  T_WHITESPACE     \s+
-    
+
     #Expression
-      : <T_DIGIT> (Operator() <T_DIGIT>)* 
+      : <T_DIGIT> (Operator() <T_DIGIT>)*
       ;
 
     #Operator
@@ -104,9 +104,9 @@ EBNF);
 
 ### Execution
 
-In order to quickly check the performance of what has been written, you can use 
-the simple `parse()` method. As a result, it will output the recognized abstract 
-syntax tree along with the predefined AST classes which can be converted to their 
+In order to quickly check the performance of what has been written, you can use
+the simple `parse()` method. As a result, it will output the recognized abstract
+syntax tree along with the predefined AST classes which can be converted to their
 string representation.
 
 ```php
@@ -129,7 +129,7 @@ echo $compiler->parse('2 + 2');
 
 ### Compilation
 
-After your grammar is ready and tested, it should be compiled. After that, 
+After your grammar is ready and tested, it should be compiled. After that,
 you no longer need the `phplrt/compiler` dependency (see https://phplrt.org/docs/installation#runtime-only).
 
 ```php
@@ -146,16 +146,16 @@ use Phplrt\Parser\ContextInterface;
 
 $data = require __DIR__ . '/grammar.php';
 
-// Create Lexer from compiled data
+// Create lexer from compiled data
 $lexer = new Lexer($data['tokens']['default'], $data['skip']);
 
-// Create Parser from compiled data
+// Create parser from compiled data
 $parser = new Parser($lexer, $data['grammar'], [
 
     // Recognition will start from the specified rule
     Parser::CONFIG_INITIAL_RULE => $data['initial'],
 
-    // Rules for the abstract syntax tree builder. 
+    // Rules for the abstract syntax tree builder.
     // In this case, we use the data found in the compiled grammar.
     Parser::CONFIG_AST_BUILDER => new class($data['reducers']) implements BuilderInterface {
         public function __construct(private array $reducers) {}
@@ -164,7 +164,7 @@ $parser = new Parser($lexer, $data['grammar'], [
         {
             $state = $context->getState();
 
-            return isset($this->reducers[$state])) 
+            return isset($this->reducers[$state]))
                 ? $this->reducers[$state]($context, $result)
                 : $result
             ;
