@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "^8.0",
         "phplrt/ast-contracts": "^4.0",
         "phplrt/buffer-contracts": "^4.0",
         "phplrt/exception-contracts": "^4.0",

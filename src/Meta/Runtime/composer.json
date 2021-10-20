@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "^8.0",
         "phplrt/lexer": "^4.0",
         "phplrt/parser": "^4.0",
         "phplrt/position": "^4.0",

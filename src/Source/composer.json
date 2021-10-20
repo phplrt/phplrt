@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "^8.0",
         "symfony/polyfill-php80": "^1.22",
         "phplrt/source-contracts": "^4.0"
     },
