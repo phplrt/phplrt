@@ -205,7 +205,9 @@ jobs:
         run: vendor/bin/phpunit
 
   subsplit:
+    name: Split (${{ matrix.package.local_path }})
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
