@@ -13,33 +13,36 @@
 >
     <coverage>
         <include>
-            <directory suffix=".php">src/**/src</directory>
+            <directory suffix=".php">libs/**/src</directory>
         </include>
     </coverage>
     <testsuites>
         <testsuite name="phplrt/buffer">
-            <directory suffix="TestCase.php">src/Buffer/tests</directory>
+            <directory suffix="TestCase.php">libs/buffer/tests</directory>
         </testsuite>
         <testsuite name="phplrt/compiler">
-            <directory suffix="TestCase.php">src/Compiler/tests</directory>
+            <directory suffix="TestCase.php">libs/compiler/tests</directory>
         </testsuite>
         <testsuite name="phplrt/exception">
-            <directory suffix="TestCase.php">src/Exception/tests</directory>
+            <directory suffix="TestCase.php">libs/exception/tests</directory>
+        </testsuite>
+        <testsuite name="phplrt/grammar">
+            <directory suffix="TestCase.php">libs/grammar/tests</directory>
         </testsuite>
         <testsuite name="phplrt/lexer">
-            <directory suffix="TestCase.php">src/Lexer/tests</directory>
+            <directory suffix="TestCase.php">libs/lexer/tests</directory>
         </testsuite>
         <testsuite name="phplrt/parser">
-            <directory suffix="TestCase.php">src/Parser/tests</directory>
+            <directory suffix="TestCase.php">libs/parser/tests</directory>
         </testsuite>
         <testsuite name="phplrt/position">
-            <directory suffix="TestCase.php">src/Position/tests</directory>
+            <directory suffix="TestCase.php">libs/position/tests</directory>
         </testsuite>
         <testsuite name="phplrt/source">
-            <directory suffix="TestCase.php">src/Source/tests</directory>
+            <directory suffix="TestCase.php">libs/source/tests</directory>
         </testsuite>
         <testsuite name="phplrt/visitor">
-            <directory suffix="TestCase.php">src/Visitor/tests</directory>
+            <directory suffix="TestCase.php">libs/visitor/tests</directory>
         </testsuite>
     </testsuites>
     <php>
