@@ -45,23 +45,17 @@ trait IntervalFactoryTrait
     }
 
     /**
-     * @param ReadableInterface|string|resource|mixed $source
+     * @param ReadableInterface|string|resource|mixed $src
      * @param int $line
      * @param int $column
      * @param int $length
      * @return IntervalInterface
      */
-    public static function fromLineAndColumn(
-        $source,
-        int $line = 1,
-        int $column = 1,
-        int $length = 0
-    ): IntervalInterface {
+    public static function fromLineAndColumn($src, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
+    {
         return new Interval(
-            $from = Position::fromLineAndColumn($source, $line, $column),
-            Position::fromOffset($source, $from->getOffset() + $length)
+            $from = Position::fromLineAndColumn($src, $line, $column),
+            Position::fromOffset($src, $from->getOffset() + $length)
         );
     }
-
-
 }

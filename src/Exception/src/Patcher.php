@@ -84,7 +84,7 @@ final class Patcher
      */
     private function getPatcher(ReadableInterface $source, PositionInterface $position): \Closure
     {
-        return function() use ($source, $position) {
+        return function () use ($source, $position) {
             /**
              * @var \Exception $this
              * @psalm-suppress InaccessibleProperty
