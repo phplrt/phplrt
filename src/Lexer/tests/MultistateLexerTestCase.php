@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Lexer;

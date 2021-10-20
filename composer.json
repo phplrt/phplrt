@@ -75,7 +75,6 @@
         "phplrt/compiler": "self.version",
         "phplrt/contracts": "self.version",
         "phplrt/exception": "self.version",
-        "phplrt/exception-contracts": "self.version",
         "phplrt/grammar": "self.version",
         "phplrt/grammar-contracts": "self.version",
         "phplrt/lexer": "self.version",

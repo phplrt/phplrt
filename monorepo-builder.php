@@ -33,7 +33,7 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorke
         ],
         'authors' => [
             [
-                'name' => 'SerafimArts',
+                'name' => 'Kirill Nesmeyanov',
                 'email' => 'nesk@xakep.ru',
             ],
         ],

@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Exception;
+namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;

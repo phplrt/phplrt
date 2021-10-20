@@ -13,7 +13,7 @@ namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Buffer\BufferInterface;
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Grammar\ProductionInterface;
 use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Grammar\TerminalInterface;

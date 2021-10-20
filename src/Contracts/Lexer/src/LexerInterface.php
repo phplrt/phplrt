@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**

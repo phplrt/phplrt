@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\EndOfInput;

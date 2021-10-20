@@ -16,7 +16,7 @@ use Phplrt\Compiler\Execution\AstBuilder;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Renderer\LaminasRenderer;
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;

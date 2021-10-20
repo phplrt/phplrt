@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;

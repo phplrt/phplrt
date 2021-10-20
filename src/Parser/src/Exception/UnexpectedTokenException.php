@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Exception;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface as ExceptionContract;
+use Phplrt\Exception\RuntimeExceptionInterface as ExceptionContract;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Renderer\Renderer;

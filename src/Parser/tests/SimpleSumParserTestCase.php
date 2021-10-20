@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Tests;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\Token;

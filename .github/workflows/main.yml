@@ -234,8 +234,6 @@ jobs:
             split_repository: 'ast-contracts'
           - local_path: 'Contracts/Buffer'
             split_repository: 'buffer-contracts'
-          - local_path: 'Contracts/Exception'
-            split_repository: 'exception-contracts'
           - local_path: 'Contracts/Grammar'
             split_repository: 'grammar-contracts'
           - local_path: 'Contracts/Lexer'
