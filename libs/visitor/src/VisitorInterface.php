@@ -18,8 +18,10 @@ interface VisitorInterface
     /**
      * Called once before traversal.
      *
-     * @param iterable|NodeInterface[]|NodeInterface $nodes
-     * @return iterable|NodeInterface[]|NodeInterface|null
+     * @template T of iterable<NodeInterface>|NodeInterface
+     *
+     * @param T $nodes
+     * @return T|null
      */
     public function before(iterable $nodes): ?iterable;
 
@@ -27,7 +29,7 @@ interface VisitorInterface
      * Called when entering a node.
      *
      * @param NodeInterface $node
-     * @return mixed
+     * @return mixed|void
      */
     public function enter(NodeInterface $node);
 
@@ -35,15 +37,17 @@ interface VisitorInterface
      * Called when leaving a node.
      *
      * @param NodeInterface $node
-     * @return mixed
+     * @return mixed|void
      */
     public function leave(NodeInterface $node);
 
     /**
      * Called once after traversal.
      *
-     * @param iterable|NodeInterface[]|NodeInterface $nodes
-     * @return iterable|NodeInterface[]|NodeInterface|null
+     * @template T of iterable<NodeInterface>|NodeInterface
+     *
+     * @param T $nodes
+     * @return T|null
      */
     public function after(iterable $nodes): ?iterable;
 }

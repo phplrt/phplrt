@@ -9,13 +9,16 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Visitor;
+namespace Phplrt\Visitor\Internal;
 
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\Control;
 use Phplrt\Visitor\Exception\AttributeException;
 use Phplrt\Visitor\Exception\BadMethodException;
 use Phplrt\Visitor\Exception\BadReturnTypeException;
 use Phplrt\Visitor\Exception\BrokenTreeException;
+use Phplrt\Visitor\Exception\VisitorException;
+use Phplrt\Visitor\VisitorInterface;
 
 /**
  * This file is part of phplrt package and is a modified/adapted version of
@@ -55,29 +58,12 @@ use Phplrt\Visitor\Exception\BrokenTreeException;
  *
  * @see https://github.com/nikic/PHP-Parser
  * @see https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php
+ *
+ * @internal Phplrt\Visitor\Internal\Executor is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Visitor
  */
-class Executor implements ExecutorInterface
+class Executor
 {
-    /**
-     * @var int
-     */
-    public const ERROR_CODE_ARRAY_ENTERING = 0x01;
-
-    /**
-     * @var int
-     */
-    public const ERROR_CODE_ARRAY_LEAVING = 0x02;
-
-    /**
-     * @var int
-     */
-    public const ERROR_CODE_NODE_ENTERING = 0x03;
-
-    /**
-     * @var int
-     */
-    public const ERROR_CODE_NODE_LEAVING = 0x04;
-
     /**
      * @var string
      */
@@ -238,13 +224,13 @@ class Executor implements ExecutorInterface
                             $error = self::ERROR_ENTER_RETURN_ARRAY;
                             $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
 
-                            throw new BadMethodException($error, static::ERROR_CODE_ARRAY_ENTERING);
+                            throw new BadMethodException($error, VisitorException::ERROR_CODE_ARRAY_ENTERING);
 
                         default:
                             $error = self::ERROR_ENTER_RETURN_TYPE;
                             $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
 
-                            throw new BadReturnTypeException($error, static::ERROR_CODE_ARRAY_ENTERING);
+                            throw new BadReturnTypeException($error, VisitorException::ERROR_CODE_ARRAY_ENTERING);
                     }
                 }
 
@@ -283,7 +269,7 @@ class Executor implements ExecutorInterface
                             $error = self::ERROR_LEAVE_RETURN_TYPE;
                             $error = \sprintf($error, \get_class($visitor), \gettype($return));
 
-                            throw new BadReturnTypeException($error, static::ERROR_CODE_ARRAY_LEAVING);
+                            throw new BadReturnTypeException($error, VisitorException::ERROR_CODE_ARRAY_LEAVING);
                     }
 
                     if ($breakVisitorIndex === $index) {
@@ -349,7 +335,7 @@ class Executor implements ExecutorInterface
                                 $error = self::ERROR_ENTER_RETURN_TYPE;
                                 $error = \sprintf($error, \get_class($visitor), \gettype($return));
 
-                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_ENTERING);
+                                throw new BadReturnTypeException($error, VisitorException::ERROR_CODE_NODE_ENTERING);
                         }
                     }
 
@@ -384,13 +370,13 @@ class Executor implements ExecutorInterface
                                 $error = self::ERROR_MODIFY_BY_ARRAY;
                                 $error = \sprintf($error, \get_class($visitor));
 
-                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
+                                throw new BadReturnTypeException($error, VisitorException::ERROR_CODE_NODE_LEAVING);
 
                             default:
                                 $error = self::ERROR_LEAVE_RETURN_TYPE;
                                 $error = \sprintf($error, \get_class($visitor), \gettype($return));
 
-                                throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
+                                throw new BadReturnTypeException($error, VisitorException::ERROR_CODE_NODE_LEAVING);
                         }
 
                         if ($breakVisitorIndex === $index) {

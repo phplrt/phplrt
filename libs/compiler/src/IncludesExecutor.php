@@ -52,7 +52,7 @@ class IncludesExecutor extends Visitor
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public function leave(NodeInterface $node)
+    public function leave(NodeInterface $node): mixed
     {
         if ($node instanceof IncludeExpr) {
             return $this->lookup($node);

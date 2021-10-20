@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Visitor;
 
+use Phplrt\Visitor\Internal\Executor;
+
 class Traverser implements TraverserInterface
 {
     /**

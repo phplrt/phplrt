@@ -13,4 +13,23 @@ namespace Phplrt\Visitor\Exception;
 
 class VisitorException extends \LogicException
 {
+    /**
+     * @var int
+     */
+    public const ERROR_CODE_ARRAY_ENTERING = 0x01;
+
+    /**
+     * @var int
+     */
+    public const ERROR_CODE_ARRAY_LEAVING = 0x02;
+
+    /**
+     * @var int
+     */
+    public const ERROR_CODE_NODE_ENTERING = 0x03;
+
+    /**
+     * @var int
+     */
+    public const ERROR_CODE_NODE_LEAVING = 0x04;
 }

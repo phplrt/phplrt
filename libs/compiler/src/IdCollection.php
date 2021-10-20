@@ -29,9 +29,7 @@ class IdCollection extends Visitor
     private array $tokens = [];
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
-     * @throws \Exception
+     * {@inheritDoc}
      */
     public function enter(NodeInterface $node)
     {

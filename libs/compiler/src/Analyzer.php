@@ -103,8 +103,7 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
+     * {@inheritDoc}
      */
     public function enter(NodeInterface $node)
     {
@@ -135,8 +134,7 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
+     * {@inheritDoc}
      * @throws ParserRuntimeException
      * @throws NotAccessibleException
      * @throws \RuntimeException
