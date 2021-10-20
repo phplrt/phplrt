@@ -16,5 +16,5 @@ interface MemoizableInterface
     /**
      * @return void
      */
-    public function refresh(): void;
+    public function free(): void;
 }
