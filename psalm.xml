@@ -15,7 +15,7 @@
     <issueHandlers>
         <UnusedVariable>
             <errorLevel type="suppress">
-                <file name="src/Lexer/src/Multistate.php"/>
+                <file name="libs/lexer/src/Multistate.php"/>
             </errorLevel>
         </UnusedVariable>
         <RedundantCondition errorLevel="suppress" />
@@ -26,14 +26,14 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="src/Buffer/tests" />
-            <directory name="src/Compiler/tests" />
-            <directory name="src/Exception/tests" />
-            <directory name="src/Lexer/tests" />
-            <directory name="src/Parser/tests" />
-            <directory name="src/Position/tests" />
-            <directory name="src/Source/tests" />
-            <directory name="src/Visitor/tests" />
+            <directory name="libs/buffer/tests" />
+            <directory name="libs/compiler/tests" />
+            <directory name="libs/exception/tests" />
+            <directory name="libs/lexer/tests" />
+            <directory name="libs/parser/tests" />
+            <directory name="libs/position/tests" />
+            <directory name="libs/source/tests" />
+            <directory name="libs/visitor/tests" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
