@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 
@@ -35,9 +36,23 @@ final class UndefinedToken implements TokenInterface
     /**
      * {@inheritDoc}
      */
+    public function getChannel(): ChannelInterface
+    {
+        return new class implements ChannelInterface
+        {
+            public function getName(): string
+            {
+                return 'GENERAL';
+            }
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getName(): string
     {
-        return TokenInterface::END_OF_INPUT;
+        return 'T_UNDEFINED';
     }
 
     /**
@@ -59,8 +74,8 @@ final class UndefinedToken implements TokenInterface
     /**
      * {@inheritDoc}
      */
-    public function getBytes(): int
+    public function __toString(): string
     {
-        return 0;
+        return $this->getName();
     }
 }
