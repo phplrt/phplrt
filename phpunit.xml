@@ -32,9 +32,6 @@
         <testsuite name="phplrt/lexer">
             <directory suffix="TestCase.php">libs/lexer/tests</directory>
         </testsuite>
-        <testsuite name="phplrt/lexer-printer">
-            <directory suffix="TestCase.php">libs/lexer-printer/tests</directory>
-        </testsuite>
         <testsuite name="phplrt/parser">
             <directory suffix="TestCase.php">libs/parser/tests</directory>
         </testsuite>
