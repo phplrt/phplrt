@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\PCRE;
+namespace Phplrt\Lexer;
+
+use Phplrt\Lexer\PCRE\Flag;
 
 final class RegExpCreateInfo
 {

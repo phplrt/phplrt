@@ -12,8 +12,11 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\PCRE\Compiler;
+use Phplrt\Lexer\Token\Channel;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\Exception\SourceExceptionInterface;
@@ -73,6 +76,25 @@ final class Lexer implements LexerInterface
         /** @psalm-suppress MixedArgument */
         $source = File::new($source);
 
+        foreach ($this->execute($source, $offset) as $token) {
+            $channel = $token->getChannel();
+
+            // Checking that the channel should throw exceptions
+            if (\in_array($channel, $this->info->throw, true)) {
+                throw UnrecognizedTokenException::fromToken($source, $token);
+            }
+
+            yield $token;
+        }
+    }
+
+    /**
+     * @param ReadableInterface $source
+     * @param int $offset
+     * @return \Traversable<TokenInterface>
+     */
+    private function execute(ReadableInterface $source, int $offset): \Traversable
+    {
         $result = $this->match($source->getContents(), $offset);
         $error = null;
 
@@ -80,6 +102,8 @@ final class Lexer implements LexerInterface
         foreach ($result as $payload) {
             $name = \array_pop($payload);
             $name = $this->mappings[$name] ?? $name;
+
+            $channel = $this->info->channels[$name] ?? Channel::DEFAULT;
 
             /**
              * Capture offset
@@ -89,8 +113,14 @@ final class Lexer implements LexerInterface
             $offset += \strlen($payload[0]);
 
             // Capture error token
-            if ($name === Token::NAME_UNKNOWN) {
-                $error ??= Token::unknown('', $previous);
+            if ($name === $this->info->unknownTokenName) {
+                $error ??= Token::unknown(
+                    value: '',
+                    offset: $previous,
+                    name: $this->info->unknownTokenName,
+                    channel: $this->info->channels[$name] ?? Channel::UNKNOWN
+                );
+
                 /** @psalm-suppress InaccessibleProperty */
                 $error->value .= $payload[0];
                 continue;
@@ -98,19 +128,21 @@ final class Lexer implements LexerInterface
 
             // Transition to a known token from error token
             if ($error !== null) {
-                throw UnrecognizedTokenException::fromToken($source, $error);
+                yield $error;
+                $error = null;
+                continue;
             }
 
             yield \count($payload) > 1
-                ? Composite::fromArray($name, $payload, $previous)
-                : new Token($name, $payload[0], $previous);
+                ? new Composite($name, \array_shift($payload), $previous, $channel, $payload)
+                : new Token($name, $payload[0], $previous, $channel);
         }
 
-        if ($error !== null) {
-            throw UnrecognizedTokenException::fromToken($source, $error);
-        }
-
-        yield Token::eoi($offset);
+        yield Token::eoi(
+            offset: $offset,
+            name: $this->info->eoiTokenName,
+            channel: $this->info->channels[$this->info->eoiTokenName] ?? Channel::END_OF_INPUT
+        );
     }
 
     /**

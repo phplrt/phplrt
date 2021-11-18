@@ -60,33 +60,47 @@ class Token extends BaseToken
     /**
      * @param positive-int|0 $offset
      * @param non-empty-string $name
+     * @param ChannelInterface $channel
      * @return static
      */
-    public static function eoi(int $offset = 0, string $name = self::NAME_EOI): self
-    {
-        return new self($name, "\0", $offset, Channel::END_OF_INPUT);
+    public static function eoi(
+        int $offset = 0,
+        string $name = self::NAME_EOI,
+        ChannelInterface $channel = Channel::END_OF_INPUT
+    ): self {
+        return new self($name, "\0", $offset, $channel);
     }
 
     /**
      * @param string $value
      * @param positive-int|0 $offset
      * @param non-empty-string $name
+     * @param ChannelInterface $channel
      * @return static
      */
-    public static function unknown(string $value, int $offset = 0, string $name = self::NAME_UNKNOWN): self
-    {
-        return new self($name, $value, $offset, Channel::UNKNOWN);
+    public static function unknown(
+        string $value,
+        int $offset = 0,
+        string $name = self::NAME_UNKNOWN,
+        ChannelInterface $channel = Channel::UNKNOWN
+    ): self {
+        return new self($name, $value, $offset, $channel);
     }
 
     /**
      * @param non-empty-string|int $name
      * @param string $value
      * @param positive-int|0 $offset
+     * @param ChannelInterface $channel
      * @return static
      */
-    public static function skip(string|int $name, string $value, int $offset = 0): self
-    {
-        return new self($name, $value, $offset, Channel::HIDDEN);
+    public static function skip(
+        string|int $name,
+        string $value,
+        int $offset = 0,
+        ChannelInterface $channel = Channel::HIDDEN
+    ): self {
+        return new self($name, $value, $offset, $channel);
     }
 
     /**

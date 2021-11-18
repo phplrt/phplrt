@@ -19,14 +19,16 @@ interface TokenInterface extends \Stringable
     /**
      * Returns a token name.
      *
-     * @return non-empty-string|int
+     * @return string|int
+     * @psalm-return non-empty-string|int
      */
     public function getName(): string|int;
 
     /**
      * Token position in bytes.
      *
-     * @return positive-int|0
+     * @return int
+     * @psalm-return positive-int|0
      */
     public function getOffset(): int;
 
@@ -34,6 +36,7 @@ interface TokenInterface extends \Stringable
      * Returns the value of the captured subgroup.
      *
      * @return string
+     * @psalm-return non-empty-string
      */
     public function getValue(): string;
 
@@ -43,4 +46,12 @@ interface TokenInterface extends \Stringable
      * @return ChannelInterface
      */
     public function getChannel(): ChannelInterface;
+
+    /**
+     * Returns pretty string representation of the token.
+     *
+     * @return string
+     * @psalm-return non-empty-string
+     */
+    public function __toString(): string;
 }

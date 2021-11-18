@@ -13,36 +13,72 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\ChannelInterface;
 
-enum Channel: int implements ChannelInterface
+enum Channel: string implements ChannelInterface
 {
     /**
      * General token's type matches any non-special token.
-     *
-     * @var int
      */
-    case GENERAL = 0x00;
+    case GENERAL = 'GENERAL';
 
     /**
      * Hidden tokens channel name.
-     *
-     * @var int
      */
-    case HIDDEN = 0x01;
+    case HIDDEN = 'HIDDEN';
 
     /**
      * This token's type matches any unrecognized token.
-     *
-     * @var int
      */
-    case UNKNOWN = 0x02;
+    case UNKNOWN = 'UNKNOWN';
 
     /**
      * This token's type corresponds to a terminal token and can only be
      * singular in the entire token stream.
-     *
-     * @var int
      */
-    case END_OF_INPUT = 0x03;
+    case END_OF_INPUT = 'END_OF_INPUT';
+
+    /**
+     * Default channel for all tokens.
+     */
+    public const DEFAULT = self::GENERAL;
+
+    /**
+     * @param non-empty-string $channel
+     * @return ChannelInterface
+     */
+    public static function create(string $channel): ChannelInterface
+    {
+        static $index = [];
+
+        if (($result = self::tryFrom($channel)) !== null) {
+            return $result;
+        }
+
+        assert(\trim($channel) !== '', new \InvalidArgumentException(
+            'Channel name MUST not be empty'
+        ));
+
+        if (isset($index[$channel])) {
+            return $index[$channel];
+        }
+
+        return $index[$channel] = new class ($channel) implements ChannelInterface {
+            /**
+             * @param non-empty-string $name
+             */
+            public function __construct(
+                private readonly string $name,
+            ) {
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function getName(): string
+            {
+                return $this->name;
+            }
+        };
+    }
 
     /**
      * {@inheritDoc}
@@ -51,4 +87,4 @@ enum Channel: int implements ChannelInterface
     {
         return $this->name;
     }
-}
+    }

@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Printer;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
+use Phplrt\Lexer\Token\Channel;
+
 final class PrinterCreateInfo
 {
     /**
@@ -33,6 +36,17 @@ final class PrinterCreateInfo
     ];
 
     /**
+     * List of standard channels that will not be displayed
+     * during rendering.
+     *
+     * @var array<ChannelInterface>
+     */
+    public const DEFAULT_HIDDEN_CHANNELS = [
+        Channel::GENERAL,
+        Channel::UNKNOWN
+    ];
+
+    /**
      * The maximum length of the token value, above which this value will be
      * truncated.
      *
@@ -52,20 +66,28 @@ final class PrinterCreateInfo
     public readonly array $replace;
 
     /**
+     * List of channels that will not be displayed during rendering.
+     *
+     * @var array<ChannelInterface>
+     */
+    public readonly array $hiddenChannels;
+
+    /**
      * @param positive-int $length
      *        See also {@see PrinterCreateInfo::$length}
      * @param iterable<non-empty-string, non-empty-string> $replace
      *        See also {@see PrinterCreateInfo::$replace}
+     * @param iterable<ChannelInterface|non-empty-string> $hiddenChannels
+     *        See also {@see PrinterCreateInfo::$hiddenChannels}
      */
     public function __construct(
         int $length = self::DEFAULT_LENGTH,
         iterable $replace = self::DEFAULT_REPLACEMENTS,
+        iterable $hiddenChannels = self::DEFAULT_HIDDEN_CHANNELS,
     ) {
-        // Initialize string truncate length
         $this->length = $this->formatLength($length);
-
-        // Initialize string replacements
         $this->replace = $this->formatReplacements($replace);
+        $this->hiddenChannels = $this->formatHiddenChannels($hiddenChannels);
     }
 
     /**
@@ -99,6 +121,25 @@ final class PrinterCreateInfo
             ));
 
             $result[$from] = $to;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param iterable<ChannelInterface|non-empty-string> $channels
+     * @return array<ChannelInterface>
+     */
+    private function formatHiddenChannels(iterable $channels): array
+    {
+        $result = [];
+
+        foreach ($channels as $channel) {
+            if (\is_string($channel)) {
+                $channel = Channel::create($channel);
+            }
+
+            $result[] = $channel;
         }
 
         return $result;

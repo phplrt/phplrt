@@ -11,6 +11,17 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-abstract class LexerException extends \LogicException implements LexerExceptionInterface
+use Phplrt\Contracts\Lexer\LexerExceptionInterface;
+
+abstract class LexerException extends \Exception implements LexerExceptionInterface
 {
+    /**
+     * @param string $message
+     * @param int $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message, int $code = 0, \Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
 }

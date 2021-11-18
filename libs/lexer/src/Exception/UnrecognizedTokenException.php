@@ -13,27 +13,24 @@ namespace Phplrt\Lexer\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Renderer\Renderer;
 
 class UnrecognizedTokenException extends LexerRuntimeException
 {
     /**
      * @var string
      */
-    private const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized %s';
+    private const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized token %s';
 
     /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $tok
+     * @param ReadableInterface $source
+     * @param TokenInterface $token
      * @param \Throwable|null $prev
      * @return static
      */
-    public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
+    public static function fromToken(ReadableInterface $source, TokenInterface $token, \Throwable $prev = null): self
     {
-        $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
-            (new Renderer())->render($tok),
-        ]);
+        $message = \sprintf(self::ERROR_UNRECOGNIZED_TOKEN, $token);
 
-        return new static($message, $src, $tok, $prev);
+        return new static($message, $source, $token, $prev);
     }
 }

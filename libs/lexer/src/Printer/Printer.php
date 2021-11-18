@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Printer;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Channel;
 
@@ -139,6 +140,21 @@ final class Printer implements PrinterInterface
     }
 
     /**
+     * @param ChannelInterface $channel
+     * @return bool
+     */
+    private function isHiddenChannel(ChannelInterface $channel): bool
+    {
+        foreach ($this->info->hiddenChannels as $expected) {
+            if ($expected->getName() === $channel->getName()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param TokenInterface $token
      * @return string
      */
@@ -147,7 +163,7 @@ final class Printer implements PrinterInterface
         $channel = $token->getChannel();
         $name = $token->getName();
 
-        if ($channel === Channel::GENERAL) {
+        if ($this->isHiddenChannel($channel)) {
             return $this->isAnonymous($token) ? '' : \sprintf(' (%s)', $token->getName());
         }
 

@@ -12,50 +12,88 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\ChannelInterface;
-use Phplrt\Lexer\PCRE\RegExpCreateInfo;
 use Phplrt\Lexer\Token\Channel;
 use Phplrt\Lexer\Token\Token;
 
-/**
- * @psalm-type TName = non-empty-string|int
- * @psalm-type TPattern = non-empty-string
- * @psalm-type TChannelName = non-empty-string
- * @psalm-type TChannel = TChannelName|ChannelInterface
- */
 final class LexerCreateInfo
 {
+    /**
+     * @var array<non-empty-string, ChannelInterface>
+     */
+    public const DEFAULT_CHANNELS = [
+        Token::NAME_UNKNOWN => Channel::UNKNOWN,
+        Token::NAME_EOI => Channel::END_OF_INPUT,
+    ];
+
+    /**
+     * @var array<ChannelInterface>
+     */
+    public const DEFAULT_THROW_CHANNELS = [
+        Channel::UNKNOWN,
+    ];
+
     /**
      * @var bool
      */
     public readonly bool $debug;
 
     /**
-     * @var array<TName, TPattern>
+     * @var array<non-empty-string|int, non-empty-string>
      */
     public readonly array $tokens;
 
     /**
-     * @var array<TName, TChannelName>
+     * @var array<non-empty-string|int, ChannelInterface>
      */
     public readonly array $channels;
 
     /**
-     * @param iterable<TName, TPattern> $tokens
-     * @param iterable<TName> $skip
-     * @param iterable<TName, TChannel> $channels
+     * List of channels whose tokens interrupt the lexer and throw an exception.
+     *
+     * @var array<ChannelInterface>
+     */
+    public readonly array $throw;
+
+    /**
+     * @param iterable<non-empty-string|int, non-empty-string> $tokens
+     * @param iterable<non-empty-string> $skip
      * @param bool|null $debug
+     * @param non-empty-string $unknownTokenName
+     * @param non-empty-string $eoiTokenName
+     * @param iterable<non-empty-string|int, ChannelInterface|non-empty-string> $channels
+     * @param iterable<ChannelInterface|non-empty-string> $throw
      * @param RegExpCreateInfo $pcre
      */
     public function __construct(
-        iterable $tokens,
+        iterable $tokens = [],
         iterable $skip = [],
-        iterable $channels = [],
+        iterable $channels = self::DEFAULT_CHANNELS,
+        public readonly string $unknownTokenName = Token::NAME_UNKNOWN,
+        public readonly string $eoiTokenName = Token::NAME_EOI,
+        iterable $throw = self::DEFAULT_THROW_CHANNELS,
         ?bool $debug = null,
         public readonly RegExpCreateInfo $pcre = new RegExpCreateInfo(),
     ) {
         $this->tokens = $this->formatTokens($tokens);
-        $this->channels = $this->formatChannels($skip, $channels);
         $this->debug = $this->formatDebug($debug);
+        $this->channels = $this->formatWithHiddenChannels($channels, $skip);
+        $this->throw = $this->formatChannels($throw);
+    }
+
+    /**
+     * @param iterable $channels
+     * @param iterable $skip
+     * @return ChannelInterface[]
+     */
+    private function formatWithHiddenChannels(iterable $channels, iterable $skip): array
+    {
+        $channels = $this->formatChannels($channels);
+
+        foreach ($skip as $name) {
+            $channels[$name] = Channel::HIDDEN;
+        }
+
+        return $channels;
     }
 
     /**
@@ -76,35 +114,8 @@ final class LexerCreateInfo
     }
 
     /**
-     * @param iterable<TName, TChannel> $channels
-     * @param iterable<TName, TChannelName> $skip
-     * @return array<TName, TChannelName>
-     */
-    private function formatChannels(iterable $skip, iterable $channels): array
-    {
-        $result = [];
-
-        foreach ($channels as $token => $channel) {
-            if ($channel instanceof ChannelInterface) {
-                $channel = $channel->getName();
-            }
-
-            $result[$token] = $channel;
-        }
-
-        $hidden = Channel::HIDDEN->getName();
-        foreach ($skip as $token) {
-            $result[$token] = $hidden;
-        }
-
-        $result[Token::NAME_UNKNOWN] = Channel::UNKNOWN;
-
-        return $result;
-    }
-
-    /**
-     * @param iterable<TName, TPattern> $tokens
-     * @return array<TName, TPattern>
+     * @param iterable<non-empty-string|int, non-empty-string> $tokens
+     * @return array<non-empty-string|int, non-empty-string>
      */
     private function formatTokens(iterable $tokens): array
     {
@@ -114,7 +125,28 @@ final class LexerCreateInfo
             $result[$token] = $pattern;
         }
 
-        $result[Token::NAME_UNKNOWN] = '.+?';
+        $result[$this->unknownTokenName] = '.+?';
+
+        return $result;
+    }
+
+    /**
+     * @template T of array-key
+     *
+     * @param iterable<T, ChannelInterface|non-empty-string> $channels
+     * @return array<T, ChannelInterface>
+     */
+    private function formatChannels(iterable $channels): array
+    {
+        $result = [];
+
+        foreach ($channels as $i => $channel) {
+            if (\is_string($channel)) {
+                $channel = Channel::create($channel);
+            }
+
+            $result[$i] = $channel;
+        }
 
         return $result;
     }

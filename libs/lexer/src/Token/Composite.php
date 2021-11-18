@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 final class Composite extends Token implements CompositeTokenInterface
@@ -29,27 +30,19 @@ final class Composite extends Token implements CompositeTokenInterface
      * @param string|int $name
      * @param string $value
      * @param positive-int|0 $offset
+     * @param ChannelInterface $channel
      * @param array<string> $children
      */
-    public function __construct(string|int $name, string $value, int $offset, array $children)
-    {
+    public function __construct(
+        string|int $name,
+        string $value,
+        int $offset = 0,
+        ChannelInterface $channel = Channel::GENERAL,
+        array $children = []
+    ) {
+        parent::__construct($name, $value, $offset, $channel);
+
         $this->children = $children;
-
-        parent::__construct($name, $value, $offset);
-    }
-
-    /**
-     * @param string|int $name
-     * @param array<string> $groups
-     * @param positive-int|0 $offset
-     * @return static
-     */
-    public static function fromArray(string|int $name, array $groups, int $offset): self
-    {
-        /** @var string $body */
-        $body = \array_shift($groups);
-
-        return new self($name, $body, $offset, $groups);
     }
 
     /**
