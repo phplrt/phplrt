@@ -28,7 +28,8 @@ class TokenPrinterTestCase extends TestCase
 
         $this->printer = new Printer(new PrinterCreateInfo(
             length: PrinterCreateInfo::DEFAULT_LENGTH,
-            replace: PrinterCreateInfo::DEFAULT_REPLACEMENTS
+            replace: PrinterCreateInfo::DEFAULT_REPLACEMENTS,
+            hiddenChannels: [Channel::DEFAULT]
         ));
     }
 

@@ -42,7 +42,7 @@ final class PrinterCreateInfo
      * @var array<ChannelInterface>
      */
     public const DEFAULT_HIDDEN_CHANNELS = [
-        Channel::GENERAL,
+        Channel::DEFAULT,
         Channel::UNKNOWN
     ];
 

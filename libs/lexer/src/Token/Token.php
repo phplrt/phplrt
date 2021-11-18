@@ -35,10 +35,12 @@ class Token extends BaseToken
         public string|int $name,
         public string $value,
         public int $offset = 0,
-        public ChannelInterface $channel = Channel::GENERAL
+        public ChannelInterface $channel = Channel::DEFAULT
     ) {
-        assert($this->name !== '', 'Token name MUST not be empty');
-        assert($this->offset >= 0, 'Token offset MUST be greater or equals than 0');
+        assert($this->name !== '', new \InvalidArgumentException('Token name MUST not be empty'));
+        assert($this->offset >= 0, new \InvalidArgumentException(
+            'Token offset MUST be greater or equals than 0, but ' . $this->offset . ' passed'
+        ));
     }
 
     /**
