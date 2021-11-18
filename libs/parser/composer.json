@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "phplrt/source": "^4.0",
         "phplrt/buffer": "^4.0",
         "phplrt/exception": "^4.0",

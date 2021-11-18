@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "phplrt/ast-contracts": "^4.0",
         "phplrt/buffer-contracts": "^4.0",
         "phplrt/lexer-contracts": "^4.0",

@@ -9,23 +9,22 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Internal\Regex;
+namespace Phplrt\Lexer\PCRE;
 
 /**
- * @internal Flag is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\lexer
+ * The current possible PCRE modifiers are listed below. The names in
+ * parentheses refer to internal PCRE names for these modifiers. Spaces and
+ * newlines are ignored in modifiers, other characters cause error.
  *
- * @psalm-type FlagType = Flag::FLAG_*
+ * @link https://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
  */
-final class Flag
+enum Flag: string
 {
     /**
      * If this modifier is set, letters in the pattern match both upper
      * and lower case letters.
-     *
-     * @var FlagType
      */
-    public const FLAG_CASELESS = 'i';
+    case CASELESS = 'i';
 
     /**
      * By default, PCRE treats the subject string as consisting of a single
@@ -40,10 +39,8 @@ final class Flag
      * as well as at the very start and end. This is equivalent to Perl's /m
      * modifier. If there are no "\n" characters in a subject string, or no
      * occurrences of ^ or $ in a pattern, setting this modifier has no effect.
-     *
-     * @var FlagType
      */
-    public const FLAG_MULTILINE = 'm';
+    case MULTILINE = 'm';
 
     /**
      * If this modifier is set, a dot metacharacter in the pattern matches
@@ -51,10 +48,8 @@ final class Flag
      * This modifier is equivalent to Perl's /s modifier. A negative class
      * such as [^a] always matches a newline character, independent of the
      * setting of this modifier.
-     *
-     * @var FlagType
      */
-    public const FLAG_DOTALL = 's';
+    case DOTALL = 's';
 
     /**
      * If this modifier is set, whitespace data characters in the pattern are
@@ -66,10 +61,8 @@ final class Flag
      * data characters. Whitespace characters may never appear within special
      * character sequences in a pattern, for example within the sequence
      * (?( which introduces a conditional subpattern.
-     *
-     * @var FlagType
      */
-    public const FLAG_EXTENDED = 'x';
+    case EXTENDED = 'x';
 
     /**
      * If this modifier is set, the pattern is forced to be "anchored", that is,
@@ -77,10 +70,8 @@ final class Flag
      * being searched (the "subject string"). This effect can also be achieved
      * by appropriate constructs in the pattern itself, which is the only way
      * to do it in Perl.
-     *
-     * @var FlagType
      */
-    public const FLAG_ANCHORED = 'A';
+    case ANCHORED = 'A';
 
     /**
      * If this modifier is set, a dollar metacharacter in the pattern matches
@@ -88,10 +79,8 @@ final class Flag
      * also matches immediately before the final character if it is a newline
      * (but not before any other newlines). This modifier is ignored if m
      * modifier is set. There is no equivalent to this modifier in Perl.
-     *
-     * @var FlagType
      */
-    public const FLAG_DOLLAR_ENDONLY = 'D';
+    case DOLLAR_ENDONLY = 'D';
 
     /**
      * When a pattern is going to be used several times, it is worth spending
@@ -99,20 +88,16 @@ final class Flag
      * If this modifier is set, then this extra analysis is performed. At
      * present, studying a pattern is useful only for non-anchored patterns
      * that do not have a single fixed starting character.
-     *
-     * @var FlagType
      */
-    public const FLAG_COMPILED = 'S';
+    case COMPILED = 'S';
 
     /**
      * This modifier inverts the "greediness" of the quantifiers so that they
      * are not greedy by default, but become greedy if followed by ?. It is
      * not compatible with Perl. It can also be set by a (?U) modifier setting
      * within the pattern or by a question mark behind a quantifier (e.g. .*?).
-     *
-     * @var FlagType
      */
-    public const FLAG_UNGREEDY = 'U';
+    case UNGREEDY = 'U';
 
     /**
      * This modifier turns on additional functionality of PCRE that is
@@ -122,19 +107,15 @@ final class Flag
      * backslash followed by a letter with no special meaning is treated as a
      * literal. There are at present no other features controlled by this
      * modifier.
-     *
-     * @var FlagType
      */
-    public const FLAG_EXTRA = 'X';
+    case EXTRA = 'X';
 
     /**
      * The (?J) internal option setting changes the local PCRE_DUPNAMES option.
      * Allow duplicate names for subpatterns. As of PHP 7.2.0 J is supported
      * as modifier as well.
-     *
-     * @var FlagType
      */
-    public const FLAG_INFO_JCHANGED = 'X';
+    case INFO_JCHANGED = 'J';
 
     /**
      * This modifier turns on additional functionality of PCRE that is
@@ -144,8 +125,21 @@ final class Flag
      * octet UTF-8 sequences are regarded as invalid since PHP 5.3.4
      * (resp. PCRE 7.3 2007-08-28); formerly those have been regarded as
      * valid UTF-8.
-     *
-     * @var FlagType
      */
-    public const FLAG_UTF8 = 'u';
+    case UTF8 = 'u';
+
+    /**
+     * @param iterable<self> $flags
+     * @return string
+     */
+    public static function toString(iterable $flags): string
+    {
+        $suffix = '';
+
+        foreach ($flags as $flag) {
+            $suffix .= $flag->value;
+        }
+
+        return $suffix;
+    }
 }

@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "phplrt/grammar-contracts": "^4.0"
     },
     "autoload": {

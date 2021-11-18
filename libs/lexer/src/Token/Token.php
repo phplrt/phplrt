@@ -11,45 +11,88 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Renderer\Renderer;
+use Phplrt\Contracts\Lexer\ChannelInterface;
 
 class Token extends BaseToken
 {
     /**
-     * @var positive-int|0
-     * @psalm-readonly
+     * @var non-empty-string
      */
-    public int $offset;
+    public const NAME_EOI = 'T_EOI';
 
     /**
-     * @var string
-     * @psalm-readonly
+     * @var non-empty-string
      */
-    public string $value;
+    public const NAME_UNKNOWN = 'T_UNKNOWN';
 
     /**
-     * @var string
-     * @psalm-readonly
-     */
-    public string $name;
-
-    /**
-     * @param string $name
+     * @param non-empty-string|int $name
      * @param string $value
      * @param positive-int|0 $offset
+     * @param ChannelInterface $channel
      */
-    public function __construct(string $name, string $value, int $offset)
+    public function __construct(
+        public string|int $name,
+        public string $value,
+        public int $offset = 0,
+        public ChannelInterface $channel = Channel::GENERAL
+    ) {
+        assert($this->name !== '', 'Token name MUST not be empty');
+        assert($this->offset >= 0, 'Token offset MUST be greater or equals than 0');
+    }
+
+    /**
+     * @param non-empty-string|int $name
+     * @param string $value
+     * @param positive-int|0 $offset
+     * @param ChannelInterface $channel
+     * @return static
+     */
+    public static function new(
+        string|int $name,
+        string $value,
+        int $offset = 0,
+        ChannelInterface $channel = Channel::GENERAL
+    ): self {
+        return new self($name, $value, $offset, $channel);
+    }
+
+    /**
+     * @param positive-int|0 $offset
+     * @param non-empty-string $name
+     * @return static
+     */
+    public static function eoi(int $offset = 0, string $name = self::NAME_EOI): self
     {
-        $this->name = $name;
-        $this->value = $value;
-        $this->offset = $offset;
+        return new self($name, "\0", $offset, Channel::END_OF_INPUT);
+    }
+
+    /**
+     * @param string $value
+     * @param positive-int|0 $offset
+     * @param non-empty-string $name
+     * @return static
+     */
+    public static function unknown(string $value, int $offset = 0, string $name = self::NAME_UNKNOWN): self
+    {
+        return new self($name, $value, $offset, Channel::UNKNOWN);
+    }
+
+    /**
+     * @param non-empty-string|int $name
+     * @param string $value
+     * @param positive-int|0 $offset
+     * @return static
+     */
+    public static function skip(string|int $name, string $value, int $offset = 0): self
+    {
+        return new self($name, $value, $offset, Channel::HIDDEN);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getName(): string
+    public function getName(): string|int
     {
         return $this->name;
     }
@@ -73,8 +116,8 @@ class Token extends BaseToken
     /**
      * {@inheritDoc}
      */
-    public function __toString(): string
+    public function getChannel(): ChannelInterface
     {
-        return (new Renderer())->render($this);
+        return $this->channel;
     }
 }

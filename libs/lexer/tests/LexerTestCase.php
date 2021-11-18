@@ -13,24 +13,30 @@ namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Lexer\Lexer;
+use Phplrt\Lexer\LexerCreateInfo;
 use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Source\Exception\SourceExceptionInterface;
 
-class SimpleLexerTestCase extends TestCase
+class LexerTestCase extends TestCase
 {
     /**
      * @return void
      * @throws RuntimeExceptionInterface
+     * @throws SourceExceptionInterface
      */
     public function testDigits(): void
     {
         $expected = $this->tokensOf([
-            new Token('T_DIGIT', '23', 0),
-            new Token('T_DIGIT', '42', 3),
-            new EndOfInput(5),
+            Token::new('T_DIGIT', '23'),
+            Token::skip('T_WHITESPACE', ' ', 2),
+            Token::new('T_DIGIT', '42', 3),
+            Token::eoi(5),
         ]);
 
-        $lexer = new Lexer(['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'], ['T_WHITESPACE']);
+        $lexer = new Lexer(new LexerCreateInfo(
+            tokens: ['T_WHITESPACE' => '\s+', 'T_DIGIT' => '\d+'],
+            skip: ['T_WHITESPACE']
+        ));
 
         $this->assertEquals($expected, $this->tokensOf($lexer->lex('23 42')));
     }

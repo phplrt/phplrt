@@ -15,6 +15,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
  * @template-implements \IteratorAggregate<array-key, TokenInterface>
+ * @template-implements \ArrayAccess<array-key, TokenInterface>
  */
 interface CompositeTokenInterface extends TokenInterface, \IteratorAggregate, \Countable, \ArrayAccess
 {

@@ -1,6 +1,6 @@
 * text=auto eol=lf
-*.pp eol=lf linguist-language=EBNF
-*.pp2 eol=lf linguist-language=EBNF
+*.pp eol=lf linguist-language=BNF
+*.pp2 eol=lf linguist-language=BNF
 
 *.php text eol=lf
 

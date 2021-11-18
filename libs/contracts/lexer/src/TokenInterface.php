@@ -12,42 +12,35 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Lexer;
 
 /**
- * The lexical token that returns from LexerInterface
+ * The lexical token that returns from {@see LexerInterface}.
  */
-interface TokenInterface
+interface TokenInterface extends \Stringable
 {
-    /**
-     * Name of the token that marks the end of the incoming data.
-     *
-     * @var string
-     */
-    public const END_OF_INPUT = 'T_EOI';
-
     /**
      * Returns a token name.
      *
-     * @return string
+     * @return non-empty-string|int
      */
-    public function getName(): string;
+    public function getName(): string|int;
 
     /**
-     * Token position in bytes
+     * Token position in bytes.
      *
      * @return positive-int|0
      */
     public function getOffset(): int;
 
     /**
-     * Returns the value of the captured subgroup
+     * Returns the value of the captured subgroup.
      *
      * @return string
      */
     public function getValue(): string;
 
     /**
-     * The token value size in bytes
+     * Returns channel of the token.
      *
-     * @return positive-int|0
+     * @return ChannelInterface
      */
-    public function getBytes(): int;
+    public function getChannel(): ChannelInterface;
 }

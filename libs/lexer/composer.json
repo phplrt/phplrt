@@ -16,12 +16,11 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-spl": "*",
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "symfony/polyfill-php80": "^1.22",
         "phplrt/source": "^4.0",
         "phplrt/lexer-contracts": "^4.0",
         "phplrt/exception": "^4.0"

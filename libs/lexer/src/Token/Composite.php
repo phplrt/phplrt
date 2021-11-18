@@ -26,12 +26,12 @@ final class Composite extends Token implements CompositeTokenInterface
     private array $initialized = [];
 
     /**
-     * @param string $name
+     * @param string|int $name
      * @param string $value
      * @param positive-int|0 $offset
      * @param array<string> $children
      */
-    public function __construct(string $name, string $value, int $offset, array $children)
+    public function __construct(string|int $name, string $value, int $offset, array $children)
     {
         $this->children = $children;
 
@@ -39,12 +39,12 @@ final class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @param string $name
+     * @param string|int $name
      * @param array<string> $groups
      * @param positive-int|0 $offset
      * @return static
      */
-    public static function fromArray(string $name, array $groups, int $offset): self
+    public static function fromArray(string|int $name, array $groups, int $offset): self
     {
         /** @var string $body */
         $body = \array_shift($groups);
@@ -88,7 +88,7 @@ final class Composite extends Token implements CompositeTokenInterface
      * @param positive-int|0 $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         assert(is_int($offset) && $offset >= 0);
 
@@ -99,7 +99,7 @@ final class Composite extends Token implements CompositeTokenInterface
      * @param positive-int|0 $offset
      * @return TokenInterface|null
      */
-    public function offsetGet($offset): ?TokenInterface
+    public function offsetGet(mixed $offset): ?TokenInterface
     {
         assert(is_int($offset) && $offset >= 0);
 
@@ -108,22 +108,23 @@ final class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param positive-int|0 $offset
-     * @param TokenInterface $value
+     * @param string $value
      * @return void
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         assert(is_int($offset) && $offset >= 0);
-        assert($value instanceof TokenInterface);
+        assert(is_string($value));
 
-        $this->getChildren()[$offset] = $value;
+        $this->initialized = [];
+        $this->children[$offset] = $value;
     }
 
     /**
      * @param positive-int|0 $offset
      * @return void
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         assert(is_int($offset) && $offset >= 0);
 

@@ -11,138 +11,87 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use JetBrains\PhpStorm\Language;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
-use Phplrt\Lexer\Internal\Regex\MarkersCompiler;
+use Phplrt\Lexer\PCRE\Compiler;
 use Phplrt\Lexer\Token\Composite;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Source\Exception\SourceExceptionInterface;
 use Phplrt\Source\File;
 
-class Lexer implements MutableLexerInterface
+final class Lexer implements LexerInterface
 {
-    /**
-     * @var string
-     */
-    public const T_UNKNOWN_NAME = 'T_UNKNOWN';
-
-    /**
-     * @var string
-     */
-    private const T_UNKNOWN_PATTERN = '.+?';
-
-    /**
-     * @var array<string, string>
-     */
-    protected array $tokens;
-
-    /**
-     * @var array<string>
-     */
-    protected array $skip;
-
     /**
      * @var string|null
      */
     private ?string $pattern = null;
 
     /**
-     * @param array<string, string> $tokens
-     * @param array<string> $skip
+     * @var array<int, string>
      */
-    public function __construct(array $tokens = [], array $skip = [])
-    {
-        $this->tokens = $tokens;
-        $this->skip = $skip;
-    }
+    private readonly array $tokens;
 
     /**
-     * {@inheritDoc}
+     * @var array<string, string|int>
      */
-    public function skip(string ...$names): self
-    {
-        $this->skip = \array_merge($this->skip, $names);
-
-        return $this;
-    }
+    private readonly array $mappings;
 
     /**
-     * {@inheritDoc}
+     * @param LexerCreateInfo $info
      */
-    public function append(
-        string $token,
-        #[Language("RegExp")]
-        string $pattern
-    ): self {
-        $this->reset();
-        $this->tokens[$token] = $pattern;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function prepend(
-        string $token,
-        #[Language("RegExp")]
-        string $pattern
-    ): self {
-        $this->reset();
-        $this->tokens = \array_merge([$token => $pattern], $this->tokens);
-
-        return $this;
+    public function __construct(
+        private readonly LexerCreateInfo $info
+    ) {
+        $this->bootTokens();
     }
 
     /**
      * @return void
      */
-    private function reset(): void
+    private function bootTokens(): void
     {
-        $this->pattern = null;
-    }
+        $tokens = $mappings = [];
+        $identifier = 0;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function remove(string ...$tokens): self
-    {
-        $this->reset();
-
-        foreach ($tokens as $token) {
-            unset($this->tokens[$token]);
-
-            $this->skip = \array_filter($this->skip, static fn(string $haystack): bool => $haystack !== $token);
+        foreach ($this->info->tokens as $token => $pcre) {
+            $mappings[$alias = 'T' . $identifier++] = $token;
+            $tokens[$alias] = $pcre;
         }
 
-        return $this;
+        [$this->tokens, $this->mappings] = [$tokens, $mappings];
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @param positive-int|0 $offset
+     * @throws SourceExceptionInterface
+     * @psalm-suppress LessSpecificImplementedReturnType
      */
     public function lex(mixed $source, int $offset = 0): iterable
     {
+        /** @psalm-suppress MixedArgument */
         $source = File::new($source);
+
         $result = $this->match($source->getContents(), $offset);
         $error = null;
 
         /** @var array<string> $payload */
         foreach ($result as $payload) {
             $name = \array_pop($payload);
+            $name = $this->mappings[$name] ?? $name;
 
-            // Capture offset
+            /**
+             * Capture offset
+             * @var positive-int|0 $previous
+             */
             $previous = $offset;
             $offset += \strlen($payload[0]);
 
-            // Skip non-captured tokens
-            if (\in_array($name, $this->skip, true)) {
-                continue;
-            }
-
             // Capture error token
-            if ($name === self::T_UNKNOWN_NAME) {
-                $error ??= new Token(self::T_UNKNOWN_NAME, '', $previous);
+            if ($name === Token::NAME_UNKNOWN) {
+                $error ??= Token::unknown('', $previous);
+                /** @psalm-suppress InaccessibleProperty */
                 $error->value .= $payload[0];
                 continue;
             }
@@ -154,39 +103,28 @@ class Lexer implements MutableLexerInterface
 
             yield \count($payload) > 1
                 ? Composite::fromArray($name, $payload, $previous)
-                : new Token($name, $payload[0], $previous)
-            ;
+                : new Token($name, $payload[0], $previous);
         }
 
         if ($error !== null) {
             throw UnrecognizedTokenException::fromToken($source, $error);
         }
 
-        if (! \in_array(EndOfInput::END_OF_INPUT, $this->skip, true)) {
-            yield new EndOfInput($offset);
-        }
-    }
-
-    /**
-     * @return string
-     */
-    private function compile(): string
-    {
-        $compiler = new MarkersCompiler();
-
-        return $compiler->compile(\array_merge($this->tokens, [
-            self::T_UNKNOWN_NAME => self::T_UNKNOWN_PATTERN,
-        ]));
+        yield Token::eoi($offset);
     }
 
     /**
      * @param string $source
-     * @param int $offset
-     * @return array
+     * @param positive-int|0 $offset
+     * @return array<positive-int|0|"MARK", string>
      */
     private function match(string $source, int $offset): array
     {
-        $this->pattern ??= $this->compile();
+        if ($this->pattern === null) {
+            $compiler = new Compiler($this->info);
+
+            $this->pattern = $compiler->compile($this->tokens, $this->mappings);
+        }
 
         \preg_match_all($this->pattern, $source, $matches, \PREG_SET_ORDER, $offset);
 

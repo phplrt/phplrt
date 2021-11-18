@@ -62,11 +62,15 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters->set(Option::PACKAGE_DIRECTORIES, ['libs']);
 
     $parameters->set(Option::DATA_TO_APPEND, [
+        'autoload-dev' => [
+            'psr-4' => [
+                'Phplrt\\Bench\\' => 'tests/bench',
+            ]
+        ],
         'require-dev' => [
             'phpunit/phpunit' => '^9.5',
             'squizlabs/php_codesniffer' => '^3.6',
             'symfony/var-dumper' => '^4.3|^5.0|^6.0',
-            'symplify/monorepo-builder' => '^9.4',
             'vimeo/psalm' => '^4.10',
         ],
     ]);

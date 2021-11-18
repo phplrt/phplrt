@@ -14,7 +14,7 @@ namespace Phplrt\Parser\Exception;
 use Phplrt\Exception\RuntimeExceptionInterface as ExceptionContract;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Renderer\Renderer;
+use Phplrt\Lexer\Renderer\Printer;
 
 class UnexpectedTokenException extends ParserRuntimeException
 {
@@ -61,8 +61,8 @@ class UnexpectedTokenException extends ParserRuntimeException
      */
     protected static function getTokenValue(TokenInterface $token): string
     {
-        if (\class_exists(Renderer::class)) {
-            return (new Renderer())->render($token);
+        if (\class_exists(Printer::class)) {
+            return (new Printer())->render($token);
         }
 
         $replacements = self::DEFAULT_REPLACEMENTS;

@@ -12,21 +12,15 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Renderer\Renderer;
+use Phplrt\Lexer\Printer\Printer;
 
-abstract class BaseToken implements TokenInterface, \JsonSerializable, \Stringable
+abstract class BaseToken implements TokenInterface, \JsonSerializable
 {
     /**
-     * @psalm-var positive-int|0|null
-     */
-    private ?int $bytes = null;
-
-    /**
      * @return array {
-     *      name:   string,
-     *      value:  string,
-     *      bytes:  positive-int,
-     *      offset: positive-int|0,
+     *  name: non-empty-string|int,
+     *  value: string,
+     *  offset: positive-int|0,
      * }
      */
     public function jsonSerialize(): array
@@ -34,7 +28,6 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable, \Stringab
         return [
             'name'   => $this->getName(),
             'value'  => $this->getValue(),
-            'bytes'  => $this->getBytes(),
             'offset' => $this->getOffset(),
         ];
     }
@@ -42,19 +35,8 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable, \Stringab
     /**
      * {@inheritDoc}
      */
-    public function getBytes(): int
-    {
-        /** @psalm-suppress PropertyTypeCoercion */
-        return $this->bytes ?? $this->bytes = \strlen($this->getValue());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function __toString(): string
     {
-        return (new Renderer())
-            ->render($this)
-        ;
+        return (new Printer())->print($this);
     }
 }

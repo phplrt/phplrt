@@ -9,15 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Renderer;
+namespace Phplrt\Lexer\Printer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-interface RendererInterface
+interface PrinterInterface
 {
     /**
      * @param TokenInterface $token
      * @return string
      */
-    public function render(TokenInterface $token): string;
+    public function print(TokenInterface $token): string;
 }
