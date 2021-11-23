@@ -31,7 +31,7 @@ class Repetition extends Production
             'Min repetitions count must be greater or equal than max repetitions'
         ));
 
-        assert(\is_float($lte) && $lte !== \INF, new \InvalidArgumentException(
+        assert(!\is_float($lte) || $lte === \INF, new \InvalidArgumentException(
             '"Less than" criterion must be an integer or float(INF) value, but ' . $lte . ' passed'
         ));
     }
