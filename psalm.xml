@@ -1,39 +1,36 @@
 <?xml version="1.0"?>
 <psalm
+    errorLevel="1"
+    resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
-    errorLevel="1"
-    hoistConstants="true"
-    resolveFromConfigFile="true"
-    allowPhpStormGenerics="true"
-    findUnusedPsalmSuppress="true"
-    findUnusedVariablesAndParams="true"
-    ensureArrayStringOffsetsExist="true"
-    addParamDefaultToDocblockType="true"
 >
     <issueHandlers>
-        <UnusedVariable>
-            <errorLevel type="suppress">
-                <file name="libs/lexer/src/Multistate.php"/>
-            </errorLevel>
-        </UnusedVariable>
-        <RedundantCondition errorLevel="suppress" />
-        <MoreSpecificReturnType errorLevel="suppress" />
-        <LessSpecificReturnStatement errorLevel="suppress" />
+        <RedundantCondition errorLevel="suppress"/>
+        <RedundantCast errorLevel="suppress"/>
     </issueHandlers>
     <projectFiles>
-        <directory name="src" />
+        <directory name="libs/contracts/ast/src" />
+        <directory name="libs/contracts/buffer/src" />
+        <directory name="libs/contracts/grammar/src" />
+        <directory name="libs/contracts/lexer/src" />
+        <directory name="libs/contracts/parser/src" />
+        <directory name="libs/contracts/position/src" />
+        <directory name="libs/contracts/source/src" />
+
+        <directory name="libs/buffer/src" />
+        <directory name="libs/exception/src" />
+        <directory name="libs/grammar/src" />
+        <directory name="libs/lexer/src" />
+
+        <!--<directory name="libs/compiler/src" />-->
+        <!--<directory name="libs/parser/src" />-->
+        <!--<directory name="libs/position/src" />-->
+        <!--<directory name="libs/source/src" />-->
+        <!--<directory name="libs/visitor/src" />-->
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="libs/buffer/tests" />
-            <directory name="libs/compiler/tests" />
-            <directory name="libs/exception/tests" />
-            <directory name="libs/lexer/tests" />
-            <directory name="libs/parser/tests" />
-            <directory name="libs/position/tests" />
-            <directory name="libs/source/tests" />
-            <directory name="libs/visitor/tests" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
