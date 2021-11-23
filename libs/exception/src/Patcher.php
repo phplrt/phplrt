@@ -37,13 +37,16 @@ final class Patcher
 
     /**
      * @param \Throwable $exception
+     *
+     * @psalm-suppress ArgumentTypeCoercion
+     * @psalm-suppress PropertyTypeCoercion
      */
     public function __construct(
         private readonly \Throwable $exception
     ) {
-        if (\is_file($this->exception->getFile())) {
-            $this->source = File::fromPathname($this->exception->getFile());
-            $this->line = $this->exception->getLine();
+        if (\is_file($file = $exception->getFile())) {
+            $this->source = File::fromPathname($file);
+            $this->line = (int)$exception->getLine();
         }
     }
 
