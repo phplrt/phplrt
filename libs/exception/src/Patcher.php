@@ -36,17 +36,11 @@ final class Patcher
     private ?ReadableInterface $source = null;
 
     /**
-     * @var \Throwable
-     */
-    private \Throwable $exception;
-
-    /**
      * @param \Throwable $exception
      */
-    public function __construct(\Throwable $exception)
-    {
-        $this->exception = $exception;
-
+    public function __construct(
+        private readonly \Throwable $exception
+    ) {
         if (\is_file($this->exception->getFile())) {
             $this->source = File::fromPathname($this->exception->getFile());
             $this->line = $this->exception->getLine();

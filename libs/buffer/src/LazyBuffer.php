@@ -23,7 +23,7 @@ class LazyBuffer extends Buffer
     /**
      * @var \Generator
      */
-    protected \Generator $stream;
+    protected readonly \Generator $stream;
 
     /**
      * LazyBuffer constructor.
@@ -52,7 +52,7 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * @return int
+     * @return positive-int|0
      */
     public function getBufferCurrentSize(): int
     {

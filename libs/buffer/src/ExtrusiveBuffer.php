@@ -23,7 +23,7 @@ class ExtrusiveBuffer extends LazyBuffer
     /**
      * @var int
      */
-    public const BUFFER_MIN_SIZE = 1;
+    final public const BUFFER_MIN_SIZE = 1;
 
     /**
      * @var int
@@ -33,7 +33,7 @@ class ExtrusiveBuffer extends LazyBuffer
     /**
      * @var int
      */
-    private int $size;
+    private readonly int $size;
 
     /**
      * ExtrusiveBuffer constructor.

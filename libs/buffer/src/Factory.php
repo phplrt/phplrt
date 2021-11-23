@@ -21,14 +21,10 @@ final class Factory implements FactoryInterface
      */
     public function create(iterable $tokens, int $size = null): BufferInterface
     {
-        if ($size <= 0) {
-            return new LazyBuffer($tokens);
-        }
-
-        if ($size !== null) {
-            return new ExtrusiveBuffer($tokens, $size);
-        }
-
-        return new ArrayBuffer($tokens);
+        return match (true) {
+            $size === null => new ArrayBuffer($tokens),
+            $size > 0 => new ExtrusiveBuffer($tokens, $size),
+            default => new LazyBuffer($tokens),
+        };
     }
 }

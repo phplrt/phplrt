@@ -18,27 +18,37 @@ class ArrayBuffer extends Buffer
     /**
      * @var array<TokenInterface>
      */
-    private array $buffer;
+    private readonly array $buffer;
 
     /**
-     * @var int
+     * @var positive-int|0
      */
-    private int $size;
+    private readonly int $size;
 
     /**
      * @param iterable<TokenInterface> $stream
      */
     public function __construct(iterable $stream)
     {
-        $this->buffer = $stream instanceof \Traversable
-            ? \iterator_to_array($stream, false)
-            : $stream;
-
+        $this->buffer = $this->iterableToArray($stream);
         $this->size = \count($this->buffer);
 
         if (\count($this->buffer)) {
             $this->initial = $this->current = \array_key_first($this->buffer);
         }
+    }
+
+    /**
+     * @param iterable<TokenInterface> $tokens
+     * @return array<TokenInterface>
+     */
+    private function iterableToArray(iterable $tokens): array
+    {
+        if ($tokens instanceof \Traversable) {
+            return \iterator_to_array($tokens, false);
+        }
+
+        return $tokens;
     }
 
     /**
