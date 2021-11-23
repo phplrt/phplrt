@@ -13,30 +13,30 @@ namespace Phplrt\Buffer;
 
 use Phplrt\Contracts\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\Token;
 
 abstract class Buffer implements BufferInterface
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     protected const ERROR_STREAM_POSITION_EXCEED =
         'Can not seek to position %d, because the last buffer token has an index %d';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     protected const ERROR_STREAM_POSITION_TO_LOW =
         'Can not seek to a position %d that is less than the initial value (%d) ' .
         'of the first element of the stream';
 
     /**
-     * @var int
+     * @var positive-int|0
      */
     protected int $initial = 0;
 
     /**
-     * @var int
+     * @var positive-int|0
      */
     protected int $current = 0;
 
@@ -67,7 +67,7 @@ abstract class Buffer implements BufferInterface
     }
 
     /**
-     * @param array|TokenInterface[] $data
+     * @param array<TokenInterface> $data
      * @return TokenInterface
      */
     protected function currentFrom(array $data): TokenInterface
@@ -80,6 +80,6 @@ abstract class Buffer implements BufferInterface
             return $data[$key];
         }
 
-        return new EndOfInput(0);
+        return Token::eoi();
     }
 }

@@ -57,7 +57,7 @@ class ArrayBuffer extends Buffer
     public function seek(int $offset): void
     {
         if ($offset < $this->initial) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $offset, $this->current());
+            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current());
 
             throw new \OutOfRangeException($message);
         }
