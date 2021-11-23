@@ -14,7 +14,7 @@ namespace Phplrt\Lexer\Exception;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-class UnrecognizedTokenException extends LexerRuntimeException
+class UnrecognizedTokenException extends LexerLexerRuntimeException
 {
     /**
      * @var string

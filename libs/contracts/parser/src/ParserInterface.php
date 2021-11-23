@@ -11,21 +11,48 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Parser;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * An interface that implements methods for parsing source code.
+ *
+ * @psalm-type SourceType = (ReadableInterface|StreamInterface|\SplFileInfo|string|resource)
+ *
+ * @see StreamInterface
+ * @see ReadableInterface
  */
 interface ParserInterface
 {
     /**
-     * Parses sources into an abstract source tree (AST) or list of AST nodes.
+     * Parses the source and returns the result of the parsing.
      *
-     * @param string|resource|ReadableInterface $source
-     * @return iterable
-     * @throws RuntimeExceptionInterface
+     * In most cases, result can be an abstract syntax tree (AST). However, in
+     * some cases, the parser implementation can execute the code and return
+     * the computation result.
+     *
+     * Declarative parser's example result:
+     * <code>
+     *  $result = $parser->parse('{ key: value }');
+     *  // object(ObjectNode) {
+     *  //   key: object(KeyNode) {
+     *  //     name: "key"
+     *  //   },
+     *  //   value: object(ValueNode) {
+     *  //     value: "value"
+     *  //   }
+     *  // }
+     * </code>
+     *
+     * Imperative parser's example result:
+     * <code>
+     *  $result = $parser->parse('2 + 2');
+     *  // 4
+     * </code>
+     *
+     * @param mixed $source
+     * @psalm-param SourceType $source
+     * @return mixed
      */
-    public function parse(mixed $source): iterable;
+    public function parse(mixed $source): mixed;
 }

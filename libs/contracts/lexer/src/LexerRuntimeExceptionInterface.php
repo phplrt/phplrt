@@ -14,10 +14,10 @@ namespace Phplrt\Contracts\Lexer;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Interface for lexer exceptions thrown in case of an
- * error during code execution.
+ * Interface for lexer exceptions thrown in case of an error during code
+ * execution.
  */
-interface RuntimeExceptionInterface extends LexerExceptionInterface
+interface LexerRuntimeExceptionInterface extends LexerExceptionInterface
 {
     /**
      * Returns the token on which the error occurred.

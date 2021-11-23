@@ -9,11 +9,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Lexer;
+namespace Phplrt\Contracts\Parser;
 
 /**
  * Interface used for all types of exceptions thrown by the implementing library.
  */
-interface LexerExceptionInterface extends \Throwable
+interface ParserExceptionInterface extends \Throwable
 {
 }

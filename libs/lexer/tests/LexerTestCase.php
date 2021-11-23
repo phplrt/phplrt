@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Contracts\Lexer\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\LexerCreateInfo;
 use Phplrt\Lexer\Token\Token;
@@ -22,7 +22,7 @@ class LexerTestCase extends TestCase
     /**
      * @return void
      * @throws SourceExceptionInterface
-     * @throws RuntimeExceptionInterface
+     * @throws LexerRuntimeExceptionInterface
      */
     public function testDigits(): void
     {

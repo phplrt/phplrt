@@ -12,22 +12,24 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Lexer;
 
 use Phplrt\Contracts\Source\ReadableInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * An interface that is an abstract implementation of a lexer.
  *
  * @psalm-type SourceType = (ReadableInterface|StreamInterface|\SplFileInfo|string|resource)
+ * @see StreamInterface
+ * @see ReadableInterface
  */
 interface LexerInterface
 {
     /**
      * Returns a set of token objects from the passed source.
      *
-     * @param ReadableInterface|string $source
+     * @param mixed $source
      * @psalm-param SourceType $source
      * @return iterable<TokenInterface>
-     *
-     * @throws RuntimeExceptionInterface
+     * @throws LexerRuntimeExceptionInterface
      */
     public function lex(mixed $source): iterable;
 }

@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-use Phplrt\Contracts\Lexer\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Position\Position;
 
-abstract class LexerRuntimeException extends LexerException implements RuntimeExceptionInterface
+abstract class LexerLexerRuntimeException extends LexerException implements LexerRuntimeExceptionInterface
 {
     /**
      * @param string $message
