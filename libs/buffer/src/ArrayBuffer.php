@@ -16,7 +16,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class ArrayBuffer extends Buffer
 {
     /**
-     * @var array<TokenInterface>
+     * @var array<positive-int|0, TokenInterface>
      */
     private readonly array $buffer;
 
@@ -34,13 +34,16 @@ class ArrayBuffer extends Buffer
         $this->size = \count($this->buffer);
 
         if (\count($this->buffer)) {
+            /** @psalm-suppress MixedPropertyTypeCoercion */
             $this->initial = $this->current = \array_key_first($this->buffer);
         }
     }
 
     /**
      * @param iterable<TokenInterface> $tokens
-     * @return array<TokenInterface>
+     * @return array<positive-int|0, TokenInterface>
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     private function iterableToArray(iterable $tokens): array
     {
@@ -57,15 +60,15 @@ class ArrayBuffer extends Buffer
     public function seek(int $offset): void
     {
         if ($offset < $this->initial) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current());
-
-            throw new \OutOfRangeException($message);
+            throw new \OutOfRangeException(
+                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current())
+            );
         }
 
         if ($offset > ($last = \array_key_last($this->buffer))) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $offset, $last);
-
-            throw new \OutOfRangeException($message);
+            throw new \OutOfRangeException(
+                \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (string)$last)
+            );
         }
 
         parent::seek($offset);

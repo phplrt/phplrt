@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Buffer;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
+
 class ExtrusiveBuffer extends LazyBuffer
 {
     /**
@@ -31,25 +33,24 @@ class ExtrusiveBuffer extends LazyBuffer
     public const BUFFER_DEFAULT_SIZE = 100;
 
     /**
-     * @var int
-     */
-    private readonly int $size;
-
-    /**
      * ExtrusiveBuffer constructor.
      *
-     * @param iterable $stream
-     * @param int $size
+     * @param iterable<TokenInterface> $stream
+     * @param positive-int $size
      */
-    public function __construct(iterable $stream, int $size = self::BUFFER_DEFAULT_SIZE)
-    {
-        $this->size = \max(self::BUFFER_MIN_SIZE, $size);
+    public function __construct(
+        iterable $stream,
+        private readonly int $size = self::BUFFER_DEFAULT_SIZE
+    ) {
+        assert($this->size > 0, new \InvalidArgumentException(
+            'Buffer size must be greater than 0, but ' . $size . ' passed'
+        ));
 
         parent::__construct($stream);
     }
 
     /**
-     * @return int
+     * @return positive-int
      */
     public function getBufferSize(): int
     {
@@ -76,6 +77,7 @@ class ExtrusiveBuffer extends LazyBuffer
     public function next(): void
     {
         if ($this->nextValid() && $this->getBufferCurrentSize() > $this->size) {
+            /** @psalm-suppress PossiblyNullArrayOffset */
             unset($this->buffer[\array_key_first($this->buffer)]);
         }
     }

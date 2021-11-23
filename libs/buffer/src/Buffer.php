@@ -20,15 +20,15 @@ abstract class Buffer implements BufferInterface
     /**
      * @var non-empty-string
      */
-    protected const ERROR_STREAM_POSITION_EXCEED =
+    final protected const ERROR_STREAM_POSITION_EXCEED =
         'Can not seek to position %d, because the last buffer token has an index %d';
 
     /**
      * @var non-empty-string
      */
-    protected const ERROR_STREAM_POSITION_TO_LOW =
-        'Can not seek to a position %d that is less than the initial value (%d) ' .
-        'of the first element of the stream';
+    final protected const ERROR_STREAM_POSITION_TO_LOW =
+        'Can not seek to a position %d that is less than the initial '
+        . 'value (%d) of the first element of the stream';
 
     /**
      * @var positive-int|0
@@ -69,6 +69,7 @@ abstract class Buffer implements BufferInterface
     /**
      * @param array<TokenInterface> $data
      * @return TokenInterface
+     * @psalm-suppress PossiblyNullArrayOffset
      */
     protected function currentFrom(array $data): TokenInterface
     {
@@ -76,10 +77,6 @@ abstract class Buffer implements BufferInterface
             return $data[$this->current];
         }
 
-        if (isset($data[$key = \array_key_last($data)])) {
-            return $data[$key];
-        }
-
-        return Token::eoi();
+        return $data[\array_key_last($data)] ?? Token::eoi();
     }
 }
