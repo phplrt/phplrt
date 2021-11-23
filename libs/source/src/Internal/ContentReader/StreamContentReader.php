@@ -34,11 +34,6 @@ final class StreamContentReader implements ContentReaderInterface, MemoizableInt
         'Impossible to read a stream from the beginning for non-seekable stream';
 
     /**
-     * @var resource
-     */
-    private $stream;
-
-    /**
      * @var string|null
      */
     private ?string $content = null;
@@ -48,21 +43,24 @@ final class StreamContentReader implements ContentReaderInterface, MemoizableInt
      *
      * @param resource $stream
      */
-    public function __construct($stream)
-    {
-        \assert(Util::isNonClosedStream($stream));
-
-        $this->stream = $stream;
+    public function __construct(
+        private mixed $stream
+    ) {
+        assert(Util::isNonClosedStream($stream));
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getContents(): string
     {
+        if ($this->content !== null) {
+            return $this->content;
+        }
+
         $this->rewind();
 
-        return \stream_get_contents($this->stream);
+        return $this->content = \stream_get_contents($this->stream);
     }
 
     /**
@@ -91,7 +89,7 @@ final class StreamContentReader implements ContentReaderInterface, MemoizableInt
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function free(): void
     {

@@ -20,18 +20,13 @@ use Phplrt\Source\Internal\ContentReaderInterface;
 final class ContentReader implements ContentReaderInterface
 {
     /**
-     * @var string
-     */
-    private string $content;
-
-    /**
      * ContentReader constructor.
      *
      * @param string $content
      */
-    public function __construct(string $content)
-    {
-        $this->content = $content;
+    public function __construct(
+        private readonly string $content
+    ) {
     }
 
     /**

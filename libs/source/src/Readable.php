@@ -20,19 +20,9 @@ class Readable implements ReadableInterface, MemoizableInterface
     use FactoryTrait;
 
     /**
-     * @var string
+     * @var non-empty-string
      */
-    protected const HASH_ALGORITHM = 'crc32';
-
-    /**
-     * @var StreamReaderInterface
-     */
-    private StreamReaderInterface $stream;
-
-    /**
-     * @var ContentReaderInterface
-     */
-    private ContentReaderInterface $content;
+    final protected const HASH_ALGORITHM = 'crc32';
 
     /**
      * @var string|null
@@ -43,14 +33,14 @@ class Readable implements ReadableInterface, MemoizableInterface
      * @param StreamReaderInterface $stream
      * @param ContentReaderInterface $content
      */
-    public function __construct(StreamReaderInterface $stream, ContentReaderInterface $content)
-    {
-        $this->stream = $stream;
-        $this->content = $content;
+    public function __construct(
+        private readonly StreamReaderInterface $stream,
+        private readonly ContentReaderInterface $content,
+    ) {
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function free(): void
     {
@@ -66,7 +56,7 @@ class Readable implements ReadableInterface, MemoizableInterface
     }
 
     /**
-     * @return resource
+     * {@inheritDoc}
      */
     public function getStream()
     {
@@ -74,7 +64,7 @@ class Readable implements ReadableInterface, MemoizableInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getContents(): string
     {
@@ -82,7 +72,7 @@ class Readable implements ReadableInterface, MemoizableInterface
     }
 
     /**
-     * @param string $algo
+     * @param non-empty-string $algo
      * @param bool $binary
      * @return non-empty-string
      */

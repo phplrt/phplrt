@@ -34,7 +34,7 @@ class File extends Readable implements FileInterface
     /**
      * @var string
      */
-    private string $pathname;
+    private readonly string $pathname;
 
     /**
      * @param string $pathname
@@ -46,7 +46,7 @@ class File extends Readable implements FileInterface
         StreamReaderInterface $stream = null,
         ContentReaderInterface $content = null
     ) {
-        $this->pathname = \realpath($pathname);
+        $this->pathname = \realpath($pathname) ?: $pathname;
 
         $stream ??= new FileStreamReader($pathname);
         $content ??= new FileContentReader($pathname);

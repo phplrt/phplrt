@@ -26,7 +26,7 @@ use Psr\Http\Message\StreamInterface;
 trait FactoryTrait
 {
     /**
-     * @param string|null $pathname
+     * @param non-empty-string|null $pathname
      * @return ReadableInterface
      */
     public static function empty(string $pathname = null): ReadableInterface
@@ -36,7 +36,7 @@ trait FactoryTrait
 
     /**
      * @param string $sources
-     * @param string|null $pathname
+     * @param non-empty-string|null $pathname
      * @return ReadableInterface|FileInterface
      */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
@@ -57,7 +57,7 @@ trait FactoryTrait
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public static function new($source): ReadableInterface
+    public static function new(mixed $source): ReadableInterface
     {
         switch (true) {
             case $source instanceof ReadableInterface:
@@ -93,7 +93,7 @@ trait FactoryTrait
     }
 
     /**
-     * @param string $pathname
+     * @param non-empty-string $pathname
      * @return FileInterface
      * @throws NotFoundException
      * @throws NotReadableException
@@ -107,7 +107,7 @@ trait FactoryTrait
 
     /**
      * @param StreamInterface $stream
-     * @param string|null $pathname
+     * @param non-empty-string|null $pathname
      * @return ReadableInterface
      * @throws \RuntimeException
      */
@@ -122,7 +122,7 @@ trait FactoryTrait
 
     /**
      * @param resource $resource
-     * @param string|null $pathname
+     * @param non-empty-string|null $pathname
      * @return ReadableInterface
      * @throws NotReadableException
      */

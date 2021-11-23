@@ -33,11 +33,6 @@ final class ContentStreamReader implements StreamReaderInterface
     /**
      * @var string
      */
-    private const ERROR_MEMORY_OPENING = 'Can not open ' . self::MEMORY_FILENAME . ' for writing';
-
-    /**
-     * @var string
-     */
     private const ERROR_MEMORY_WRITING = 'Can not write content data into ' . self::MEMORY_FILENAME;
 
     /**
@@ -46,24 +41,19 @@ final class ContentStreamReader implements StreamReaderInterface
     private const ERROR_MEMORY_NON_REWINDABLE = self::MEMORY_FILENAME . ' is not rewindable';
 
     /**
-     * @var string
-     */
-    private string $content;
-
-    /**
      * ContentStreamReader constructor.
      *
      * @param string $content
      */
-    public function __construct(string $content)
-    {
-        $this->content = $content;
+    public function __construct(
+        private readonly string $content
+    ) {
     }
 
     /**
      * @return resource
      */
-    public function getStream()
+    public function getStream(): mixed
     {
         /** @var resource $memory */
         $memory = \fopen(self::MEMORY_FILENAME, self::MEMORY_MODE);

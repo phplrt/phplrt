@@ -26,24 +26,19 @@ final class FileStreamReader implements StreamReaderInterface
     private const ERROR_NOT_READABLE = 'An error occurred while trying to open the file "%s" for reading';
 
     /**
-     * @var string
-     */
-    private string $pathname;
-
-    /**
      * FileStreamReader constructor.
      *
      * @param string $pathname
      */
-    public function __construct(string $pathname)
-    {
-        $this->pathname = $pathname;
+    public function __construct(
+        private readonly string $pathname
+    ) {
     }
 
     /**
      * @return resource
      */
-    public function getStream()
+    public function getStream(): mixed
     {
         $stream = @\fopen($this->pathname, 'rb');
 

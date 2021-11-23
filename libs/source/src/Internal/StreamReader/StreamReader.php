@@ -21,24 +21,18 @@ use Phplrt\Source\Internal\Util;
 final class StreamReader implements StreamReaderInterface
 {
     /**
-     * @var resource
-     */
-    private $stream;
-
-    /**
      * @param resource $stream
      */
-    public function __construct($stream)
-    {
-        assert(Util::isNonClosedStream($stream));
-
-        $this->stream = $stream;
+    public function __construct(
+        private mixed $stream
+    ) {
+        assert(Util::isNonClosedStream($this->stream));
     }
 
     /**
      * @return resource
      */
-    public function getStream()
+    public function getStream(): mixed
     {
         return $this->stream;
     }

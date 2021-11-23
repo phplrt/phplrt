@@ -27,11 +27,6 @@ final class FileContentReader implements ContentReaderInterface, MemoizableInter
     private const ERROR_NOT_READABLE = 'An error occurred while trying to read a file "%s"';
 
     /**
-     * @var string
-     */
-    private string $pathname;
-
-    /**
      * @var string|null
      */
     private ?string $content = null;
@@ -41,13 +36,13 @@ final class FileContentReader implements ContentReaderInterface, MemoizableInter
      *
      * @param string $pathname
      */
-    public function __construct(string $pathname)
-    {
-        $this->pathname = $pathname;
+    public function __construct(
+        private readonly string $pathname
+    ) {
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getContents(): string
     {
@@ -73,7 +68,7 @@ final class FileContentReader implements ContentReaderInterface, MemoizableInter
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function free(): void
     {

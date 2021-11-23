@@ -16,16 +16,11 @@ use Phplrt\Contracts\Source\ReadableInterface;
 class Reader implements ReaderInterface
 {
     /**
-     * @var ReadableInterface
-     */
-    private ReadableInterface $source;
-
-    /**
      * @param ReadableInterface $source
      */
-    public function __construct(ReadableInterface $source)
-    {
-        $this->source = $source;
+    public function __construct(
+        private readonly ReadableInterface $source
+    ) {
     }
 
     /**
@@ -42,7 +37,9 @@ class Reader implements ReaderInterface
      */
     public function line(int $line): string
     {
-        assert($line > 0, 'Line should be greater than 0');
+        assert($line > 0, new \InvalidArgumentException(
+            'Line should be greater than 0, but ' . $line . ' passed'
+        ));
 
         foreach ($this->lines($line, $line) as $current) {
             return $current;
@@ -56,8 +53,13 @@ class Reader implements ReaderInterface
      */
     public function lines(int $from, int $to): iterable
     {
-        assert($from > 0, 'Line [$from] should be greater than 0');
-        assert($to > 0, 'Line [$to] should be greater than 0');
+        assert($from > 0, new \InvalidArgumentException(
+            'Line $from argument should be greater than 0, but ' . $from . ' passed'
+        ));
+
+        assert($to > 0, new \InvalidArgumentException(
+            'Line $to argument should be greater than 0, but ' . $to . ' passed'
+        ));
 
         [$from, $to] = $from > $to ? [$to, $from] : [$from, $to];
 

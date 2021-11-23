@@ -20,5 +20,5 @@ interface StreamReaderInterface
     /**
      * @return resource
      */
-    public function getStream();
+    public function getStream(): mixed;
 }

@@ -21,7 +21,7 @@ final class Util
      * @param resource $stream
      * @return bool
      */
-    public static function isStream($stream): bool
+    public static function isStream(mixed $stream): bool
     {
         return self::isNonClosedStream($stream) || self::isClosedStream($stream);
     }
@@ -30,7 +30,7 @@ final class Util
      * @param resource $stream
      * @return bool
      */
-    public static function isNonClosedStream($stream): bool
+    public static function isNonClosedStream(mixed $stream): bool
     {
         return \is_resource($stream);
     }
@@ -39,7 +39,7 @@ final class Util
      * @param resource $stream
      * @return bool
      */
-    public static function isClosedStream($stream): bool
+    public static function isClosedStream(mixed $stream): bool
     {
         return \gettype($stream) === 'resource (closed)';
     }
@@ -48,7 +48,7 @@ final class Util
      * @param resource $resource
      * @return array
      */
-    public static function serialize($resource): array
+    public static function serialize(mixed $resource): array
     {
         \error_clear_last();
 
@@ -69,7 +69,7 @@ final class Util
      * @param array $data
      * @return resource
      */
-    public static function unserialize(array $data)
+    public static function unserialize(array $data): mixed
     {
         if (! isset($data['uri'], $data['mode'], $data['seek'])) {
             return \fopen('php://memory', 'rb');
