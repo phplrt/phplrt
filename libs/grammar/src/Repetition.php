@@ -19,20 +19,20 @@ class Repetition extends Production
      * Repetition constructor.
      *
      * @param int|string $rule
-     * @param int $gte
-     * @param int|float $lte
+     * @param int $from
+     * @param int|float $to
      */
     public function __construct(
         public readonly int|string $rule,
-        public readonly int $gte = 0,
-        public readonly int|float $lte = \INF
+        public readonly int $from = 0,
+        public readonly int|float $to = \INF
     ) {
-        assert($lte >= $gte, new \InvalidArgumentException(
+        assert($to >= $from, new \InvalidArgumentException(
             'Min repetitions count must be greater or equal than max repetitions'
         ));
 
-        assert(!\is_float($lte) || $lte === \INF, new \InvalidArgumentException(
-            '"Less than" criterion must be an integer or float(INF) value, but ' . $lte . ' passed'
+        assert(!\is_float($to) || $to === \INF, new \InvalidArgumentException(
+            '"Less than" criterion must be an integer or float(INF) value, but ' . $to . ' passed'
         ));
     }
 
@@ -46,7 +46,7 @@ class Repetition extends Production
         $global = $buffer->key();
 
         do {
-            $inRange  = $iterations >= $this->gte && $iterations <= $this->lte;
+            $inRange  = $iterations >= $this->from && $iterations <= $this->to;
             $rollback = $buffer->key();
 
             if (($result = $reduce($this->rule)) === null) {

@@ -141,7 +141,7 @@ class Generator
                 return $this->newRule($depth, $rule, [$rule->rule]);
 
             case $rule instanceof Repetition:
-                return $this->newRule($depth, $rule, [$rule->rule, $rule->gte, $rule->lte]);
+                return $this->newRule($depth, $rule, [$rule->rule, $rule->from, $rule->to]);
         }
 
         return $this->newRule($depth, $rule, []);
