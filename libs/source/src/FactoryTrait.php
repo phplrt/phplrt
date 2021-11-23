@@ -59,26 +59,16 @@ trait FactoryTrait
      */
     public static function new(mixed $source): ReadableInterface
     {
-        switch (true) {
-            case $source instanceof ReadableInterface:
-                return $source;
-
-            case $source instanceof \SplFileInfo:
-                return static::fromSplFileInfo($source);
-
-            case \is_string($source):
-                return static::fromSources($source);
-
-            case $source instanceof StreamInterface:
-                return static::fromPsrStream($source);
-
-            case \is_resource($source):
-                return static::fromResource($source);
-
-            default:
-                $message = 'Unrecognized readable file type "%s"';
-                throw new \InvalidArgumentException(\sprintf($message, \get_debug_type($source)));
-        }
+        return match (true) {
+            $source instanceof ReadableInterface => $source,
+            $source instanceof \SplFileInfo => static::fromSplFileInfo($source),
+            \is_string($source) => static::fromSources($source),
+            $source instanceof StreamInterface => static::fromPsrStream($source),
+            \is_resource($source) => static::fromResource($source),
+            default => throw new \InvalidArgumentException(
+                \sprintf('Unrecognized readable file type "%s"', \get_debug_type($source))
+            )
+        };
     }
 
     /**
