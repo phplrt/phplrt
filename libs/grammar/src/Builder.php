@@ -75,47 +75,47 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param int|string ...$of
+     * @param string|int ...$of
      * @return Concatenation
      */
-    public function concat(...$of): Concatenation
+    public function concat(string|int ...$of): Concatenation
     {
         return new Concatenation($of);
     }
 
     /**
-     * @param int|string ...$of
+     * @param string|int ...$of
      * @return Alternation
      */
-    public function any(...$of): Alternation
+    public function any(string|int ...$of): Alternation
     {
         return new Alternation($of);
     }
 
     /**
-     * @param string $named
+     * @param string|int $name
      * @param bool $keep
      * @return Lexeme
      */
-    public function token(string $named, bool $keep = true): Lexeme
+    public function token(string|int $name, bool $keep = true): Lexeme
     {
-        return new Lexeme($named, $keep);
+        return new Lexeme($name, $keep);
     }
 
     /**
-     * @param string|int $of
+     * @param string|int ...$of
      * @return Optional
      */
-    public function maybe(...$of): Optional
+    public function maybe(string|int ...$of): Optional
     {
         return new Optional($this->unwrap($of));
     }
 
     /**
-     * @param array|string[]|int[] $args
+     * @param array<string|int> $args
      * @return int|string
      */
-    private function unwrap(array $args)
+    private function unwrap(array $args): string|int
     {
         if (\count($args) > 1) {
             return $this->add($this->concat(...$args));
@@ -125,10 +125,10 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param mixed ...$of
+     * @param string|int ...$of
      * @return Repetition
      */
-    public function repeat(...$of): Repetition
+    public function repeat(string|int ...$of): Repetition
     {
         return new Repetition($this->unwrap($of));
     }
@@ -150,13 +150,11 @@ class Builder implements \IteratorAggregate
 
     /**
      * @param RuleInterface $rule
-     * @param int|string $id
+     * @param int|string|null $id
      * @return int|string|null
      */
-    public function add(RuleInterface $rule, $id = null)
+    public function add(RuleInterface $rule, int|string $id = null): int|string|null
     {
-        \assert($id === null || \is_int($id) || \is_string($id)); /** @phpstan-ignore-line */
-
         if ($id === null) {
             $this->grammar[] = $rule;
 

@@ -17,19 +17,14 @@ use Phplrt\Contracts\Lexer;
 class Lexeme extends Terminal
 {
     /**
-     * @var string
-     */
-    public string $token;
-
-    /**
-     * @param string $token
+     * @param non-empty-string|int $token
      * @param bool $keep
      */
-    public function __construct(string $token, bool $keep = true)
-    {
+    public function __construct(
+        public readonly string|int $token,
+        bool $keep = true
+    ) {
         parent::__construct($keep);
-
-        $this->token = $token;
     }
 
     /**

@@ -22,7 +22,7 @@ abstract class Production extends Rule implements ProductionInterface
      * @param iterable|NodeInterface|TokenInterface $result
      * @return array|NodeInterface[]|TokenInterface[]
      */
-    protected function mergeWith(array $children, $result): array
+    protected function mergeWith(array $children, mixed $result): array
     {
         if (\is_array($result)) {
             return \array_merge($children, $result);

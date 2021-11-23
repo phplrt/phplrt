@@ -16,18 +16,13 @@ use Phplrt\Contracts\Buffer\BufferInterface;
 class Alternation extends Production
 {
     /**
-     * @var array|int[]|string[]
-     */
-    public array $sequence;
-
-    /**
      * Rule constructor.
      *
-     * @param array $sequence
+     * @param array<int|string> $sequence
      */
-    public function __construct(array $sequence)
-    {
-        $this->sequence = $sequence;
+    public function __construct(
+        public readonly array $sequence
+    ) {
     }
 
     /**

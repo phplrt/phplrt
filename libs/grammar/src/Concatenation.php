@@ -16,18 +16,13 @@ use Phplrt\Contracts\Buffer\BufferInterface;
 class Concatenation extends Production
 {
     /**
-     * @var array|int[]
-     */
-    public array $sequence;
-
-    /**
      * Rule constructor.
      *
-     * @param array $sequence
+     * @param array<int|string> $sequence
      */
-    public function __construct(array $sequence)
-    {
-        $this->sequence = $sequence;
+    public function __construct(
+        public readonly array $sequence
+    ) {
     }
 
     /**

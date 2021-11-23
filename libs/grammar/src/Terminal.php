@@ -16,18 +16,13 @@ use Phplrt\Contracts\Grammar\TerminalInterface;
 abstract class Terminal extends Rule implements TerminalInterface
 {
     /**
-     * @var bool
-     */
-    public bool $keep = true;
-
-    /**
      * Terminal constructor.
      *
      * @param bool $keep
      */
-    public function __construct(bool $keep)
-    {
-        $this->keep = $keep;
+    public function __construct(
+        public readonly bool $keep = true
+    ) {
     }
 
     /**

@@ -16,16 +16,16 @@ use Phplrt\Contracts\Buffer\BufferInterface;
 class Optional extends Production
 {
     /**
-     * @var int|string
+     * @var int|non-empty-string
      */
-    public $rule;
+    public int|string $rule;
 
     /**
      * Optional constructor.
      *
-     * @param int|string $rule
+     * @param int|non-empty-string $rule
      */
-    public function __construct($rule)
+    public function __construct(int|string $rule)
     {
         $this->rule = $rule;
     }
