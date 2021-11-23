@@ -37,6 +37,7 @@ class Optional extends Production
     {
         $rollback = $buffer->key();
 
+        /** @psalm-suppress MixedAssignment */
         if (($result = $reduce($this->rule)) !== null) {
             return $result;
         }

@@ -13,6 +13,11 @@ namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
 
+/**
+ * @psalm-type RuleId = non-empty-string|int
+ * @psalm-type InitializerExpression = \Closure(Builder): \Generator<RuleId, RuleInterface, RuleId, mixed>
+ * @template-implements \IteratorAggregate<RuleId, RuleInterface>
+ */
 class Builder implements \IteratorAggregate
 {
     /**
@@ -21,14 +26,14 @@ class Builder implements \IteratorAggregate
     private const ERROR_INVALID_PAYLOAD = 'Closure should return an instance of \Generator';
 
     /**
-     * @var array|RuleInterface[]
+     * @var array<int|non-empty-string, RuleInterface>
      */
     private array $grammar = [];
 
     /**
      * Builder constructor.
      *
-     * @param \Closure|null $generator
+     * @param InitializerExpression|null $generator
      */
     public function __construct(\Closure $generator = null)
     {
@@ -39,16 +44,16 @@ class Builder implements \IteratorAggregate
 
     /**
      * <code>
-     *  $builder->extend(function () {
+     *  $builder->extend(static function (): \Generator {
      *      // Example with named rule
-     *      $name = yield 'RuleName' => new Concatenation([1, 2, 3])
+     *      $name = yield 'RuleName' => new Concatenation([1, 2, 3]);
      *
      *      // Example with anonymous rule
-     *      yield
+     *      yield new Concatenation([1, 2, 3]);
      *  });
      * </code>
      *
-     * @param \Closure $rules
+     * @param InitializerExpression $rules
      * @return $this
      */
     public function extend(\Closure $rules): self
@@ -56,10 +61,12 @@ class Builder implements \IteratorAggregate
         $generator = $this->read($rules);
 
         while ($generator->valid()) {
+            /** @psalm-suppress MixedAssignment */
             [$key, $value] = [$generator->key(), $generator->current()];
 
             switch (true) {
                 case \is_string($key) && $value instanceof RuleInterface:
+                    /** @psalm-suppress ArgumentTypeCoercion */
                     $generator->send($this->add($value, $key));
                     continue 2;
 
@@ -75,7 +82,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param string|int ...$of
+     * @param RuleId ...$of
      * @return Concatenation
      */
     public function concat(string|int ...$of): Concatenation
@@ -84,7 +91,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param string|int ...$of
+     * @param RuleId ...$of
      * @return Alternation
      */
     public function any(string|int ...$of): Alternation
@@ -93,7 +100,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param string|int $name
+     * @param RuleId $name
      * @param bool $keep
      * @return Lexeme
      */
@@ -103,7 +110,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param string|int ...$of
+     * @param RuleId ...$of
      * @return Optional
      */
     public function maybe(string|int ...$of): Optional
@@ -112,8 +119,10 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param array<string|int> $args
-     * @return int|string
+     * @param array<RuleId> $args
+     * @return non-empty-string|int
+     * @psalm-suppress NullableReturnStatement
+     * @psalm-suppress InvalidNullableReturnType
      */
     private function unwrap(array $args): string|int
     {
@@ -125,7 +134,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param string|int ...$of
+     * @param RuleId ...$of
      * @return Repetition
      */
     public function repeat(string|int ...$of): Repetition
@@ -134,7 +143,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param \Closure $rules
+     * @param InitializerExpression $rules
      * @return \Generator
      */
     private function read(\Closure $rules): \Generator
@@ -150,10 +159,10 @@ class Builder implements \IteratorAggregate
 
     /**
      * @param RuleInterface $rule
-     * @param int|string|null $id
-     * @return int|string|null
+     * @param RuleId|null $id
+     * @return non-empty-string|int
      */
-    public function add(RuleInterface $rule, int|string $id = null): int|string|null
+    public function add(RuleInterface $rule, int|string $id = null): int|string
     {
         if ($id === null) {
             $this->grammar[] = $rule;

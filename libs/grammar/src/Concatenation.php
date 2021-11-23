@@ -33,6 +33,7 @@ class Concatenation extends Production
         [$revert, $children] = [$buffer->key(), []];
 
         foreach ($this->sequence as $rule) {
+            /** @psalm-suppress MixedAssignment */
             if (($result = $reduce($rule)) === null) {
                 $buffer->seek($revert);
 

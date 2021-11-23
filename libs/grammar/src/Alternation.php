@@ -33,6 +33,7 @@ class Alternation extends Production
         $rollback = $buffer->key();
 
         foreach ($this->sequence as $rule) {
+            /** @psalm-suppress MixedAssignment */
             if (($result = $reduce($rule)) !== null) {
                 return $result;
             }

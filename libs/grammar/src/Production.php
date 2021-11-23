@@ -12,15 +12,14 @@ declare(strict_types=1);
 namespace Phplrt\Grammar;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Grammar\ProductionInterface;
 
 abstract class Production extends Rule implements ProductionInterface
 {
     /**
-     * @param array|NodeInterface[] $children
-     * @param iterable|NodeInterface|TokenInterface $result
-     * @return array|NodeInterface[]|TokenInterface[]
+     * @param array $children
+     * @param mixed $result
+     * @return array
      */
     protected function mergeWith(array $children, mixed $result): array
     {
@@ -28,6 +27,7 @@ abstract class Production extends Rule implements ProductionInterface
             return \array_merge($children, $result);
         }
 
+        /** @psalm-suppress MixedAssignment */
         $children[] = $result;
 
         return $children;

@@ -43,27 +43,24 @@ class Repetition extends Production
     {
         [$children, $iterations] = [[], 0];
 
-        $global = $buffer->key();
+        $position = $buffer->key();
 
         do {
-            $inRange  = $iterations >= $this->from && $iterations <= $this->to;
-            $rollback = $buffer->key();
-
+            /** @psalm-suppress MixedAssignment */
             if (($result = $reduce($this->rule)) === null) {
-                if (! $inRange) {
-                    $buffer->seek($global);
+                if ($iterations >= $this->from && $iterations <= $this->to) {
+                    $buffer->seek($buffer->key());
 
-                    return null;
+                    return $children;
                 }
 
-                $buffer->seek($rollback);
+                $buffer->seek($position);
 
-                return $children;
+                return null;
             }
 
             $children = $this->mergeWith($children, $result);
-            ++$iterations;
-        } while ($result !== null);
+        } while (++$iterations);
 
         return $children;
     }
