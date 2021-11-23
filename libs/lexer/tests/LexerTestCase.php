@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\RuntimeExceptionInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\LexerCreateInfo;
 use Phplrt\Lexer\Token\Token;
@@ -21,8 +21,8 @@ class LexerTestCase extends TestCase
 {
     /**
      * @return void
-     * @throws RuntimeExceptionInterface
      * @throws SourceExceptionInterface
+     * @throws RuntimeExceptionInterface
      */
     public function testDigits(): void
     {
@@ -38,6 +38,8 @@ class LexerTestCase extends TestCase
             skip: ['T_WHITESPACE']
         ));
 
-        $this->assertEquals($expected, $this->tokensOf($lexer->lex('23 42')));
+        $this->assertEquals($expected, $this->tokensOf(
+            $lexer->lex('23 42')
+        ));
     }
 }
