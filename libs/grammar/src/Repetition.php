@@ -19,7 +19,8 @@ class Repetition extends Production
      * Repetition constructor.
      *
      * @param int|string $rule
-     * @param int $from @param int|float $to
+     * @param int $from
+     * @param int|float $to
      */
     public function __construct(
         public readonly int|string $rule,
