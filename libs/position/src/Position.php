@@ -20,37 +20,37 @@ class Position implements PositionInterface
     /**
      * @var positive-int
      */
-    public const MIN_LINE = 1;
+    final public const MIN_LINE = 1;
 
     /**
      * @var positive-int
      */
-    public const MIN_COLUMN = 1;
+    final public const MIN_COLUMN = 1;
 
     /**
      * @var positive-int|0
      */
-    public const MIN_OFFSET = 0;
+    final public const MIN_OFFSET = 0;
 
     /**
      * @var string
      */
-    protected const LINE_DELIMITER = "\n";
+    final protected const LINE_DELIMITER = "\n";
 
     /**
      * @var positive-int|0
      */
-    private int $offset;
+    private readonly int $offset;
 
     /**
      * @var positive-int
      */
-    private int $line;
+    private readonly int $line;
 
     /**
      * @var positive-int
      */
-    private int $column;
+    private readonly int $column;
 
     /**
      * @param positive-int|0 $offset

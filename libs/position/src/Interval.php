@@ -21,12 +21,12 @@ class Interval implements IntervalInterface
     /**
      * @var PositionInterface
      */
-    private PositionInterface $from;
+    private readonly PositionInterface $from;
 
     /**
      * @var PositionInterface
      */
-    private PositionInterface $to;
+    private readonly PositionInterface $to;
 
     /**
      * @param PositionInterface $from
