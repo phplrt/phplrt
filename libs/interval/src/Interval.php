@@ -60,6 +60,8 @@ class Interval implements IntervalInterface
 
     /**
      * {@inheritDoc}
+     * @psalm-suppress MoreSpecificReturnType Length is uint: "to" always greater than "from"
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function getLength(): int
     {

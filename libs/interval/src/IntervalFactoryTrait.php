@@ -12,30 +12,28 @@ declare(strict_types=1);
 namespace Phplrt\Interval;
 
 use Phplrt\Contracts\Interval\IntervalInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Position\Position;
+use Phplrt\Source\File;
 
 trait IntervalFactoryTrait
 {
     /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @param int $offset
-     * @param int $length
+     * @param mixed $source
+     * @param positive-int|0 $offset
+     * @param positive-int|0 $length
      * @return IntervalInterface
      */
     public static function fromOffset(mixed $source, int $offset = 0, int $length = 0): IntervalInterface
     {
-        return new Interval(
-            Position::fromOffset($source, $offset),
-            Position::fromOffset($source, $offset + $length)
-        );
+        return Factory::getInstance()
+            ->fromOffset(File::new($source), $offset, $length)
+        ;
     }
 
     /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @param int $line
-     * @param int $column
-     * @param int $length
+     * @param mixed $source
+     * @param positive-int $line
+     * @param positive-int $column
+     * @param positive-int|0 $length
      * @return IntervalInterface
      */
     public static function fromLineAndColumn(
@@ -44,9 +42,8 @@ trait IntervalFactoryTrait
         int $column = 1,
         int $length = 0
     ): IntervalInterface {
-        return new Interval(
-            $from = Position::fromLineAndColumn($source, $line, $column),
-            Position::fromOffset($source, $from->getOffset() + $length)
-        );
+        return Factory::getInstance()
+            ->fromLineAndColumn(File::new($source), $line, $column, $length)
+        ;
     }
 }
