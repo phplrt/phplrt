@@ -22,6 +22,7 @@ use Phplrt\SourceMap\EntryInterface;
  * Reference implementation of Zend Trace Printer
  *
  * @link https://github.com/php/php-src/blob/php-8.1.0/Zend/zend_exceptions.c#L491
+ * @link https://github.com/php/php-src/blob/php-8.1.0/Zend/zend_smart_str.c#L193
  */
 class PhpPrinter implements PrinterInterface
 {
