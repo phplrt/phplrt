@@ -55,7 +55,7 @@ trait PositionFactoryTrait
 
     /**
      * @param mixed $source
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @return PositionInterface
      */
     public static function fromOffset(mixed $source, int $offset = Position::MIN_OFFSET): PositionInterface
