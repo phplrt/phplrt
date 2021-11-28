@@ -16,6 +16,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Trace\InvocationInterface;
 use Phplrt\Contracts\Trace\TraceInterface;
 use Phplrt\Trace\Printer\PhpPrinter;
+use Phplrt\Trace\Printer\PhpPrinterCreateInfo;
 
 final class Trace implements TraceInterface, \Stringable
 {
@@ -118,6 +119,10 @@ final class Trace implements TraceInterface, \Stringable
      */
     public function __toString(): string
     {
-        return (new PhpPrinter())->print($this);
+        $printer = new PhpPrinter(new PhpPrinterCreateInfo(
+            prettyArgs: true,
+        ));
+
+        return $printer->print($this);
     }
 }

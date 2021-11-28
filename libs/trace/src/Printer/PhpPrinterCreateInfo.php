@@ -19,6 +19,7 @@ final class PhpPrinterCreateInfo
      * @param bool $index Print trace item index
      * @param bool $columns Print trace item position column
      * @param bool $main Print terminal "{main}" statement
+     * @param bool $prettyArgs Enable pretty arguments representation
      */
     public function __construct(
         public readonly string $eol = \PHP_EOL,
@@ -26,6 +27,8 @@ final class PhpPrinterCreateInfo
         public readonly bool $index = true,
         public readonly bool $columns = false,
         public readonly bool $main = true,
+        public readonly bool $prettyArgs = false,
+        public readonly int $stringLength = 15,
     ) {
     }
 }

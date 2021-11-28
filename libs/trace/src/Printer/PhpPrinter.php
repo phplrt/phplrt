@@ -18,6 +18,11 @@ use Phplrt\Contracts\Trace\MethodInvocationInterface;
 use Phplrt\Contracts\Trace\TraceInterface;
 use Phplrt\SourceMap\EntryInterface;
 
+/**
+ * Reference implementation of Zend Trace Printer
+ *
+ * @link https://github.com/php/php-src/blob/php-8.1.0/Zend/zend_exceptions.c#L491
+ */
 class PhpPrinter implements PrinterInterface
 {
     /**
@@ -44,10 +49,37 @@ class PhpPrinter implements PrinterInterface
 
         $result[] = $this->info->index
             ? '#' . ($index + 1) . ' {main}'
-            : '{main}'
-        ;
+            : '{main}';
 
         return \implode($this->info->eol, $result);
+    }
+
+    /**
+     * @param positive-int|0 $index
+     * @param InvocationInterface $entry
+     * @return non-empty-string
+     */
+    private function file(int $index, InvocationInterface $entry): string
+    {
+        $source = $entry->getSource();
+
+        $name = $source instanceof FileInterface
+            ? $source->getPathname()
+            : '{' . $source->getHash() . '}';
+
+        $result = '';
+
+        if ($this->info->index) {
+            $result .= "#$index ";
+        }
+
+        $result .= $name . '(' . $entry->getLine();
+
+        if ($this->info->columns) {
+            $result .= ':' . $entry->getColumn();
+        }
+
+        return $result . ')';
     }
 
     /**
@@ -113,41 +145,85 @@ class PhpPrinter implements PrinterInterface
      */
     private function functionArgumentToString(mixed $arg): string
     {
+        if ($this->info->prettyArgs) {
+            return $this->functionPrettyArgumentToString($arg);
+        }
+
         return match (true) {
-            \is_string($arg) => 'string(' . \strlen($arg) . ') "' . $arg . '"',
-            \is_bool($arg) => 'bool(' . ($arg ? 'true' : 'false') . ')',
-            \is_float($arg) => 'float(' . $arg . ')',
-            \is_int($arg) => 'int(' . $arg . ')',
-            \is_object($arg) => 'object(' . \get_class($arg) . ')',
+            $arg === null => 'NULL',
+            \is_string($arg) => "'" . $this->escape($this->limit($arg)) . "'",
+            \is_bool($arg) => $arg ? 'true' : 'false',
+            \is_float($arg), \is_int($arg) => (string)$arg,
+            \is_object($arg) => 'Object(' . \explode("\0", \get_class($arg))[0] . ')',
+            \is_array($arg) => 'Array',
+            \gettype($arg) === 'resource (closed)',
+            \is_resource($arg) => 'Resource id #' . \get_resource_id($arg),
             default => \get_debug_type($arg),
         };
     }
 
     /**
-     * @param positive-int|0 $index
-     * @param InvocationInterface $entry
-     * @return non-empty-string
+     * @param int $code
+     * @return string
      */
-    private function file(int $index, InvocationInterface $entry): string
+    private function decToHex(int $code): string
     {
-        $source = $entry->getSource();
+        $hex = \dechex($code);
+        $hex = \str_pad($hex, 2, '0', \STR_PAD_LEFT);
 
-        $name = $source instanceof FileInterface
-            ? $source->getPathname()
-            : '{' . $source->getHash() . '}';
+        return \strtoupper($hex);
+    }
 
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function escape(string $value): string
+    {
         $result = '';
 
-        if ($this->info->index) {
-            $result .= "#$index ";
+        foreach (\str_split($value) as $char) {
+            $code = \ord($char);
+
+            if ($code < 32 || $code > 126) {
+                $char = '\\x' . $this->decToHex($code);
+            }
+
+            $result .= $char;
         }
 
-        $result .= $name . '(' . $entry->getLine();
+        return $result;
+    }
 
-        if ($this->info->columns) {
-            $result .= ':' . $entry->getColumn();
-        }
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function limit(string $value): string
+    {
+        return \strlen($value) > $this->info->stringLength
+            ? \substr($value, 0, $this->info->stringLength) . '...'
+            : $value
+        ;
+    }
 
-        return $result . ')';
+    /**
+     * @param mixed $arg
+     * @return string
+     */
+    private function functionPrettyArgumentToString(mixed $arg): string
+    {
+        return match (true) {
+            $arg === null => 'null',
+            \is_string($arg) => 'string(' . \strlen($arg) . ') "' . $this->escape($this->limit($arg)) . '"',
+            \is_bool($arg) => 'bool(' . ($arg ? 'true' : 'false') . ')',
+            \is_float($arg) => 'float(' . $arg . ')',
+            \is_int($arg) => 'int(' . $arg . ')',
+            \is_object($arg) => 'object#' . \spl_object_id($arg) . '(' . \explode("\0", \get_class($arg))[0] . ')',
+            \is_array($arg) => 'array(' . \count($arg) . ')',
+            \gettype($arg) === 'resource (closed)' => 'resource#' . \get_resource_id($arg) . '(closed)',
+            \is_resource($arg) => 'resource#' . \get_resource_id($arg) . '(' . \get_resource_type($arg) . ')',
+            default => \get_debug_type($arg),
+        };
     }
 }
