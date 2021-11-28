@@ -16,7 +16,6 @@ use Phplrt\Contracts\Trace\FunctionInvocationInterface;
 use Phplrt\Contracts\Trace\InvocationInterface;
 use Phplrt\Contracts\Trace\MethodInvocationInterface;
 use Phplrt\Contracts\Trace\TraceInterface;
-use Phplrt\SourceMap\EntryInterface;
 
 /**
  * Reference implementation of Zend Trace Printer
@@ -43,7 +42,7 @@ class PhpPrinter implements PrinterInterface
         $result = [];
         $index = 0;
 
-        /** @var EntryInterface $item */
+        /** @var InvocationInterface $item */
         foreach ($trace as $index => $item) {
             $result[] = $this->file($index, $item) . $this->info->delimiter . $this->entryToString($item);
         }
