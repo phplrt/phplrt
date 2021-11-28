@@ -60,12 +60,12 @@ final class Factory implements FactoryInterface
     {
         $trace = new Trace();
 
-        foreach (\debug_backtrace() as $index => $item) {
-            if (!isset($item['file']) || $index <= $depth) {
+        foreach (\debug_backtrace(0) as $index => $item) {
+            if ($index <= $depth) {
                 continue;
             }
 
-            $source = $this->file($item['file']);
+            $source = $this->file($item['file'] ?? null);
             $position = $this->position->fromLineAndColumn($source, $item['line'] ?? 1);
 
             switch (true) {
@@ -83,11 +83,15 @@ final class Factory implements FactoryInterface
     }
 
     /**
-     * @param non-empty-string $name
+     * @param non-empty-string|null $name
      * @return ReadableInterface
      */
-    private function file(string $name): ReadableInterface
+    private function file(?string $name): ReadableInterface
     {
+        if ($name === null) {
+            return $this->source->create('');
+        }
+
         return \is_file($name)
             ? $this->source->fromPathname($name)
             : $this->source->fromSource('', $name)

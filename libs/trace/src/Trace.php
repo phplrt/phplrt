@@ -100,6 +100,9 @@ final class Trace implements TraceInterface, \Stringable
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function getIterator(): \Traversable
     {

@@ -66,7 +66,8 @@ class PhpPrinter implements PrinterInterface
 
         $name = $source instanceof FileInterface
             ? $source->getPathname()
-            : '{' . $source->getHash() . '}';
+            : '[internal function]'
+            ;
 
         $result = '';
 
@@ -74,13 +75,19 @@ class PhpPrinter implements PrinterInterface
             $result .= "#$index ";
         }
 
-        $result .= $name . '(' . $entry->getLine();
+        $result .= $name;
 
-        if ($this->info->columns) {
-            $result .= ':' . $entry->getColumn();
+        if ($source instanceof FileInterface) {
+            $result .= '(' . $entry->getLine();
+
+            if ($this->info->columns) {
+                $result .= ':' . $entry->getColumn();
+            }
+
+            $result .= ')';
         }
 
-        return $result . ')';
+        return $result;
     }
 
     /**
