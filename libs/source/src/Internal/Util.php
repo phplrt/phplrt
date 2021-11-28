@@ -66,7 +66,7 @@ final class Util
     }
 
     /**
-     * @param array $data
+     * @param array{uri:string, mode:string, seek:int} $data
      * @return resource
      */
     public static function unserialize(array $data): mixed

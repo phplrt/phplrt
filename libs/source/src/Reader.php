@@ -13,7 +13,7 @@ namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
-class Reader implements ReaderInterface
+final class Reader implements ReaderInterface
 {
     /**
      * @param ReadableInterface $source

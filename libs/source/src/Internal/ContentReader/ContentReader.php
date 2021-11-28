@@ -14,8 +14,8 @@ namespace Phplrt\Source\Internal\ContentReader;
 use Phplrt\Source\Internal\ContentReaderInterface;
 
 /**
- * @internal ContentReader is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\source
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
  */
 final class ContentReader implements ContentReaderInterface
 {

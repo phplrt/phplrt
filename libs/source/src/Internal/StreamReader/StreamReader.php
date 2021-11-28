@@ -15,8 +15,8 @@ use Phplrt\Source\Internal\StreamReaderInterface;
 use Phplrt\Source\Internal\Util;
 
 /**
- * @internal StreamReader is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\source
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
  */
 final class StreamReader implements StreamReaderInterface
 {
@@ -26,7 +26,9 @@ final class StreamReader implements StreamReaderInterface
     public function __construct(
         private mixed $stream
     ) {
-        assert(Util::isNonClosedStream($this->stream));
+        assert(Util::isNonClosedStream($this->stream), new \InvalidArgumentException(
+            'Can not open for reading already closed resource'
+        ));
     }
 
     /**

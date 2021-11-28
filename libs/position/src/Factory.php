@@ -15,6 +15,7 @@ use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\File;
+use Phplrt\Source\Factory as FileFactory;
 
 final class Factory implements FactoryInterface
 {
@@ -65,7 +66,7 @@ final class Factory implements FactoryInterface
             return $this->start();
         }
 
-        $stream = File::new($source)->getStream();
+        $stream = $source->getStream();
         $offset = $cursor = 0;
 
         //

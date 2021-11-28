@@ -17,8 +17,8 @@ use Phplrt\Source\Internal\Util;
 use Phplrt\Source\MemoizableInterface;
 
 /**
- * @internal StreamContentReader is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\source
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
  */
 final class StreamContentReader implements ContentReaderInterface, MemoizableInterface
 {
@@ -46,7 +46,9 @@ final class StreamContentReader implements ContentReaderInterface, MemoizableInt
     public function __construct(
         private mixed $stream
     ) {
-        assert(Util::isNonClosedStream($stream));
+        assert(Util::isNonClosedStream($this->stream), new \InvalidArgumentException(
+            'Can not open for reading already closed resource'
+        ));
     }
 
     /**

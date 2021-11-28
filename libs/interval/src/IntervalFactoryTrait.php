@@ -13,6 +13,7 @@ namespace Phplrt\Interval;
 
 use Phplrt\Contracts\Interval\IntervalInterface;
 use Phplrt\Source\File;
+use Phplrt\Source\Factory as FileFactory;
 
 trait IntervalFactoryTrait
 {
@@ -24,8 +25,10 @@ trait IntervalFactoryTrait
      */
     public static function fromOffset(mixed $source, int $offset = 0, int $length = 0): IntervalInterface
     {
+        $factory = FileFactory::getInstance();
+
         return Factory::getInstance()
-            ->fromOffset(File::new($source), $offset, $length)
+            ->fromOffset($factory->create($source), $offset, $length)
         ;
     }
 
@@ -42,8 +45,10 @@ trait IntervalFactoryTrait
         int $column = 1,
         int $length = 0
     ): IntervalInterface {
+        $factory = FileFactory::getInstance();
+
         return Factory::getInstance()
-            ->fromLineAndColumn(File::new($source), $line, $column, $length)
+            ->fromLineAndColumn($factory->create($source), $line, $column, $length)
         ;
     }
 }

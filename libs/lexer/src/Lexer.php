@@ -22,7 +22,7 @@ use Phplrt\Lexer\Token\Channel;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\Exception\SourceExceptionInterface;
-use Phplrt\Source\File;
+use Phplrt\Source\Factory as FileFactory;
 
 final class Lexer implements LexerInterface
 {
@@ -72,12 +72,15 @@ final class Lexer implements LexerInterface
      *
      * @param positive-int|0 $offset
      * @throws SourceExceptionInterface
+     * @throws CompilationException
      * @psalm-suppress LessSpecificImplementedReturnType
      */
     public function lex(mixed $source, int $offset = 0): iterable
     {
         /** @psalm-suppress MixedArgument */
-        $source = File::new($source);
+        $source = FileFactory::getInstance()
+            ->create($source)
+        ;
 
         foreach ($this->execute($source, $offset) as $token) {
             $channel = $token->getChannel();

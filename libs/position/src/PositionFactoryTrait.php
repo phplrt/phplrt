@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Position;
 
 use Phplrt\Contracts\Position\PositionInterface;
+use Phplrt\Source\Factory as FileFactory;
 use Phplrt\Source\File;
 
 trait PositionFactoryTrait
@@ -27,8 +28,10 @@ trait PositionFactoryTrait
         int $line = Position::MIN_LINE,
         int $column = Position::MIN_COLUMN
     ): PositionInterface {
+        $factory = FileFactory::getInstance();
+
         return Factory::getInstance()
-            ->fromLineAndColumn(File::new($source), $line, $column)
+            ->fromLineAndColumn($factory->create($source), $line, $column)
         ;
     }
 
@@ -48,8 +51,10 @@ trait PositionFactoryTrait
      */
     public static function end(mixed $source): PositionInterface
     {
+        $factory = FileFactory::getInstance();
+
         return Factory::getInstance()
-            ->end(File::new($source))
+            ->end($factory->create($source))
         ;
     }
 
@@ -60,8 +65,10 @@ trait PositionFactoryTrait
      */
     public static function fromOffset(mixed $source, int $offset = Position::MIN_OFFSET): PositionInterface
     {
+        $factory = FileFactory::getInstance();
+
         return Factory::getInstance()
-            ->fromOffset(File::new($source), $offset)
+            ->fromOffset($factory->create($source), $offset)
         ;
     }
 }

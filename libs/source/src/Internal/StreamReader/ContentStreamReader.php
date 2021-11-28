@@ -15,8 +15,8 @@ use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Internal\StreamReaderInterface;
 
 /**
- * @internal ContentStreamReader is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\source
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
  */
 final class ContentStreamReader implements StreamReaderInterface
 {

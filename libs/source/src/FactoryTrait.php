@@ -16,12 +16,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\Internal\ContentReader\ContentReader;
-use Phplrt\Source\Internal\ContentReader\StreamContentReader;
-use Phplrt\Source\Internal\StreamReader\ContentStreamReader;
-use Phplrt\Source\Internal\StreamReader\StreamReader;
-use Phplrt\Source\Internal\Util;
-use Psr\Http\Message\StreamInterface;
 
 trait FactoryTrait
 {
@@ -31,24 +25,37 @@ trait FactoryTrait
      */
     public static function empty(string $pathname = null): ReadableInterface
     {
-        return static::fromSources('', $pathname);
+        return Factory::getInstance()
+            ->fromSource('', $pathname)
+        ;
     }
 
     /**
-     * @param string $sources
-     * @param non-empty-string|null $pathname
-     * @return ReadableInterface
+     * @deprecated Please use {@see FactoryTrait::fromSource()} instead.
      */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
     {
-        $stream = new ContentStreamReader($sources);
-        $content = new ContentReader($sources);
+        return static::fromSource($sources, $pathname);
+    }
 
-        if ($pathname !== null) {
-            return new File($pathname, $stream, $content);
-        }
+    /**
+     * @param string $source
+     * @param non-empty-string|null $pathname
+     * @return ReadableInterface
+     */
+    public static function fromSource(string $source, string $pathname = null): ReadableInterface
+    {
+        return Factory::getInstance()
+            ->fromSource($source, $pathname)
+        ;
+    }
 
-        return new Readable($stream, $content);
+    /**
+     * @deprecated Please use {@see FactoryTrait::create()} instead.
+     */
+    public static function new(mixed $source): ReadableInterface
+    {
+        return static::create($source);
     }
 
     /**
@@ -57,18 +64,11 @@ trait FactoryTrait
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public static function new(mixed $source): ReadableInterface
+    public static function create(mixed $source): ReadableInterface
     {
-        return match (true) {
-            $source instanceof ReadableInterface => $source,
-            $source instanceof \SplFileInfo => static::fromSplFileInfo($source),
-            \is_string($source) => static::fromSources($source),
-            $source instanceof StreamInterface => static::fromPsrStream($source),
-            \is_resource($source) => static::fromResource($source),
-            default => throw new \InvalidArgumentException(
-                \sprintf('Unrecognized readable file type "%s"', \get_debug_type($source))
-            )
-        };
+        return Factory::getInstance()
+            ->create($source)
+        ;
     }
 
     /**
@@ -79,7 +79,9 @@ trait FactoryTrait
      */
     public static function fromSplFileInfo(\SplFileInfo $info): FileInterface
     {
-        return static::fromPathname($info->getPathname());
+        return Factory::getInstance()
+            ->fromSplFileInfo($info)
+        ;
     }
 
     /**
@@ -90,24 +92,17 @@ trait FactoryTrait
      */
     public static function fromPathname(string $pathname): FileInterface
     {
-        File::assertValidPathname($pathname);
-
-        return new File($pathname);
+        return Factory::getInstance()
+            ->fromPathname($pathname)
+        ;
     }
 
     /**
-     * @param StreamInterface $stream
-     * @param non-empty-string|null $pathname
-     * @return ReadableInterface
-     * @throws \RuntimeException
+     * @deprecated Please use {@see FactoryTrait::fromResourceStream()} instead.
      */
-    public static function fromPsrStream(StreamInterface $stream, string $pathname = null): ReadableInterface
+    public static function fromResource(mixed $resource, string $pathname = null): ReadableInterface
     {
-        if ($stream->isSeekable()) {
-            $stream->rewind();
-        }
-
-        return static::fromResource($stream->detach(), $pathname);
+        return static::fromResourceStream($resource, $pathname);
     }
 
     /**
@@ -116,25 +111,10 @@ trait FactoryTrait
      * @return ReadableInterface
      * @throws NotReadableException
      */
-    public static function fromResource($resource, string $pathname = null): ReadableInterface
+    public static function fromResourceStream(mixed $resource, string $pathname = null): ReadableInterface
     {
-        if (! Util::isStream($resource)) {
-            $message = 'First argument must be a valid resource, but %s given';
-
-            throw new \InvalidArgumentException(\sprintf($message, \gettype($resource)));
-        }
-
-        if (Util::isClosedStream($resource)) {
-            throw new NotReadableException('Can not open for reading already closed resource');
-        }
-
-        $stream = new StreamReader($resource);
-        $content = new StreamContentReader($resource);
-
-        if ($pathname !== null) {
-            return new File($pathname, $stream, $content);
-        }
-
-        return new Readable($stream, $content);
+        return Factory::getInstance()
+            ->fromResourceStream($resource, $pathname)
+        ;
     }
 }

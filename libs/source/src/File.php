@@ -62,17 +62,13 @@ class File extends Readable implements FileInterface
      */
     public static function assertValidPathname(string $pathname): void
     {
-        if (! \is_file($pathname)) {
-            $message = \sprintf(self::ERROR_NOT_FOUND, $pathname);
+        assert(\is_file($pathname), new NotFoundException(
+            \sprintf(self::ERROR_NOT_FOUND, \realpath($pathname) ?: $pathname)
+        ));
 
-            throw new NotFoundException($message);
-        }
-
-        if (! \is_readable($pathname)) {
-            $message = \sprintf(self::ERROR_NOT_READABLE, \realpath($pathname));
-
-            throw new NotReadableException($message);
-        }
+        assert(\is_readable($pathname), new NotReadableException(
+            \sprintf(self::ERROR_NOT_READABLE, \realpath($pathname) ?: $pathname)
+        ));
     }
 
     /**
@@ -87,6 +83,10 @@ class File extends Readable implements FileInterface
      * @param string $algo
      * @param bool $binary
      * @return non-empty-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress PropertyTypeCoercion
      */
     final public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {

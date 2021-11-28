@@ -25,7 +25,7 @@ class Readable implements ReadableInterface, MemoizableInterface
     final protected const HASH_ALGORITHM = 'crc32';
 
     /**
-     * @var string|null
+     * @var non-empty-string|null
      */
     protected ?string $hash = null;
 
@@ -75,6 +75,10 @@ class Readable implements ReadableInterface, MemoizableInterface
      * @param non-empty-string $algo
      * @param bool $binary
      * @return non-empty-string
+     *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress PropertyTypeCoercion
      */
     public function getHash(string $algo = self::HASH_ALGORITHM, bool $binary = false): string
     {

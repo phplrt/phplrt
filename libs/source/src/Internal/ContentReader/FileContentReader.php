@@ -16,8 +16,8 @@ use Phplrt\Source\Internal\ContentReaderInterface;
 use Phplrt\Source\MemoizableInterface;
 
 /**
- * @internal FileContentReader is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\source
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Source
  */
 final class FileContentReader implements ContentReaderInterface, MemoizableInterface
 {
