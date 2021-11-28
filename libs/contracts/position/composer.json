@@ -3,7 +3,22 @@
     "type": "library",
     "description": "A set of phplrt position abstractions",
     "license": "MIT",
-    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "analyzing", "visualization", "input", "position", "line", "column", "offset", "utils"],
+    "keywords": [
+        "abstractions",
+        "contracts",
+        "decoupling",
+        "interfaces",
+        "interoperability",
+        "standards",
+        "analyzing",
+        "visualization",
+        "input",
+        "position",
+        "line",
+        "column",
+        "offset",
+        "utils"
+    ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",

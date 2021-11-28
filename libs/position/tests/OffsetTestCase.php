@@ -39,6 +39,10 @@ class OffsetTestCase extends TestCase
      */
     public function testOffsetUnderflow(string $text): void
     {
+        if (\ini_get('assert.active')) {
+            $this->expectException(\InvalidArgumentException::class);
+        }
+
         $position = Position::fromOffset($text, \PHP_INT_MIN);
 
         $this->assertSame(0, $position->getOffset());

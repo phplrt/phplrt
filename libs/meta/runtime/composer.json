@@ -20,6 +20,7 @@
         "phplrt/lexer": "^4.0",
         "phplrt/parser": "^4.0",
         "phplrt/position": "^4.0",
+        "phplrt/interval": "^4.0",
         "phplrt/visitor": "^4.0"
     },
     "extra": {

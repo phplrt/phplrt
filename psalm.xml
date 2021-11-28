@@ -20,11 +20,11 @@
         <directory name="libs/contracts/source/src" />
 
         <directory name="libs/buffer/src" />
+        <!--<directory name="libs/compiler/src" />-->
         <directory name="libs/exception/src" />
         <directory name="libs/grammar/src" />
+        <!--<directory name="libs/interval/src" />-->
         <directory name="libs/lexer/src" />
-
-        <!--<directory name="libs/compiler/src" />-->
         <!--<directory name="libs/parser/src" />-->
         <!--<directory name="libs/position/src" />-->
         <!--<directory name="libs/source/src" />-->

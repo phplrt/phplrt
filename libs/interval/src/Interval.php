@@ -9,9 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Position;
+namespace Phplrt\Interval;
 
-use Phplrt\Contracts\Position\IntervalInterface;
+use Phplrt\Contracts\Interval\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 
 class Interval implements IntervalInterface

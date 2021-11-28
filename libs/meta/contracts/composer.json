@@ -22,6 +22,7 @@
         "phplrt/lexer-contracts": "^4.0",
         "phplrt/parser-contracts": "^4.0",
         "phplrt/position-contracts": "^4.0",
+        "phplrt/interval-contracts": "^4.0",
         "phplrt/source-contracts": "^4.0"
     },
     "extra": {

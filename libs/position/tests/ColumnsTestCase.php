@@ -40,6 +40,10 @@ class ColumnsTestCase extends TestCase
      */
     public function testOffsetUnderflow(string $text): void
     {
+        if (\ini_get('assert.active')) {
+            $this->expectException(\InvalidArgumentException::class);
+        }
+
         $position = Position::fromOffset($text, \PHP_INT_MIN);
 
         $this->assertSame(1, $position->getColumn());

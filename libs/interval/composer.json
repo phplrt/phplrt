@@ -1,13 +1,14 @@
 {
-    "name": "phplrt/position",
+    "name": "phplrt/interval",
     "type": "library",
-    "description": "The phplrt position package.",
+    "description": "The phplrt interval package.",
     "license": "MIT",
     "keywords": [
         "analyzing",
         "visualization",
         "input",
         "position",
+        "interval",
         "line",
         "column",
         "offset",
@@ -16,7 +17,7 @@
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/position"
+        "source": "https://github.com/phplrt/interval"
     },
     "authors": [
         {
@@ -26,12 +27,12 @@
     ],
     "require": {
         "php": "^8.1",
-        "phplrt/position-contracts": "^4.0",
+        "phplrt/interval-contracts": "^4.0",
         "phplrt/source": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Position\\": "src"
+            "Phplrt\\Interval\\": "src"
         }
     },
     "require-dev": {
@@ -40,11 +41,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Position\\Tests\\": "tests"
+            "Phplrt\\Interval\\Tests\\": "tests"
         }
     },
     "provide": {
-        "phplrt/position-contracts-implementation": "^3.0"
+        "phplrt/interval-contracts-implementation": "^3.0"
     },
     "extra": {
         "branch-alias": {

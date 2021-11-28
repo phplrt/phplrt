@@ -37,7 +37,7 @@ trait FactoryTrait
     /**
      * @param string $sources
      * @param non-empty-string|null $pathname
-     * @return ReadableInterface|FileInterface
+     * @return ReadableInterface
      */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
     {
@@ -53,7 +53,7 @@ trait FactoryTrait
 
     /**
      * @param mixed $source
-     * @return ReadableInterface|FileInterface
+     * @return ReadableInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
