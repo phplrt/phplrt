@@ -1,13 +1,20 @@
 {
-    "name": "phplrt/exception",
+    "name": "phplrt/trace",
     "type": "library",
-    "description": "The phplrt exception package",
+    "description": "The phplrt trace package.",
     "license": "MIT",
-    "keywords": ["exception", "parsing", "errors", "helpers"],
+    "keywords": [
+        "trace",
+        "visualization",
+        "position",
+        "backtrace",
+        "exception",
+        "debig"
+    ],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/exception"
+        "source": "https://github.com/phplrt/trace"
     },
     "authors": [
         {
@@ -17,16 +24,11 @@
     ],
     "require": {
         "php": "^8.1",
-        "ext-spl": "*",
-        "ext-pcre": "*",
-        "ext-json": "*",
-        "ext-mbstring": "*",
-        "phplrt/source": "^4.0",
-        "phplrt/position": "^4.0"
+        "phplrt/trace-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Exception\\": "src"
+            "Phplrt\\Trace\\": "src"
         }
     },
     "require-dev": {
@@ -35,8 +37,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Exception\\Tests\\": "tests"
+            "Phplrt\\Trace\\Tests\\": "tests"
         }
+    },
+    "provide": {
+        "phplrt/trace-contracts-implementation": "^3.0"
     },
     "extra": {
         "branch-alias": {

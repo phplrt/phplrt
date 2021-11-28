@@ -19,8 +19,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-spl": "*",
-        "sebastian/environment": ">=5.0"
+        "ext-spl": "*"
     },
     "autoload": {
         "psr-4": {
@@ -34,6 +33,7 @@
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Contracts\\Trace\\": "libs/contracts/trace/src",
             "Phplrt\\Exception\\": "libs/exception/src",
             "Phplrt\\Grammar\\": "libs/grammar/src",
             "Phplrt\\Interval\\": "libs/interval/src",
@@ -42,11 +42,11 @@
             "Phplrt\\Position\\": "libs/position/src",
             "Phplrt\\SourceMap\\": "libs/source-map/src",
             "Phplrt\\Source\\": "libs/source/src",
+            "Phplrt\\Trace\\": "libs/trace/src",
             "Phplrt\\Visitor\\": "libs/visitor/src"
         }
     },
     "require-dev": {
-        "axy/sourcemap": "*",
         "jetbrains/phpstorm-attributes": "^1.0",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.6",
@@ -67,6 +67,7 @@
             "Phplrt\\Position\\Tests\\": "libs/position/tests",
             "Phplrt\\SourceMap\\Tests\\": "libs/source-map/tests",
             "Phplrt\\Source\\Tests\\": "libs/source/tests",
+            "Phplrt\\Trace\\Tests\\": "libs/trace/tests",
             "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
         }
     },
@@ -91,6 +92,8 @@
         "phplrt/source": "*",
         "phplrt/source-contracts": "*",
         "phplrt/source-map": "*",
+        "phplrt/trace": "self.version",
+        "phplrt/trace-contracts": "self.version",
         "phplrt/visitor": "*"
     },
     "scripts": {

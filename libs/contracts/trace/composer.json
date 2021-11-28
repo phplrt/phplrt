@@ -1,0 +1,45 @@
+{
+    "name": "phplrt/trace-contracts",
+    "type": "library",
+    "description": "A set of phplrt trace abstractions",
+    "license": "MIT",
+    "keywords": [
+        "trace",
+        "visualization",
+        "position",
+        "backtrace",
+        "exception",
+        "debig"
+    ],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/trace-contracts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "phplrt/source-contracts": "^4.0",
+        "phplrt/position-contracts": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Trace\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

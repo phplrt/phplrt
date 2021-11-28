@@ -14,8 +14,6 @@ namespace Phplrt\Position;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
-use Phplrt\Source\File;
-use Phplrt\Source\Factory as FileFactory;
 
 final class Factory implements FactoryInterface
 {
