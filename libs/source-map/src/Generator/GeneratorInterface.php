@@ -9,16 +9,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Tests;
+namespace Phplrt\SourceMap\Generator;
 
-class CodeGeneratorTestCase extends TestCase
+use Phplrt\SourceMap\EntryInterface;
+
+interface GeneratorInterface
 {
     /**
-     * @return void
-     * @throws \Throwable
+     * @param EntryInterface $entry
+     * @return string
      */
-    public function testOutput(): void
-    {
-        $this->markTestSkipped('TODO');
-    }
+    public function generate(EntryInterface $entry): string;
 }

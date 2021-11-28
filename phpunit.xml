@@ -44,6 +44,9 @@
         <testsuite name="phplrt/source">
             <directory suffix="TestCase.php">libs/source/tests</directory>
         </testsuite>
+        <testsuite name="phplrt/source-map">
+            <directory suffix="TestCase.php">libs/source-map/tests</directory>
+        </testsuite>
         <testsuite name="phplrt/visitor">
             <directory suffix="TestCase.php">libs/visitor/tests</directory>
         </testsuite>

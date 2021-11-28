@@ -9,12 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Source;
+namespace Phplrt\SourceMap\Generator;
 
-interface FileInterface extends ReadableInterface
+abstract class Generator implements GeneratorInterface
 {
-    /**
-     * @return non-empty-string
-     */
-    public function getPathname(): string;
 }

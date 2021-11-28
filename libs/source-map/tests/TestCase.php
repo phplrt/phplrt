@@ -9,12 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Source;
+namespace Phplrt\SourceMap\Tests;
 
-interface FileInterface extends ReadableInterface
+use PHPUnit\Framework\TestCase as BaseTestCase;
+
+abstract class TestCase extends BaseTestCase
 {
-    /**
-     * @return non-empty-string
-     */
-    public function getPathname(): string;
 }

@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Laminas\Diactoros\StreamFactory;
 use Phplrt\Source\File;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -22,17 +21,15 @@ abstract class TestCase extends BaseTestCase
      */
     public function provider(): array
     {
-        $factory = new StreamFactory();
-
         return [
-            'File::fromSources + filename'          => [
+            'File::fromSource + filename'          => [
                 function () {
-                    return File::fromSources($this->getSources(), $this->getPathname());
+                    return File::fromSource($this->getSources(), $this->getPathname());
                 },
             ],
-            'File::fromSources'                     => [
+            'File::fromSource'                     => [
                 function () {
-                    return File::fromSources($this->getSources());
+                    return File::fromSource($this->getSources());
                 },
             ],
             'File::fromPathname'                    => [
@@ -45,30 +42,16 @@ abstract class TestCase extends BaseTestCase
                     return File::fromSplFileInfo(new \SplFileInfo($this->getPathname()));
                 },
             ],
-            'File::fromPsrStream + filename' => [
-                function () use ($factory) {
-                    $stream = $factory->createStreamFromFile($this->getPathname());
-
-                    return File::fromPsrStream($stream, $this->getPathname());
-                },
-            ],
-            'File::fromPsrStream' => [
-                function () use ($factory) {
-                    $stream = $factory->createStreamFromFile($this->getPathname());
-
-                    return File::fromPsrStream($stream);
-                },
-            ],
             'File::fromResource + filename' => [
                 function () {
                     $resource = \fopen($this->getPathname(), 'rb');
 
-                    return File::fromResource($resource, $this->getPathname());
+                    return File::fromResourceStream($resource, $this->getPathname());
                 },
             ],
             'File::fromResource' => [
                 function () {
-                    return File::fromResource(\fopen($this->getPathname(), 'rb'));
+                    return File::fromResourceStream(\fopen($this->getPathname(), 'rb'));
                 },
             ],
         ];

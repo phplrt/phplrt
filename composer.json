@@ -25,6 +25,7 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Buffer\\": "libs/buffer/src",
+            "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
             "Phplrt\\Contracts\\Buffer\\": "libs/contracts/buffer/src",
             "Phplrt\\Contracts\\Grammar\\": "libs/contracts/grammar/src",
@@ -39,12 +40,13 @@
             "Phplrt\\Lexer\\": "libs/lexer/src",
             "Phplrt\\Parser\\": "libs/parser/src",
             "Phplrt\\Position\\": "libs/position/src",
-            "Phplrt\\SourceMap\\": "libs/sourcemap/src",
+            "Phplrt\\SourceMap\\": "libs/source-map/src",
             "Phplrt\\Source\\": "libs/source/src",
             "Phplrt\\Visitor\\": "libs/visitor/src"
         }
     },
     "require-dev": {
+        "axy/sourcemap": "*",
         "jetbrains/phpstorm-attributes": "^1.0",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.6",
@@ -56,13 +58,14 @@
         "psr-4": {
             "Phplrt\\Bench\\": "tests/bench",
             "Phplrt\\Buffer\\Tests\\": "libs/buffer/tests",
+            "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
             "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
             "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
             "Phplrt\\Interval\\Tests\\": "libs/interval/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
             "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
             "Phplrt\\Position\\Tests\\": "libs/position/tests",
-            "Phplrt\\SourceMap\\Tests\\": "libs/sourcemap/tests",
+            "Phplrt\\SourceMap\\Tests\\": "libs/source-map/tests",
             "Phplrt\\Source\\Tests\\": "libs/source/tests",
             "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
         }
@@ -71,6 +74,7 @@
         "phplrt/ast-contracts": "*",
         "phplrt/buffer": "*",
         "phplrt/buffer-contracts": "*",
+        "phplrt/compiler": "*",
         "phplrt/contracts": "*",
         "phplrt/exception": "*",
         "phplrt/grammar": "*",
@@ -86,7 +90,7 @@
         "phplrt/runtime": "*",
         "phplrt/source": "*",
         "phplrt/source-contracts": "*",
-        "phplrt/sourcemap": "*",
+        "phplrt/source-map": "*",
         "phplrt/visitor": "*"
     },
     "scripts": {
