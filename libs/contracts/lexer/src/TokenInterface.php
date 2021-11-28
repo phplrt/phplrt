@@ -36,7 +36,6 @@ interface TokenInterface extends \Stringable
      * Returns the value of the captured subgroup.
      *
      * @return string
-     * @psalm-return non-empty-string
      */
     public function getValue(): string;
 

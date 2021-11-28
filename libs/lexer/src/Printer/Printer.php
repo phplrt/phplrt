@@ -13,7 +13,6 @@ namespace Phplrt\Lexer\Printer;
 
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Token\Channel;
 
 final class Printer implements PrinterInterface
 {
@@ -27,7 +26,10 @@ final class Printer implements PrinterInterface
 
     /**
      * @param TokenInterface $token
-     * @return string
+     * @return non-empty-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function print(TokenInterface $token): string
     {
@@ -78,7 +80,6 @@ final class Printer implements PrinterInterface
 
         $result = '';
 
-        /** @var string $char */
         foreach (\mb_str_split($value) as $char) {
             $result .= match (true) {
                 $char === '"' => '\\"',
@@ -116,7 +117,6 @@ final class Printer implements PrinterInterface
     {
         $result = '';
 
-        /** @var string $byte */
         foreach (\mb_str_split($char) as $byte) {
             $hex = \strtoupper(\dechex(\mb_ord($byte)));
             $result .= \strlen($hex) > 2

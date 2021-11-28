@@ -27,11 +27,11 @@ final class Composite extends Token implements CompositeTokenInterface
     private array $initialized = [];
 
     /**
-     * @param string|int $name
-     * @param string $value
+     * @param non-empty-string|int $name
+     * @param non-empty-string $value
      * @param positive-int|0 $offset
      * @param ChannelInterface $channel
-     * @param array<string> $children
+     * @param array<non-empty-string> $children
      */
     public function __construct(
         string|int $name,
@@ -94,7 +94,9 @@ final class Composite extends Token implements CompositeTokenInterface
      */
     public function offsetGet(mixed $offset): ?TokenInterface
     {
-        assert(is_int($offset) && $offset >= 0);
+        assert(is_int($offset) && $offset >= 0, new \InvalidArgumentException(
+            'Offset must be int greater or equal than 0'
+        ));
 
         return $this->getChildren()[$offset] ?? null;
     }
@@ -106,8 +108,13 @@ final class Composite extends Token implements CompositeTokenInterface
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        assert(is_int($offset) && $offset >= 0);
-        assert(is_string($value));
+        assert(is_int($offset) && $offset >= 0, new \InvalidArgumentException(
+            'Offset must be int greater or equal than 0'
+        ));
+
+        assert(is_string($value), new \InvalidArgumentException(
+            'Value must be a string'
+        ));
 
         $this->initialized = [];
         $this->children[$offset] = $value;
@@ -119,7 +126,9 @@ final class Composite extends Token implements CompositeTokenInterface
      */
     public function offsetUnset(mixed $offset): void
     {
-        assert(is_int($offset) && $offset >= 0);
+        assert(is_int($offset) && $offset >= 0, new \InvalidArgumentException(
+            'Offset must be int greater or equal than 0'
+        ));
 
         unset($this->getChildren()[$offset]);
     }
@@ -130,9 +139,7 @@ final class Composite extends Token implements CompositeTokenInterface
      */
     public function count(): int
     {
-        /**
-         * @psalm-suppress InvalidReturnStatement (Count of children tokens greater than 0)
-         */
+        /** @psalm-suppress InvalidReturnStatement (Count of children tokens greater than 0) */
         return \count($this->children);
     }
 }

@@ -83,7 +83,11 @@ final class LexerCreateInfo
     /**
      * @param iterable $channels
      * @param iterable $skip
-     * @return ChannelInterface[]
+     * @return array<ChannelInterface>
+     *
+     * @psalm-suppress MixedArgumentTypeCoercion
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedAssignment
      */
     private function formatWithHiddenChannels(iterable $channels, iterable $skip): array
     {
@@ -131,10 +135,11 @@ final class LexerCreateInfo
     }
 
     /**
-     * @template T of array-key
+     * @param iterable<ChannelInterface|non-empty-string> $channels
+     * @return array<ChannelInterface>
      *
-     * @param iterable<T, ChannelInterface|non-empty-string> $channels
-     * @return array<T, ChannelInterface>
+     * @psalm-suppress MixedAssignment
+     * @psalm-suppress MixedArrayOffset
      */
     private function formatChannels(iterable $channels): array
     {

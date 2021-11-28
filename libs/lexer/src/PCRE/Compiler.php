@@ -53,8 +53,9 @@ final class Compiler
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
-     * @param array<non-empty-string, non-empty-string> $mappings
-     * @return string
+     * @param array<non-empty-string, non-empty-string|int> $mappings
+     * @return non-empty-string
+     * @throws CompilationException
      */
     public function compile(array $tokens, array $mappings): string
     {
@@ -66,6 +67,7 @@ final class Compiler
                 $this->escapePattern($pcre)
             );
 
+            /** @psalm-suppress ArgumentTypeCoercion */
             $this->info->debug and $this->test($chunk, [$mappings[$name] ?? $name, $pcre]);
         }
 
@@ -77,8 +79,11 @@ final class Compiler
     }
 
     /**
-     * @param array $chunks
-     * @return string
+     * @param array<non-empty-string> $chunks
+     * @return non-empty-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     protected function implodeAllTokens(array $chunks): string
     {
@@ -86,9 +91,12 @@ final class Compiler
     }
 
     /**
-     * @param string $name
-     * @param string $pattern
-     * @return string
+     * @param non-empty-string $name
+     * @param non-empty-string $pattern
+     * @return non-empty-string
+     *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      */
     protected function implodeToken(string $name, string $pattern): string
     {
@@ -98,6 +106,9 @@ final class Compiler
     /**
      * @param non-empty-string $name
      * @return non-empty-string
+     *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      */
     protected function escapeName(string $name): string
     {
@@ -107,6 +118,9 @@ final class Compiler
     /**
      * @param non-empty-string $pattern
      * @return non-empty-string
+     *
+     * @psalm-suppress LessSpecificReturnStatement
+     * @psalm-suppress MoreSpecificReturnType
      */
     protected function escapePattern(string $pattern): string
     {
@@ -117,6 +131,9 @@ final class Compiler
      * @param non-empty-string $pattern
      * @param array{non-empty-string, non-empty-string}|null $token
      * @return void
+     * @throws CompilationException
+     *
+     * @psalm-suppress UnusedFunctionCall Preg match contains side effect (provide errors)
      */
     public function test(string $pattern, array $token = null): void
     {
@@ -125,7 +142,7 @@ final class Compiler
         @\preg_match_all($this->create($pattern), '');
 
         if ($error = \error_get_last()) {
-            $message = self::formatException($error['message']);
+            $message = self::formatException((string)$error['message']);
 
             if ($token !== null) {
                 $message .= \sprintf(' in %s = %s token definition', ...$token);
@@ -145,8 +162,8 @@ final class Compiler
     }
 
     /**
-     * @param non-empty-string $message
-     * @return non-empty-string
+     * @param string $message
+     * @return string
      */
     protected static function formatException(string $message): string
     {

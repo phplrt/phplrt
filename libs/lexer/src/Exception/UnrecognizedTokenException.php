@@ -29,7 +29,7 @@ class UnrecognizedTokenException extends LexerLexerRuntimeException
      */
     public static function fromToken(ReadableInterface $source, TokenInterface $token, \Throwable $prev = null): self
     {
-        $message = \sprintf(self::ERROR_UNRECOGNIZED_TOKEN, $token);
+        $message = \sprintf(self::ERROR_UNRECOGNIZED_TOKEN, (string)$token);
 
         return new static($message, $source, $token, $prev);
     }

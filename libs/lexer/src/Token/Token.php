@@ -30,6 +30,8 @@ class Token extends BaseToken
      * @param string $value
      * @param positive-int|0 $offset
      * @param ChannelInterface $channel
+     *
+     * @psalm-suppress InaccessibleClassConstant Psalm bug (Channel::DEFAULT is public)
      */
     public function __construct(
         public string|int $name,
@@ -51,7 +53,7 @@ class Token extends BaseToken
      * @param string $value
      * @param positive-int|0 $offset
      * @param ChannelInterface $channel
-     * @return static
+     * @return self
      */
     public static function new(
         string|int $name,
@@ -66,7 +68,7 @@ class Token extends BaseToken
      * @param positive-int|0 $offset
      * @param non-empty-string $name
      * @param ChannelInterface $channel
-     * @return static
+     * @return self
      */
     public static function eoi(
         int $offset = 0,
@@ -81,7 +83,7 @@ class Token extends BaseToken
      * @param positive-int|0 $offset
      * @param non-empty-string $name
      * @param ChannelInterface $channel
-     * @return static
+     * @return self
      */
     public static function unknown(
         string $value,
@@ -97,7 +99,7 @@ class Token extends BaseToken
      * @param string $value
      * @param positive-int|0 $offset
      * @param ChannelInterface $channel
-     * @return static
+     * @return self
      */
     public static function skip(
         string|int $name,

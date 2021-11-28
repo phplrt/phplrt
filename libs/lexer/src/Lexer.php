@@ -11,9 +11,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Exception\CompilationException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\PCRE\Compiler;
 use Phplrt\Lexer\Token\Channel;
@@ -25,17 +27,17 @@ use Phplrt\Source\File;
 final class Lexer implements LexerInterface
 {
     /**
-     * @var string|null
+     * @var non-empty-string|null
      */
     private ?string $pattern = null;
 
     /**
-     * @var array<int, string>
+     * @var array<non-empty-string, non-empty-string>
      */
     private readonly array $tokens;
 
     /**
-     * @var array<string, string|int>
+     * @var array<non-empty-string, non-empty-string|int>
      */
     private readonly array $mappings;
 
@@ -50,6 +52,7 @@ final class Lexer implements LexerInterface
 
     /**
      * @return void
+     * @psalm-suppress InaccessibleProperty Allow writing to readonly properties
      */
     private function bootTokens(): void
     {
@@ -90,8 +93,11 @@ final class Lexer implements LexerInterface
 
     /**
      * @param ReadableInterface $source
-     * @param int $offset
+     * @param positive-int|0 $offset
      * @return \Traversable<TokenInterface>
+     * @throws CompilationException
+     *
+     * @psalm-suppress ArgumentTypeCoercion Offset always >= 0
      */
     private function execute(ReadableInterface $source, int $offset): \Traversable
     {
@@ -101,8 +107,13 @@ final class Lexer implements LexerInterface
         /** @var array<string> $payload */
         foreach ($result as $payload) {
             $name = \array_pop($payload);
+            /** @var non-empty-string|int $name */
             $name = $this->mappings[$name] ?? $name;
 
+            /**
+             * @var ChannelInterface $channel
+             * @psalm-suppress InaccessibleClassConstant Psalm bug (Channel::DEFAULT is public)
+             */
             $channel = $this->info->channels[$name] ?? Channel::DEFAULT;
 
             /**
@@ -149,6 +160,10 @@ final class Lexer implements LexerInterface
      * @param string $source
      * @param positive-int|0 $offset
      * @return array<positive-int|0|"MARK", string>
+     * @throws CompilationException
+     *
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     private function match(string $source, int $offset): array
     {

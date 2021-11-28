@@ -40,6 +40,7 @@ final class PrinterCreateInfo
      * during rendering.
      *
      * @var array<ChannelInterface>
+     * @psalm-suppress InaccessibleClassConstant Psalm bug (Channel::DEFAULT is public)
      */
     public const DEFAULT_HIDDEN_CHANNELS = [
         Channel::DEFAULT,

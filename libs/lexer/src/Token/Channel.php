@@ -38,12 +38,15 @@ enum Channel: string implements ChannelInterface
 
     /**
      * Default channel for all tokens.
+     * @var ChannelInterface
      */
     public const DEFAULT = self::GENERAL;
 
     /**
      * @param non-empty-string $channel
      * @return ChannelInterface
+     *
+     * @psalm-suppress all Psalm bug (enum methods may not be found).
      */
     public static function create(string $channel): ChannelInterface
     {
