@@ -68,6 +68,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ]
         ],
         'require-dev' => [
+            'symplify/monorepo-builder' => '^9.4',
             'phpunit/phpunit' => '^9.5',
             'squizlabs/php_codesniffer' => '^3.6',
             'symfony/var-dumper' => '^4.3|^5.0|^6.0',

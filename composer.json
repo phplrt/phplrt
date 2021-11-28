@@ -20,14 +20,11 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
-        "laminas/laminas-code": "^4.0",
-        "sebastian/environment": ">=5.0",
-        "symfony/polyfill-php80": "^1.22"
+        "sebastian/environment": ">=5.0"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Buffer\\": "libs/buffer/src",
-            "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
             "Phplrt\\Contracts\\Buffer\\": "libs/contracts/buffer/src",
             "Phplrt\\Contracts\\Grammar\\": "libs/contracts/grammar/src",
@@ -42,30 +39,30 @@
             "Phplrt\\Lexer\\": "libs/lexer/src",
             "Phplrt\\Parser\\": "libs/parser/src",
             "Phplrt\\Position\\": "libs/position/src",
+            "Phplrt\\SourceMap\\": "libs/sourcemap/src",
             "Phplrt\\Source\\": "libs/source/src",
             "Phplrt\\Visitor\\": "libs/visitor/src"
         }
     },
     "require-dev": {
         "jetbrains/phpstorm-attributes": "^1.0",
-        "laminas/laminas-diactoros": "^2.2",
         "phpunit/phpunit": "^9.5",
-        "psr/http-message": "^1.0",
         "squizlabs/php_codesniffer": "^3.6",
         "symfony/var-dumper": "^4.3|^5.0|^6.0",
+        "symplify/monorepo-builder": "^9.4",
         "vimeo/psalm": "^4.13"
     },
     "autoload-dev": {
         "psr-4": {
             "Phplrt\\Bench\\": "tests/bench",
             "Phplrt\\Buffer\\Tests\\": "libs/buffer/tests",
-            "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
             "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
             "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
             "Phplrt\\Interval\\Tests\\": "libs/interval/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
             "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
             "Phplrt\\Position\\Tests\\": "libs/position/tests",
+            "Phplrt\\SourceMap\\Tests\\": "libs/sourcemap/tests",
             "Phplrt\\Source\\Tests\\": "libs/source/tests",
             "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
         }
@@ -74,7 +71,6 @@
         "phplrt/ast-contracts": "*",
         "phplrt/buffer": "*",
         "phplrt/buffer-contracts": "*",
-        "phplrt/compiler": "*",
         "phplrt/contracts": "*",
         "phplrt/exception": "*",
         "phplrt/grammar": "*",
@@ -90,6 +86,7 @@
         "phplrt/runtime": "*",
         "phplrt/source": "*",
         "phplrt/source-contracts": "*",
+        "phplrt/sourcemap": "*",
         "phplrt/visitor": "*"
     },
     "scripts": {
