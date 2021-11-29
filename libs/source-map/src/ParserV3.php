@@ -144,7 +144,7 @@ final class ParserV3 implements ParserInterface
                     default => throw $this->invalidSegmentSize($segment)
                 };
 
-                $result->add($entry);
+                $result->addEntry($entry);
             }
         }
 
@@ -197,7 +197,7 @@ final class ParserV3 implements ParserInterface
             }
 
             foreach (\explode(',', $segment) as $chunk) {
-                $result[] = $this->codec->decode($chunk);
+                $result[] = [...$this->codec->decode($chunk)];
             }
 
             yield $index => $result;

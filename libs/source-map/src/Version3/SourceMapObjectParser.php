@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Phplrt\SourceMap\Version3;
 
-use Phplrt\SourceMap\Format;
-use Phplrt\SourceMap\GeneratorV3;
 use Phplrt\SourceMap\ParserV3;
 
 /**
@@ -22,7 +20,7 @@ use Phplrt\SourceMap\ParserV3;
  * @see ParserV3
  * @see GeneratorV3
  */
-class SourceMapObjectParser
+final class SourceMapObjectParser
 {
     /**
      * @var positive-int|0

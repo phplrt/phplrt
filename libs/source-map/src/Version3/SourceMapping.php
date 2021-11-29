@@ -35,11 +35,24 @@ final class SourceMapping implements SourceMappingInterface
      * @param UnmappedEntry $entry
      * @return void
      */
-    public function add(UnmappedEntry $entry): void
+    public function addEntry(UnmappedEntry $entry): void
     {
         $this->entries[] = $entry;
     }
 
+    /**
+     * @return iterable<UnmappedEntry>
+     */
+    public function getEntries(): iterable
+    {
+        return $this->entries;
+    }
+
+    /**
+     * @param int $line
+     * @param int $column
+     * @return OriginalMappingInterface|null
+     */
     public function originalMappingFor(int $line, int $column): ?OriginalMappingInterface
     {
         throw new \LogicException(__METHOD__ . ' not implemented yet');
