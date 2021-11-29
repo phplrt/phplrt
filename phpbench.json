@@ -1,4 +1,12 @@
 {
     "runner.bootstrap": "vendor/autoload.php",
-    "runner.path": "tests/bench"
+    "runner.path": "tests/bench",
+    "runner.php_config": {
+        "opcache.enable": "1",
+        "opcache.enable_cli": "1",
+        "opcache.jit_buffer_size": "32M",
+        "opcache.jit": "1255",
+        "memory_limit": "-1",
+        "zend.assertions": "-1"
+    }
 }
