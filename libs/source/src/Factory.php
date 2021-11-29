@@ -83,7 +83,7 @@ final class Factory implements FactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function fromSource(string $source, string $pathname = null): ReadableInterface
+    public function fromSource(string $source = '', string $pathname = null): ReadableInterface
     {
         $stream = new ContentStreamReader($source);
         $content = new ContentReader($source);
@@ -148,7 +148,7 @@ final class Factory implements FactoryInterface
     {
         File::assertValidPathname($pathname);
 
-        return new File($pathname);
+        return new File(\realpath($pathname) ?: $pathname);
     }
 
     /**

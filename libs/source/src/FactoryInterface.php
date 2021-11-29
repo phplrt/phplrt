@@ -28,7 +28,7 @@ interface FactoryInterface
      * @return ReadableInterface
      * @psalm-return ($pathname is string ? FileInterface : ReadableInterface)
      */
-    public function fromSource(string $source, string $pathname = null): ReadableInterface;
+    public function fromSource(string $source = '', string $pathname = null): ReadableInterface;
 
     /**
      * @param resource $stream
