@@ -9,19 +9,19 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap\Generator\Version3;
+namespace Phplrt\SourceMap\Codec;
 
 interface CodecInterface
 {
     /**
-     * @param array<int> $value
+     * @param list<int> $values
      * @return string
      */
-    public function encode(array $value): string;
+    public function encode(iterable $values): string;
 
     /**
      * @param string $string
-     * @return array<int>
+     * @return list<int>
      */
     public function decode(string $string): array;
 }

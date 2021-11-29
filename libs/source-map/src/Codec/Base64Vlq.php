@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap\Generator\Version3;
+namespace Phplrt\SourceMap\Codec;
 
 /**
  * The VLQ is a Base64 value, where the most significant bit (the 6th bit) is
@@ -27,9 +27,9 @@ namespace Phplrt\SourceMap\Generator\Version3;
  * @link https://github.com/google/closure-compiler/blob/v20211107/src/com/google/debugging/sourcemap/Base64VLQ.java
  *
  * @internal This is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\SourceMap\Generator
+ * @psalm-internal Phplrt\SourceMap\Codec
  */
-final class Base64VlqCodec implements CodecInterface
+final class Base64Vlq implements CodecInterface
 {
     /**
      * A Base64 VLQ digit can represent 5 bits, so it is base-32.
@@ -114,24 +114,25 @@ final class Base64VlqCodec implements CodecInterface
     }
 
     /**
-     * @param array<int> $value
-     * @return string
+     * Returns a VLQ encoded value as a string (char array).
+     *
+     * {@inheritDoc}
      */
-    public function encode(array $value): string
+    public function encode(iterable $values): string
     {
         $result = '';
 
-        foreach ($value as $number) {
-            assert(\is_int($number), new \InvalidArgumentException(
-                \sprintf(self::ERROR_ENCODE_INVALID_ARGUMENT, \get_debug_type($number))
+        foreach ($values as $value) {
+            assert(\is_int($value), new \InvalidArgumentException(
+                \sprintf(self::ERROR_ENCODE_INVALID_ARGUMENT, \get_debug_type($value))
             ));
 
-            assert($number >= self::INT32_MIN && $number <= self::INT32_MAX, new \OutOfRangeException(
-                \sprintf(self::ERROR_ENCODE_INT32, $number)
+            assert($value >= self::INT32_MIN && $value <= self::INT32_MAX, new \OutOfRangeException(
+                \sprintf(self::ERROR_ENCODE_INT32, $value)
             ));
 
-
-            $result .= $this->encodeInt($number);
+            /** @psalm-suppress ArgumentTypeCoercion */
+            $result .= $this->encodeInt($value);
         }
 
         return $result;
@@ -170,11 +171,14 @@ final class Base64VlqCodec implements CodecInterface
     }
 
     /**
-     * @param string $string
-     * @return iterable<int>
+     * Decodes the VLQ values from the provided string (char array).
+     *
+     * {@inheritDoc}
      */
-    private function indices(string $string): iterable
+    public function decode(string $string): array
     {
+        $result = [];
+        $shift = $value = 0;
         for ($i = 0, $length = \strlen($string); $i < $length; ++$i) {
             $index = self::$charToInt[$string[$i]] ?? null;
 
@@ -182,22 +186,6 @@ final class Base64VlqCodec implements CodecInterface
                 \sprintf(self::ERROR_DECODE_INVALID_ARGUMENT, $string[$i])
             ));
 
-            yield $index;
-        }
-    }
-
-    /**
-     * Decodes the VLQ values from the provided string (char array).
-     *
-     * @param string $string
-     * @return array<int>
-     */
-    public function decode(string $string): array
-    {
-        $result = [];
-
-        $shift = $value = 0;
-        foreach ($this->indices($string) as $index) {
             $isContinuation = ($index & self::VLQ_CONTINUATION_BIT) !== 0;
 
             $index &= self::VLQ_BASE_MASK;
@@ -205,17 +193,19 @@ final class Base64VlqCodec implements CodecInterface
 
             if ($isContinuation) {
                 $shift += self::VLQ_BASE_SHIFT;
-            } else {
-                $isNegative = $value & 1;
-                $value = ($value >> 1) & ~(1 << self::VLQ_BASE - 1);
 
-                if ($isNegative) {
-                    $value = $value === 0 ? self::INT32_MIN : -$value;
-                }
-
-                $result[] = $value;
-                $value = $shift = 0;
+                continue;
             }
+
+            $isNegative = $value & 1;
+            $value = ($value >> 1) & ~(1 << self::VLQ_BASE - 1);
+
+            if ($isNegative) {
+                $value = $value === 0 ? self::INT32_MIN : -$value;
+            }
+
+            $result[] = $value;
+            $value = $shift = 0;
         }
 
         return $result;

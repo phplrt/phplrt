@@ -9,40 +9,31 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap;
+namespace Phplrt\SourceMap\Version3;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
-class Entry implements EntryInterface
+/**
+ * @template-extends \ArrayObject<positive-int|0, ReadableInterface>
+ */
+final class SourcesStorage extends \ArrayObject
 {
     /**
-     * @var array
-     */
-    private array $mappings = [];
-
-    /**
      * @param ReadableInterface $source
+     * @param iterable<ReadableInterface> $sources
      */
     public function __construct(
-        private readonly ReadableInterface $source
+        private readonly ReadableInterface $source,
+        iterable $sources = []
     ) {
+        parent::__construct($sources);
     }
 
     /**
-     * {@inheritDoc}
+     * @return ReadableInterface
      */
     public function getSource(): ReadableInterface
     {
         return $this->source;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getMappings(): iterable
-    {
-        foreach ($this->mappings as [$from, $to]) {
-            yield $from => $to;
-        }
     }
 }

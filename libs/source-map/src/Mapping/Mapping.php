@@ -9,26 +9,20 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap;
+namespace Phplrt\SourceMap\Mapping;
 
 use Phplrt\Contracts\Position\PositionInterface;
 
-abstract class Mapping implements PositionInterface
+class Mapping implements MappingInterface
 {
     /**
-     * @param PositionInterface $position
+     * @param positive-int $line
+     * @param positive-int $column
      */
     public function __construct(
-        protected readonly PositionInterface $position,
+        public readonly int $line = PositionInterface::MIN_LINE,
+        public readonly int $column = PositionInterface::MIN_COLUMN,
     ) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getOffset(): int
-    {
-        return $this->position->getOffset();
     }
 
     /**
@@ -36,7 +30,7 @@ abstract class Mapping implements PositionInterface
      */
     public function getLine(): int
     {
-        return $this->position->getLine();
+        return $this->line;
     }
 
     /**
@@ -44,6 +38,6 @@ abstract class Mapping implements PositionInterface
      */
     public function getColumn(): int
     {
-        return $this->position->getColumn();
+        return $this->column;
     }
 }

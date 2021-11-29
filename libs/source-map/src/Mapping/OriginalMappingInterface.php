@@ -9,19 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap;
+namespace Phplrt\SourceMap\Mapping;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 
-interface EntryInterface
+interface OriginalMappingInterface extends MappingInterface
 {
     /**
      * @return ReadableInterface
      */
     public function getSource(): ReadableInterface;
-
-    /**
-     * @return iterable
-     */
-    public function getMappings(): iterable;
 }

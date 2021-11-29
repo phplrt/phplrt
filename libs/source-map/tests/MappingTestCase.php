@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Phplrt\SourceMap\Tests;
 
-use Phplrt\SourceMap\Generator\Version3\Base64VlqCodec;
-use Phplrt\SourceMap\Generator\Version3\CodecInterface;
+use Phplrt\SourceMap\Codec\Base64Vlq;
+use Phplrt\SourceMap\Codec\CodecInterface;
 use Phplrt\SourceMap\Generator\Version3\Mapping;
 
 class MappingTestCase extends TestCase
@@ -542,12 +542,6 @@ class MappingTestCase extends TestCase
     ];
 
     /**
-     * @var Mapping
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
-    protected Mapping $map;
-
-    /**
      * @var CodecInterface
      * @psalm-suppress PropertyNotSetInConstructor
      */
@@ -561,8 +555,7 @@ class MappingTestCase extends TestCase
     {
         parent::setUp();
 
-        $this->codec = new Base64VlqCodec();
-        $this->map = new Mapping($this->codec);
+        $this->codec = new Base64Vlq();
     }
 
     /**
@@ -592,39 +585,6 @@ class MappingTestCase extends TestCase
      */
     public function testCodecDecoding(array $expected, string $from): void
     {
-        $this->assertSame($expected, $this->codec->decode($from));
-    }
-
-    /**
-     * @return array<array{string, array<array<array<int>>>}>
-     */
-    public function mappingDataProvider(): array
-    {
-        $name = $value = [];
-        foreach (self::BASE64VLQ_DATA_PROVIDER as $vlq64 => $seq) {
-            $name[] = $vlq64;
-            $value[] = $seq;
-        }
-
-        return [
-            \implode(',', $name) => [\implode(',', $name), [$value]],
-            \implode(';', $name) => [\implode(';', $name), \array_map(fn($i) => [$i], $value)],
-        ];
-    }
-
-    /**
-     * @dataProvider mappingDataProvider
-     */
-    public function testMappingEncoding(string $expected, array $from): void
-    {
-        $this->assertSame($expected, $this->map->encode($from));
-    }
-
-    /**
-     * @dataProvider mappingDataProvider
-     */
-    public function testMappingDecoding(string $from, array $expected): void
-    {
-        $this->assertSame($expected, $this->map->decode($from));
+        $this->assertSame($expected, [...$this->codec->decode($from)]);
     }
 }

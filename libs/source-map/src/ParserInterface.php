@@ -9,8 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap\Generator;
+namespace Phplrt\SourceMap;
 
-abstract class Generator implements GeneratorInterface
+interface ParserInterface
 {
+    /**
+     * @param string $contents
+     * @return SourceMappingInterface
+     */
+    public function parse(string $contents): SourceMappingInterface;
 }

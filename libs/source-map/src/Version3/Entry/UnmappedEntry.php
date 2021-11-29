@@ -9,15 +9,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\SourceMap\Generator;
+namespace Phplrt\SourceMap\Version3\Entry;
 
-use Phplrt\SourceMap\EntryInterface;
-
-interface GeneratorInterface
+class UnmappedEntry
 {
     /**
-     * @param EntryInterface $entry
-     * @return string
+     * @param int $line
+     * @param int $column
      */
-    public function generate(EntryInterface $entry): string;
+    public function __construct(
+        public readonly int $line,
+        public readonly int $column,
+    ) {
+    }
 }
