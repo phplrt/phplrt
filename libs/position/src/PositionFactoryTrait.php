@@ -30,7 +30,7 @@ trait PositionFactoryTrait
     ): PositionInterface {
         $factory = FileFactory::getInstance();
 
-        return Factory::getInstance()
+        return PositionFactory::getInstance()
             ->fromLineAndColumn($factory->create($source), $line, $column)
         ;
     }
@@ -40,7 +40,7 @@ trait PositionFactoryTrait
      */
     public static function start(): PositionInterface
     {
-        return Factory::getInstance()
+        return PositionFactory::getInstance()
             ->start()
         ;
     }
@@ -53,7 +53,7 @@ trait PositionFactoryTrait
     {
         $factory = FileFactory::getInstance();
 
-        return Factory::getInstance()
+        return PositionFactory::getInstance()
             ->end($factory->create($source))
         ;
     }
@@ -67,7 +67,7 @@ trait PositionFactoryTrait
     {
         $factory = FileFactory::getInstance();
 
-        return Factory::getInstance()
+        return PositionFactory::getInstance()
             ->fromOffset($factory->create($source), $offset)
         ;
     }

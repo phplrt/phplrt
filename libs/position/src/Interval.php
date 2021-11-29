@@ -9,9 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Interval;
+namespace Phplrt\Position;
 
-use Phplrt\Contracts\Interval\IntervalInterface;
+use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 
 class Interval implements IntervalInterface
@@ -45,7 +45,7 @@ class Interval implements IntervalInterface
     /**
      * {@inheritDoc}
      */
-    public function getFrom(): PositionInterface
+    public function fromPosition(): PositionInterface
     {
         return $this->from;
     }
@@ -53,7 +53,7 @@ class Interval implements IntervalInterface
     /**
      * {@inheritDoc}
      */
-    public function getTo(): PositionInterface
+    public function toPosition(): PositionInterface
     {
         return $this->to;
     }

@@ -9,33 +9,32 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Interval;
+namespace Phplrt\Position;
 
-use Phplrt\Contracts\Interval\IntervalInterface;
+use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Position\Factory as PositionFactory;
 
-final class Factory implements FactoryInterface
+final class IntervalFactory implements IntervalFactoryInterface
 {
     /**
-     * @var FactoryInterface|null
+     * @var IntervalFactoryInterface|null
      */
-    private static ?FactoryInterface $instance = null;
+    private static ?IntervalFactoryInterface $instance = null;
 
     /**
-     * @return FactoryInterface
+     * @return IntervalFactoryInterface
      */
-    public static function getInstance(): FactoryInterface
+    public static function getInstance(): IntervalFactoryInterface
     {
         return self::$instance ??= new self();
     }
 
     /**
-     * @param FactoryInterface|null $factory
+     * @param IntervalFactoryInterface|null $factory
      * @return void
      */
-    public static function setInstance(?FactoryInterface $factory): void
+    public static function setInstance(?IntervalFactoryInterface $factory): void
     {
         self::$instance = $factory;
     }
@@ -48,7 +47,7 @@ final class Factory implements FactoryInterface
         int $offset = PositionInterface::MIN_OFFSET,
         int $length = 0
     ): IntervalInterface {
-        $position = PositionFactory::getInstance();
+        $position = PositionPositionFactory::getInstance();
 
         return new Interval(
             $position->fromOffset($source, $offset),
@@ -65,7 +64,7 @@ final class Factory implements FactoryInterface
         int $column = PositionInterface::MIN_COLUMN,
         int $length = 0
     ): IntervalInterface {
-        $position = PositionFactory::getInstance();
+        $position = PositionPositionFactory::getInstance();
 
         return new Interval(
             $from = $position->fromLineAndColumn($source, $line, $column),

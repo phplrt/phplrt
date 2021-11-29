@@ -15,7 +15,7 @@ use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 
-final class Factory implements FactoryInterface
+final class PositionFactory implements PositionFactoryInterface
 {
     /**
      * @var string
@@ -23,23 +23,23 @@ final class Factory implements FactoryInterface
     final protected const LINE_DELIMITER = "\n";
 
     /**
-     * @var FactoryInterface|null
+     * @var PositionFactoryInterface|null
      */
-    private static ?FactoryInterface $instance = null;
+    private static ?PositionFactoryInterface $instance = null;
 
     /**
-     * @return FactoryInterface
+     * @return PositionFactoryInterface
      */
-    public static function getInstance(): FactoryInterface
+    public static function getInstance(): PositionFactoryInterface
     {
         return self::$instance ??= new self();
     }
 
     /**
-     * @param FactoryInterface|null $factory
+     * @param PositionFactoryInterface|null $factory
      * @return void
      */
-    public static function setInstance(?FactoryInterface $factory): void
+    public static function setInstance(?PositionFactoryInterface $factory): void
     {
         self::$instance = $factory;
     }

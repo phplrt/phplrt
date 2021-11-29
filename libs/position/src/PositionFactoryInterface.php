@@ -14,7 +14,7 @@ namespace Phplrt\Position;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-interface FactoryInterface
+interface PositionFactoryInterface
 {
     /**
      * @param ReadableInterface $source

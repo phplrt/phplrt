@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Interval;
-
-use Phplrt\Contracts\Position\PositionInterface;
+namespace Phplrt\Contracts\Position;
 
 interface IntervalInterface
 {
@@ -20,14 +18,14 @@ interface IntervalInterface
      *
      * @return PositionInterface
      */
-    public function getFrom(): PositionInterface;
+    public function fromPosition(): PositionInterface;
 
     /**
      * Returns the position of the end of the interval.
      *
      * @return PositionInterface
      */
-    public function getTo(): PositionInterface;
+    public function toPosition(): PositionInterface;
 
     /**
      * Returns the length from the beginning to the end of the interval.

@@ -9,13 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Interval;
+namespace Phplrt\Position;
 
-use Phplrt\Contracts\Interval\IntervalInterface;
+use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-interface FactoryInterface
+interface IntervalFactoryInterface
 {
     /**
      * @param ReadableInterface $source
