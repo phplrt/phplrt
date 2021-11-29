@@ -29,9 +29,6 @@
         <testsuite name="phplrt/grammar">
             <directory suffix="TestCase.php">libs/grammar/tests</directory>
         </testsuite>
-        <testsuite name="phplrt/interval">
-            <directory suffix="TestCase.php">libs/interval/tests</directory>
-        </testsuite>
         <testsuite name="phplrt/lexer">
             <directory suffix="TestCase.php">libs/lexer/tests</directory>
         </testsuite>
