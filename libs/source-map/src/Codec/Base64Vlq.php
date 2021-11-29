@@ -180,20 +180,21 @@ final class Base64Vlq implements CodecInterface
         $result = [];
         $shift = $value = 0;
         for ($i = 0, $length = \strlen($string); $i < $length; ++$i) {
-            $index = self::$charToInt[$string[$i]] ?? null;
+            $char = $string[$i];
 
-            assert(\is_int($index), new \InvalidArgumentException(
-                \sprintf(self::ERROR_DECODE_INVALID_ARGUMENT, $string[$i])
+            assert(isset(self::$charToInt[$char]), new \InvalidArgumentException(
+                \sprintf(self::ERROR_DECODE_INVALID_ARGUMENT, $char)
             ));
 
-            $isContinuation = ($index & self::VLQ_CONTINUATION_BIT) !== 0;
+            $index = self::$charToInt[$char];
+
+            $isContinuation = $index & self::VLQ_CONTINUATION_BIT;
 
             $index &= self::VLQ_BASE_MASK;
             $value += $index << $shift;
 
             if ($isContinuation) {
                 $shift += self::VLQ_BASE_SHIFT;
-
                 continue;
             }
 
