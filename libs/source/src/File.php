@@ -46,7 +46,7 @@ class File extends Readable implements FileInterface
         StreamReaderInterface $stream = null,
         ContentReaderInterface $content = null
     ) {
-        $this->pathname = \realpath($pathname) ?: $pathname;
+        $this->pathname = $pathname;
 
         $stream ??= new FileStreamReader($pathname);
         $content ??= new FileContentReader($pathname);
