@@ -16,6 +16,7 @@ use Phplrt\Source\Factory;
 use Phplrt\Source\FactoryInterface;
 use Phplrt\SourceMap\Codec\Base64Vlq;
 use Phplrt\SourceMap\Codec\CodecInterface;
+use Phplrt\SourceMap\Exception\ParsingException;
 use Phplrt\SourceMap\Version3\Context;
 use Phplrt\SourceMap\Version3\Entry;
 use Phplrt\SourceMap\Version3\SourceMapObject;
@@ -39,6 +40,12 @@ use Phplrt\SourceMap\Version3\SourcesStorage;
  */
 final class ParserV3 implements ParserInterface
 {
+    /**
+     * @var string
+     */
+    private const ERROR_VLQ_SEQ_SIZE =
+        'Invalid VLQ sequence: Expected 1, 4, or 5 bytes but array(%d) { %s } received in "%s"';
+
     /**
      * @var SourceMapObjectParser
      */
@@ -67,12 +74,32 @@ final class ParserV3 implements ParserInterface
     /**
      * @param string $contents
      * @return SourceMapping
-     * @throws \JsonException
+     * @throws ParsingException
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function parse(string $contents): SourceMapping
     {
-        return $this->create($this->parser->parse($contents));
+        try {
+            $data = $this->parser->parse($contents);
+        } catch (\Throwable $e) {
+            $message = 'An error occurred while reading the JSON data of the Source Map V3: ' . $e->getMessage();
+            throw new ParsingException($message, (int)$e->getCode(), $e);
+        }
+
+        if ($data->version !== 3) {
+            throw new ParsingException('Unknown version: ' . $data->version);
+        }
+
+        if ($data->file !== null && \trim($data->file) === '') {
+            throw new ParsingException('File entry is empty');
+        }
+
+        try {
+            return $this->create($data);
+        } catch (\Throwable $e) {
+            $message = 'An error occurred while reading mapping data of the Source Map V3: ' . $e->getMessage();
+            throw new ParsingException($message, (int)$e->getCode(), $e);
+        }
     }
 
     /**
@@ -81,14 +108,6 @@ final class ParserV3 implements ParserInterface
      */
     private function create(SourceMapObject $data): SourceMapping
     {
-        if ($data->version !== 3) {
-            throw new \InvalidArgumentException('Unknown version: ' . $data->version);
-        }
-
-        if ($data->file !== null && \trim($data->file) === '') {
-            throw new \InvalidArgumentException('File entry is empty');
-        }
-
         $storage = $this->getSourcesStorage($data);
         $result = new SourceMapping($storage->getSource());
 
@@ -108,7 +127,7 @@ final class ParserV3 implements ParserInterface
                         line: $line,
                         column: $ctx->column += $segment[0],
                         source: $storage[$ctx->sourceFileIndex += $segment[1]]
-                            ?? throw $this->invalidSourceFile($ctx->sourceFileIndex),
+                            ?? throw $this->invalidFileIndex($ctx->sourceFileIndex),
                         sourceLine: $ctx->sourceLine += $segment[2],
                         sourceColumn: $ctx->sourceColumn += $segment[3],
                     ),
@@ -116,15 +135,13 @@ final class ParserV3 implements ParserInterface
                         line: $line,
                         column: $ctx->column += $segment[0],
                         source: $storage[$ctx->sourceFileIndex += $segment[1]]
-                            ?? throw $this->invalidSourceFile($ctx->sourceFileIndex),
+                            ?? throw $this->invalidFileIndex($ctx->sourceFileIndex),
                         sourceLine: $ctx->sourceLine += $segment[2],
                         sourceColumn: $ctx->sourceColumn += $segment[3],
                         name: $data->names[$ctx->sourceName += $segment[4]]
                             ?? throw $this->invalidNameIndex($ctx->sourceName),
                     ),
-                    default => throw new \InvalidArgumentException(
-                        'Unexpected number of values for entry: ' . $size,
-                    )
+                    default => throw $this->invalidSegmentSize($segment)
                 };
 
                 $result->add($entry);
@@ -135,25 +152,34 @@ final class ParserV3 implements ParserInterface
     }
 
     /**
-     * @param int $index
-     * @return \OutOfBoundsException
+     * @param array<int> $segment
+     * @return \LengthException
      */
-    private function invalidSourceFile(int $index): \OutOfBoundsException
+    private function invalidSegmentSize(array $segment): \LengthException
     {
-        return new \OutOfBoundsException(
-            'Unexpected index of source file for entry: ' . $index
-        );
+        return new \LengthException(\vsprintf(self::ERROR_VLQ_SEQ_SIZE, [
+            \count($segment),
+            \implode(', ', $segment),
+            $this->codec->encode($segment)
+        ]));
     }
 
     /**
      * @param int $index
-     * @return \OutOfBoundsException
+     * @return \OutOfRangeException
      */
-    private function invalidNameIndex(int $index): \OutOfBoundsException
+    private function invalidFileIndex(int $index): \OutOfRangeException
     {
-        return new \OutOfBoundsException(
-            'Unexpected index of name for entry: ' . $index
-        );
+        return new \OutOfRangeException(\sprintf('Unexpected index #%d of the source file', $index));
+    }
+
+    /**
+     * @param int $index
+     * @return \OutOfRangeException
+     */
+    private function invalidNameIndex(int $index): \OutOfRangeException
+    {
+        return new \OutOfRangeException(\sprintf('Unexpected index #%d of the name for entry', $index));
     }
 
     /**
