@@ -15,8 +15,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Trace\TraceInterface;
 use Phplrt\Source\Factory as SourceFactory;
 use Phplrt\Source\FactoryInterface as SourceFactoryInterface;
-use Phplrt\Position\FactoryInterface as PositionFactoryInterface;
-use Phplrt\Position\Factory as PositionFactory;
+use Phplrt\Position\PositionFactoryInterface;
 
 final class Factory implements FactoryInterface
 {
