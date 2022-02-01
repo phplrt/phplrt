@@ -48,7 +48,8 @@ final class LexerCreateInfo
     public readonly array $channels;
 
     /**
-     * List of channels whose tokens interrupt the lexer and throw an exception.
+     * List of channels, whose tokens interrupt
+     * the lexer and throw an exception.
      *
      * @var array<ChannelInterface>
      */
