@@ -280,6 +280,7 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          # Kernel Libraries
           - local_path: 'buffer'
             split_repository: 'buffer'
           - local_path: 'compiler'
@@ -298,6 +299,7 @@ jobs:
             split_repository: 'source'
           - local_path: 'visitor'
             split_repository: 'visitor'
+          # Contracts
           - local_path: 'contracts/ast'
             split_repository: 'ast-contracts'
           - local_path: 'contracts/buffer'
@@ -312,10 +314,14 @@ jobs:
             split_repository: 'position-contracts'
           - local_path: 'contracts/source'
             split_repository: 'source-contracts'
+          # Metadata
           - local_path: 'meta/runtime'
             split_repository: 'runtime'
           - local_path: 'meta/contracts'
             split_repository: 'contracts'
+          # Documentation
+          - local_path: '../docs'
+            split_repository: 'docs'
 
     steps:
       - uses: actions/checkout@v2
