@@ -1,0 +1,38 @@
+{
+    "name": "phplrt/contracts",
+    "type": "metapackage",
+    "description": "A set of phplrt contacts libraries",
+    "license": "MIT",
+    "keywords": ["runtime"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/contacts/issues",
+        "source": "https://github.com/phplrt/contacts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "phplrt/ast-contracts": "^3.1",
+        "phplrt/exception-contracts": "^3.1",
+        "phplrt/grammar-contracts": "^3.1",
+        "phplrt/lexer-contracts": "^3.1",
+        "phplrt/parser-contracts": "^3.1",
+        "phplrt/position-contracts": "^3.1",
+        "phplrt/source-contracts": "^3.1"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.2.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

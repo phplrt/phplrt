@@ -1,0 +1,36 @@
+{
+    "name": "phplrt/position-contracts",
+    "type": "library",
+    "description": "A set of phplrt position abstractions",
+    "license": "MIT",
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "analyzing", "visualization", "input", "position", "line", "column", "offset", "utils"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/position-contracts/issues",
+        "source": "https://github.com/phplrt/position-contracts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Position\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.2.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

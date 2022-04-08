@@ -9,29 +9,8 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="phplrt/compiler">
-            <directory suffix="TestCase.php">src/Compiler/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/exception">
-            <directory suffix="TestCase.php">src/Exception/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/grammar">
-            <directory suffix="TestCase.php">src/Grammar/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/lexer">
-            <directory suffix="TestCase.php">src/Lexer/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/parser">
-            <directory suffix="TestCase.php">src/Parser/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/position">
-            <directory suffix="TestCase.php">src/Position/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/source">
-            <directory suffix="TestCase.php">src/Source/tests</directory>
-        </testsuite>
-        <testsuite name="phplrt/visitor">
-            <directory suffix="TestCase.php">src/Visitor/tests</directory>
+        <testsuite name="Unit Tests">
+            <directory suffix="TestCase.php">libs/*/tests</directory>
         </testsuite>
     </testsuites>
     <filter>

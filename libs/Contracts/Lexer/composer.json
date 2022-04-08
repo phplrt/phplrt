@@ -1,0 +1,36 @@
+{
+    "name": "phplrt/lexer-contracts",
+    "type": "library",
+    "description": "A set of phplrt lexer abstractions",
+    "license": "MIT",
+    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "regex", "lexer", "token", "stream", "parsing", "tokenizer"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/lexer-contracts/issues",
+        "source": "https://github.com/phplrt/lexer-contracts"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Lexer\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.2.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

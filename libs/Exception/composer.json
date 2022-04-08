@@ -1,0 +1,54 @@
+{
+    "name": "phplrt/exception",
+    "type": "library",
+    "description": "The phplrt exception package",
+    "license": "MIT",
+    "keywords": ["exception", "parsing", "errors", "helpers"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/exception"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-spl": "*",
+        "ext-pcre": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "phplrt/source": "^3.1",
+        "phplrt/position": "^3.1",
+        "phplrt/exception-contracts": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Exception\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Exception\\Tests\\": "tests"
+        }
+    },
+    "provide": {
+        "phplrt/exception-contracts-implementation": "^3.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.2.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
