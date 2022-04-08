@@ -15,5 +15,4 @@ use PHPUnit\Framework\TestCase as BastTestCase;
 
 abstract class TestCase extends BastTestCase
 {
-
 }
