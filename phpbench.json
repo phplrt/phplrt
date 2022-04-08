@@ -4,6 +4,8 @@
     "runner.php_config": {
         "opcache.enable": "1",
         "opcache.enable_cli": "1",
+        "opcache.jit_buffer_size": "0",
+        "opcache.jit": "1255",
         "memory_limit": "-1",
         "zend.assertions": "-1"
     }
