@@ -13,51 +13,34 @@ namespace Phplrt\Position;
 
 use Phplrt\Contracts\Position\PositionInterface;
 
-class Position implements PositionInterface
+final class Position implements PositionInterface
 {
     use PositionFactoryTrait;
 
     /**
-     * @var int
-     */
-    public const MIN_LINE = 1;
-
-    /**
-     * @var int
-     */
-    public const MIN_COLUMN = 1;
-
-    /**
-     * @var int
-     */
-    public const MIN_OFFSET = 0;
-
-    /**
-     * @var string
+     * @var non-empty-string
      */
     protected const LINE_DELIMITER = "\n";
 
     /**
-     * @var int
+     * @var positive-int|0
      */
     private int $offset;
 
     /**
-     * @var int
+     * @var positive-int
      */
     private int $line;
 
     /**
-     * @var int
+     * @var positive-int
      */
     private int $column;
 
     /**
-     * Position constructor.
-     *
-     * @param int $offset
-     * @param int $line
-     * @param int $column
+     * @param positive-int|0 $offset
+     * @param positive-int $line
+     * @param positive-int $column
      */
     public function __construct(
         int $offset = self::MIN_OFFSET,

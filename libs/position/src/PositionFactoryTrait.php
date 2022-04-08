@@ -20,8 +20,8 @@ trait PositionFactoryTrait
 {
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @param int $line
-     * @param int $column
+     * @param positive-int $line
+     * @param positive-int $column
      * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException

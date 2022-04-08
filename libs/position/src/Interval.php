@@ -14,7 +14,7 @@ namespace Phplrt\Position;
 use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 
-class Interval implements IntervalInterface
+final class Interval implements IntervalInterface
 {
     use IntervalFactoryTrait;
 
