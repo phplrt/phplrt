@@ -13,5 +13,4 @@ namespace Phplrt\Source\Exception;
 
 interface SourceExceptionInterface extends \Throwable
 {
-
 }

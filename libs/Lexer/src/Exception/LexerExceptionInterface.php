@@ -13,5 +13,4 @@ namespace Phplrt\Lexer\Exception;
 
 interface LexerExceptionInterface extends \Throwable
 {
-
 }
