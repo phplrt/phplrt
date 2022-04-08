@@ -59,7 +59,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
 
     $parameters->set(Option::PACKAGE_ALIAS_FORMAT, '<major>.<minor>.x-dev');
-    $parameters->set(Option::PACKAGE_DIRECTORIES, ['libs']);
+    $parameters->set(Option::PACKAGE_DIRECTORIES, ['libs', 'libs/contracts', 'libs/meta']);
 
     $parameters->set(Option::DATA_TO_APPEND, [
         'autoload-dev' => [
@@ -68,10 +68,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ]
         ],
         'require-dev' => [
-            'symplify/monorepo-builder' => '^9.4',
+            'symplify/monorepo-builder' => '^10.1',
             'phpunit/phpunit' => '^9.5',
             'squizlabs/php_codesniffer' => '^3.6',
-            'symfony/var-dumper' => '^4.3|^5.0|^6.0',
+            'symfony/var-dumper' => '^5.4|^6.0',
             'vimeo/psalm' => '^4.13',
         ],
     ]);
