@@ -152,67 +152,10 @@ jobs:
   #
   # Execute unit tests on all valid PHP versions.
   #
-  benchmark:
-    name: Benchmark (PHP ${{matrix.php}})
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        phpbnench: [ '1.2.0' ]
-        php: [ '8.1' ]
-        stability: [ prefer-stable ]
-
-    steps: # General Steps
-      - name: Set Git To Use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      # Install PHP Dependencies
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: pecl
-          ini-values: "memory_limit=-1"
-      - name: Validate Composer
-        run: composer validate
-      - name: Get Composer Cache Directory
-        # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Restore Composer Cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
-      - name: Install Dependencies
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-      - name: Downloading phpbench/phpbench
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: wget https://github.com/phpbench/phpbench/releases/download/${{ matrix.phpbnench }}/phpbench.phar
-
-      # Execution
-      - name: Execute Benchmarks
-        run: php phpbench.phar run --report=aggregate
-
-  #
-  # Execute unit tests on all valid PHP versions.
-  #
   test:
     name: Build (PHP ${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
@@ -220,6 +163,11 @@ jobs:
         php: [ '7.4', '8.0', '8.1', '8.2' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
+        experimental: [false]
+        include:
+          - php: '8.2'
+            composer-options: "--ignore-platform-reqs"
+            experimental: true
 
     steps: # General Steps
       - name: Set Git To Use LF
@@ -250,20 +198,12 @@ jobs:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
-      - name: Install Dependencies (PHP Stable)
-        if: matrix.php != '8.2'
+      - name: Install Dependencies
         uses: nick-invision/retry@v1
         with:
           timeout_minutes: 5
           max_attempts: 5
-          command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-      - name: Install Dependencies (PHP Next)
-        if: matrix.php == '8.2'
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --ignore-platform-reqs --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
+          command: composer update  --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --no-suggest ${{ matrix.composer-options }}
       # Execution
       - name: Execute Tests
         run: vendor/bin/phpunit
