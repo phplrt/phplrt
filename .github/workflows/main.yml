@@ -153,7 +153,7 @@ jobs:
   # Execute unit tests on all valid PHP versions.
   #
   benchmark:
-    name: Benchmark (${{matrix.php}})
+    name: Benchmark (PHP ${{matrix.php}})
     runs-on: ubuntu-latest
 
     strategy:
@@ -213,7 +213,7 @@ jobs:
   # Execute unit tests on all valid PHP versions.
   #
   test:
-    name: Build (${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
+    name: Build (PHP ${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
     runs-on: ${{ matrix.os }}
 
     strategy:
