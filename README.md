@@ -12,12 +12,6 @@
     <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license" alt="License MIT"></a>
 </p>
 
-<p align="center">
-    <a href="https://opencollective.com/phplrt/donate?" target="_blank">
-      <img src="https://opencollective.com/phplrt/donate/button@2x.png" width="200" />
-    </a>
-</p>
-
 ## Thanks To
 
 <table>
