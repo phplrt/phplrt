@@ -20,17 +20,17 @@
         </UnusedVariable>
     </issueHandlers>
     <projectFiles>
-        <directory name="src" />
+        <directory name="libs" />
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="src/Compiler/tests" />
-            <directory name="src/Exception/tests" />
-            <directory name="src/Grammar/tests" />
-            <directory name="src/Lexer/tests" />
-            <directory name="src/Parser/tests" />
-            <directory name="src/Position/tests" />
-            <directory name="src/Source/tests" />
-            <directory name="src/Visitor/tests" />
+            <directory name="libs/compiler/tests" />
+            <directory name="libs/exception/tests" />
+            <directory name="libs/grammar/tests" />
+            <directory name="libs/lexer/tests" />
+            <directory name="libs/parser/tests" />
+            <directory name="libs/position/tests" />
+            <directory name="libs/source/tests" />
+            <directory name="libs/visitor/tests" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
