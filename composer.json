@@ -24,21 +24,20 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\": "libs/Compiler/src",
-            "Phplrt\\Contracts\\Ast\\": "libs/Contracts/Ast/src",
-            "Phplrt\\Contracts\\Exception\\": "libs/Contracts/Exception/src",
-            "Phplrt\\Contracts\\Grammar\\": "libs/Contracts/Grammar/src",
-            "Phplrt\\Contracts\\Lexer\\": "libs/Contracts/Lexer/src",
-            "Phplrt\\Contracts\\Parser\\": "libs/Contracts/Parser/src",
-            "Phplrt\\Contracts\\Position\\": "libs/Contracts/Position/src",
-            "Phplrt\\Contracts\\Source\\": "libs/Contracts/Source/src",
-            "Phplrt\\Exception\\": "libs/Exception/src",
-            "Phplrt\\Grammar\\": "libs/Grammar/src",
-            "Phplrt\\Lexer\\": "libs/Lexer/src",
-            "Phplrt\\Parser\\": "libs/Parser/src",
-            "Phplrt\\Position\\": "libs/Position/src",
-            "Phplrt\\Source\\": "libs/Source/src",
-            "Phplrt\\Visitor\\": "libs/Visitor/src"
+            "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
+            "Phplrt\\Contracts\\Exception\\": "libs/contracts/exception/src",
+            "Phplrt\\Contracts\\Grammar\\": "libs/contracts/grammar/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
+            "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
+            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Exception\\": "libs/exception/src",
+            "Phplrt\\Grammar\\": "libs/grammar/src",
+            "Phplrt\\Lexer\\": "libs/lexer/src",
+            "Phplrt\\Parser\\": "libs/parser/src",
+            "Phplrt\\Position\\": "libs/position/src",
+            "Phplrt\\Source\\": "libs/source/src",
+            "Phplrt\\Visitor\\": "libs/visitor/src"
         }
     },
     "require-dev": {
@@ -53,14 +52,13 @@
     "autoload-dev": {
         "psr-4": {
             "Phplrt\\Bench\\": "tests/bench",
-            "Phplrt\\Compiler\\Tests\\": "libs/Compiler/tests",
-            "Phplrt\\Exception\\Tests\\": "libs/Exception/tests",
-            "Phplrt\\Grammar\\Tests\\": "libs/Grammar/tests",
-            "Phplrt\\Lexer\\Tests\\": "libs/Lexer/tests",
-            "Phplrt\\Parser\\Tests\\": "libs/Parser/tests",
-            "Phplrt\\Position\\Tests\\": "libs/Position/tests",
-            "Phplrt\\Source\\Tests\\": "libs/Source/tests",
-            "Phplrt\\Visitor\\Tests\\": "libs/Visitor/tests"
+            "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
+            "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
+            "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
+            "Phplrt\\Position\\Tests\\": "libs/position/tests",
+            "Phplrt\\Source\\Tests\\": "libs/source/tests",
+            "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
         }
     },
     "replace": {
