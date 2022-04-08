@@ -219,8 +219,6 @@ jobs:
       matrix:
         package:
           # Kernel Libraries
-          - local_path: 'buffer'
-            split_repository: 'buffer'
           - local_path: 'compiler'
             split_repository: 'compiler'
           - local_path: 'exception'
@@ -240,8 +238,6 @@ jobs:
           # Contracts
           - local_path: 'contracts/ast'
             split_repository: 'ast-contracts'
-          - local_path: 'contracts/buffer'
-            split_repository: 'buffer-contracts'
           - local_path: 'contracts/grammar'
             split_repository: 'grammar-contracts'
           - local_path: 'contracts/lexer'
