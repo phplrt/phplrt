@@ -72,7 +72,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'phpunit/phpunit' => '^9.5',
             'squizlabs/php_codesniffer' => '^3.6',
             'symfony/var-dumper' => '^5.4|^6.0',
-            'vimeo/psalm' => '^4.13',
+            'vimeo/psalm' => '^4.22',
         ],
     ]);
 
