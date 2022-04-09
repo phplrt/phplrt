@@ -25,6 +25,7 @@
         }
     },
     "require-dev": {
+        "phplrt/parser": "^3.1",
         "phpunit/phpunit": "^9.5.20",
         "vimeo/psalm": "^4.22"
     },
