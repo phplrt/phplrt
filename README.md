@@ -12,7 +12,6 @@
 </p>
 <p align="center">
     <a href="https://github.com/phplrt/phplrt/actions"><img src="https://github.com/phplrt/phplrt/workflows/build/badge.svg"></a>
-    <a href="https://github.com/phplrt/phplrt/actions"><img src="https://raw.githubusercontent.com/phplrt/phplrt/master/badge-coverage.svg"></a>
 </p>
 
 ## Thanks To
