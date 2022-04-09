@@ -23,6 +23,9 @@
             "Phplrt\\Contracts\\Parser\\": "src"
         }
     },
+    "require-dev": {
+        "vimeo/psalm": "^4.22"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "3.2.x-dev",
