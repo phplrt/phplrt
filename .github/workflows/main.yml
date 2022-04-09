@@ -208,7 +208,14 @@ jobs:
           command: composer update --ignore-platform-reqs --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
       # Execution
       - name: Execute Tests
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --coverage-clover clover.xml
+
+      - name: Generate Coverage Badge
+        uses: timkrase/phpunit-coverage-badge@v1.2.0
+        with:
+          coverage_badge_path: 'badge-coverage.svg'
+          push_badge: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
 
   subsplit:
     name: Split (${{ matrix.package.local_path }})
