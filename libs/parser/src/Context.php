@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Grammar\RuleInterface;
 use Phplrt\Contracts\Lexer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
  * This is an internal implementation of parser mechanisms and modifying the

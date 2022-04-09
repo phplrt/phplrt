@@ -26,20 +26,21 @@
         "psr-4": {
             "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
             "Phplrt\\Contracts\\Exception\\": "libs/contracts/exception/src",
-            "Phplrt\\Contracts\\Grammar\\": "libs/contracts/grammar/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Exception\\": "libs/exception/src",
-            "Phplrt\\Grammar\\": "libs/grammar/src",
             "Phplrt\\Lexer\\": "libs/lexer/src",
             "Phplrt\\Parser\\": "libs/parser/src",
             "Phplrt\\Position\\": "libs/position/src",
             "Phplrt\\Source\\": "libs/source/src",
             "Phplrt\\Visitor\\": "libs/visitor/src"
-        }
+        },
+        "files": [
+            "libs/parser/src/polyfill.php"
+        ]
     },
     "require-dev": {
         "laminas/laminas-diactoros": "^2.2",
@@ -54,7 +55,6 @@
         "psr-4": {
             "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
             "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
-            "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
             "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
             "Phplrt\\Position\\Tests\\": "libs/position/tests",
@@ -68,8 +68,6 @@
         "phplrt/contracts": "*",
         "phplrt/exception": "*",
         "phplrt/exception-contracts": "*",
-        "phplrt/grammar": "*",
-        "phplrt/grammar-contracts": "*",
         "phplrt/lexer": "*",
         "phplrt/lexer-contracts": "*",
         "phplrt/parser": "*",

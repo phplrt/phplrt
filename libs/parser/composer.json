@@ -27,13 +27,17 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Parser\\": "src"
-        }
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
     },
     "require-dev": {
         "phplrt/visitor": "^3.1",
         "phplrt/lexer": "^3.1",
         "phpunit/phpunit": "^9.5.20",
-        "vimeo/psalm": "^4.22"
+        "vimeo/psalm": "^4.22",
+        "jetbrains/phpstorm-attributes": "^1.0"
     },
     "autoload-dev": {
         "psr-4": {

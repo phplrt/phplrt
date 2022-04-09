@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar;
-
-use Phplrt\Contracts\Grammar\TerminalInterface;
+namespace Phplrt\Parser\Grammar;
 
 abstract class Terminal extends Rule implements TerminalInterface
 {

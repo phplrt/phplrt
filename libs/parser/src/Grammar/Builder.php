@@ -9,9 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar;
-
-use Phplrt\Contracts\Grammar\RuleInterface;
+namespace Phplrt\Parser\Grammar;
 
 class Builder implements \IteratorAggregate
 {

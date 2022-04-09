@@ -15,7 +15,7 @@ Refers to the token defined in the lexer.
 
 ```php
 <?php
-use Phplrt\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Lexeme;
 
 $kept = new Lexeme('T_NUMBER');
 ```
@@ -43,7 +43,7 @@ And let's try to reproduce its work:
 ```php
 <?php
 
-$rule = new \Phplrt\Grammar\Lexeme('T_PLUS');
+$rule = new \Phplrt\Parser\Grammar\Lexeme('T_PLUS');
 
 while ($buffer->valid()) {
     var_dump($buffer->key(), $rule->reduce($buffer));
@@ -72,7 +72,7 @@ the [AST builder](/docs/parser/ast) methods.
 
 ```php
 <?php
-use Phplrt\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Lexeme;
 
 $skipped = new Lexeme('T_WHITESPACE', false);
 ```
@@ -83,7 +83,7 @@ Sequence of rules.
 
 ```php
 <?php
-use Phplrt\Grammar\Concatenation;
+use Phplrt\Parser\Grammar\Concatenation;
 
 //
 // EBNF: 
@@ -98,7 +98,7 @@ Choosing between several rules.
 
 ```php
 <?php
-use Phplrt\Grammar\Alternation;
+use Phplrt\Parser\Grammar\Alternation;
 
 //
 // EBNF: 
@@ -113,7 +113,7 @@ Repeat one or more rules.
 
 ```php
 <?php
-use Phplrt\Grammar\Repetition;
+use Phplrt\Parser\Grammar\Repetition;
 
 //
 // EBNF:
@@ -140,7 +140,7 @@ Optional rule
 
 ```php
 <?php
-use Phplrt\Grammar\Optional;
+use Phplrt\Parser\Grammar\Optional;
 
 //
 // EBNF:

@@ -9,10 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar\Tests;
+namespace Phplrt\Parser\Tests\Stub;
 
-use PHPUnit\Framework\TestCase as BastTestCase;
+use Phplrt\Parser\Grammar\RuleInterface;
 
-abstract class TestCase extends BastTestCase
+class Rule implements RuleInterface
 {
+    public static function new(): self
+    {
+        return new self();
+    }
 }

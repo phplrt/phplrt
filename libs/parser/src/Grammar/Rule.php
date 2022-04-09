@@ -9,11 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Grammar;
+namespace Phplrt\Parser\Grammar;
 
-/**
- * The base interface of all parser rules.
- */
-interface RuleInterface
+abstract class Rule implements RuleInterface
 {
 }

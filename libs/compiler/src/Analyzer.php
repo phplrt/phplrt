@@ -11,27 +11,27 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Grammar\Lexeme;
-use Phplrt\Visitor\Visitor;
-use Phplrt\Grammar\Optional;
-use Phplrt\Grammar\Repetition;
-use Phplrt\Grammar\Alternation;
-use Phplrt\Grammar\Concatenation;
+use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
-use Phplrt\Compiler\Ast\Def\PragmaDef;
+use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
+use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
+use Phplrt\Compiler\Ast\Stmt\PatternStmt;
+use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
 use Phplrt\Compiler\Ast\Stmt\RuleStmt;
 use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\TokenStmt;
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Compiler\Ast\Stmt\PatternStmt;
-use Phplrt\Contracts\Grammar\RuleInterface;
-use Phplrt\Compiler\Ast\Stmt\RepetitionStmt;
-use Phplrt\Compiler\Ast\Stmt\AlternationStmt;
-use Phplrt\Compiler\Ast\Stmt\ConcatenationStmt;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Grammar\Alternation;
+use Phplrt\Parser\Grammar\Concatenation;
+use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Repetition;
+use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Visitor\Visitor;
 
 class Analyzer extends Visitor
 {

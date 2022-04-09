@@ -9,13 +9,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Grammar\Tests;
+namespace Phplrt\Parser\Tests;
 
-use Phplrt\Grammar\Concatenation;
-use Phplrt\Grammar\Lexeme;
-use Phplrt\Grammar\Repetition;
-use Phplrt\Grammar\Builder;
-use Phplrt\Grammar\Tests\Stub\Rule;
+use Phplrt\Parser\Tests\Stub\Rule;
+use Phplrt\Parser\Grammar\Builder;
+use Phplrt\Parser\Grammar\Concatenation;
+use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Repetition;
 
 class GrammarGeneratorTestCase extends TestCase
 {
