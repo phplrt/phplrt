@@ -19,7 +19,6 @@
         "php": "^7.4|^8.0",
         "phplrt/source": "^3.1",
         "phplrt/exception": "^3.1",
-        "phplrt/grammar": "^3.1",
         "phplrt/parser-contracts": "^3.1",
         "phplrt/lexer-contracts": "^3.1",
         "phplrt/ast-contracts": "^3.1"

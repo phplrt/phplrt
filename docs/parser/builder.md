@@ -1,6 +1,6 @@
 # Builder
 
-> This package can be installed separately using the command `composer require phplrt/grammar`
+> This package can be installed separately using the command `composer require phplrt/parser`
 
 In case to quickly compose a grammar, you can use the special grammar builder, 
 class which provides a convenient API for creating grammar rules.
