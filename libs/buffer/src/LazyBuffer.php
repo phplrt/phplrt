@@ -9,33 +9,36 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Buffer;
+namespace Phplrt\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 class LazyBuffer extends Buffer
 {
     /**
-     * @var array|TokenInterface[]
+     * @var array<TokenInterface>
      */
     protected array $buffer = [];
 
     /**
-     * @var \Generator
+     * @var \Generator<positive-int|0, TokenInterface, mixed, mixed>
      */
     protected \Generator $stream;
 
     /**
      * LazyBuffer constructor.
      *
-     * @param iterable $stream
+     * @param iterable<TokenInterface> $stream
      */
     public function __construct(iterable $stream)
     {
+        /** @psalm-suppress MixedPropertyTypeCoercion */
         $this->stream = $this->toGenerator($stream);
 
         if ($this->stream->valid()) {
+            /** @psalm-suppress MixedAssignment */
             $this->initial = $this->current = $this->stream->key();
+            /** @psalm-suppress MixedArrayOffset */
             $this->buffer[$this->current] = $this->stream->current();
 
             $this->stream->next();
@@ -43,8 +46,8 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * @param iterable $stream
-     * @return \Generator
+     * @param iterable<TokenInterface> $stream
+     * @return \Generator<mixed, TokenInterface, mixed, mixed>
      */
     private function toGenerator(iterable $stream): \Generator
     {
@@ -52,7 +55,7 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * @return int
+     * @return positive-int|0
      */
     public function getBufferCurrentSize(): int
     {
@@ -62,12 +65,12 @@ class LazyBuffer extends Buffer
     /**
      * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek($offset): void
     {
-        if ($position < $this->initial) {
-            $message = \sprintf(static::ERROR_STREAM_POSITION_TO_LOW, $position, $this->current());
-
-            throw new \OutOfRangeException($message);
+        if ($offset < $this->initial) {
+            throw new \OutOfRangeException(
+                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current())
+            );
         }
 
         //
@@ -75,17 +78,17 @@ class LazyBuffer extends Buffer
         // into the buffer, then it must be loaded into the memory of the
         // buffer.
         //
-        while ($position > ($last = \array_key_last($this->buffer))) {
+        while ($offset > ($last = \array_key_last($this->buffer))) {
             if (! $this->valid()) {
-                $message = \sprintf(static::ERROR_STREAM_POSITION_EXCEED, $position, $last);
-
-                throw new \OutOfRangeException($message);
+                throw new \OutOfRangeException(
+                    \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (string)$last)
+                );
             }
 
             $this->next();
         }
 
-        $this->current = $position;
+        $this->current = $offset;
     }
 
     /**
@@ -134,12 +137,13 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function key(): int
     {
         if (! $this->valid()) {
-            return \array_key_last($this->buffer);
+            return \array_key_last($this->buffer) ?? 0;
         }
 
         return parent::key();

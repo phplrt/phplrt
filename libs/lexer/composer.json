@@ -28,7 +28,10 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Lexer\\": "src"
-        }
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5.20",
@@ -40,7 +43,7 @@
         }
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "^3.0"
+        "phplrt/lexer-contracts-implementation": "^3.2"
     },
     "extra": {
         "branch-alias": {

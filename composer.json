@@ -30,6 +30,7 @@
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Buffer\\": "libs/buffer/src",
             "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Exception\\": "libs/exception/src",
             "Phplrt\\Lexer\\": "libs/lexer/src",
@@ -39,7 +40,9 @@
             "Phplrt\\Visitor\\": "libs/visitor/src"
         },
         "files": [
-            "libs/parser/src/polyfill.php"
+            "libs/parser/src/polyfill.php",
+            "libs/lexer/src/polyfill.php",
+            "libs/contracts/lexer/src/polyfill.php"
         ]
     },
     "require-dev": {
@@ -53,6 +56,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Buffer\\Tests\\": "libs/buffer/tests",
             "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
             "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",

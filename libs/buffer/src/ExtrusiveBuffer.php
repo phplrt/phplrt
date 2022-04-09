@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Buffer;
+namespace Phplrt\Buffer;
+
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 class ExtrusiveBuffer extends LazyBuffer
 {
@@ -21,35 +23,32 @@ class ExtrusiveBuffer extends LazyBuffer
         'of the buffer has already been freed';
 
     /**
-     * @var int
-     */
-    public const BUFFER_MIN_SIZE = 1;
-
-    /**
-     * @var int
+     * @var positive-int
      */
     public const BUFFER_DEFAULT_SIZE = 100;
 
     /**
-     * @var int
+     * @var positive-int
      */
     private int $size;
 
     /**
-     * ExtrusiveBuffer constructor.
-     *
-     * @param iterable $stream
-     * @param int $size
+     * @param iterable<TokenInterface> $stream
+     * @param positive-int $size
      */
-    public function __construct(iterable $stream, int $size = self::BUFFER_DEFAULT_SIZE)
-    {
-        $this->size = \max(self::BUFFER_MIN_SIZE, $size);
+    public function __construct(
+        iterable $stream,
+        int $size = self::BUFFER_DEFAULT_SIZE
+    ) {
+        $this->size = $size;
+
+        assert($this->size > 0, 'Buffer size must be greater than 0, but ' . $size . ' passed');
 
         parent::__construct($stream);
     }
 
     /**
-     * @return int
+     * @return positive-int
      */
     public function getBufferSize(): int
     {
@@ -57,18 +56,17 @@ class ExtrusiveBuffer extends LazyBuffer
     }
 
     /**
-     * @param int $position
-     * @return void
+     * {@inheritDoc}
      */
-    public function seek($position): void
+    public function seek($offset): void
     {
-        if ($position < \array_key_first($this->buffer)) {
-            $message = \sprintf(self::ERROR_BUFFER_MEMORY_ALREADY_FREED, $position, $this->size);
+        if ($offset < \array_key_first($this->buffer)) {
+            $message = \sprintf(self::ERROR_BUFFER_MEMORY_ALREADY_FREED, $offset, $this->size);
 
             throw new \OutOfBoundsException($message);
         }
 
-        parent::seek($position);
+        parent::seek($offset);
     }
 
     /**
@@ -77,6 +75,7 @@ class ExtrusiveBuffer extends LazyBuffer
     public function next(): void
     {
         if ($this->nextValid() && $this->getBufferCurrentSize() > $this->size) {
+            /** @psalm-suppress PossiblyNullArrayOffset */
             unset($this->buffer[\array_key_first($this->buffer)]);
         }
     }

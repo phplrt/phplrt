@@ -18,9 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: # Kernel Libraries
+        package:
+          # Kernel Libraries
           - local_path: 'compiler'
             split_repository: 'compiler'
+          - local_path: 'buffer'
+            split_repository: 'buffer'
           - local_path: 'exception'
             split_repository: 'exception'
           - local_path: 'lexer'

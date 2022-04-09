@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests\Buffer;
+namespace Phplrt\Buffer\Tests;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
-use Phplrt\Lexer\Buffer\LazyBuffer;
+use Phplrt\Buffer\BufferInterface;
+use Phplrt\Buffer\LazyBuffer;
 
-class LazyBufferTestCase extends BufferTestCase
+class LazyTestCase extends TestCase
 {
     /**
      * @param iterable $tokens

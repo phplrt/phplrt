@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
+use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**

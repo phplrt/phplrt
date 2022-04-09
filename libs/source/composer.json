@@ -36,7 +36,7 @@
         }
     },
     "provide": {
-        "phplrt/source-contracts-implementation": "^3.0"
+        "phplrt/source-contracts-implementation": "^3.2"
     },
     "extra": {
         "branch-alias": {

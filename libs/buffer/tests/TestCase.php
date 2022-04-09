@@ -9,14 +9,14 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests\Buffer;
+namespace Phplrt\Buffer\Tests;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
+use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Lexer\Token\Token;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class BufferTestCase extends TestCase
+abstract class TestCase extends BaseTestCase
 {
     /**
      * @var int
@@ -59,7 +59,7 @@ abstract class BufferTestCase extends TestCase
     private function createTokens(int $count): \Generator
     {
         for ($i = 0; $i < $count; ++$i) {
-            yield new Token($i, 'Value#' . $i, $i);
+            yield new Token((string)$i, 'Value#' . $i, $i);
         }
     }
 
@@ -98,7 +98,7 @@ abstract class BufferTestCase extends TestCase
      */
     public function testCurrentSameWithIteratorState(BufferInterface $buffer): void
     {
-        foreach ($buffer as $index => $token) {
+        foreach ($buffer as $token) {
             $this->assertSame($token, $buffer->current());
         }
     }
@@ -127,7 +127,7 @@ abstract class BufferTestCase extends TestCase
         $needle = $buffer->current();
 
         // Iterate
-        foreach ($buffer as $index => $token) {
+        foreach ($buffer as $token) {
         }
 
         $this->assertNotSame($needle, $buffer->current());

@@ -18,6 +18,7 @@
     "require": {
         "php": "^7.4|^8.0",
         "phplrt/source": "3.2",
+        "phplrt/buffer": "3.2",
         "phplrt/exception": "3.2",
         "phplrt/parser-contracts": "3.2",
         "phplrt/lexer-contracts": "3.2",
@@ -48,7 +49,7 @@
         }
     },
     "provide": {
-        "phplrt/parser-contracts-implementation": "^3.0"
+        "phplrt/parser-contracts-implementation": "^3.2"
     },
     "extra": {
         "branch-alias": {

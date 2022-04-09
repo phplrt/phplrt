@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Contracts\Lexer\BufferInterface;
+use Phplrt\Buffer\ArrayBuffer;
+use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Buffer\ArrayBuffer;
 use Phplrt\Parser\ParserConfigsInterface as Config;
 
 /**
