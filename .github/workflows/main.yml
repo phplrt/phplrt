@@ -205,9 +205,4 @@ jobs:
           command: composer update --ignore-platform-reqs --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
       # Execution
       - name: Execute Tests
-        run: vendor/bin/phpunit --coverage-clover clover.xml
-      # Execution
-      - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v3.0.0
-        env:
-          CC_TEST_REPORTER_ID: a781b49be13181e5c026f329ea2de61a5c2490b4cf8882d055721fc920edbed3
+        run: vendor/bin/phpunit
