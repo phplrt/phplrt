@@ -38,6 +38,8 @@ jobs:
           # Contracts
           - local_path: 'contracts/ast'
             split_repository: 'ast-contracts'
+          - local_path: 'contracts/exception'
+            split_repository: 'exception-contracts'
           - local_path: 'contracts/grammar'
             split_repository: 'grammar-contracts'
           - local_path: 'contracts/lexer'
