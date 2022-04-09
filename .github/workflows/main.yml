@@ -6,9 +6,6 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
 jobs:
   security:
     name: Security
@@ -209,79 +206,3 @@ jobs:
       # Execution
       - name: Execute Tests
         run: vendor/bin/phpunit
-
-  subsplit:
-    name: Split (${{ matrix.package.local_path }})
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        package:
-          # Kernel Libraries
-          - local_path: 'compiler'
-            split_repository: 'compiler'
-          - local_path: 'exception'
-            split_repository: 'exception'
-          - local_path: 'grammar'
-            split_repository: 'grammar'
-          - local_path: 'lexer'
-            split_repository: 'lexer'
-          - local_path: 'parser'
-            split_repository: 'parser'
-          - local_path: 'position'
-            split_repository: 'position'
-          - local_path: 'source'
-            split_repository: 'source'
-          - local_path: 'visitor'
-            split_repository: 'visitor'
-          # Contracts
-          - local_path: 'contracts/ast'
-            split_repository: 'ast-contracts'
-          - local_path: 'contracts/grammar'
-            split_repository: 'grammar-contracts'
-          - local_path: 'contracts/lexer'
-            split_repository: 'lexer-contracts'
-          - local_path: 'contracts/parser'
-            split_repository: 'parser-contracts'
-          - local_path: 'contracts/position'
-            split_repository: 'position-contracts'
-          - local_path: 'contracts/source'
-            split_repository: 'source-contracts'
-          # Metadata
-          - local_path: 'meta/runtime'
-            split_repository: 'runtime'
-          - local_path: 'meta/contracts'
-            split_repository: 'contracts'
-          # Documentation
-          - local_path: '../docs'
-            split_repository: 'docs'
-
-    steps:
-      - uses: actions/checkout@v2
-
-      # no tag
-      - if: "!startsWith(github.ref, 'refs/tags/')"
-        name: Monorepo Split of ${{ matrix.package.split_repository }}
-        uses: symplify/github-action-monorepo-split@2.0
-        with:
-          package-directory: 'libs/${{ matrix.package.local_path }}'
-          split-repository-organization: 'phplrt'
-          split-repository-name: '${{ matrix.package.split_repository }}'
-          user-name: "GitHub Action"
-          user-email: "action@github.com"
-          branch: "master"
-
-      # with tag
-      - if: "startsWith(github.ref, 'refs/tags/')"
-        name: Monorepo Tagged Split of ${{ matrix.package }}
-        uses: symplify/github-action-monorepo-split@2.0
-        with:
-          tag: ${GITHUB_REF#refs/tags/}
-
-          package-directory: 'libs/${{ matrix.package.local_path }}'
-          split-repository-organization: 'phplrt'
-          split-repository-name: '${{ matrix.package.split_repository }}'
-          user-name: "GitHub Action"
-          user-email: "action@github.com"
-          branch: "master"
