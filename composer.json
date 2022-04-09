@@ -31,6 +31,7 @@
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Exception\\": "libs/exception/src",
             "Phplrt\\Grammar\\": "libs/grammar/src",
             "Phplrt\\Lexer\\": "libs/lexer/src",
@@ -51,6 +52,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
             "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
             "Phplrt\\Grammar\\Tests\\": "libs/grammar/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
