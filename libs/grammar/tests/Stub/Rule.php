@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Tests\Stub;
+namespace Phplrt\Grammar\Tests\Stub;
 
 use Phplrt\Contracts\Grammar\RuleInterface;
 

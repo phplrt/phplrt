@@ -15,7 +15,7 @@ use Phplrt\Grammar\Concatenation;
 use Phplrt\Grammar\Lexeme;
 use Phplrt\Grammar\Repetition;
 use Phplrt\Grammar\Builder;
-use Phplrt\Parser\Tests\Stub\Rule;
+use Phplrt\Grammar\Tests\Stub\Rule;
 
 class GrammarGeneratorTestCase extends TestCase
 {
