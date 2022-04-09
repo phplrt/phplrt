@@ -21,8 +21,6 @@ class Optional extends Production
     public $rule;
 
     /**
-     * Optional constructor.
-     *
      * @param int|string $rule
      */
     public function __construct($rule)

@@ -22,8 +22,6 @@ class Lexeme extends Terminal
     public $token;
 
     /**
-     * Lexeme constructor.
-     *
      * @param string|int $token
      * @param bool $keep
      */

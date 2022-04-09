@@ -35,8 +35,6 @@ class Readable implements ReadableInterface, MemoizableInterface
     private ContentReaderInterface $content;
 
     /**
-     * Readable constructor.
-     *
      * @param StreamReaderInterface $stream
      * @param ContentReaderInterface $content
      */

@@ -14,7 +14,6 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class RepetitionStmt
  * @internal Compiler's grammar AST node class
  */
 class RepetitionStmt extends Statement
@@ -22,16 +21,14 @@ class RepetitionStmt extends Statement
     /**
      * @var Statement
      */
-    public $statement;
+    public Statement $statement;
 
     /**
      * @var Quantifier
      */
-    public $quantifier;
+    public Quantifier $quantifier;
 
     /**
-     * Choice constructor.
-     *
      * @param Statement $stmt
      * @param Quantifier $quantifier
      */

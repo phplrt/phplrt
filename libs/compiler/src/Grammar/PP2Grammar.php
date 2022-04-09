@@ -52,9 +52,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
      */
     private array $reducers;
 
-    /**
-     * Parser constructor.
-     */
     public function __construct()
     {
         $lexer = new Multistate([

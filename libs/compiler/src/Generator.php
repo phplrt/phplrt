@@ -38,8 +38,6 @@ class Generator
     private array $declarations = [];
 
     /**
-     * Generator constructor.
-     *
      * @param Analyzer $analyzer
      * @param RendererInterface $renderer
      */

@@ -32,8 +32,6 @@ class FileContentReader implements ContentReaderInterface, MemoizableInterface
     private ?string $content = null;
 
     /**
-     * FileContentReader constructor.
-     *
      * @param string $pathname
      */
     public function __construct(string $pathname)

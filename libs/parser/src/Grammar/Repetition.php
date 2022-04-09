@@ -31,8 +31,6 @@ class Repetition extends Production
     public $rule;
 
     /**
-     * Repetition constructor.
-     *
      * @param int|string $rule
      * @param int $gte
      * @param int|float $lte

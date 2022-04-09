@@ -29,8 +29,6 @@ class PP2PHPLexer implements LexerInterface
     private int $depth = 0;
 
     /**
-     * PP2PHPLexer constructor.
-     *
      * @param PhpLexer $lexer
      */
     public function __construct(PhpLexer $lexer)

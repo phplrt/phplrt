@@ -44,8 +44,6 @@ class Compiler implements ParserInterface
     private TraverserInterface $preloader;
 
     /**
-     * Compiler constructor.
-     *
      * @param GrammarInterface|null $grammar
      */
     public function __construct(GrammarInterface $grammar = null)

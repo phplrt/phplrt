@@ -26,8 +26,6 @@ abstract class Driver implements DriverInterface
     private CompilerInterface $compiler;
 
     /**
-     * State constructor.
-     *
      * @param CompilerInterface $compiler
      */
     public function __construct(CompilerInterface $compiler)

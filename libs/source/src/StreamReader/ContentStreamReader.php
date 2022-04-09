@@ -46,8 +46,6 @@ class ContentStreamReader implements StreamReaderInterface
     private string $content;
 
     /**
-     * ContentStreamReader constructor.
-     *
      * @param string $content
      */
     public function __construct(string $content)

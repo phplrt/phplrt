@@ -202,9 +202,6 @@ final class PP2Lexer extends Lexer
         'T_BLOCK_COMMENT',
     ];
 
-    /**
-     * PP2Lexer constructor.
-     */
     public function __construct()
     {
         parent::__construct(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);

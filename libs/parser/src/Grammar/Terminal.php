@@ -19,8 +19,6 @@ abstract class Terminal extends Rule implements TerminalInterface
     public bool $keep = true;
 
     /**
-     * Terminal constructor.
-     *
      * @param bool $keep
      */
     public function __construct(bool $keep)

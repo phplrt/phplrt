@@ -24,8 +24,6 @@ final class EndOfInput extends BaseToken
     private int $offset;
 
     /**
-     * EndOfInput constructor.
-     *
      * @param int $offset
      */
     public function __construct(int $offset = 0)

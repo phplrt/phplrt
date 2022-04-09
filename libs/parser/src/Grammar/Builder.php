@@ -24,8 +24,6 @@ class Builder implements \IteratorAggregate
     private array $grammar = [];
 
     /**
-     * Builder constructor.
-     *
      * @param \Closure|null $generator
      */
     public function __construct(\Closure $generator = null)

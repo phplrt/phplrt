@@ -15,7 +15,6 @@ use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 
 /**
- * Class RuleDef
  * @internal Compiler's grammar AST node class
  */
 class RuleDef extends Definition
@@ -23,26 +22,24 @@ class RuleDef extends Definition
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var DelegateStmt|null
      */
-    public $delegate;
+    public ?DelegateStmt $delegate = null;
 
     /**
      * @var Statement
      */
-    public $body;
+    public Statement $body;
 
     /**
      * @var bool
      */
-    public $keep;
+    public bool $keep;
 
     /**
-     * Rule constructor.
-     *
      * @param string $name
      * @param DelegateStmt $delegate
      * @param Statement $body

@@ -32,8 +32,6 @@ class SampleNode implements NodeInterface
     public array $children;
 
     /**
-     * SampleNode constructor.
-     *
      * @param int $offset
      * @param string $state
      * @param array $children

@@ -19,8 +19,6 @@ use Phplrt\Source\Exception\NotAccessibleException;
 class GrammarException extends \LogicException
 {
     /**
-     * GrammarException constructor.
-     *
      * @param string $message
      * @param ReadableInterface $source
      * @param int $offset

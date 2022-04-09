@@ -37,8 +37,6 @@ class IncludesExecutor extends Visitor
     private $loader;
 
     /**
-     * IncludesExecutor constructor.
-     *
      * @param \Closure $loader
      */
     public function __construct(\Closure $loader)

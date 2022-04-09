@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class RuleStmt
  * @internal Compiler's grammar AST node class
  */
 class RuleStmt extends Statement
@@ -20,11 +19,9 @@ class RuleStmt extends Statement
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
-     * RuleInvocation constructor.
-     *
      * @param string $name
      */
     public function __construct(string $name)

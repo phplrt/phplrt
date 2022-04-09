@@ -37,8 +37,6 @@ class File extends Readable implements FileInterface
     private string $pathname;
 
     /**
-     * File constructor.
-     *
      * @param string $pathname
      * @param StreamReaderInterface|null $stream
      * @param ContentReaderInterface|null $content

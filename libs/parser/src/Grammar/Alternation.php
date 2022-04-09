@@ -21,8 +21,6 @@ class Alternation extends Production
     public array $sequence;
 
     /**
-     * Rule constructor.
-     *
      * @param array $sequence
      */
     public function __construct(array $sequence)

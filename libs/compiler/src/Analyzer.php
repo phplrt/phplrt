@@ -93,8 +93,6 @@ class Analyzer extends Visitor
     private IdCollection $ids;
 
     /**
-     * ParserBuilder constructor.
-     *
      * @param IdCollection $ids
      */
     public function __construct(IdCollection $ids)

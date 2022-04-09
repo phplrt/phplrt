@@ -21,8 +21,6 @@ class StreamReader implements StreamReaderInterface
     private $stream;
 
     /**
-     * StreamReader constructor.
-     *
      * @param resource $stream
      */
     public function __construct($stream)

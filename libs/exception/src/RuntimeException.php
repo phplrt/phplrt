@@ -37,8 +37,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     private string $original;
 
     /**
-     * RuntimeException constructor.
-     *
      * @param string $message
      * @param int $code
      * @param \Throwable|null $previous

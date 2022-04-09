@@ -26,8 +26,6 @@ class FileStreamReader implements StreamReaderInterface
     private string $pathname;
 
     /**
-     * FileStreamReader constructor.
-     *
      * @param string $pathname
      */
     public function __construct(string $pathname)

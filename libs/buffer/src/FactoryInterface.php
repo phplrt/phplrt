@@ -17,7 +17,8 @@ interface FactoryInterface
 {
     /**
      * @param iterable<TokenInterface> $tokens
+     * @param positive-int|0|null $size
      * @return BufferInterface
      */
-    public function create(iterable $tokens): BufferInterface;
+    public function create(iterable $tokens, ?int $size = null): BufferInterface;
 }

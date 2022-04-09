@@ -178,8 +178,6 @@ abstract class PCRECompiler implements CompilerInterface
     private bool $debug = false;
 
     /**
-     * PCRECompiler constructor.
-     *
      * @param array|string[]|null $flags
      * @param bool|null $debug
      */

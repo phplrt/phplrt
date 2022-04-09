@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class TokenStmt
  * @internal Compiler's grammar AST node class
  */
 class TokenStmt extends Statement
@@ -20,16 +19,14 @@ class TokenStmt extends Statement
     /**
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
      * @var bool
      */
-    public $keep;
+    public bool $keep;
 
     /**
-     * TokenUsage constructor.
-     *
      * @param string $name
      * @param bool $keep
      */

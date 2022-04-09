@@ -64,8 +64,6 @@ class ErrorInformationRenderer
     private TokenInterface $token;
 
     /**
-     * ErrorInformationRenderer constructor.
-     *
      * @param ReadableInterface $source
      * @param TokenInterface $token
      */

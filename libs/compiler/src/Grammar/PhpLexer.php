@@ -26,8 +26,6 @@ class PhpLexer implements LexerInterface
     private bool $inline;
 
     /**
-     * PhpLexer constructor.
-     *
      * @param bool $inline
      */
     public function __construct(bool $inline = true)

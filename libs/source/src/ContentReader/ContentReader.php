@@ -19,8 +19,6 @@ class ContentReader implements ContentReaderInterface
     private string $content;
 
     /**
-     * ContentReader constructor.
-     *
      * @param string $content
      */
     public function __construct(string $content)

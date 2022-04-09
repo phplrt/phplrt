@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class DelegateStmt
  * @internal Compiler's grammar AST node class
  */
 class DelegateStmt extends Statement
@@ -20,11 +19,9 @@ class DelegateStmt extends Statement
     /**
      * @var string|null
      */
-    public $code;
+    public ?string $code;
 
     /**
-     * DelegateStmt constructor.
-     *
      * @param string|null $code
      */
     public function __construct(?string $code)

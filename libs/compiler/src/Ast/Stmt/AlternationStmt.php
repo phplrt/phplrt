@@ -14,7 +14,6 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class AlternationStmt
  * @internal Compiler's grammar AST node class
  */
 class AlternationStmt extends Statement
@@ -25,8 +24,6 @@ class AlternationStmt extends Statement
     public array $statements = [];
 
     /**
-     * Choice constructor.
-     *
      * @param array|Statement[] $statements
      */
     public function __construct(array $statements)

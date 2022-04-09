@@ -95,8 +95,6 @@ final class Parser implements
     private array $rules;
 
     /**
-     * Parser constructor.
-     *
      * @param LexerInterface $lexer
      * @param iterable|RuleInterface[] $grammar
      * @param array $options

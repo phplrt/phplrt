@@ -21,8 +21,6 @@ class LineReader
     private array $lines;
 
     /**
-     * LineReader constructor.
-     *
      * @param ReadableInterface $source
      */
     public function __construct(ReadableInterface $source)
@@ -42,7 +40,9 @@ class LineReader
     }
 
     /**
-     * {@inheritDoc}
+     * @param int $from
+     * @param int $to
+     * @return iterable
      */
     public function readLines(int $from, int $to): iterable
     {

@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Ast\Stmt;
 
 /**
- * Class PatternStmt
- *
  * @internal Compiler's grammar AST node class
  */
 class PatternStmt extends Statement
@@ -31,11 +29,9 @@ class PatternStmt extends Statement
     /**
      * @var int
      */
-    public $name;
+    public int $name;
 
     /**
-     * TokenDefinition constructor.
-     *
      * @param string $pattern
      */
     public function __construct(string $pattern)

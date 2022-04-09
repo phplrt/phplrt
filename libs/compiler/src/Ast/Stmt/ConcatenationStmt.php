@@ -14,7 +14,6 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * Class ConcatenationStmt
  * @internal Compiler's grammar AST node class
  */
 class ConcatenationStmt extends Statement
@@ -25,8 +24,6 @@ class ConcatenationStmt extends Statement
     public array $statements = [];
 
     /**
-     * Sequence constructor.
-     *
      * @param array|Statement[] $statements
      */
     public function __construct(array $statements)

@@ -39,8 +39,6 @@ class StreamContentReader implements ContentReaderInterface, MemoizableInterface
     private ?string $content = null;
 
     /**
-     * StreamContentReader constructor.
-     *
      * @param resource $stream
      */
     public function __construct($stream)

@@ -39,8 +39,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
     private DriverInterface $driver;
 
     /**
-     * Lexer constructor.
-     *
      * @param array|string[] $tokens
      * @param array|string[] $skip
      * @param DriverInterface|null $driver

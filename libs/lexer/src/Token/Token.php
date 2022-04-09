@@ -32,8 +32,6 @@ class Token extends BaseToken
     private $name;
 
     /**
-     * BaseToken constructor.
-     *
      * @param string|int $name
      * @param string $value
      * @param int $offset

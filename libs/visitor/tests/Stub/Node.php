@@ -18,23 +18,21 @@ class Node implements NodeInterface
     /**
      * @var array|NodeInterface[]
      */
-    public $children;
+    public array $children;
 
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
-     * Node constructor.
-     *
      * @param int $id
      * @param array $children
      */
     public function __construct(int $id, array $children = [])
     {
+        $this->id = $id;
         $this->children = $children;
-        $this->id       = $id;
     }
 
     /**

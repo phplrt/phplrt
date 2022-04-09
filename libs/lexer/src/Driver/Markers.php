@@ -25,8 +25,6 @@ class Markers extends Driver
     private const UNKNOWN_PATTERN = '.+?';
 
     /**
-     * Markers constructor.
-     *
      * @param MarkersCompiler|null $compiler
      */
     public function __construct(MarkersCompiler $compiler = null)
