@@ -30,6 +30,7 @@
         }
     },
     "require-dev": {
+        "phplrt/visitor": "^3.1",
         "phplrt/lexer": "^3.1",
         "phpunit/phpunit": "^9.5.20",
         "vimeo/psalm": "^4.22"
