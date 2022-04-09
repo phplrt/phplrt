@@ -26,8 +26,6 @@ class LazyBuffer extends Buffer
     protected \Generator $stream;
 
     /**
-     * LazyBuffer constructor.
-     *
      * @param iterable<TokenInterface> $stream
      */
     public function __construct(iterable $stream)

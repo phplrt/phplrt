@@ -17,7 +17,8 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "ext-spl": "*"
+        "ext-spl": "*",
+        "phplrt/lexer": "^3.2"
     },
     "autoload": {
         "psr-4": {
