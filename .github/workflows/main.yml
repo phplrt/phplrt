@@ -208,7 +208,7 @@ jobs:
           command: composer update --ignore-platform-reqs --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
       # Execution
       - name: Execute Tests
-        run: vendor/bin/phpunit --coverage-clover clover.xml
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Generate Coverage Badge
         uses: timkrase/phpunit-coverage-badge@v1.2.0
