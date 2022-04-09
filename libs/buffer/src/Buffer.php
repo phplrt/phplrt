@@ -40,6 +40,19 @@ abstract class Buffer implements BufferInterface
     protected int $current = 0;
 
     /**
+     * @param TokenInterface $token
+     * @return string
+     */
+    protected function tokenToString(TokenInterface $token): string
+    {
+        if ($token instanceof \Stringable) {
+            return (string)$token;
+        }
+
+        return $token->getName();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function key(): int

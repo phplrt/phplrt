@@ -42,6 +42,7 @@ class ExtrusiveBuffer extends LazyBuffer
     ) {
         $this->size = $size;
 
+        /** @psalm-suppress RedundantCondition */
         assert($this->size > 0, 'Buffer size must be greater than 0, but ' . $size . ' passed');
 
         parent::__construct($stream);

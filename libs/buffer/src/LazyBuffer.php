@@ -67,7 +67,7 @@ class LazyBuffer extends Buffer
     {
         if ($offset < $this->initial) {
             throw new \OutOfRangeException(
-                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current())
+                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, $this->tokenToString($this->current()))
             );
         }
 

@@ -34,7 +34,6 @@ class ArrayBuffer extends Buffer
         $this->size = \count($this->buffer);
 
         if (\count($this->buffer)) {
-            /** @psalm-suppress MixedPropertyTypeCoercion */
             $this->initial = $this->current = \array_key_first($this->buffer);
         }
     }
@@ -61,13 +60,13 @@ class ArrayBuffer extends Buffer
     {
         if ($offset < $this->initial) {
             throw new \OutOfRangeException(
-                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, (string)$this->current())
+                \sprintf(self::ERROR_STREAM_POSITION_TO_LOW, $offset, $this->tokenToString($this->current()))
             );
         }
 
         if ($offset > ($last = \array_key_last($this->buffer))) {
             throw new \OutOfRangeException(
-                \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (string)$last)
+                \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (int)$last)
             );
         }
 
