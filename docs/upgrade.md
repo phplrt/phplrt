@@ -1,5 +1,27 @@
 # Upgrade Guide
 
+## Upgrading To 3.2 From 3.1
+
+### Grammar Package Removed
+
+> Likelihood Of Impact: **Medium**
+
+The `phplrt/grammar` and `phplrt/grammar-contracts` has been removed. All
+classes and interfaces associated with this package have been moved inside
+the `phplrt/parser` package.
+
+- All classes `Phplrt\Grammar\*` has been renamed to `Phplrt\Parser\Grammar\*`.
+- All interfaces `Phplrt\Contracts\Grammar\*` has been renamed to 
+  `Phplrt\Parser\Grammar\*`.
+
+### Buffer Package Has Been Moved
+
+> Likelihood Of Impact: **Medium**
+
+- Interface `Phplrt\Contracts\Lexer\BufferInterface` has been moved
+  into `Phplrt\Buffer\BufferInterface`.
+- All classes `Phplrt\Lexer\Buffer\*` has been moved into `Phplrt\Buffer\*`.
+
 ## Upgrading To 3.0 From 2.3
 
 ### PHP 7.4 Required
