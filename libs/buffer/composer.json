@@ -17,8 +17,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "ext-spl": "*",
-        "phplrt/buffer-contracts": "^3.2"
+        "ext-spl": "*"
     },
     "autoload": {
         "psr-4": {
@@ -33,9 +32,6 @@
         "psr-4": {
             "Phplrt\\Buffer\\Tests\\": "tests"
         }
-    },
-    "provide": {
-        "phplrt/buffer-contracts-implementation": "^3.2"
     },
     "extra": {
         "branch-alias": {
