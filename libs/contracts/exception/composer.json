@@ -17,8 +17,8 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/lexer-contracts": "3.2",
-        "phplrt/source-contracts": "3.2"
+        "phplrt/lexer-contracts": "^3.2",
+        "phplrt/source-contracts": "^3.2"
     },
     "autoload": {
         "psr-4": {

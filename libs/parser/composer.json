@@ -17,12 +17,12 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/source": "3.2",
-        "phplrt/buffer": "3.2",
-        "phplrt/exception": "3.2",
-        "phplrt/parser-contracts": "3.2",
-        "phplrt/lexer-contracts": "3.2",
-        "phplrt/ast-contracts": "3.2"
+        "phplrt/source": "^3.2",
+        "phplrt/buffer": "^3.2",
+        "phplrt/exception": "^3.2",
+        "phplrt/parser-contracts": "^3.2",
+        "phplrt/lexer-contracts": "^3.2",
+        "phplrt/ast-contracts": "^3.2"
     },
     "replace": {
         "phplrt/grammar": "<=3.1",
@@ -37,8 +37,8 @@
         ]
     },
     "require-dev": {
-        "phplrt/visitor": "3.2",
-        "phplrt/lexer": "3.2",
+        "phplrt/visitor": "^3.2",
+        "phplrt/lexer": "^3.2",
         "phpunit/phpunit": "^9.5.20",
         "vimeo/psalm": "^4.22",
         "jetbrains/phpstorm-attributes": "^1.0"
