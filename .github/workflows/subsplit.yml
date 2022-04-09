@@ -53,8 +53,6 @@ jobs:
           # Metadata
           - local_path: 'meta/runtime'
             split_repository: 'runtime'
-          - local_path: 'meta/contracts'
-            split_repository: 'contracts'
           # Documentation
           - local_path: '../docs'
             split_repository: 'docs'
