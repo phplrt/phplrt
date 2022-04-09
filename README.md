@@ -14,34 +14,6 @@
     <a href="https://github.com/phplrt/phplrt/actions"><img src="https://github.com/phplrt/phplrt/workflows/build/badge.svg"></a>
 </p>
 
-## Thanks To
-
-<table>
-    <tr>
-        <td width="225" align="center">
-            <a href="https://www.antlr.org/" target="_blank" rel="nofollow">
-                <img src="https://phplrt.org/img/thanks/antlr-logo.png" alt="Antlr" height="48" />
-            </a>
-        </td>
-        <td width="225" align="center">
-            <a href="https://hoa-project.net/" target="_blank" rel="nofollow">
-                <img src="https://phplrt.org/img/thanks/hoa.svg" alt="Hoa Project" height="48" />
-            </a>
-        </td>
-        <td width="225" align="center">
-            <a href="https://github.com/nikic/PHP-Parser" target="_blank" rel="nofollow">
-                <img src="https://phplrt.org/img/thanks/php-parser.png" alt="nikic/PHP-Parser" height="48" />
-            </a>
-        </td>
-        <td width="225" align="center">
-            <a href="https://www.jetbrains.com/" target="_blank" rel="nofollow">
-                <img src="https://phplrt.org/img/thanks/jetbrains.svg" alt="JetBrains" height="64" />
-            </a>
-        </td>
-    </tr>
-</table>
-
-
 ## Introduction
 
 The phplrt is a set of tools for programming languages recognition. The library 
