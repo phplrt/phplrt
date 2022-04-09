@@ -13,7 +13,7 @@ token definitions list.
 
 ### Append
 
-```php {highlight: [5]}
+```php
 <?php
 
 $lexer = new \Phplrt\Lexer\Lexer(['T_INT' => '\d+']);
@@ -30,7 +30,7 @@ $lexer->append('T_FLOAT', '\d+\.\d+');
 This is incorrect behavior because any numbers will be 
 determined primarily as `T_INT`.
 
-```php {highlight: ['11-13']}
+```php
 foreach ($lexer->lex('42.0') as $i => $token) {
     echo $i . ' => ' . $token . "\n";
 }
@@ -50,7 +50,7 @@ foreach ($lexer->lex('42.0') as $i => $token) {
 
 In this case, we needed to use the `prepend` method.
 
-```php {highlight: [5]}
+```php
 <?php
 
 $lexer = new \Phplrt\Lexer\Lexer(['T_INT' => '\d+']);
@@ -82,7 +82,7 @@ foreach ($lexer->lex('42.0') as $i => $token) {
 In the case when you need to add several new tokens to the end, you can 
 use the `appendMany` method.
 
-```php {highlight: ['4-5']}
+```php
 $lexer = new \Phplrt\Lexer\Lexer(['T_WHITESPACE' => '\s+']);
 
 $lexer->appendMany([
@@ -103,7 +103,7 @@ $lexer->appendMany([
 In the case when you need to add several new tokens to the end, you can 
 use the `appendMany` method.
 
-```php {highlight: ['4-5']}
+```php
 $lexer = new \Phplrt\Lexer\Lexer(['T_WHITESPACE' => '\s+']);
 
 $lexer->prependMany([
@@ -123,7 +123,7 @@ Please note that the entire list was added to the beginning, and **not each**
 of the tokens. In case for each of the transferred tokens to be added to the 
 beginning, the second argument of the `prependMany` method should be specified
 
-```php {highlight: ['4-5']}
+```php
 $lexer = new \Phplrt\Lexer\Lexer(['T_WHITESPACE' => '\s+']);
 
 $lexer->prependMany([
@@ -148,7 +148,7 @@ In addition to adding tokens, it is possible to delete old.
 In case to delete a previously registered token, you need to call the 
 `remove(string ...$tokens)` method.
 
-```php {highlight: ['2-4', 7]}
+```php
 $lexer = new \Phplrt\Lexer\Lexer([
     'T_WHITESPACE' => '\s+',
     'T_FLOAT'      => '\d+\.\d+',

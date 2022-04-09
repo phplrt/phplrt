@@ -4,7 +4,7 @@
 
 In order to quickly understand how it works:
 
-```php {highlight: ['2-4', 9]}
+```php
 $tokens = [
     'T_WHITESPACE'  => '\s+',
     'T_PLUS'        => '\+',
@@ -39,7 +39,7 @@ these objects as a string value.
 The second argument to the `Lexer` class is the list of token names that are
 ignored in the `lex` method result. Let's exclude the whitespace from the result.
 
-```php{highlight: [3]}
+```php
 <?php
 $lexer = new Phplrt\Lexer\Lexer(..., [
     'T_WHITESPACE'
