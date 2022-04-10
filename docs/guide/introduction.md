@@ -15,10 +15,10 @@ For brevity, your `composer.json` file may contain lines similar to the followin
 ```json
 {
     "require": {
-        "phplrt/runtime": "^3.1"
+        "phplrt/runtime": "^3.2"
     },
     "require-dev": {
-        "phplrt/compiler": "^3.1"
+        "phplrt/compiler": "^3.2"
     }
 }
 ```
@@ -32,7 +32,7 @@ the `phplrt` as a parser only, like this:
 ```json
 {
     "require": {
-        "phplrt/parser": "^3.1",
+        "phplrt/parser": "^3.2",
         "custom/lexer": "*"
     }
 }
