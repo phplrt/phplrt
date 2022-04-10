@@ -133,6 +133,7 @@ class Executor implements ExecutorInterface
     /**
      * @param iterable<object> $ast
      * @return iterable<object>
+     * @psalm-suppress InvalidReturnType
      */
     private function each(iterable $ast): iterable
     {
@@ -140,7 +141,10 @@ class Executor implements ExecutorInterface
             case $ast instanceof NodeInterface:
                 $result = $this->traverseArray([$ast]);
 
-                if (($first = \reset($result)) === false) {
+                /** @var NodeInterface|false $first */
+                $first = \reset($result);
+
+                if ($first === false) {
                     throw new BadMethodException(self::ERROR_ROOT_REMOVING);
                 }
 

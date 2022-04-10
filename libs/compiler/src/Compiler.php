@@ -15,6 +15,7 @@ use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Renderer\LaminasRenderer;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
@@ -129,6 +130,7 @@ class Compiler implements ParserInterface
      */
     public function load($source): self
     {
+        /** @var iterable<NodeInterface> $ast */
         $ast = $this->run(File::new($source));
 
         (new Traverser())

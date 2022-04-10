@@ -218,10 +218,11 @@ class Analyzer extends Visitor
 
     /**
      * @param Statement $statement
-     * @return RuleInterface|string
+     * @return RuleInterface|int|string
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
+     * @psalm-suppress PossiblyInvalidArgument
      */
     private function reduce(Statement $statement)
     {

@@ -56,7 +56,7 @@ class Token extends BaseToken
      */
     public function getName(): string
     {
-        return $this->containsValidName() ? $this->name : $this->value;
+        return (string)($this->containsValidName() ? $this->name : $this->value);
     }
 
     /**

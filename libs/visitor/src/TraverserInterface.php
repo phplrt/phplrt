@@ -94,8 +94,8 @@ interface TraverserInterface
      * Traverses the node and its descendants nodes using the
      * registered visitors.
      *
-     * @param NodeInterface|NodeInterface[] $node
-     * @return NodeInterface|NodeInterface[]
+     * @param NodeInterface|iterable<NodeInterface> $node
+     * @return NodeInterface|iterable<NodeInterface>
      */
     public function traverse(iterable $node): iterable;
 }

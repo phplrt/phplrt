@@ -64,6 +64,8 @@ class IncludesExecutor extends Visitor
      * @return array
      * @throws NotAccessibleException
      * @throws \RuntimeException
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     private function lookup(IncludeExpr $expr): array
     {
