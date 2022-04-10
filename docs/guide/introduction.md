@@ -18,7 +18,7 @@ For brevity, your `composer.json` file may contain lines similar to the followin
         "phplrt/runtime": "^3.2"
     },
     "require-dev": {
-        "phplrt/compiler": "^3.2"
+        "phplrt/phplrt": "^3.2"
     }
 }
 ```

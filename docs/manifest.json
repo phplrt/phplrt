@@ -4,10 +4,6 @@
         "Upgrade Guide": "upgrade",
         "Contribution Guide": "contributions"
     },
-    "Quick Guide": {
-        "Introduction": "guide/introduction",
-        "Creating Project": "guide/creating-project"
-    },
     "Lexer": {
         "Usage": "lexer",
         "Extension": "lexer/extension",
