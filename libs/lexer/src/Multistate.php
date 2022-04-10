@@ -133,6 +133,7 @@ class Multistate implements LexerInterface
      * @param int $offset
      * @return \Generator
      * @throws RuntimeExceptionInterface
+     * @psalm-suppress UnusedVariable
      */
     private function run(ReadableInterface $source, int $offset): \Generator
     {

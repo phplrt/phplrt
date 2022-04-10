@@ -42,7 +42,6 @@ class ArrayBuffer extends Buffer
      * @param iterable<TokenInterface> $tokens
      * @return array<positive-int|0, TokenInterface>
      * @psalm-suppress LessSpecificReturnStatement
-     * @psalm-suppress MixedReturnTypeCoercion
      */
     private function iterableToArray(iterable $tokens): array
     {

@@ -12,19 +12,15 @@
     addParamDefaultToDocblockType="true"
 >
     <issueHandlers>
-        <UnusedVariable>
-            <errorLevel type="suppress">
-                <file name="src/Lexer/src/Multistate.php"/>
-            </errorLevel>
-        </UnusedVariable>
+        <UnusedPsalmSuppress errorLevel="suppress" />
     </issueHandlers>
     <projectFiles>
         <directory name="libs" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="libs/buffer/tests" />
             <directory name="libs/compiler/tests" />
             <directory name="libs/exception/tests" />
-            <directory name="libs/grammar/tests" />
             <directory name="libs/lexer/tests" />
             <directory name="libs/parser/tests" />
             <directory name="libs/position/tests" />
