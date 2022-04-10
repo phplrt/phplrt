@@ -24,12 +24,12 @@ use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 class Lexer implements LexerInterface, MutableLexerInterface
 {
     /**
-     * @var array|string[]
+     * @var array<string>
      */
     protected array $tokens;
 
     /**
-     * @var array|string[]
+     * @var array<string>
      */
     protected array $skip;
 
@@ -39,8 +39,8 @@ class Lexer implements LexerInterface, MutableLexerInterface
     private DriverInterface $driver;
 
     /**
-     * @param array|string[] $tokens
-     * @param array|string[] $skip
+     * @param array<string> $tokens
+     * @param array<string> $skip
      * @param DriverInterface|null $driver
      */
     public function __construct(array $tokens = [], array $skip = [], DriverInterface $driver = null)
@@ -72,9 +72,9 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * {@inheritDoc}
      */
-    public function skip(string ...$names): self
+    public function skip(string ...$tokens): self
     {
-        $this->skip = \array_merge($this->skip, $names);
+        $this->skip = \array_merge($this->skip, $tokens);
 
         return $this;
     }

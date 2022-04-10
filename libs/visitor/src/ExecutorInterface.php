@@ -14,8 +14,8 @@ namespace Phplrt\Visitor;
 interface ExecutorInterface
 {
     /**
-     * @param iterable $ast
-     * @return iterable
+     * @param iterable<object> $nodes
+     * @return iterable<object>
      */
-    public function execute(iterable $ast): iterable;
+    public function execute(iterable $nodes): iterable;
 }

@@ -102,18 +102,16 @@ class Executor implements ExecutorInterface
     /**
      * Traverses an array of nodes using the registered visitors.
      *
-     * @param NodeInterface[] $nodes Array of nodes
-     * @return NodeInterface[] Traversed array of nodes
+     * @param iterable<object> $nodes Array of nodes
+     * @return iterable<object> Traversed array of nodes
      */
     public function execute(iterable $nodes): iterable
     {
         $this->stop = false;
 
-        $nodes = $this->before($nodes);
-        $nodes = $this->each($nodes);
-        $nodes = $this->after($nodes);
-
-        return $nodes;
+        return $this->after(
+            $this->each($this->before($nodes))
+        );
     }
 
     /**
@@ -133,8 +131,8 @@ class Executor implements ExecutorInterface
     }
 
     /**
-     * @param iterable|\Traversable|array $ast
-     * @return iterable
+     * @param iterable<object> $ast
+     * @return iterable<object>
      */
     private function each(iterable $ast): iterable
     {
@@ -159,8 +157,8 @@ class Executor implements ExecutorInterface
     /**
      * Recursively traverse array (usually of nodes).
      *
-     * @param array $nodes Array to traverse
-     * @return array Result of traversal (may be original array or changed one)
+     * @param array<object> $nodes Array to traverse
+     * @return array<object> Result of traversal (may be original array or changed one)
      */
     protected function traverseArray(array $nodes): array
     {
