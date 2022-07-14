@@ -39,6 +39,25 @@ class ArrayBuffer extends Buffer
     }
 
     /**
+     * @param int $key
+     * @return TokenInterface
+     */
+    public function get(int $key): TokenInterface
+    {
+        return $this->buffer[$key];
+    }
+
+    /**
+     * @param int $key
+     * @param $value
+     * @return void
+     */
+    public function set(int $key, $value): void
+    {
+        $this->buffer[$key] = $value;
+    }
+
+    /**
      * @param iterable<TokenInterface> $tokens
      * @return array<positive-int|0, TokenInterface>
      * @psalm-suppress LessSpecificReturnStatement

@@ -39,6 +39,11 @@ class Lexer implements LexerInterface, MutableLexerInterface
     private DriverInterface $driver;
 
     /**
+     * @var bool
+     */
+    private bool $possibleTokensSearching = false;
+
+    /**
      * @param array<string> $tokens
      * @param array<string> $skip
      * @param DriverInterface|null $driver
@@ -48,6 +53,14 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->driver = $driver ?? new Markers();
         $this->tokens = $tokens;
         $this->skip = $skip;
+    }
+
+    /**
+     * @return void
+     */
+    public function usePossibleTokensSearching()
+    {
+        $this->possibleTokensSearching = true;
     }
 
     /**
@@ -169,19 +182,21 @@ class Lexer implements LexerInterface, MutableLexerInterface
                 continue;
             }
 
-            if ($token->getName() === $this->driver::UNKNOWN_TOKEN_NAME) {
-                $unknown[] = $token;
-                continue;
-            }
+            if (!$this->possibleTokensSearching) {
+                if ($token->getName() === $this->driver::UNKNOWN_TOKEN_NAME) {
+                    $unknown[] = $token;
+                    continue;
+                }
 
-            if (\count($unknown) && $token->getName() !== $this->driver::UNKNOWN_TOKEN_NAME) {
-                throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+                if (\count($unknown) && $token->getName() !== $this->driver::UNKNOWN_TOKEN_NAME) {
+                    throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+                }
             }
 
             yield $token;
         }
 
-        if (\count($unknown)) {
+        if (!$this->possibleTokensSearching && \count($unknown)) {
             throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
         }
 

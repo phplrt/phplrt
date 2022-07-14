@@ -86,6 +86,7 @@ trait ParserConfigsTrait
             ->withBuffer($options[Config::CONFIG_BUFFER] ?? $this->buffer)
             ->buildUsing($options[Config::CONFIG_AST_BUILDER] ?? $this)
             ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
+            ->possibleTokensSearching($options[Config::CONFIG_POSSIBLE_TOKENS_SEARCHING] ?? false)
         ;
     }
 
@@ -148,6 +149,19 @@ trait ParserConfigsTrait
     public function startsAt($initial): self
     {
         $this->initial = $initial;
+
+        return $this;
+    }
+
+    /**
+     * Turn on/off for possible tokens searching
+     *
+     * @param bool $possibleTokensSearching
+     * @return Parser|ParserConfigsTrait
+     */
+    public function possibleTokensSearching(bool $possibleTokensSearching): self
+    {
+        $this->possibleTokensSearching = $possibleTokensSearching;
 
         return $this;
     }
