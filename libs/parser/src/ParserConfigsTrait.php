@@ -162,6 +162,7 @@ trait ParserConfigsTrait
     public function possibleTokensSearching(bool $possibleTokensSearching): self
     {
         $this->possibleTokensSearching = $possibleTokensSearching;
+        $this->useMutableBuffer = $this->possibleTokensSearching;
 
         return $this;
     }

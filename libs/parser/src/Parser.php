@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
+use Phplrt\Buffer\MutableBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -112,6 +113,11 @@ final class Parser implements
     private array $possibleTokens = [];
 
     /**
+     * @var bool
+     */
+    private bool $useMutableBuffer = false;
+
+    /**
      * @param LexerInterface $lexer
      * @param iterable|RuleInterface[] $grammar
      * @param array $options
@@ -207,7 +213,13 @@ final class Parser implements
 
         $class = $this->buffer;
 
-        return new $class($stream);
+        $buffer = new $class($stream);
+
+        if ($this->useMutableBuffer) {
+            $buffer = new MutableBuffer($buffer);
+        }
+
+        return $buffer;
     }
 
     /**
