@@ -282,7 +282,7 @@ final class Parser implements
     {
         $problemTokenOffset = $context->lastOrdinalToken->getOffset();
         $problemTokenKey = 0;
-        while ($context->buffer->get($problemTokenKey)->getOffset() != $problemTokenOffset) {
+        while ($context->buffer->get($problemTokenKey)->getOffset() !== $problemTokenOffset) {
             $problemTokenKey++;
         }
 
