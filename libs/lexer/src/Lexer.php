@@ -41,11 +41,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * @var bool
      */
-    private bool $possibleTokensSearching = false;
-
-    /**
-     * @var bool
-     */
     private bool $throwOnError = true;
 
     /**
@@ -63,9 +58,8 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * @return void
      */
-    public function usePossibleTokensSearching()
+    public function disableUnrecognizedTokenException()
     {
-        $this->possibleTokensSearching = true;
         $this->throwOnError = false;
     }
 
@@ -188,20 +182,27 @@ class Lexer implements LexerInterface, MutableLexerInterface
                 continue;
             }
 
-            if (!$this->possibleTokensSearching && $token->getName() === $this->driver::UNKNOWN_TOKEN_NAME) {
+            if ($token->getName() === $this->driver::UNKNOWN_TOKEN_NAME) {
                 $unknown[] = $token;
                 continue;
             }
 
-            if ($this->throwOnError && \count($unknown) && $token->getName() !== $this->driver::UNKNOWN_TOKEN_NAME) {
-                throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+            if (\count($unknown)) {
+                if ($this->throwOnError) {
+                    throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+                }
+                yield $this->reduceUnknownToken($unknown);
+                $unknown = [];
             }
 
             yield $token;
         }
 
-        if ($this->throwOnError && \count($unknown)) {
-            throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+        if (\count($unknown)) {
+            if ($this->throwOnError) {
+                throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
+            }
+            yield $this->reduceUnknownToken($unknown);
         }
 
         if (! \in_array(EndOfInput::END_OF_INPUT, $this->skip, true)) {
