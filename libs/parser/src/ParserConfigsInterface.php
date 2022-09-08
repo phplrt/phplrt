@@ -47,4 +47,9 @@ interface ParserConfigsInterface
      * @var string
      */
     public const CONFIG_STEP_REDUCER = 'step';
+
+    /**
+     * @var string
+     */
+    public const CONFIG_POSSIBLE_TOKENS_SEARCHING = 'possibleTokensSearching';
 }

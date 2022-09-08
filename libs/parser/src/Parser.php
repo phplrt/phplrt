@@ -12,14 +12,18 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
+use Phplrt\Buffer\MutableBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Driver\DriverInterface;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\Token;
 use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Parser\Exception\UnexpectedTokenWithHintsException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
 use Phplrt\Parser\Grammar\ProductionInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -93,6 +97,25 @@ final class Parser implements
      * @var array|RuleInterface[]
      */
     private array $rules;
+
+    /**
+     * Possible tokens searching (enable if it is true)
+     *
+     * @var bool
+     */
+    private bool $possibleTokensSearching = false;
+
+    /**
+     * Array of possible tokens for error or missing token.
+     *
+     * @var array
+     */
+    private array $possibleTokens = [];
+
+    /**
+     * @var bool
+     */
+    private bool $useMutableBuffer = false;
 
     /**
      * @param LexerInterface $lexer
@@ -190,7 +213,13 @@ final class Parser implements
 
         $class = $this->buffer;
 
-        return new $class($stream);
+        $buffer = new $class($stream);
+
+        if ($this->useMutableBuffer) {
+            $buffer = new MutableBuffer($buffer);
+        }
+
+        return $buffer;
     }
 
     /**
@@ -236,9 +265,37 @@ final class Parser implements
             return $result;
         }
 
-        $token = $context->lastOrdinalToken ?? $context->buffer->current();
+        $token = clone($context->lastOrdinalToken ?? $context->buffer->current());
 
-        throw UnexpectedTokenException::fromToken($context->getSource(), $token);
+        if ($this->possibleTokensSearching) {
+            $this->findPossibleTokensForUnexpected($context);
+        }
+
+        throw UnexpectedTokenWithHintsException::fromToken($context->getSource(), $token, null, $this->possibleTokens);
+    }
+
+    /**
+     * @param Context $context
+     * @return void
+     */
+    private function findPossibleTokensForUnexpected(Context $context): void
+    {
+        $problemTokenOffset = $context->lastOrdinalToken->getOffset();
+        $problemTokenKey = 0;
+        while ($context->buffer->get($problemTokenKey)->getOffset() !== $problemTokenOffset) {
+            $problemTokenKey++;
+        }
+
+        $context->buffer->set($problemTokenKey, new Token(
+            DriverInterface::UNKNOWN_TOKEN_NAME,
+            '?',
+            $problemTokenOffset
+        ));
+        if ($this->eoi === $context->lastOrdinalToken->getName()) {
+            $context->buffer->set($problemTokenKey + 1, new EndOfInput($problemTokenOffset));
+        }
+
+        $this->next($context);
     }
 
     /**
@@ -277,6 +334,12 @@ final class Parser implements
                     // Rollback previous state
                     [$context->state, $context->lastProcessedToken] = $before;
 
+                    if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
+                        if (!in_array($context->rule->token, $this->possibleTokens)) {
+                            $this->possibleTokens[] = $context->rule->token;
+                        }
+                    }
+
                     return $result;
                 });
 
@@ -294,6 +357,12 @@ final class Parser implements
 
                     if (! $context->rule->isKeep()) {
                         return [];
+                    }
+                }
+
+                if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
+                    if (!in_array($context->rule->token, $this->possibleTokens)) {
+                        $this->possibleTokens[] = $context->rule->token;
                     }
                 }
 
