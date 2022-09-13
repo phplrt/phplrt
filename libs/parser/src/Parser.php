@@ -94,28 +94,16 @@ final class Parser implements
     /**
      * Array of transition rules for the parser.
      *
-     * @var array|RuleInterface[]
+     * @var array<RuleInterface>
      */
     private array $rules;
 
     /**
-     * Possible tokens searching (enable if it is true)
-     *
-     * @var bool
-     */
-    private bool $possibleTokensSearching = false;
-
-    /**
      * Array of possible tokens for error or missing token.
      *
-     * @var array
+     * @var array<TokenInterface>
      */
     private array $possibleTokens = [];
-
-    /**
-     * @var bool
-     */
-    private bool $useMutableBuffer = false;
 
     /**
      * @param LexerInterface $lexer
