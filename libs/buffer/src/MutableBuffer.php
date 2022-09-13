@@ -110,6 +110,4 @@ class MutableBuffer implements BufferInterface
     {
         $this->parent->next();
     }
-
 }
-
