@@ -53,6 +53,18 @@ trait ParserConfigsTrait
     private string $eoi = TokenInterface::END_OF_INPUT;
 
     /**
+     * Possible tokens searching (enable if it is true)
+     *
+     * @var bool
+     */
+    private bool $possibleTokensSearching = false;
+
+    /**
+     * @var bool
+     */
+    private bool $useMutableBuffer = false;
+
+    /**
      * Step reducer
      *
      * @var \Closure|null
