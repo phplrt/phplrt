@@ -112,3 +112,4 @@ class MutableBuffer implements BufferInterface
     }
 
 }
+
