@@ -19,21 +19,19 @@ use Phplrt\Contracts\Ast\NodeInterface;
 class IdCollection extends Visitor
 {
     /**
-     * @var array|bool[]
+     * @var array<bool>
      */
     private array $rules = [];
 
     /**
-     * @var array|bool[]
+     * @var array<bool>
      */
     private array $tokens = [];
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
-     * @throws \Exception
+     * {@inheritDoc}
      */
-    public function enter(NodeInterface $node)
+    public function enter(NodeInterface $node): void
     {
         if ($node instanceof RuleDef) {
             $this->rules[$node->name] = $node->keep;

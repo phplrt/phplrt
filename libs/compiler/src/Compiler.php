@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Compiler\Ast\Node;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
@@ -23,6 +24,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Multistate;
 use Phplrt\Parser\Parser;
+use Phplrt\Parser\ParserConfigsInterface;
 use Phplrt\Source\File;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Visitor\TraverserInterface;
@@ -58,6 +60,8 @@ class Compiler implements ParserInterface
     /**
      * @param IdCollection $ids
      * @return TraverserInterface
+     *
+     * @psalm-suppress MixedArgumentTypeCoercion: Allow impure closure as traverser
      */
     private function bootPreloader(IdCollection $ids): TraverserInterface
     {
@@ -70,8 +74,11 @@ class Compiler implements ParserInterface
 
     /**
      * @param ReadableInterface $source
-     * @return iterable
+     * @return iterable<Node>
      * @throws \Throwable
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     private function run(ReadableInterface $source): iterable
     {
@@ -87,19 +94,16 @@ class Compiler implements ParserInterface
     }
 
     /**
-     * @param resource|string|ReadableInterface $source
-     * @param array $options
-     * @return iterable
-     * @throws RuntimeExceptionInterface
+     * {@inheritDoc}
      * @throws \Throwable
      */
-    public function parse($source, array $options = []): iterable
+    public function parse($source): iterable
     {
         $lexer = $this->createLexer();
 
         $parser = new Parser($lexer, $this->analyzer->rules, [
-            Parser::CONFIG_INITIAL_RULE => $this->analyzer->initial,
-            Parser::CONFIG_AST_BUILDER  => new AstBuilder(),
+            ParserConfigsInterface::CONFIG_INITIAL_RULE => $this->analyzer->initial,
+            ParserConfigsInterface::CONFIG_AST_BUILDER  => new AstBuilder(),
         ]);
 
         return $parser->parse($source);

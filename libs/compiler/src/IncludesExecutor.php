@@ -11,10 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Compiler\Ast\Node;
 use Phplrt\Visitor\Visitor;
-use Phplrt\Compiler\Ast\Def\Definition;
 use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Compiler\Ast\Expr\Expression;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
 use Phplrt\Compiler\Exception\GrammarException;
 use Phplrt\Source\Exception\NotAccessibleException;
@@ -32,12 +31,12 @@ class IncludesExecutor extends Visitor
     private const FILE_EXTENSIONS = ['', '.pp2', '.pp'];
 
     /**
-     * @var \Closure
+     * @var \Closure(non-empty-string):iterable<Node>
      */
-    private $loader;
+    private \Closure $loader;
 
     /**
-     * @param \Closure $loader
+     * @param \Closure(non-empty-string):iterable<Node> $loader
      */
     public function __construct(\Closure $loader)
     {
@@ -83,10 +82,11 @@ class IncludesExecutor extends Visitor
     }
 
     /**
-     * @param string $pathname
-     * @return iterable|Definition[]|Expression[]
+     * @psalm-taint-sink file $pathname
+     * @param non-empty-string $pathname
+     * @return iterable<Node>
      */
-    private function execute(string $pathname)
+    private function execute(string $pathname): iterable
     {
         return ($this->loader)($pathname);
     }

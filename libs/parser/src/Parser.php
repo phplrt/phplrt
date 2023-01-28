@@ -160,9 +160,6 @@ final class Parser implements
 
     /**
      * {@inheritDoc}
-     *
-     * @param string|resource|ReadableInterface|mixed $source
-     * @throws \Throwable
      */
     public function parse($source, array $options = []): iterable
     {
@@ -176,7 +173,7 @@ final class Parser implements
     /**
      * @param ReadableInterface $source
      * @param array $options
-     * @return iterable
+     * @return iterable<NodeInterface>
      * @throws \Throwable
      */
     private function run(ReadableInterface $source, array $options): iterable

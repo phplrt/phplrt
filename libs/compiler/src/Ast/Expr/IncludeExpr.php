@@ -14,25 +14,37 @@ namespace Phplrt\Compiler\Ast\Expr;
 use Phplrt\Contracts\Source\FileInterface;
 
 /**
- * @internal Compiler's grammar AST node class
+ * @internal This is an internal class, please do not use it in your application code.
+ * @psalm-internal Phplrt\Compiler
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class IncludeExpr extends Expression
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private string $target;
 
     /**
-     * @param string $file
+     * @param non-empty-string $file
      */
     public function __construct(string $file)
     {
-        $this->target = \trim($file, '"\'');
+        $file = \trim($file, '"\'');
+
+        if ($file === '') {
+            throw new \InvalidArgumentException('File include pathname must not be empty');
+        }
+
+        if (\trim($file, '/') === '') {
+            throw new \InvalidArgumentException('File include must contain filename');
+        }
+
+        $this->target = $file;
     }
 
     /**
-     * @return string
+     * @return non-empty-string
      */
     public function getTarget(): string
     {
@@ -40,7 +52,10 @@ class IncludeExpr extends Expression
     }
 
     /**
-     * @return string
+     * @return non-empty-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     public function getTargetPathname(): string
     {
@@ -54,7 +69,7 @@ class IncludeExpr extends Expression
     }
 
     /**
-     * @return string
+     * @return non-empty-string
      */
     public function render(): string
     {

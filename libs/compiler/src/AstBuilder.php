@@ -30,6 +30,8 @@ class AstBuilder implements BuilderInterface
         }
 
         $token = $context->getToken();
+
+        /** @var array<SampleNode> $result */
         $result = \is_array($result) ? $result : [$result];
 
         return new SampleNode($token->getOffset(), (string)$context->getState(), $result);

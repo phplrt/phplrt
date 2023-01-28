@@ -17,24 +17,24 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class SampleNode implements NodeInterface
 {
     /**
-     * @var int
+     * @var int<0, max>
      */
     private int $offset;
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     private string $state;
 
     /**
-     * @var array|SampleNode[]|TokenInterface[]
+     * @var array<array-key, SampleNode>
      */
     public array $children;
 
     /**
-     * @param int $offset
-     * @param string $state
-     * @param array $children
+     * @param int<0, max> $offset
+     * @param non-empty-string $state
+     * @param array<array-key, SampleNode> $children
      */
     public function __construct(int $offset, string $state, array $children)
     {
@@ -44,7 +44,7 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @return \Traversable|SampleNode[][]|TokenInterface[][]
+     * @return \Traversable<non-empty-string, array<array-key, SampleNode>>
      */
     public function getIterator(): \Traversable
     {
@@ -60,18 +60,21 @@ class SampleNode implements NodeInterface
     }
 
     /**
-     * @param int $depth
-     * @return array|string[]
+     * @param int<0, max> $depth
+     * @return array<string>
      */
     public function render(int $depth): array
     {
         $prefix = \str_repeat('    ', $depth);
 
-        $result[] = $prefix . '<' . $this->state . ' offset="' . $this->offset . '">';
+        $result = [
+            $prefix . '<' . $this->state . ' offset="' . $this->offset . '">',
+        ];
 
         foreach ($this->children as $child) {
             switch (true) {
                 case $child instanceof self:
+                    /** @psalm-suppress RedundantFunctionCall: PHP 7.4 unpacking expect only integer keys */
                     $result = [
                         ...\array_values($result),
                         ...\array_values($child->render($depth + 1))
@@ -84,7 +87,7 @@ class SampleNode implements NodeInterface
                     break;
 
                 default:
-                    $result[] = $prefix . '    <' . (string)$child . ' />';
+                    $result[] = $prefix . '    <' . $child . ' />';
             }
         }
 

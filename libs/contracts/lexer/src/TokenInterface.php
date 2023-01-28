@@ -26,14 +26,14 @@ interface TokenInterface
     /**
      * Returns a token name.
      *
-     * @return string
+     * @return non-empty-string
      */
     public function getName(): string;
 
     /**
      * Token position in bytes
      *
-     * @return int
+     * @return int<0, max>
      */
     public function getOffset(): int;
 
@@ -47,7 +47,7 @@ interface TokenInterface
     /**
      * The token value size in bytes
      *
-     * @return int
+     * @return int<0, max>
      */
     public function getBytes(): int;
 }

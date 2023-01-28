@@ -14,8 +14,8 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Compiler\Ast\Node;
 
 /**
- * Class Statement
- * @internal Compiler's grammar AST node class
+ * @internal This is an internal class, please do not use it in your application code.
+ * @psalm-internal Phplrt\Compiler
  */
 abstract class Statement extends Node
 {

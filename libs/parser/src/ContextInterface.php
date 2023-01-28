@@ -41,7 +41,7 @@ interface ContextInterface extends ContextOptionsInterface
      *
      * Note: Please note that this value is mutable and may change over time.
      *
-     * @return int|string
+     * @return int<0, max>|non-empty-string
      */
     public function getState();
 

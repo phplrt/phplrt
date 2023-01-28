@@ -15,19 +15,21 @@ use Phplrt\Compiler\Ast\Stmt\Statement;
 use Phplrt\Compiler\Ast\Stmt\DelegateStmt;
 
 /**
- * @internal Compiler's grammar AST node class
+ * @internal This is an internal class, please do not use it in your application code.
+ * @psalm-internal Phplrt\Compiler
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class RuleDef extends Definition
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     public string $name;
 
     /**
-     * @var DelegateStmt|null
+     * @var DelegateStmt
      */
-    public ?DelegateStmt $delegate = null;
+    public DelegateStmt $delegate;
 
     /**
      * @var Statement
@@ -40,17 +42,19 @@ class RuleDef extends Definition
     public bool $keep;
 
     /**
-     * @param string $name
+     * @param non-empty-string $name
      * @param DelegateStmt $delegate
      * @param Statement $body
      * @param bool $keep
      */
     public function __construct(string $name, DelegateStmt $delegate, Statement $body, bool $keep = true)
     {
-        $this->name     = $name;
-        $this->body     = $body;
+        assert($name !== '', 'Rule name must not be empty');
+
+        $this->name = $name;
+        $this->body = $body;
         $this->delegate = $delegate;
-        $this->keep     = $keep;
+        $this->keep = $keep;
     }
 
     /**

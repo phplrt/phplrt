@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\EndOfInput;
@@ -35,8 +36,8 @@ class PhpLexer implements LexerInterface
 
     /**
      * @param resource|string|ReadableInterface $source
-     * @param int $offset
-     * @return iterable
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */

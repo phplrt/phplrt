@@ -28,10 +28,14 @@ class LaminasRenderer extends Renderer
 
     /**
      * @param bool $multiline
-     * @return string
+     * @return ValueGenerator::OUTPUT_*
      */
     private function getMultilineOption(bool $multiline): string
     {
-        return $multiline ? ValueGenerator::OUTPUT_MULTIPLE_LINE : ValueGenerator::OUTPUT_SINGLE_LINE;
+        if ($multiline) {
+            return ValueGenerator::OUTPUT_MULTIPLE_LINE;
+        }
+
+        return ValueGenerator::OUTPUT_SINGLE_LINE;
     }
 }

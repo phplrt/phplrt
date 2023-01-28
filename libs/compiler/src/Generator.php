@@ -33,7 +33,7 @@ class Generator
     private RendererInterface $renderer;
 
     /**
-     * @var array|string[]
+     * @var array<class-string, non-empty-string|null>
      */
     private array $declarations = [];
 
@@ -48,8 +48,8 @@ class Generator
     }
 
     /**
-     * @param string $class
-     * @param string|null $alias
+     * @param class-string $class
+     * @param non-empty-string|null $alias
      * @return $this
      */
     public function withClassUsage(string $class, string $alias = null): self
@@ -86,19 +86,19 @@ class Generator
         return \implode("\n", [
             '<?php',
             ...\array_values($this->getUses()),
-            "return $result;",
+            "return {$result};",
         ]);
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
     private function getUses(): array
     {
         $usages = [];
 
         foreach ($this->declarations as $class => $alias) {
-            $usages[] = $alias ? "use $class as $alias;" : "use $class;";
+            $usages[] = $alias ? "use {$class} as {$alias};" : "use {$class};";
         }
 
         if (\count($usages)) {
@@ -110,7 +110,7 @@ class Generator
     }
 
     /**
-     * @param int $depth
+     * @param int<0, max> $depth
      * @return array|string[]
      */
     private function getRules(int $depth): array
@@ -122,7 +122,7 @@ class Generator
 
     /**
      * @param RuleInterface $rule
-     * @param int $depth
+     * @param int<0, max> $depth
      * @return string
      */
     private function getRuleAsString(RuleInterface $rule, int $depth): string
@@ -146,7 +146,7 @@ class Generator
     }
 
     /**
-     * @param int $depth
+     * @param int<0, max> $depth
      * @param RuleInterface $rule
      * @param array $args
      * @return string
@@ -161,7 +161,7 @@ class Generator
     }
 
     /**
-     * @param int $depth
+     * @param int<0, max> $depth
      * @return array
      */
     private function getReducers(int $depth): array
@@ -175,7 +175,7 @@ class Generator
 
     /**
      * @param string $code
-     * @param int $depth
+     * @param int<0, max> $depth
      * @return string
      */
     private function toFunction(string $code, int $depth): string
@@ -186,13 +186,13 @@ class Generator
 
         $class = Context::class;
 
-        return "function (\\$class \$ctx, \$children) {\n{$code}\n$suffix}";
+        return "function (\\{$class} \$ctx, \$children) {\n{$code}\n{$suffix}}";
     }
 
     /**
-     * @param array $lines
-     * @param int $depth
-     * @return array
+     * @param array<string> $lines
+     * @param int<0, max> $depth
+     * @return array<string>
      */
     private function format(array $lines, int $depth): array
     {
@@ -215,9 +215,9 @@ class Generator
     }
 
     /**
-     * @param array $lines
-     * @param array $needles
-     * @return array
+     * @param array<string> $lines
+     * @param array<non-empty-string, string> $needles
+     * @return array<string>
      */
     private function addInjections(array $lines, array $needles): array
     {
@@ -233,8 +233,8 @@ class Generator
     }
 
     /**
-     * @param array|string[] $lines
-     * @param string $variable
+     * @param array<string> $lines
+     * @param non-empty-string $variable
      * @return bool
      */
     private function has(array $lines, string $variable): bool

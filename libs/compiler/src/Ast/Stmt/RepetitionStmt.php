@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Ast\Stmt;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-
 /**
- * @internal Compiler's grammar AST node class
+ * @internal This is an internal class, please do not use it in your application code.
+ * @psalm-internal Phplrt\Compiler
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class RepetitionStmt extends Statement
 {
@@ -34,18 +34,16 @@ class RepetitionStmt extends Statement
      */
     public function __construct(Statement $stmt, Quantifier $quantifier)
     {
-        $this->statement  = $stmt;
+        $this->statement = $stmt;
         $this->quantifier = $quantifier;
     }
 
     /**
-     * @return \Traversable|NodeInterface[]
+     * @return \Traversable<non-empty-string, Statement|Quantifier>
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator([
-            'statement'  => $this->statement,
-            'quantifier' => $this->quantifier,
-        ]);
+        yield 'statement' => $this->statement;
+        yield 'quantifier' => $this->quantifier;
     }
 }

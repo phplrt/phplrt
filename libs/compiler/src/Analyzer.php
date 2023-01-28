@@ -46,44 +46,44 @@ class Analyzer extends Visitor
     public const PRAGMA_ROOT = 'root';
 
     /**
-     * @var array|RuleInterface[]
+     * @var array<RuleInterface>
      */
     public array $rules = [];
 
     /**
-     * @var array|string[]
+     * @var array<string>
      */
     public array $reducers = [];
 
     /**
-     * @var array|string[][]
+     * @var array<non-empty-string, array<non-empty-string, non-empty-string>>
      */
     public array $tokens = [
         self::STATE_DEFAULT => [],
     ];
 
     /**
-     * @var array|string[][]
+     * @var array<non-empty-string, array<non-empty-string, non-empty-string>>
      */
     public array $transitions = [];
 
     /**
-     * @var array|string[]
+     * @var array<array-key, non-empty-string>
      */
     public array $skip = [];
 
     /**
-     * @var string|int|null
+     * @var non-empty-string|int|null
      */
     public $initial;
 
     /**
-     * @var int
+     * @var int<0, max>
      */
     private int $counter = 0;
 
     /**
-     * @var array
+     * @var array<non-empty-string, int<0, max>>
      */
     private array $aliases = [];
 
@@ -101,10 +101,11 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
+     * {@inheritDoc}
+     *
+     * @psalm-suppress PropertyTypeCoercion
      */
-    public function enter(NodeInterface $node)
+    public function enter(NodeInterface $node): void
     {
         if ($node instanceof TokenDef) {
             $state = $node->state ?: self::STATE_DEFAULT;
@@ -133,13 +134,11 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param NodeInterface $node
-     * @return mixed|void|null
-     * @throws ParserRuntimeException
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
+     * {@inheritDoc}
+     *
+     * @psalm-suppress PropertyTypeCoercion
      */
-    public function leave(NodeInterface $node)
+    public function leave(NodeInterface $node): void
     {
         if ($node instanceof PragmaDef) {
             if ($node->name !== self::PRAGMA_ROOT) {
@@ -160,17 +159,13 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param string $rule
-     * @return string|int
+     * @param non-empty-string $rule
+     * @return non-empty-string|int<0, max>
      */
     private function name(string $rule)
     {
         if ($this->ids->rule($rule) === false) {
-            if (\array_key_exists($rule, $this->aliases)) {
-                return $this->aliases[$rule];
-            }
-
-            return $this->aliases[$rule] = $this->counter++;
+            return $this->aliases[$rule] ??= $this->counter++;
         }
 
         return $rule;
@@ -178,8 +173,8 @@ class Analyzer extends Visitor
 
     /**
      * @param RuleInterface $rule
-     * @param string|null $name
-     * @return string|int
+     * @param non-empty-string|null $name
+     * @return non-empty-string|int<0, max>
      */
     private function register(RuleInterface $rule, string $name = null)
     {
@@ -213,12 +208,16 @@ class Analyzer extends Visitor
     {
         $rule = $this->reduce($def->body);
 
-        return $rule instanceof RuleInterface ? $rule : new Concatenation([$rule]);
+        if ($rule instanceof RuleInterface) {
+            return $rule;
+        }
+
+        return new Concatenation([$rule]);
     }
 
     /**
      * @param Statement $statement
-     * @return RuleInterface|int|string
+     * @return RuleInterface|non-empty-string|int<0, max>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
@@ -260,10 +259,11 @@ class Analyzer extends Visitor
 
     /**
      * @param AlternationStmt $choice
-     * @return array
+     * @return array<RuleInterface|non-empty-string|int<0, max>>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
+     * @psalm-suppress ArgumentTypeCoercion
      */
     private function loadForAlternation(AlternationStmt $choice): array
     {
@@ -272,7 +272,7 @@ class Analyzer extends Visitor
         foreach ($choice->statements as $stmt) {
             $choices[] = $this->map($this->reduce($stmt));
 
-            /** @noinspection LoopWhichDoesNotLoopInspection */
+            /** @var string $relation */
             foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
                 $error = 'The alternation (OR condition) contains excess repeating relation %s';
                 throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
@@ -283,8 +283,8 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param RuleInterface|string $rule
-     * @return int|string
+     * @param RuleInterface|non-empty-string|int<0, max> $rule
+     * @return RuleInterface|non-empty-string|int<0, max>
      */
     private function map($rule)
     {
@@ -296,8 +296,8 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param mixed $stmt
-     * @return array|int|int[]|string|string[]
+     * @param Statement|array<Statement> $stmt
+     * @return RuleInterface|non-empty-string|int<0, max>|array<RuleInterface|non-empty-string|int<0, max>>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
@@ -312,8 +312,8 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param array $rules
-     * @return array|int[]
+     * @param array<RuleInterface|non-empty-string|int<0, max>> $rules
+     * @return array<RuleInterface|non-empty-string|int<0, max>>
      */
     private function mapAll(array $rules): array
     {
@@ -327,8 +327,8 @@ class Analyzer extends Visitor
     }
 
     /**
-     * @param array $statements
-     * @return array
+     * @param array<Statement> $statements
+     * @return array<RuleInterface|non-empty-string|int<0, max>>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
@@ -363,7 +363,7 @@ class Analyzer extends Visitor
 
     /**
      * @param RuleStmt $rule
-     * @return int|string
+     * @return non-empty-string|int<0, max>
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */

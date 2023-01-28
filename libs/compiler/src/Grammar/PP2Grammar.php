@@ -39,6 +39,7 @@ use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
+use Phplrt\Parser\ParserConfigsInterface;
 
 class PP2Grammar implements GrammarInterface, BuilderInterface
 {
@@ -55,24 +56,25 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     public function __construct()
     {
         $lexer = new Multistate([
-            0 => new PP2Lexer(),
-            1 => new PP2PHPLexer(new PhpLexer()),
+            new PP2Lexer(),
+            new PP2PHPLexer(new PhpLexer()),
         ], [
-            0 => ['T_PHP_OPEN' => 1],
-            1 => ['T_PHP_CODE' => 0],
+            ['T_PHP_OPEN' => 1],
+            ['T_PHP_CODE' => 0],
         ]);
 
         $this->reducers = $this->reducers();
 
         $this->runtime = new Parser($lexer, $this->grammar(), [
-            Parser::CONFIG_INITIAL_RULE => 0,
-            Parser::CONFIG_AST_BUILDER  => $this,
-            Parser::CONFIG_STEP_REDUCER => fn(Context $ctx, \Closure $next) => $this->next($ctx, $next),
+            ParserConfigsInterface::CONFIG_INITIAL_RULE => 0,
+            ParserConfigsInterface::CONFIG_AST_BUILDER => $this,
+            ParserConfigsInterface::CONFIG_STEP_REDUCER => \Closure::fromCallable([$this, 'next']),
         ]);
     }
 
     /**
-     * @return array|\Closure[]
+     * @return array<\Closure>
+     * @psalm-suppress all
      */
     private function reducers(): array
     {
@@ -190,22 +192,13 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     {
         return [
             0  => new Repetition(11, 0),
-            11 => new Alternation([
-                15,
-                16,
-                13,
-                14,
-                17,
-            ]),
+            11 => new Alternation([15, 16, 13, 14, 17]),
             13 => new Lexeme('T_PRAGMA'),
             14 => new Lexeme('T_INCLUDE'),
             15 => new Lexeme('T_TOKEN_DEF'),
             16 => new Lexeme('T_SKIP_DEF'),
             17 => new Concatenation([10, 20, 28, 8, 9]),
-            10 => new Alternation([
-                18,
-                19,
-            ]),
+            10 => new Alternation([18, 19]),
             18 => new Concatenation([26, 27]),
             19 => new Concatenation([27]),
             20 => new Optional(48),
@@ -224,13 +217,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
             2  => new Alternation([22, 24, 5]),
             22 => new Repetition(3, 2),
             3  => new Alternation([24, 5]),
-            5  => new Alternation([
-                23,
-                31,
-                32,
-                33,
-                34,
-            ]),
+            5  => new Alternation([23, 31, 32, 33, 34]),
             31 => new Lexeme('T_TOKEN_SKIPPED'),
             32 => new Lexeme('T_TOKEN_KEPT'),
             33 => new Lexeme('T_TOKEN_STRING'),
@@ -240,15 +227,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
             36 => new Lexeme('T_GROUP_CLOSE', false),
             7  => new Alternation([21, 22, 24, 5]),
             24 => new Concatenation([5, 6]),
-            6  => new Alternation([
-                37,
-                38,
-                39,
-                40,
-                41,
-                42,
-                43,
-            ]),
+            6  => new Alternation([37, 38, 39, 40, 41, 42, 43]),
             37 => new Lexeme('T_REPEAT_ZERO_OR_ONE'),
             38 => new Lexeme('T_REPEAT_ONE_OR_MORE'),
             39 => new Lexeme('T_REPEAT_ZERO_OR_MORE'),
@@ -267,12 +246,13 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     /**
      * @param Context $context
      * @param \Closure $next
-     * @return iterable|TokenInterface|null
+     * @return mixed
      */
     protected function next(Context $context, \Closure $next)
     {
         $offset = $context->getToken()->getOffset();
 
+        /** @var mixed $result */
         $result = $next($context);
 
         if ($result instanceof Node) {
@@ -294,6 +274,8 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress MixedFunctionCall
      */
     public function build(ContextInterface $context, $result)
     {

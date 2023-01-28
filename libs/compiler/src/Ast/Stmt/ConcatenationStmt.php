@@ -14,17 +14,19 @@ namespace Phplrt\Compiler\Ast\Stmt;
 use Phplrt\Contracts\Ast\NodeInterface;
 
 /**
- * @internal Compiler's grammar AST node class
+ * @internal This is an internal class, please do not use it in your application code.
+ * @psalm-internal Phplrt\Compiler
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 class ConcatenationStmt extends Statement
 {
     /**
-     * @var Statement[]
+     * @var array<Statement>
      */
     public array $statements = [];
 
     /**
-     * @param array|Statement[] $statements
+     * @param array<Statement> $statements
      */
     public function __construct(array $statements)
     {
@@ -32,12 +34,10 @@ class ConcatenationStmt extends Statement
     }
 
     /**
-     * @return \Traversable|NodeInterface[][]|Statement[][]
+     * @return \Traversable<non-empty-string, array<Statement>>
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator([
-            'statements' => $this->statements
-        ]);
+        yield 'statements' => $this->statements;
     }
 }

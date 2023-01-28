@@ -14,14 +14,14 @@ namespace Phplrt\Compiler\Renderer;
 interface RendererInterface
 {
     /**
-     * @param int $depth
+     * @param int<0, max> $depth
      * @return string
      */
     public function prefix(int $depth): string;
 
     /**
      * @param mixed $data
-     * @param int $depth
+     * @param int<0, max> $depth
      * @param bool $multiline
      * @return string
      */
@@ -29,7 +29,7 @@ interface RendererInterface
 
     /**
      * @param mixed $data
-     * @param int $depth
+     * @param int<0, max> $depth
      * @param bool $multiline
      * @return string
      */
