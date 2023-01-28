@@ -4,7 +4,7 @@
     </a>
 </p>
 <p align="center">
-    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="http://poser.pugx.org/phplrt/phplrt/require/php?style=for-the-badge" alt="PHP 7.1+"></a>
+    <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/require/php?style=for-the-badge" alt="PHP 7.4+"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/version?style=for-the-badge" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/downloads?style=for-the-badge" alt="Total Downloads"></a>

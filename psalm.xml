@@ -1,31 +1,22 @@
 <?xml version="1.0"?>
 <psalm
+    errorLevel="1"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
-    errorLevel="6"
-    hoistConstants="true"
-    resolveFromConfigFile="true"
-    findUnusedPsalmSuppress="true"
-    findUnusedVariablesAndParams="true"
-    ensureArrayStringOffsetsExist="true"
-    addParamDefaultToDocblockType="true"
 >
-    <issueHandlers>
-        <UnusedPsalmSuppress errorLevel="suppress" />
-    </issueHandlers>
-    <projectFiles>
-        <directory name="libs" />
-        <ignoreFiles>
-            <directory name="vendor" />
-            <directory name="libs/buffer/tests" />
-            <directory name="libs/compiler/tests" />
-            <directory name="libs/exception/tests" />
-            <directory name="libs/lexer/tests" />
-            <directory name="libs/parser/tests" />
-            <directory name="libs/position/tests" />
-            <directory name="libs/source/tests" />
-            <directory name="libs/visitor/tests" />
-        </ignoreFiles>
-    </projectFiles>
+<projectFiles>
+    <directory name="libs" />
+    <ignoreFiles>
+        <directory name="vendor" />
+        <directory name="libs/buffer/tests" />
+        <directory name="libs/compiler/tests" />
+        <directory name="libs/exception/tests" />
+        <directory name="libs/lexer/tests" />
+        <directory name="libs/parser/tests" />
+        <directory name="libs/position/tests" />
+        <directory name="libs/source/tests" />
+        <directory name="libs/visitor/tests" />
+    </ignoreFiles>
+</projectFiles>
 </psalm>

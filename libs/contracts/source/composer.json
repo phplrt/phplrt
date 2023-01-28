@@ -24,7 +24,7 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "^4.22"
+        "vimeo/psalm": "^5.6"
     },
     "extra": {
         "branch-alias": {
