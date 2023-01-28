@@ -28,19 +28,19 @@ final class Position implements PositionInterface
     private int $offset;
 
     /**
-     * @var positive-int
+     * @var int<1, max>
      */
     private int $line;
 
     /**
-     * @var positive-int
+     * @var int<1, max>
      */
     private int $column;
 
     /**
      * @param int<0, max> $offset
-     * @param positive-int $line
-     * @param positive-int $column
+     * @param int<1, max> $line
+     * @param int<1, max> $column
      */
     public function __construct(
         int $offset = self::MIN_OFFSET,

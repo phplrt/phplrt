@@ -23,18 +23,18 @@ class ExtrusiveBuffer extends LazyBuffer
         'of the buffer has already been freed';
 
     /**
-     * @var positive-int
+     * @var int<1, max>
      */
     public const BUFFER_DEFAULT_SIZE = 100;
 
     /**
-     * @var positive-int
+     * @var int<1, max>
      */
     private int $size;
 
     /**
      * @param iterable<TokenInterface> $stream
-     * @param positive-int $size
+     * @param int<1, max> $size
      */
     public function __construct(
         iterable $stream,
@@ -49,7 +49,7 @@ class ExtrusiveBuffer extends LazyBuffer
     }
 
     /**
-     * @return positive-int
+     * @return int<1, max>
      */
     public function getBufferSize(): int
     {

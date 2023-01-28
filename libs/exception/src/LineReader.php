@@ -16,7 +16,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 class LineReader
 {
     /**
-     * @var array|string[]
+     * @var array<int<0, max>, string>
      */
     private array $lines;
 
@@ -25,13 +25,13 @@ class LineReader
      */
     public function __construct(ReadableInterface $source)
     {
-        $filter = fn (string $line) => \trim($line, "\r\0");
+        $filter = static fn(string $line): string => \trim($line, "\r\0");
 
         $this->lines = \array_map($filter, \explode("\n", $source->getContents()));
     }
 
     /**
-     * @param int $line
+     * @param int<1, max> $line
      * @return string
      */
     public function readLine(int $line): string
@@ -40,9 +40,9 @@ class LineReader
     }
 
     /**
-     * @param int $from
-     * @param int $to
-     * @return iterable
+     * @param int<1, max> $from
+     * @param int<1, max> $to
+     * @return iterable<int<1, max>, string>
      */
     public function readLines(int $from, int $to): iterable
     {

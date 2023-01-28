@@ -110,7 +110,7 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     public function getToken(): TokenInterface
     {
         if ($this->token === null) {
-            $position = Position::fromPosition($this->getSource(), $this->getLine());
+            $position = Position::fromPosition($this->getSource(), \max(1, $this->getLine()));
 
             return new UndefinedToken($position);
         }

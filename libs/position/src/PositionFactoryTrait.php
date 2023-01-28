@@ -20,18 +20,18 @@ trait PositionFactoryTrait
 {
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @param positive-int $line
-     * @param positive-int $column
+     * @param int<1, max> $line
+     * @param int<1, max> $column
      * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
     public static function fromPosition($source, int $line = 1, int $column = 1): PositionInterface
     {
-        \assert($line >= Position::MIN_LINE, 'Line argument should be greater than 1');
-        \assert($column >= Position::MIN_COLUMN, 'Column argument should be greater than 1');
+        \assert($line >= PositionInterface::MIN_LINE, 'Line argument should be greater than 1');
+        \assert($column >= PositionInterface::MIN_COLUMN, 'Column argument should be greater than 1');
 
-        if ($line === Position::MIN_LINE && $column === Position::MIN_COLUMN) {
+        if ($line === PositionInterface::MIN_LINE && $column === PositionInterface::MIN_COLUMN) {
             return static::start();
         }
 
@@ -66,7 +66,11 @@ trait PositionFactoryTrait
      */
     public static function start(): PositionInterface
     {
-        return new Position(Position::MIN_OFFSET, Position::MIN_LINE, Position::MIN_COLUMN);
+        return new Position(
+            PositionInterface::MIN_OFFSET,
+            PositionInterface::MIN_LINE,
+            PositionInterface::MIN_COLUMN
+        );
     }
 
     /**
@@ -91,7 +95,7 @@ trait PositionFactoryTrait
      */
     public static function fromOffset($source, int $offset = 0): PositionInterface
     {
-        if ($offset <= Position::MIN_OFFSET) {
+        if ($offset <= PositionInterface::MIN_OFFSET) {
             return static::start();
         }
 
