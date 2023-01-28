@@ -58,12 +58,10 @@ class RuleDef extends Definition
     }
 
     /**
-     * @return \Traversable
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator([
-            'body' => $this->body,
-        ]);
+        yield 'body' => $this->body;
     }
 }
