@@ -7,41 +7,43 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
+  # ----------------------------------------------------------------------------
+  #   Security
+  # ----------------------------------------------------------------------------
   security:
     name: Security
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.1' ] # Note: This workflow requires only the LATEST version of PHP
+        php: [ '8.2' ]
         os: [ ubuntu-latest ]
-
-    steps: # General Steps
+    steps:
       - name: Set Git To Use LF
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
+
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Install PHP Dependencies
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-      - name: Validate Composer
-        run: composer validate
+          tools: composer:v2
+
       - name: Get Composer Cache Directory
-        # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
       - name: Restore Composer Cache
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
+
       - name: Install Dependencies
         uses: nick-invision/retry@v1
         with:
@@ -49,45 +51,46 @@ jobs:
           max_attempts: 5
           command: composer update --prefer-dist --no-interaction --no-progress
 
-      # Execution
       - name: Security Advisories
         run: composer require --dev roave/security-advisories:dev-latest
 
+  # ----------------------------------------------------------------------------
+  #   Static Analysis
+  # ----------------------------------------------------------------------------
   static-analysis:
     name: Psalm
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.1' ] # Note: This workflow requires only the LATEST version of PHP
+        php: [ '8.2' ]
         os: [ ubuntu-latest ]
-
-    steps: # General Steps
+    steps:
       - name: Set Git To Use LF
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
+
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Install PHP Dependencies
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-      - name: Validate Composer
-        run: composer validate
+          tools: composer:v2
+
       - name: Get Composer Cache Directory
-        # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
       - name: Restore Composer Cache
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
+
       - name: Install Dependencies
         uses: nick-invision/retry@v1
         with:
@@ -95,46 +98,46 @@ jobs:
           max_attempts: 5
           command: composer update --prefer-dist --no-interaction --no-progress
 
-      # Execution
       - name: Static Analysis
-        continue-on-error: true
         run: vendor/bin/psalm --no-cache
 
+  # ----------------------------------------------------------------------------
+  #   Coding Standards
+  # ----------------------------------------------------------------------------
   coding-standards:
     name: Coding Standards
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.1' ] # Note: This workflow requires only the LATEST version of PHP
+        php: [ '8.2' ]
         os: [ ubuntu-latest ]
-
-    steps: # General Steps
+    steps:
       - name: Set Git To Use LF
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
+
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Install PHP Dependencies
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-      - name: Validate Composer
-        run: composer validate
+          tools: composer:v2
+
       - name: Get Composer Cache Directory
-        # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
       - name: Restore Composer Cache
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
+
       - name: Install Dependencies
         uses: nick-invision/retry@v1
         with:
@@ -142,67 +145,54 @@ jobs:
           max_attempts: 5
           command: composer update --prefer-dist --no-interaction --no-progress
 
-      # Execution
       - name: Check Coding Standards
         run: vendor/bin/phpcs --standard=phpcs.xml
 
-  #
-  # Execute unit tests on all valid PHP versions.
-  #
+  # ----------------------------------------------------------------------------
+  #   Execute Test Cases
+  # ----------------------------------------------------------------------------
   test:
     name: Build (PHP ${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
     runs-on: ${{ matrix.os }}
-
     strategy:
       fail-fast: false
       matrix:
         php: [ '7.4', '8.0', '8.1', '8.2' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
-
-    steps: # General Steps
+    steps:
       - name: Set Git To Use LF
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
+
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Install PHP Dependencies
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          # PHP Extras
-          coverage: pcov
-          tools: pecl
+          tools: composer:v2
           ini-values: "memory_limit=-1"
-      - name: Validate Composer
-        run: composer validate
+
       - name: Get Composer Cache Directory
-        # Docs: <https://github.com/actions/cache/blob/master/examples.md#php---composer>
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
       - name: Restore Composer Cache
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
+
       - name: Install Dependencies (PHP Stable)
-        if: matrix.php != '8.2'
         uses: nick-invision/retry@v1
         with:
           timeout_minutes: 5
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-      - name: Install Dependencies (PHP Next)
-        if: matrix.php == '8.2'
-        uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --ignore-platform-reqs --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
-      # Execution
+
       - name: Execute Tests
         run: vendor/bin/phpunit
