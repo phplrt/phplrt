@@ -16,17 +16,17 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class ArrayBuffer extends Buffer
 {
     /**
-     * @var array<positive-int|0, TokenInterface>
+     * @var array<int<0, max>, TokenInterface>
      */
     private array $buffer;
 
     /**
-     * @var positive-int|0
+     * @var int<0, max>
      */
     private int $size;
 
     /**
-     * @param iterable<TokenInterface> $stream
+     * @param iterable<int<0, max>, TokenInterface> $stream
      */
     public function __construct(iterable $stream)
     {
@@ -39,9 +39,8 @@ class ArrayBuffer extends Buffer
     }
 
     /**
-     * @param iterable<TokenInterface> $tokens
-     * @return array<positive-int|0, TokenInterface>
-     * @psalm-suppress LessSpecificReturnStatement
+     * @param iterable<int<0, max>, TokenInterface> $tokens
+     * @return array<int<0, max>, TokenInterface>
      */
     private function iterableToArray(iterable $tokens): array
     {

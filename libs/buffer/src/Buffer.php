@@ -30,12 +30,12 @@ abstract class Buffer implements BufferInterface
         . 'value (%d) of the first element of the stream';
 
     /**
-     * @var positive-int|0
+     * @var int<0, max>
      */
     protected int $initial = 0;
 
     /**
-     * @var positive-int|0
+     * @var int<0, max>
      */
     protected int $current = 0;
 

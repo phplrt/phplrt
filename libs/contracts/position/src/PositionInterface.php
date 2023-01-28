@@ -24,7 +24,7 @@ interface PositionInterface
     public const MIN_COLUMN = 1;
 
     /**
-     * @var positive-int|0
+     * @var int<0, max>
      */
     public const MIN_OFFSET = 0;
 
@@ -33,7 +33,7 @@ interface PositionInterface
      *
      * Equivalent to the amount from a line and a column.
      *
-     * @return positive-int|0
+     * @return int<0, max>
      */
     public function getOffset(): int;
 

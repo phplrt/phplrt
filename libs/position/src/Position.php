@@ -23,7 +23,7 @@ final class Position implements PositionInterface
     protected const LINE_DELIMITER = "\n";
 
     /**
-     * @var positive-int|0
+     * @var int<0, max>
      */
     private int $offset;
 
@@ -38,7 +38,7 @@ final class Position implements PositionInterface
     private int $column;
 
     /**
-     * @param positive-int|0 $offset
+     * @param int<0, max> $offset
      * @param positive-int $line
      * @param positive-int $column
      */

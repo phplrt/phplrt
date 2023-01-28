@@ -21,7 +21,7 @@ class LazyBuffer extends Buffer
     protected array $buffer = [];
 
     /**
-     * @var \Generator<positive-int|0, TokenInterface, mixed, mixed>
+     * @var \Generator<int<0, max>, TokenInterface, mixed, mixed>
      */
     protected \Generator $stream;
 
@@ -53,7 +53,7 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * @return positive-int|0
+     * @return int<0, max>
      */
     public function getBufferCurrentSize(): int
     {

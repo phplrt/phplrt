@@ -16,8 +16,8 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 interface FactoryInterface
 {
     /**
-     * @param iterable<TokenInterface> $tokens
-     * @param positive-int|0|null $size
+     * @param iterable<int<0, max>, TokenInterface> $tokens
+     * @param int<0, max>|null $size
      * @return BufferInterface
      */
     public function create(iterable $tokens, ?int $size = null): BufferInterface;

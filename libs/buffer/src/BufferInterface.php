@@ -14,7 +14,7 @@ namespace Phplrt\Buffer;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
- * @template-extends \SeekableIterator<positive-int|0, TokenInterface>
+ * @template-extends \SeekableIterator<int<0, max>, TokenInterface>
  */
 interface BufferInterface extends \SeekableIterator
 {
@@ -24,7 +24,7 @@ interface BufferInterface extends \SeekableIterator
      * @link https://php.net/manual/en/seekableiterator.seek.php
      * @see \SeekableIterator::seek()
      *
-     * @param positive-int|0 $offset
+     * @param int<0, max> $offset
      * @return void
      */
     public function seek($offset): void;
@@ -45,7 +45,7 @@ interface BufferInterface extends \SeekableIterator
      * @link https://php.net/manual/en/iterator.key.php
      * @see \Iterator::key()
      *
-     * @return positive-int|0
+     * @return int<0, max>
      */
     public function key(): int;
 

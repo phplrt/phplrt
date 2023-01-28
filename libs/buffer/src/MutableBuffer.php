@@ -16,20 +16,20 @@ class MutableBuffer implements BufferInterface
     private BufferInterface $parent;
 
     /**
-     * @var array
+     * @var array<int<0, max>, TokenInterface>
      */
     private array $overrides = [];
 
     /**
-     * @param BufferInterface $parentBuffer
+     * @param BufferInterface $parent
      */
-    public function __construct(BufferInterface $parentBuffer)
+    public function __construct(BufferInterface $parent)
     {
-        $this->parent = $parentBuffer;
+        $this->parent = $parent;
     }
 
     /**
-     * @param int $offset
+     * @param int<0, max> $offset
      * @param TokenInterface $token
      * @return void
      */
@@ -39,7 +39,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @param int $offset
+     * @param int<0, max> $offset
      * @return TokenInterface
      */
     public function get(int $offset): TokenInterface
@@ -48,14 +48,16 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @param int $offset
+     * @param int<0, max> $offset
      * @return TokenInterface
      */
     private function poll(int $offset): TokenInterface
     {
         $previous = $this->parent->key();
+
         try {
             $this->parent->seek($offset);
+
             return $this->parent->current();
         } finally {
             $this->parent->seek($previous);
@@ -63,8 +65,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @param $offset
-     * @return void
+     * {@inheritDoc}
      */
     public function seek($offset): void
     {
@@ -72,7 +73,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @return TokenInterface
+     * {@inheritDoc}
      */
     public function current(): TokenInterface
     {
@@ -80,7 +81,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function key(): int
     {
@@ -88,7 +89,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @return bool
+     * {@inheritDoc}
      */
     public function valid(): bool
     {
@@ -96,7 +97,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function rewind(): void
     {
@@ -104,7 +105,7 @@ class MutableBuffer implements BufferInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function next(): void
     {
