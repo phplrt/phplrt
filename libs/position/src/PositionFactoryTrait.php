@@ -58,7 +58,7 @@ trait PositionFactoryTrait
             $offset += $column = \strlen((string)\reset($lines));
         }
 
-        return new Position($offset, $cursor, $column);
+        return new Position($offset, \max(1, $cursor), \max(1, $column));
     }
 
     /**

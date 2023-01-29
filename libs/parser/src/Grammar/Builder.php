@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
+/**
+ * @template-implements \IteratorAggregate<int<0, max>|non-empty-string, RuleInterface>
+ */
 class Builder implements \IteratorAggregate
 {
     /**
@@ -19,7 +22,7 @@ class Builder implements \IteratorAggregate
     private const ERROR_INVALID_PAYLOAD = 'Closure should return an instance of \Generator';
 
     /**
-     * @var array|RuleInterface[]
+     * @var array<int<0, max>|non-empty-string, RuleInterface>
      */
     private array $grammar = [];
 

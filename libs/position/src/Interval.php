@@ -34,10 +34,6 @@ final class Interval implements IntervalInterface
      */
     public function __construct(PositionInterface $from, PositionInterface $to)
     {
-        if ($from->getOffset() > $to->getOffset()) {
-            [$from, $to] = [$to, $from];
-        }
-
         $this->from = $from;
         $this->to = $to;
     }
@@ -63,6 +59,6 @@ final class Interval implements IntervalInterface
      */
     public function getLength(): int
     {
-        return $this->to->getOffset() - $this->from->getOffset();
+        return \max(0, \abs($this->to->getOffset() - $this->from->getOffset()));
     }
 }

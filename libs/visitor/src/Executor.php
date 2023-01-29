@@ -131,8 +131,9 @@ class Executor implements ExecutorInterface
     }
 
     /**
-     * @param iterable<object> $ast
-     * @return iterable<object>
+     * @param iterable<array-key, object> $ast
+     * @return iterable<array-key, object>
+     *
      * @psalm-suppress InvalidReturnType
      */
     private function each(iterable $ast): iterable
@@ -148,6 +149,7 @@ class Executor implements ExecutorInterface
                     throw new BadMethodException(self::ERROR_ROOT_REMOVING);
                 }
 
+                /** @psalm-suppress InvalidReturnStatement : NodeInterface is an iterable */
                 return $first;
 
             case \is_array($ast):

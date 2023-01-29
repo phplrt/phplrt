@@ -34,21 +34,21 @@ trait ParserConfigsTrait
      *
      * Initialized by the generator with tokens during parser launch.
      *
-     * @var string
+     * @var class-string
      */
     private string $buffer = ArrayBuffer::class;
 
     /**
      * The initial state (initial rule identifier) of the parser.
      *
-     * @var string|int|null
+     * @var non-empty-string|int<0, max>|null
      */
     private $initial;
 
     /**
      * Token indicating the end of parsing.
      *
-     * @var string
+     * @var non-empty-string
      */
     private string $eoi = TokenInterface::END_OF_INPUT;
 
@@ -74,7 +74,7 @@ trait ParserConfigsTrait
     /**
      * Sets an a token name indicating the end of parsing.
      *
-     * @param string $token
+     * @param non-empty-string $token
      * @return $this
      */
     public function completeAt(string $token): self
@@ -140,7 +140,7 @@ trait ParserConfigsTrait
     /**
      * Sets a tokens buffer class.
      *
-     * @param string $class
+     * @param class-string $class
      * @return $this
      */
     public function withBuffer(string $class): self
@@ -155,7 +155,7 @@ trait ParserConfigsTrait
     /**
      * Sets an initial state (initial rule identifier) of the parser.
      *
-     * @param mixed $initial
+     * @param non-empty-string|int<0, max> $initial
      * @return $this
      */
     public function startsAt($initial): self
@@ -169,7 +169,7 @@ trait ParserConfigsTrait
      * Turn on/off for possible tokens searching
      *
      * @param bool $possibleTokensSearching
-     * @return Parser|ParserConfigsTrait
+     * @return $this
      */
     public function possibleTokensSearching(bool $possibleTokensSearching): self
     {

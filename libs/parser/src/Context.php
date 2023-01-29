@@ -81,7 +81,7 @@ class Context implements ContextInterface
      * the future, it is necessary to delete this data with a replacement for
      * the stateless structure.
      *
-     * @var int|string
+     * @var int<0, max>|non-empty-string
      */
     public $state;
 
@@ -102,7 +102,7 @@ class Context implements ContextInterface
     /**
      * @param BufferInterface $buffer
      * @param ReadableInterface $source
-     * @param int|string $state
+     * @param int<0, max>|non-empty-string $state
      * @param array $options
      */
     public function __construct(BufferInterface $buffer, ReadableInterface $source, $state, array $options)
@@ -144,6 +144,8 @@ class Context implements ContextInterface
      */
     public function getRule(): RuleInterface
     {
+        assert($this->rule !== null, 'Context not initialized');
+
         return $this->rule;
     }
 
@@ -160,6 +162,8 @@ class Context implements ContextInterface
      */
     public function getState()
     {
+        assert($this->state !== null, 'Context not initialized');
+
         return $this->state;
     }
 }
