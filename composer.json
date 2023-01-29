@@ -91,7 +91,7 @@
         ],
         "psalm": "psalm --no-cache",
         "phpcs": "phpcs --standard=phpcs.xml",
-        "phpunit": "phpunit --testox",
+        "phpunit": "phpunit --testdox",
         "phpcbf": "phpcbf -p --standard=PSR12 libs",
         "merge": "monorepo-builder merge"
     },

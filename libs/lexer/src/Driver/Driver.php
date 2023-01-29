@@ -16,7 +16,7 @@ use Phplrt\Lexer\Compiler\CompilerInterface;
 abstract class Driver implements DriverInterface
 {
     /**
-     * @var string|null
+     * @var non-empty-string|null
      */
     private ?string $pattern = null;
 
@@ -50,8 +50,8 @@ abstract class Driver implements DriverInterface
     }
 
     /**
-     * @param array $tokens
-     * @return string
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @return non-empty-string
      */
     protected function getPattern(array $tokens): string
     {
@@ -63,8 +63,8 @@ abstract class Driver implements DriverInterface
     }
 
     /**
-     * @param array $tokens
-     * @return string
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @return non-empty-string
      */
     protected function compile(array $tokens): string
     {

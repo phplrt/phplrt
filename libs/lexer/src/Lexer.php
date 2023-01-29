@@ -24,12 +24,12 @@ use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 class Lexer implements LexerInterface, MutableLexerInterface
 {
     /**
-     * @var array<string>
+     * @var array<non-empty-string, non-empty-string>
      */
     protected array $tokens;
 
     /**
-     * @var array<string>
+     * @var array<non-empty-string>
      */
     protected array $skip;
 
@@ -44,8 +44,8 @@ class Lexer implements LexerInterface, MutableLexerInterface
     private bool $throwOnError = true;
 
     /**
-     * @param array<string> $tokens
-     * @param array<string> $skip
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @param array<non-empty-string> $skip
      * @param DriverInterface|null $driver
      */
     public function __construct(array $tokens = [], array $skip = [], DriverInterface $driver = null)
@@ -154,7 +154,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
         foreach ($tokens as $token) {
             unset($this->tokens[$token]);
 
-            $this->skip = \array_filter($this->skip, fn(string $haystack): bool => $haystack !== $token);
+            $this->skip = \array_filter($this->skip, static fn(string $haystack): bool => $haystack !== $token);
         }
 
         return $this;
@@ -162,6 +162,10 @@ class Lexer implements LexerInterface, MutableLexerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param string|resource|ReadableInterface $source
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
      */
     public function lex($source, int $offset = 0): iterable
     {
@@ -170,10 +174,11 @@ class Lexer implements LexerInterface, MutableLexerInterface
 
     /**
      * @param ReadableInterface $source
-     * @param int $offset
-     * @return \Generator
+     * @param int<0, max> $offset
+     *
+     * @return iterable<TokenInterface>
      */
-    private function run(ReadableInterface $source, int $offset): \Generator
+    private function run(ReadableInterface $source, int $offset): iterable
     {
         $unknown = [];
 
@@ -191,7 +196,9 @@ class Lexer implements LexerInterface, MutableLexerInterface
                 if ($this->throwOnError) {
                     throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
                 }
+
                 yield $this->reduceUnknownToken($unknown);
+
                 $unknown = [];
             }
 
@@ -205,13 +212,14 @@ class Lexer implements LexerInterface, MutableLexerInterface
             yield $this->reduceUnknownToken($unknown);
         }
 
-        if (! \in_array(EndOfInput::END_OF_INPUT, $this->skip, true)) {
+        if (! \in_array(TokenInterface::END_OF_INPUT, $this->skip, true)) {
+            /** @psalm-suppress all : Psalm error: (offset) int<0, max> + (size) int<0, max> = int<0, max> */
             yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
         }
     }
 
     /**
-     * @param array|TokenInterface[] $tokens
+     * @param array<TokenInterface> $tokens
      * @return TokenInterface
      */
     private function reduceUnknownToken(array $tokens): TokenInterface
@@ -220,7 +228,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
             return $data . $token->getValue();
         };
 
-        $value = (string)\array_reduce($tokens, $concat, '');
+        $value = \array_reduce($tokens, $concat, '');
 
         return new Token(\reset($tokens)->getName(), $value, \reset($tokens)->getOffset());
     }

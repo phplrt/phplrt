@@ -158,7 +158,7 @@ final class PP2Lexer extends Lexer
     /**
      * Lexical tokens list.
      *
-     * @var string[]
+     * @var non-empty-array<non-empty-string, non-empty-string>
      */
     private const LEXER_TOKENS = [
         self::T_PRAGMA              => '%pragma\\h+([\\w\\.]+)\\h+([^\\s]+)',
@@ -194,7 +194,7 @@ final class PP2Lexer extends Lexer
     /**
      * List of skipped tokens.
      *
-     * @var string[]
+     * @var non-empty-array<non-empty-string>
      */
     private const LEXER_SKIPPED_TOKENS = [
         'T_WHITESPACE',
@@ -204,6 +204,7 @@ final class PP2Lexer extends Lexer
 
     public function __construct()
     {
+        /** @psalm-suppress ArgumentTypeCoercion */
         parent::__construct(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);
     }
 }

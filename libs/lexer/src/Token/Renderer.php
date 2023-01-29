@@ -50,7 +50,7 @@ final class Renderer
     private string $wrap = self::DEFAULT_WRAP;
 
     /**
-     * @var array
+     * @var array{array<non-empty-string>, array<non-empty-string>}
      */
     private array $replacements = self::DEFAULT_REPLACEMENTS;
 

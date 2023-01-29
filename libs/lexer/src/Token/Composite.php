@@ -16,15 +16,15 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class Composite extends Token implements CompositeTokenInterface
 {
     /**
-     * @var array|TokenInterface[]
+     * @var array<int, TokenInterface>
      */
     private array $children;
 
     /**
-     * @param string|int $name
+     * @param non-empty-string|int<0, max> $name
      * @param string $value
-     * @param int $offset
-     * @param array|TokenInterface[] $children
+     * @param int<0, max> $offset
+     * @param array<int, TokenInterface> $children
      */
     public function __construct($name, string $value, int $offset, array $children)
     {
@@ -34,7 +34,7 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @param array|TokenInterface[] $tokens
+     * @param non-empty-array<int, TokenInterface> $tokens
      * @return self
      */
     public static function fromArray(array $tokens): self
@@ -47,7 +47,7 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     public function jsonSerialize(): array
     {
@@ -57,7 +57,7 @@ class Composite extends Token implements CompositeTokenInterface
     }
 
     /**
-     * @return \Traversable|TokenInterface[]
+     * {@inheritDoc}
      */
     public function getIterator(): \Traversable
     {

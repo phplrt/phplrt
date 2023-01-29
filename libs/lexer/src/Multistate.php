@@ -22,24 +22,24 @@ use Phplrt\Source\File;
 class Multistate implements LexerInterface
 {
     /**
-     * @var array|LexerInterface[]
+     * @var array<LexerInterface>
      */
     private array $states = [];
 
     /**
-     * @var int|string|null
+     * @var int<0, max>|non-empty-string|null
      */
     private $state;
 
     /**
-     * @var array
+     * @var array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>>
      */
     private array $transitions;
 
     /**
-     * @param array|LexerInterface[] $states
-     * @param array $transitions
-     * @param int|string|null $state
+     * @param array<non-empty-string|int<0, max>, LexerInterface> $states
+     * @param array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>> $transitions
+     * @param int<0, max>|non-empty-string|null $state
      */
     public function __construct(array $states, array $transitions = [], $state = null)
     {
@@ -52,7 +52,7 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param string|int|null $state
+     * @param non-empty-string|int<0, max>|null $state
      * @return $this
      */
     public function startsWith($state): self
@@ -65,8 +65,8 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param string|int $name
-     * @param array|LexerInterface $data
+     * @param non-empty-string|int<0, max> $name
+     * @param array<non-empty-string, non-empty-string>|LexerInterface $data
      * @return $this
      */
     public function setState($name, $data): self
@@ -80,7 +80,7 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param string|int $name
+     * @param non-empty-string|int<0, max> $name
      * @return $this
      */
     public function removeState($name): self
@@ -91,10 +91,10 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param string $token
-     * @param int|string $in
-     * @param int|string $then
-     * @return Multistate|$this
+     * @param non-empty-string $token
+     * @param non-empty-string|int<0, max> $in
+     * @param non-empty-string|int<0, max> $then
+     * @return $this
      */
     public function when(string $token, $in, $then): self
     {
@@ -105,19 +105,26 @@ class Multistate implements LexerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param string|resource|ReadableInterface $source
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
      */
     public function lex($source, int $offset = 0): iterable
     {
-        $this->boot($source = File::new($source));
-
-        yield from $this->run($source, $offset);
+        yield from $this->run(File::new($source), $offset);
     }
 
     /**
      * @param ReadableInterface $source
-     * @return void
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
+     * @throws RuntimeExceptionInterface
+     *
+     * @psalm-suppress UnusedVariable
+     * @psalm-suppress TypeDoesNotContainType
      */
-    private function boot(ReadableInterface $source): void
+    private function run(ReadableInterface $source, int $offset): iterable
     {
         if (\count($this->states) === 0) {
             throw UnexpectedStateException::fromEmptyStates($source);
@@ -126,18 +133,9 @@ class Multistate implements LexerInterface
         if ($this->state === null) {
             $this->state = \array_key_first($this->states);
         }
-    }
 
-    /**
-     * @param ReadableInterface $source
-     * @param int $offset
-     * @return \Generator
-     * @throws RuntimeExceptionInterface
-     * @psalm-suppress UnusedVariable
-     */
-    private function run(ReadableInterface $source, int $offset): \Generator
-    {
-        $state = null; // PHPStan bugfix
+        $states = [];
+        $state = null;
 
         do {
             $completed = true;
@@ -159,6 +157,7 @@ class Multistate implements LexerInterface
                 throw UnexpectedStateException::fromState($state, $source, $token ?? null);
             }
 
+            /** @psalm-suppress TooManyArguments */
             $stream = $this->states[$state]->lex($source, $offset);
 
             /**
@@ -194,7 +193,7 @@ class Multistate implements LexerInterface
                      * then at this stage there was an entrance to an endless cycle.
                      */
                     if (($states[$state] ?? null) === $offset) {
-                        throw EndlessRecursionException::fromState($state, $source, $token ?? null);
+                        throw EndlessRecursionException::fromState($state, $source, $token);
                     }
 
                     $completed = false;
@@ -202,6 +201,6 @@ class Multistate implements LexerInterface
                     continue 2;
                 }
             }
-        } while (! $completed);
+        } while (!$completed);
     }
 }

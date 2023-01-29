@@ -22,10 +22,10 @@ interface DriverInterface
     public const UNKNOWN_TOKEN_NAME = 'T_UNKNOWN';
 
     /**
-     * @param array $tokens
+     * @param array<non-empty-string, non-empty-string> $tokens
      * @param ReadableInterface $source
-     * @param int $offset
-     * @return iterable|TokenInterface[]
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable;
 

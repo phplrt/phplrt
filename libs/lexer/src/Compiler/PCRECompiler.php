@@ -153,7 +153,7 @@ abstract class PCRECompiler implements CompilerInterface
     protected const DEFAULT_DELIMITER = '/';
 
     /**
-     * @var string[]
+     * @var non-empty-array<PCRECompiler::FLAG_*>
      */
     protected const DEFAULT_FLAGS = [
         self::FLAG_COMPILED,
@@ -163,7 +163,7 @@ abstract class PCRECompiler implements CompilerInterface
     ];
 
     /**
-     * @var array|string[]
+     * @var array<PCRECompiler::FLAG_*>
      */
     protected array $flags;
 
@@ -178,11 +178,12 @@ abstract class PCRECompiler implements CompilerInterface
     private bool $debug = false;
 
     /**
-     * @param array|string[]|null $flags
+     * @param array<PCRECompiler::FLAG_*>|null $flags
      * @param bool|null $debug
      */
     public function __construct(array $flags = null, bool $debug = null)
     {
+        /** @psalm-suppress PropertyTypeCoercion */
         $this->flags = $flags ?? self::DEFAULT_FLAGS;
 
         if ($debug === null) {
@@ -194,8 +195,8 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param array $tokens
-     * @return string
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @return non-empty-string
      * @throws CompilationException
      */
     public function compile(array $tokens): string
@@ -208,14 +209,14 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param array|string[] $chunks
-     * @return string
+     * @param array<non-empty-string> $chunks
+     * @return non-empty-string
      */
     abstract protected function buildTokens(array $chunks): string;
 
     /**
-     * @param array $tokens
-     * @return array
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @return array<non-empty-string>
      */
     private function buildChunks(array $tokens): array
     {
@@ -231,33 +232,35 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param string $name
-     * @param string $pattern
-     * @return string
+     * @param non-empty-string $name
+     * @param non-empty-string $pattern
+     * @return non-empty-string
      */
     abstract protected function buildToken(string $name, string $pattern): string;
 
     /**
-     * @param string $name
-     * @return string
+     * @param non-empty-string $name
+     * @return non-empty-string
      */
     protected function name(string $name): string
     {
+        /** @var non-empty-string */
         return \preg_quote($name, $this->delimiter);
     }
 
     /**
-     * @param string $pattern
-     * @return string
+     * @param non-empty-string $pattern
+     * @return non-empty-string
      */
     protected function pattern(string $pattern): string
     {
+        /** @var non-empty-string */
         return \addcslashes($pattern, $this->delimiter);
     }
 
     /**
-     * @param string $pattern
-     * @param string|null $original
+     * @param non-empty-string $pattern
+     * @param non-empty-string|null $original
      * @return void
      */
     protected function test(string $pattern, string $original = null): void
@@ -276,8 +279,8 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param string $pcre
-     * @return string
+     * @param non-empty-string $pcre
+     * @return non-empty-string
      */
     protected function wrap(string $pcre): string
     {
@@ -291,7 +294,7 @@ abstract class PCRECompiler implements CompilerInterface
      */
     protected function formatException(string $message, string $token = null): string
     {
-        $suffix = \sprintf(' in %s token definition', $token);
+        $suffix = \sprintf(' in %s token definition', $token ?: '<unknown>');
 
         $message = \str_replace('Compilation failed: ', '', $message);
         $message = \preg_replace('/([\w_]+\(\):\h+)/', '', $message);

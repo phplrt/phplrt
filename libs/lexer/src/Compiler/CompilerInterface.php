@@ -14,8 +14,8 @@ namespace Phplrt\Lexer\Compiler;
 interface CompilerInterface
 {
     /**
-     * @param array $tokens
-     * @return string
+     * @param array<non-empty-string, non-empty-string> $tokens
+     * @return non-empty-string
      */
     public function compile(array $tokens): string;
 }

@@ -16,7 +16,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 abstract class BaseToken implements TokenInterface, \JsonSerializable
 {
     /**
-     * @var int|null
+     * @var int<0, max>|null
      */
     private ?int $bytes = null;
 
@@ -26,25 +26,26 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'name'   => $this->getName(),
-            'value'  => $this->getValue(),
+            'name' => $this->getName(),
+            'value' => $this->getValue(),
             'offset' => $this->getOffset(),
         ];
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getBytes(): int
     {
         return $this->bytes ?? $this->bytes = \strlen($this->getValue());
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
-        return (new Renderer())->render($this);
+        if (\class_exists(Renderer::class)) {
+            return (new Renderer())->render($this);
+        }
+
+        return $this->getName();
     }
 }

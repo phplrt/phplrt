@@ -17,7 +17,12 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class Token extends BaseToken
 {
     /**
-     * @var int
+     * @var int<0, max>
+     */
+    private static int $anonymousId = 0;
+
+    /**
+     * @var int<0, max>
      */
     private int $offset;
 
@@ -27,19 +32,23 @@ class Token extends BaseToken
     private string $value;
 
     /**
-     * @var string|int
+     * @var non-empty-string|int<0, max>
      */
     private $name;
 
     /**
-     * @param string|int $name
+     * @param string|int<0, max> $name
      * @param string $value
-     * @param int $offset
+     * @param int<0, max> $offset
      */
     public function __construct($name, string $value, int $offset)
     {
-        $this->name   = $name;
-        $this->value  = $value;
+        if ($name === '') {
+            $name = self::$anonymousId++;
+        }
+
+        $this->name = $name;
+        $this->value = $value;
         $this->offset = $offset;
     }
 
@@ -52,15 +61,19 @@ class Token extends BaseToken
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getName(): string
     {
-        return (string)($this->containsValidName() ? $this->name : $this->value);
+        if (\is_string($this->name)) {
+            return $this->name;
+        }
+
+        return '#' . $this->name;
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getValue(): string
     {
@@ -68,7 +81,7 @@ class Token extends BaseToken
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getOffset(): int
     {
@@ -80,20 +93,10 @@ class Token extends BaseToken
      */
     public function __toString(): string
     {
-        $renderer = new Renderer();
-
-        if ($this->containsValidName()) {
-            return $renderer->render($this);
+        if (\class_exists(Renderer::class)) {
+            return (new Renderer())->render($this);
         }
 
-        return $renderer->value($this);
-    }
-
-    /**
-     * @return bool
-     */
-    private function containsValidName(): bool
-    {
-        return \is_string($this->name) && \trim($this->name) !== '';
+        return $this->getName();
     }
 }

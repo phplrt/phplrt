@@ -24,8 +24,11 @@ class Markers extends PCRECompiler
     private const FORMAT_BODY = '\\G(?|%s)';
 
     /**
-     * @param array $chunks
-     * @return string
+     * @param array<array-key, string> $chunks
+     * @return non-empty-string
+     *
+     * @psalm-suppress MoreSpecificReturnType
+     * @psalm-suppress LessSpecificReturnStatement
      */
     protected function buildTokens(array $chunks): string
     {
@@ -33,9 +36,9 @@ class Markers extends PCRECompiler
     }
 
     /**
-     * @param string $name
-     * @param string $pattern
-     * @return string
+     * @param non-empty-string $name
+     * @param non-empty-string $pattern
+     * @return non-empty-string
      */
     protected function buildToken(string $name, string $pattern): string
     {

@@ -19,12 +19,12 @@ final class EndOfInput extends BaseToken
     private const EOI_VALUE = "\0";
 
     /**
-     * @var int
+     * @var int<0, max>
      */
     private int $offset;
 
     /**
-     * @param int $offset
+     * @param int<0, max> $offset
      */
     public function __construct(int $offset = 0)
     {
@@ -32,7 +32,7 @@ final class EndOfInput extends BaseToken
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getName(): string
     {
@@ -40,7 +40,7 @@ final class EndOfInput extends BaseToken
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getOffset(): int
     {
@@ -48,7 +48,7 @@ final class EndOfInput extends BaseToken
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
     public function getValue(): string
     {
@@ -56,7 +56,7 @@ final class EndOfInput extends BaseToken
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function getBytes(): int
     {
@@ -64,7 +64,7 @@ final class EndOfInput extends BaseToken
     }
 
     /**
-     * @return string
+     * @return non-empty-string
      */
     public function __toString(): string
     {

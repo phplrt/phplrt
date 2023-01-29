@@ -33,10 +33,10 @@ class Markers extends Driver
     }
 
     /**
-     * @param array $tokens
+     * @param array<non-empty-string, non-empty-string> $tokens
      * @param ReadableInterface $source
-     * @param int $offset
-     * @return iterable|TokenInterface[]
+     * @param int<0, max> $offset
+     * @return iterable<TokenInterface>
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable
     {
@@ -47,17 +47,22 @@ class Markers extends Driver
         $result = $this->match($pattern, $source->getContents(), $offset);
 
         foreach ($result as $payload) {
+            /** @var non-empty-string $name */
             $name = \array_pop($payload);
 
+            /** @psalm-suppress InvalidArgument */
             yield $this->make($name, $payload);
         }
     }
 
     /**
-     * @param string $pattern
+     * @param non-empty-string $pattern
      * @param string $source
-     * @param int $offset
-     * @return array
+     * @param int<0, max> $offset
+     * @return array<array<int<0, max>, array{string, int}>|array{MARK: non-empty-string}>
+     *
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     private function match(string $pattern, string $source, int $offset): array
     {
@@ -67,8 +72,8 @@ class Markers extends Driver
     }
 
     /**
-     * @param string $name
-     * @param array $payload
+     * @param non-empty-string $name
+     * @param array<array{string, int<0, max>}> $payload
      * @return TokenInterface
      */
     private function make(string $name, array $payload): TokenInterface
@@ -81,9 +86,9 @@ class Markers extends Driver
     }
 
     /**
-     * @param string $name
-     * @param array $payload
-     * @return array|TokenInterface[]
+     * @param non-empty-string $name
+     * @param non-empty-array<array-key, array{string, int<0, max>}> $payload
+     * @return non-empty-array<int, TokenInterface>
      */
     private function transform(string $name, array $payload): array
     {
