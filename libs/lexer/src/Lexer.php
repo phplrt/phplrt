@@ -58,7 +58,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * @return void
      */
-    public function disableUnrecognizedTokenException()
+    public function disableUnrecognizedTokenException(): void
     {
         $this->throwOnError = false;
     }
@@ -192,7 +192,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
                 continue;
             }
 
-            if (\count($unknown)) {
+            if ($unknown !== []) {
                 if ($this->throwOnError) {
                     throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
                 }
@@ -205,14 +205,15 @@ class Lexer implements LexerInterface, MutableLexerInterface
             yield $token;
         }
 
-        if (\count($unknown)) {
+        if ($unknown !== []) {
             if ($this->throwOnError) {
                 throw UnrecognizedTokenException::fromToken($source, $this->reduceUnknownToken($unknown));
             }
+
             yield $this->reduceUnknownToken($unknown);
         }
 
-        if (! \in_array(TokenInterface::END_OF_INPUT, $this->skip, true)) {
+        if (!\in_array(TokenInterface::END_OF_INPUT, $this->skip, true)) {
             /** @psalm-suppress all : Psalm error: (offset) int<0, max> + (size) int<0, max> = int<0, max> */
             yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
         }
