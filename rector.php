@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\CodeQuality\Rector\Array_\CallableThisArrayToAnonymousFunctionRector;
 use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodingStyle\Rector\Assign\SplitDoubleAssignRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
@@ -21,11 +22,14 @@ return static function (RectorConfig $config): void {
 
     $config->sets([
         //SetList::TYPE_DECLARATION,
-        //SetList::CODE_QUALITY,
+        SetList::CODE_QUALITY,
         SetList::CODING_STYLE,
     ]);
 
     $config->skip([
+        // Replaces "Closure::fromCallable([$this, 'some'])" to full declaration.
+        CallableThisArrayToAnonymousFunctionRector::class,
+
         //
         // Do not replace classic properties to promoted eq. These are
         // completely different statements.

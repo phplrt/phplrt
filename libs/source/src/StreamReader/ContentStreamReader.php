@@ -58,7 +58,7 @@ class ContentStreamReader implements StreamReaderInterface
             throw new NotAccessibleException(self::ERROR_MEMORY_WRITING);
         }
 
-        if (@\rewind($memory) === false) {
+        if (!@\rewind($memory)) {
             throw new NotAccessibleException(self::ERROR_MEMORY_NON_REWINDABLE);
         }
 

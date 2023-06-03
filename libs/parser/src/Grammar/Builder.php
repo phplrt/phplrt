@@ -137,7 +137,7 @@ class Builder implements \IteratorAggregate
             return $generator;
         }
 
-        throw new \InvalidArgumentException(\sprintf(self::ERROR_INVALID_PAYLOAD));
+        throw new \InvalidArgumentException(self::ERROR_INVALID_PAYLOAD);
     }
 
     /**

@@ -131,26 +131,24 @@ class Executor implements ExecutorInterface
      */
     private function each(iterable $ast): iterable
     {
-        switch (true) {
-            case $ast instanceof NodeInterface:
-                $result = $this->traverseArray([$ast]);
+        if ($ast instanceof NodeInterface) {
+            $result = $this->traverseArray([$ast]);
+            /** @var NodeInterface|false $first */
+            $first = \reset($result);
 
-                /** @var NodeInterface|false $first */
-                $first = \reset($result);
+            if ($first === false) {
+                throw new BadMethodException(self::ERROR_ROOT_REMOVING);
+            }
 
-                if ($first === false) {
-                    throw new BadMethodException(self::ERROR_ROOT_REMOVING);
-                }
-
-                /** @psalm-suppress InvalidReturnStatement : NodeInterface is an iterable */
-                return $first;
-
-            case \is_array($ast):
-                return $this->traverseArray($ast);
-
-            default:
-                return $this->traverseArray(\iterator_to_array($ast, false));
+            /** @psalm-suppress InvalidReturnStatement : NodeInterface is an iterable */
+            return $first;
         }
+
+        if (\is_array($ast)) {
+            return $this->traverseArray($ast);
+        }
+
+        return $this->traverseArray(\iterator_to_array($ast, false));
     }
 
     /**
@@ -253,7 +251,7 @@ class Executor implements ExecutorInterface
             }
         }
 
-        if (! empty($replacements)) {
+        if ($replacements !== []) {
             while ([$i, $replace] = \array_pop($replacements)) {
                 \array_splice($nodes, $i, 1, $replace);
             }

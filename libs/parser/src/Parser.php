@@ -312,10 +312,11 @@ final class Parser implements
                     // Rollback previous state
                     [$context->state, $context->lastProcessedToken] = $before;
 
-                    if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
-                        if (!in_array($context->rule->token, $this->possibleTokens, true)) {
-                            $this->possibleTokens[] = $context->rule->token;
-                        }
+                    if (
+                        DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()
+                        && !\in_array($context->rule->token, $this->possibleTokens, true)
+                    ) {
+                        $this->possibleTokens[] = $context->rule->token;
                     }
 
                     return $result;
@@ -338,10 +339,8 @@ final class Parser implements
                     }
                 }
 
-                if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
-                    if (!in_array($context->rule->token, $this->possibleTokens, true)) {
-                        $this->possibleTokens[] = $context->rule->token;
-                    }
+                if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName() && !in_array($context->rule->token, $this->possibleTokens, true)) {
+                    $this->possibleTokens[] = $context->rule->token;
                 }
 
                 break;
