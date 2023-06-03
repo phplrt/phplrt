@@ -24,7 +24,7 @@ class Builder implements \IteratorAggregate
      */
     public function __construct(\Closure $generator = null)
     {
-        if ($generator) {
+        if ($generator !== null) {
             $this->extend($generator);
         }
     }

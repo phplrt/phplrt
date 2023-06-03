@@ -111,7 +111,7 @@ class LazyBuffer extends Buffer
      */
     protected function nextValid(): bool
     {
-        $this->current++;
+        ++$this->current;
 
         if (! isset($this->buffer[$this->current])) {
             $current = $this->stream->current();

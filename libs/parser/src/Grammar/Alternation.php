@@ -11,7 +11,7 @@ class Alternation extends Production
     /**
      * @var array|int[]|string[]
      */
-    public array $sequence;
+    public array $sequence = [];
 
     /**
      * @param array $sequence

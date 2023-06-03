@@ -89,7 +89,7 @@ final class Parser implements
      *
      * @var array<RuleInterface>
      */
-    private array $rules;
+    private array $rules = [];
 
     /**
      * Array of possible tokens for error or missing token.
@@ -156,7 +156,7 @@ final class Parser implements
      */
     public function parse($source, array $options = []): iterable
     {
-        if (\count($this->rules) === 0) {
+        if ($this->rules === []) {
             return [];
         }
 
@@ -261,7 +261,7 @@ final class Parser implements
         $problemTokenOffset = $context->lastOrdinalToken->getOffset();
         $problemTokenKey = 0;
         while ($context->buffer->get($problemTokenKey)->getOffset() !== $problemTokenOffset) {
-            $problemTokenKey++;
+            ++$problemTokenKey;
         }
 
         $context->buffer->set($problemTokenKey, new Token(
@@ -282,7 +282,7 @@ final class Parser implements
      */
     private function next(Context $context)
     {
-        if ($this->step) {
+        if ($this->step !== null) {
             return ($this->step)($context, function () use ($context) {
                 return $this->runNextStep($context);
             });
@@ -313,7 +313,7 @@ final class Parser implements
                     [$context->state, $context->lastProcessedToken] = $before;
 
                     if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
-                        if (!in_array($context->rule->token, $this->possibleTokens)) {
+                        if (!in_array($context->rule->token, $this->possibleTokens, true)) {
                             $this->possibleTokens[] = $context->rule->token;
                         }
                     }
@@ -339,7 +339,7 @@ final class Parser implements
                 }
 
                 if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()) {
-                    if (!in_array($context->rule->token, $this->possibleTokens)) {
+                    if (!in_array($context->rule->token, $this->possibleTokens, true)) {
                         $this->possibleTokens[] = $context->rule->token;
                     }
                 }

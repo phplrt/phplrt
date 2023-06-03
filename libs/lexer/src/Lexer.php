@@ -19,12 +19,12 @@ class Lexer implements LexerInterface, MutableLexerInterface
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    protected array $tokens;
+    protected array $tokens = [];
 
     /**
      * @var array<non-empty-string>
      */
-    protected array $skip;
+    protected array $skip = [];
 
     /**
      * @var DriverInterface
@@ -147,7 +147,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
         foreach ($tokens as $token) {
             unset($this->tokens[$token]);
 
-            $this->skip = \array_filter($this->skip, static fn(string $haystack): bool => $haystack !== $token);
+            $this->skip = \array_filter($this->skip, static fn (string $haystack): bool => $haystack !== $token);
         }
 
         return $this;

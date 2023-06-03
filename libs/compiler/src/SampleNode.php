@@ -22,7 +22,7 @@ class SampleNode implements NodeInterface
     /**
      * @var array<array-key, SampleNode>
      */
-    public array $children;
+    public array $children = [];
 
     /**
      * @param int<0, max> $offset

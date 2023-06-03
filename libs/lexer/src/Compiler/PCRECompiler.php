@@ -158,7 +158,7 @@ abstract class PCRECompiler implements CompilerInterface
     /**
      * @var array<PCRECompiler::FLAG_*>
      */
-    protected array $flags;
+    protected array $flags = [];
 
     /**
      * @var string

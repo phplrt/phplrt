@@ -11,7 +11,7 @@ class ArrayBuffer extends Buffer
     /**
      * @var array<int<0, max>, TokenInterface>
      */
-    private array $buffer;
+    private array $buffer = [];
 
     /**
      * @var int<0, max>
@@ -26,7 +26,7 @@ class ArrayBuffer extends Buffer
         $this->buffer = $this->iterableToArray($stream);
         $this->size = \count($this->buffer);
 
-        if (\count($this->buffer)) {
+        if ($this->buffer !== []) {
             $this->initial = $this->current = \array_key_first($this->buffer);
         }
     }

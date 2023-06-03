@@ -11,7 +11,7 @@ class Concatenation extends Production
     /**
      * @var array|int[]
      */
-    public array $sequence;
+    public array $sequence = [];
 
     /**
      * @param array $sequence

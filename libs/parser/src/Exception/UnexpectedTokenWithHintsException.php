@@ -29,6 +29,7 @@ class UnexpectedTokenWithHintsException extends UnexpectedTokenException
                 ? 'Expected ' . implode(', ', $possibleTokens) . '. '
                 : '';
         }
+
         $message = \sprintf(
             $errorMessage . '. '
             . $possibleTokensString,

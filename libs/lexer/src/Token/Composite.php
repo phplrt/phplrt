@@ -11,7 +11,7 @@ class Composite extends Token implements CompositeTokenInterface
     /**
      * @var array<int, TokenInterface>
      */
-    private array $children;
+    private array $children = [];
 
     /**
      * @param non-empty-string|int<0, max> $name
@@ -32,7 +32,7 @@ class Composite extends Token implements CompositeTokenInterface
      */
     public static function fromArray(array $tokens): self
     {
-        \assert(\count($tokens) > 0);
+        \assert($tokens !== []);
 
         $first = \array_shift($tokens);
 

@@ -51,7 +51,7 @@ class Traverser implements TraverserInterface
     /**
      * @var VisitorInterface[]
      */
-    private array $visitors;
+    private array $visitors = [];
 
     /**
      * @param array|VisitorInterface[] $visitors

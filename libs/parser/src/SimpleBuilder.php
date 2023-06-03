@@ -12,7 +12,7 @@ final class SimpleBuilder implements BuilderInterface
     /**
      * @var array<array-key, Reducer>
      */
-    private array $reducers;
+    private array $reducers = [];
 
     /**
      * @param array<array-key, Reducer> $reducers

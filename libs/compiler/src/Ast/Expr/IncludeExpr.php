@@ -66,6 +66,6 @@ class IncludeExpr extends Expression
      */
     public function render(): string
     {
-        return '%include(\'' . $this->getTargetPathname() . '\')';
+        return \sprintf("%include('%s')", $this->getTargetPathname());
     }
 }

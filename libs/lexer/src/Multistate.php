@@ -27,7 +27,7 @@ class Multistate implements LexerInterface
     /**
      * @var array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>>
      */
-    private array $transitions;
+    private array $transitions = [];
 
     /**
      * @param array<non-empty-string|int<0, max>, LexerInterface> $states
@@ -119,7 +119,7 @@ class Multistate implements LexerInterface
      */
     private function run(ReadableInterface $source, int $offset): iterable
     {
-        if (\count($this->states) === 0) {
+        if ($this->states === []) {
             throw UnexpectedStateException::fromEmptyStates($source);
         }
 

@@ -11,14 +11,14 @@ class LineReader
     /**
      * @var array<int<0, max>, string>
      */
-    private array $lines;
+    private array $lines = [];
 
     /**
      * @param ReadableInterface $source
      */
     public function __construct(ReadableInterface $source)
     {
-        $filter = static fn(string $line): string => \trim($line, "\r\0");
+        $filter = static fn (string $line): string => \trim($line, "\r\0");
 
         $this->lines = \array_map($filter, \explode("\n", $source->getContents()));
     }

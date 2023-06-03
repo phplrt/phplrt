@@ -77,7 +77,7 @@ class Executor implements ExecutorInterface
     /**
      * @var array|VisitorInterface[]
      */
-    private array $visitors;
+    private array $visitors = [];
 
     /**
      * @var bool
