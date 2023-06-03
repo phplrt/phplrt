@@ -43,7 +43,8 @@ class UnrecognizedTokenException extends ParserRuntimeException
      */
     public static function fromLexerException(ExceptionContract $e): self
     {
-        [$token, $source] = [$e->getToken(), $e->getSource()];
+        $token = $e->getToken();
+        $source = $e->getSource();
 
         return static::fromToken($source, $token, $e);
     }

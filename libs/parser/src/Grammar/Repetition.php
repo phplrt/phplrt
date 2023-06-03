@@ -71,7 +71,8 @@ class Repetition extends Production
 
     public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
-        [$children, $iterations] = [[], 0];
+        $children = [];
+        $iterations = 0;
 
         $global = $buffer->key();
 

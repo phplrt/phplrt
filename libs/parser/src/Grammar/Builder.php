@@ -48,7 +48,8 @@ class Builder implements \IteratorAggregate
         $generator = $this->read($rules);
 
         while ($generator->valid()) {
-            [$key, $value] = [$generator->key(), $generator->current()];
+            $key = $generator->key();
+            $value = $generator->current();
 
             switch (true) {
                 case \is_string($key) && $value instanceof RuleInterface:

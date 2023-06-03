@@ -23,7 +23,8 @@ class Concatenation extends Production
 
     public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
-        [$revert, $children] = [$buffer->key(), []];
+        $revert = $buffer->key();
+        $children = [];
 
         foreach ($this->sequence as $rule) {
             if (($result = $reduce($rule)) === null) {

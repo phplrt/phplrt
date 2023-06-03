@@ -294,20 +294,25 @@ final class Parser implements
      */
     private function runNextStep(Context $context)
     {
-        [$context->rule, $result] = [$this->rules[$context->state], null];
+        $context->rule = $this->rules[$context->state];
+        $result = null;
 
         switch (true) {
             case $context->rule instanceof ProductionInterface:
                 $result = $context->rule->reduce($context->buffer, function ($state) use ($context) {
                     // Keep current state
-                    $before = [$context->state, $context->lastProcessedToken];
+                    $beforeState = $context->state;
+                    $beforeLastProcessedToken = $context->lastProcessedToken;
+
                     // Update state
-                    [$context->state, $context->lastProcessedToken] = [$state, $context->buffer->current()];
+                    $context->state = $state;
+                    $context->lastProcessedToken = $context->buffer->current();
 
                     $result = $this->next($context);
 
                     // Rollback previous state
-                    [$context->state, $context->lastProcessedToken] = $before;
+                    $context->state = $beforeState;
+                    $context->lastProcessedToken = $beforeLastProcessedToken;
 
                     if (
                         DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()
@@ -336,7 +341,10 @@ final class Parser implements
                     }
                 }
 
-                if (DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName() && !in_array($context->rule->token, $this->possibleTokens, true)) {
+                if (
+                    DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()
+                    && !\in_array($context->rule->token, $this->possibleTokens, true)
+                ) {
                     $this->possibleTokens[] = $context->rule->token;
                 }
 
