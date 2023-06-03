@@ -96,8 +96,9 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
                 [$state, $name, $pattern, $next] = $token;
 
                 $result = new TokenDef($name->getValue(), $pattern->getValue());
+                $value = $state->getValue();
 
-                if ($state->getValue()) {
+                if ($value !== '') {
                     $result->state = $state->getValue();
                 }
 

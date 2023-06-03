@@ -1,10 +1,7 @@
 <?php
 
 $files = PhpCsFixer\Finder::create()
-    ->in([
-        __DIR__ . '/libs/*/src',
-        __DIR__ . '/libs/contracts/*/src',
-    ])
+    ->in([__DIR__ . '/libs'])
 ;
 
 return (new PhpCsFixer\Config())

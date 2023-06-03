@@ -47,7 +47,9 @@ class FileTestCase extends TestCase
     {
         $readable = $factory();
 
-        $this->assertSame($this->getSources(), \unserialize(\serialize($readable))->getContents());
+        $unserialized = \unserialize(\serialize($readable));
+
+        $this->assertSame($this->getSources(), $unserialized->getContents());
     }
 
     /**
