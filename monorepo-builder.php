@@ -63,8 +63,9 @@ return static function (MBConfig $config): void {
 
     $config->dataToAppend([
         'require-dev' => [
+            'friendsofphp/php-cs-fixer' => '^3.17',
             'phpunit/phpunit' => '^9.5.20',
-            'squizlabs/php_codesniffer' => '^3.7',
+            'rector/rector' => '^0.17',
             'symfony/var-dumper' => '^5.4|^6.0',
             'symplify/monorepo-builder' => '^11.2',
             'vimeo/psalm' => '^5.12',
