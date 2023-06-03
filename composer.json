@@ -23,36 +23,37 @@
         "laminas/laminas-code": "^4.0"
     },
     "autoload": {
+        "files": [
+            "libs/contracts/lexer/src/polyfill.php",
+            "libs/lexer/src/polyfill.php",
+            "libs/parser/src/polyfill.php"
+        ],
         "psr-4": {
+            "Phplrt\\Buffer\\": "libs/buffer/src",
+            "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
             "Phplrt\\Contracts\\Exception\\": "libs/contracts/exception/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
-            "Phplrt\\Buffer\\": "libs/buffer/src",
-            "Phplrt\\Compiler\\": "libs/compiler/src",
             "Phplrt\\Exception\\": "libs/exception/src",
             "Phplrt\\Lexer\\": "libs/lexer/src",
             "Phplrt\\Parser\\": "libs/parser/src",
             "Phplrt\\Position\\": "libs/position/src",
             "Phplrt\\Source\\": "libs/source/src",
             "Phplrt\\Visitor\\": "libs/visitor/src"
-        },
-        "files": [
-            "libs/parser/src/polyfill.php",
-            "libs/lexer/src/polyfill.php",
-            "libs/contracts/lexer/src/polyfill.php"
-        ]
+        }
     },
     "require-dev": {
+        "jetbrains/phpstorm-attributes": "^1.0",
         "laminas/laminas-diactoros": "^2.17",
         "phpunit/phpunit": "^9.5.20",
         "psr/http-message": "^1.0",
         "squizlabs/php_codesniffer": "^3.7",
         "symfony/var-dumper": "^5.4|^6.0",
         "symplify/monorepo-builder": "^11.2",
-        "vimeo/psalm": "^5.8"
+        "vimeo/psalm": "^5.12"
     },
     "autoload-dev": {
         "psr-4": {
@@ -68,10 +69,13 @@
     },
     "replace": {
         "phplrt/ast-contracts": "*",
+        "phplrt/buffer": "*",
         "phplrt/compiler": "*",
         "phplrt/contracts": "*",
         "phplrt/exception": "*",
         "phplrt/exception-contracts": "*",
+        "phplrt/grammar": "*",
+        "phplrt/grammar-contracts": "*",
         "phplrt/lexer": "*",
         "phplrt/lexer-contracts": "*",
         "phplrt/parser": "*",

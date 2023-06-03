@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symplify\MonorepoBuilder\ValueObject\Option;
+use Symplify\MonorepoBuilder\Config\MBConfig;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\AddTagToChangelogReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushNextDevReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushTagReleaseWorker;
@@ -17,7 +16,6 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorke
  *
  * @see https://github.com/symplify/symplify/issues/2061
  */
-
 \register_shutdown_function(static function () {
     $dest = \json_decode(\file_get_contents(__DIR__ . '/composer.json'), true);
 
@@ -55,23 +53,25 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorke
 });
 
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $parameters = $containerConfigurator->parameters();
+return static function (MBConfig $config): void {
+    $config->packageAliasFormat('<major>.<minor>.x-dev');
+    $config->packageDirectories([
+        __DIR__ . '/libs',
+        __DIR__ . '/libs/contracts',
+        __DIR__ . '/libs/meta'
+    ]);
 
-    $parameters->set(Option::PACKAGE_ALIAS_FORMAT, '<major>.<minor>.x-dev');
-    $parameters->set(Option::PACKAGE_DIRECTORIES, ['libs', 'libs/contracts', 'libs/meta']);
-
-    $parameters->set(Option::DATA_TO_APPEND, [
+    $config->dataToAppend([
         'require-dev' => [
-            'symplify/monorepo-builder' => '^10.1',
             'phpunit/phpunit' => '^9.5.20',
-            'squizlabs/php_codesniffer' => '^3.6',
+            'squizlabs/php_codesniffer' => '^3.7',
             'symfony/var-dumper' => '^5.4|^6.0',
-            'vimeo/psalm' => '^5.8',
+            'symplify/monorepo-builder' => '^11.2',
+            'vimeo/psalm' => '^5.12',
         ],
     ]);
 
-    $services = $containerConfigurator->services();
+    $services = $config->services();
 
     # Release Workers
     $services->set(SetCurrentMutualDependenciesReleaseWorker::class);
