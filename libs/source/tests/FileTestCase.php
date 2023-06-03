@@ -57,7 +57,7 @@ class FileTestCase extends TestCase
      */
     public function filesDataProvider(): array
     {
-        $filter = fn(array $cb) => $cb[0]() instanceof FileInterface;
+        $filter = fn (array $cb) => $cb[0]() instanceof FileInterface;
 
         return \array_filter($this->provider(), $filter);
     }
