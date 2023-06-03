@@ -22,10 +22,10 @@ abstract class Renderer implements RendererInterface
             }
 
             if ($multiline) {
-                return "[\n" . \implode(",\n", $result) . "\n{$prefix}]";
+                return \sprintf("[\n%s\n%s]", \implode(",\n", $result), $prefix);
             }
 
-            return '[' . \implode(', ', $result) . "{$prefix}]";
+            return \sprintf("[%s%s]", \implode(', ', $result), $prefix);
         }
 
         return (string)$data;

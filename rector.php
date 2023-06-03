@@ -11,17 +11,18 @@ use Rector\Config\RectorConfig;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php81\Rector\ClassConst\FinalizePublicClassConstantRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
-use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
 
 return static function (RectorConfig $config): void {
-    $config->paths([__DIR__ . '/libs']);
+    $config->paths([
+        __DIR__ . '/libs/contracts/*/src',
+        __DIR__ . '/libs/*/src'
+    ]);
 
     $config->sets([
-        SetList::TYPE_DECLARATION,
-        SetList::CODE_QUALITY,
+        //SetList::TYPE_DECLARATION,
+        //SetList::CODE_QUALITY,
         SetList::CODING_STYLE,
-        SetList::EARLY_RETURN,
     ]);
 
     $config->skip([
