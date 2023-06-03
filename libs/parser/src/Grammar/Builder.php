@@ -160,9 +160,6 @@ class Builder implements \IteratorAggregate
         return $id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->grammar);

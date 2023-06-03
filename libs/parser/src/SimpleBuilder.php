@@ -23,9 +23,6 @@ final class SimpleBuilder implements BuilderInterface
         $this->reducers = $reducers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function build(ContextInterface $context, $result)
     {
         $state = $context->getState();

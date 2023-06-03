@@ -53,9 +53,6 @@ class Token extends BaseToken
         return new self(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         if (\is_string($this->name)) {
@@ -65,17 +62,11 @@ class Token extends BaseToken
         return '#' . $this->name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOffset(): int
     {
         return $this->offset;

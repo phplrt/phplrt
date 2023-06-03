@@ -45,25 +45,16 @@ abstract class Buffer implements BufferInterface
         return $token->getName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function key(): int
     {
         return $this->current;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function rewind(): void
     {
         $this->seek($this->initial);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function seek($offset): void
     {
         \assert($offset >= 0);

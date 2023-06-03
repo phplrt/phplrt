@@ -21,9 +21,6 @@ class Alternation extends Production
         $this->sequence = $sequence;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
         $rollback = $buffer->key();

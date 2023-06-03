@@ -16,25 +16,16 @@ trait ContextOptionsTrait
      */
     protected array $options = [];
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOptions(): array
     {
         return $this->options;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOption(string $name, $default = null)
     {
         return $this->options[$name] ?? $default;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function hasOption(string $name): bool
     {
         //

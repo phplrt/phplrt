@@ -39,9 +39,6 @@ class Composite extends Token implements CompositeTokenInterface
         return new self($first->getName(), $first->getValue(), $first->getOffset(), $tokens);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function jsonSerialize(): array
     {
         return \array_merge(parent::jsonSerialize(), [
@@ -49,9 +46,6 @@ class Composite extends Token implements CompositeTokenInterface
         ]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->children);

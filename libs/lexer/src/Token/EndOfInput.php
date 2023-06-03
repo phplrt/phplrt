@@ -24,33 +24,21 @@ final class EndOfInput extends BaseToken
         $this->offset = $offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         return self::END_OF_INPUT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getValue(): string
     {
         return self::EOI_VALUE;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getBytes(): int
     {
         return 0;

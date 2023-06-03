@@ -44,9 +44,6 @@ class ArrayBuffer extends Buffer
         return $tokens;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function seek($offset): void
     {
         if ($offset < $this->initial) {
@@ -64,17 +61,11 @@ class ArrayBuffer extends Buffer
         parent::seek($offset);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function current(): TokenInterface
     {
         return $this->currentFrom($this->buffer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function next(): void
     {
         if ($this->current < $this->size) {
@@ -82,9 +73,6 @@ class ArrayBuffer extends Buffer
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function valid(): bool
     {
         return $this->current < $this->size;

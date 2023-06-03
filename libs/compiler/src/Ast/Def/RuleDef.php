@@ -50,9 +50,6 @@ class RuleDef extends Definition
         $this->keep = $keep;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         yield 'body' => $this->body;

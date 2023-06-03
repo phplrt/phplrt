@@ -69,9 +69,6 @@ class Repetition extends Production
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
         [$children, $iterations] = [[], 0];

@@ -45,25 +45,16 @@ final class Position implements PositionInterface
         $this->column = \max($column, static::MIN_COLUMN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getLine(): int
     {
         return $this->line;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getColumn(): int
     {
         return $this->column;

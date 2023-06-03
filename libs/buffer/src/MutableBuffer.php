@@ -64,49 +64,31 @@ class MutableBuffer implements BufferInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function seek($offset): void
     {
         $this->parent->seek($offset);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function current(): TokenInterface
     {
         return $this->overrides[$this->parent->key()] ?? $this->parent->current();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function key(): int
     {
         return $this->parent->key();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function valid(): bool
     {
         return $this->parent->valid();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function rewind(): void
     {
         $this->parent->rewind();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function next(): void
     {
         $this->parent->next();

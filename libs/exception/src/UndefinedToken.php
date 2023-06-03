@@ -25,33 +25,21 @@ final class UndefinedToken implements TokenInterface
         $this->position = $position;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): string
     {
         return TokenInterface::END_OF_INPUT;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getOffset(): int
     {
         return $this->position->getOffset();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getValue(): string
     {
         return '';
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getBytes(): int
     {
         return 0;

@@ -75,9 +75,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function skip(string ...$tokens): self
     {
         $this->skip = \array_merge($this->skip, $tokens);
@@ -85,9 +82,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function append(string $token, string $pattern): self
     {
         $this->reset();
@@ -104,9 +98,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->driver->reset();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function appendMany(array $tokens): self
     {
         $this->reset();
@@ -115,9 +106,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function prepend(string $token, string $pattern): self
     {
         $this->reset();
@@ -126,9 +114,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function prependMany(array $tokens, bool $reverseOrder = false): self
     {
         $this->reset();
@@ -137,9 +122,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function remove(string ...$tokens): self
     {
         $this->reset();

@@ -21,9 +21,6 @@ class Concatenation extends Production
         $this->sequence = $sequence;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function reduce(BufferInterface $buffer, \Closure $reduce): ?iterable
     {
         [$revert, $children] = [$buffer->key(), []];

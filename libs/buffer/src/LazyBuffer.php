@@ -53,9 +53,6 @@ class LazyBuffer extends Buffer
         return \count($this->buffer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function seek($offset): void
     {
         if ($offset < $this->initial) {
@@ -82,25 +79,16 @@ class LazyBuffer extends Buffer
         $this->current = $offset;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function current(): TokenInterface
     {
         return $this->currentFrom($this->buffer);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function valid(): bool
     {
         return isset($this->buffer[$this->current]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function next(): void
     {
         $this->nextValid();

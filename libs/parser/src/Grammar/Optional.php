@@ -21,9 +21,6 @@ class Optional extends Production
         $this->rule = $rule;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function reduce(BufferInterface $buffer, \Closure $reduce)
     {
         $rollback = $buffer->key();

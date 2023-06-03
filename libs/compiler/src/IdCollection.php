@@ -21,9 +21,6 @@ class IdCollection extends Visitor
      */
     private array $tokens = [];
 
-    /**
-     * {@inheritDoc}
-     */
     public function enter(NodeInterface $node): void
     {
         if ($node instanceof RuleDef) {

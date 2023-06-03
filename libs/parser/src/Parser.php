@@ -151,9 +151,6 @@ final class Parser implements
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function parse($source, array $options = []): iterable
     {
         if ($this->rules === []) {
@@ -372,9 +369,6 @@ final class Parser implements
         return $current->getName() === $this->eoi;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function build(ContextInterface $context, $result)
     {
         return $result;

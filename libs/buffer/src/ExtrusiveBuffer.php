@@ -49,9 +49,6 @@ class ExtrusiveBuffer extends LazyBuffer
         return $this->size;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function seek($offset): void
     {
         if ($offset < \array_key_first($this->buffer)) {

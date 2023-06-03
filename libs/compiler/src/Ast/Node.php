@@ -23,9 +23,6 @@ abstract class Node implements NodeInterface
      */
     public int $offset = 0;
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         return new \EmptyIterator();

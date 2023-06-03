@@ -25,9 +25,6 @@ class Lexeme extends Terminal
         $this->token = $token;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function reduce(BufferInterface $buffer): ?Lexer\TokenInterface
     {
         $haystack = $buffer->current();

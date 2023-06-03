@@ -68,17 +68,11 @@ class File extends Readable implements FileInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPathname(): string
     {
         return $this->pathname;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     final public function getHash(): string
     {
         return \hash_file(static::HASH_ALGORITHM, $this->pathname);

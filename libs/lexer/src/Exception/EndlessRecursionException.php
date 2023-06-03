@@ -15,9 +15,6 @@ class EndlessRecursionException extends UnexpectedStateException
      */
     private const ERROR_ENDLESS_TRANSITIONS = 'An unsolvable infinite lexer state transitions was found at %s';
 
-    /**
-     * {@inheritDoc}
-     */
     public static function fromState($state, ReadableInterface $src, ?TokenInterface $tok, \Throwable $e = null): self
     {
         $message = \sprintf(self::ERROR_ENDLESS_TRANSITIONS, $state);

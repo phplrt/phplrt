@@ -8,9 +8,6 @@ use Laminas\Code\Generator\ValueGenerator;
 
 class LaminasRenderer extends Renderer
 {
-    /**
-     * {@inheritDoc}
-     */
     public function fromPhp($data, int $depth = 0, bool $multiline = true): string
     {
         $generator = new ValueGenerator($data, ValueGenerator::TYPE_AUTO, $this->getMultilineOption($multiline));

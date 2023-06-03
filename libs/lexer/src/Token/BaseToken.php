@@ -25,9 +25,6 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable
         ];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getBytes(): int
     {
         return $this->bytes ?? $this->bytes = \strlen($this->getValue());
