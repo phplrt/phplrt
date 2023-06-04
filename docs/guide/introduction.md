@@ -7,7 +7,7 @@ After writing a grammar describing the syntax of your language, you get an
 
 The tool is divided into two components - a component for development, the
 so-called [compiler-compiler](https://en.wikipedia.org/wiki/Compiler-compiler)
-(or compiler generator) and a runtime component used for parsing after the
+(or compiler generator) and a runtime component used for parsing after the 
 development of the language itself.
 
 For brevity, your `composer.json` file may contain lines similar to the following:
@@ -25,7 +25,7 @@ For brevity, your `composer.json` file may contain lines similar to the followin
 
 However, it should be noted that, although this is a valid, but not mandatory
 option. Each library can be used separately, and the components interact
-directly with each other using interfaces (using &laquo;contract&raquo;
+directly with each other using interfaces (using &laquo;contract&raquo; 
 components). For example, you might well use completely custom lexer, and use
 the `phplrt` as a parser only, like this:
 
