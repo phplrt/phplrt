@@ -13,7 +13,7 @@ class which provides a convenient API for creating grammar rules.
 
 Let's take an example of [PP2 grammar](/docs/compiler/grammar):
 
-```ebnf
+```pp2
 expr = <T_DIGIT> (::T_PLUS:: <T_DIGIT>)*
 ```
 

@@ -7,7 +7,7 @@ Let's try to create the corresponding grammar for the calculator, which can add
 two numbers. If you are familiar with alternative grammars (Antlr, BNF, EBNF, Hoa, etc.), 
 then it will not be difficult for you.
 
-```ebnf
+```pp2
 (* "sum" is a rule that determines the sequence of a number, an addition symbol and one more number *)
 sum = digit plus digit ;
 
@@ -21,7 +21,7 @@ plus = "+" ;
 The grammar of Phplrt is partly different from the original EBNF. 
 In this way, let's restructure the same rule into the grammar of the Phplrt.
 
-```ebnf
+```pp2
 // The rule "digit" can be replaced by a simple lexeme, 
 // which can be expressed in a PCRE "\d".
 %token  T_DIGIT         \d
@@ -135,7 +135,7 @@ Let's try to add support for the remaining symbols of the
 calculator: Moderation, Division and Subtraction; and at the same time slightly 
 improve the rules of the lexer.
 
-```ebnf
+```pp2
 %skip  T_WHITESPACE     \s+
 
 %token T_DIGIT          \-?\d+

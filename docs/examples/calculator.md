@@ -4,7 +4,7 @@ Below is an example of a simple calculator.
 
 ## Grammar
 
-```ebnf
+```pp2
 %pragma root Expression
 
 %token T_INT      \d+

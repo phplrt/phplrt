@@ -4,6 +4,10 @@
         "Upgrade Guide": "upgrade",
         "Contribution Guide": "contributions"
     },
+    "Guide": {
+        "Introduction": "guide/introduction",
+        "Creating Project": "guide/creating-project"
+    },
     "Lexer": {
         "Usage": "lexer",
         "Extension": "lexer/extension",

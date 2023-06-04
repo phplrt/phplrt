@@ -4,7 +4,7 @@ Below is an example of a [Go! AOP](https://github.com/goaop/framework) pointcuts
 
 ## Grammar
 
-```ebnf
+```pp2
 /**
  * This file is a set of rules for parsing (syntax analysis) of pointcut syntax.
  *

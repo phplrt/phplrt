@@ -24,7 +24,7 @@ the tokens in the source text can be located, which we will parse.
 
 First we start with the [(E)BNF format](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
 
-```ebnf
+```pp2
 (* A simple example of adding two numbers will look like this: *)
 expr = T_NUMBER T_PLUS T_NUMBER ;
 ```

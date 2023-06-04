@@ -4,7 +4,7 @@ A more complex example of a math:
 
 ## Grammar
 
-```ebnf
+```pp2
 %token  T_NUMBER        \d+
 %token  T_PLUS          \+
 %token  T_MINUS         \-

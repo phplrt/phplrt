@@ -10,7 +10,7 @@ For example every "`Digit`" rule must be represented as an
 instance of `ExampleAstNode` class, and all children (the result of execution)
 will be passed to the constructor arguments.
 
-```ebnf
+```pp2
 #Digit -> ExampleAstNode
   : <T_DIGIT> 
   ;
@@ -54,7 +54,7 @@ Alternatively, you can use a real PHP code inside block `{ ... }`
 constructions. The result (meaning of expression `return XXX`) can be 
 an any PHP value except `null`.
 
-```ebnf
+```pp2
 #Digit -> {
     var_dump($children);
 

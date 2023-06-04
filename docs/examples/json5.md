@@ -4,7 +4,7 @@ Below is an example of a simple json5 grammar.
 
 ## Grammar
 
-```ebnf
+```pp2
 /**
  * --------------------------------------------------------------------------
  *  JSON5 Punctuators and Keywords
