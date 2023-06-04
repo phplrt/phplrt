@@ -25,13 +25,6 @@
         "Grammar": "compiler/grammar",
         "PHP Injections": "compiler/code"
     },
-    "Components": {
-        "Visitor": "visitor",
-        "Source": "source",
-        "Position": "position",
-        "Meta": "meta",
-        "Contracts": "contracts"
-    },
     "Examples": {
         "Simple Math Expression": "examples/simple-math",
         "Advanced Math Expression": "examples/advanced-math",
