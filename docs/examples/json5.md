@@ -178,11 +178,13 @@ Below is an example of a simple json5 grammar.
  *
  */
 
-#Json
+%pragma root Json
+
+Json
   : Value()
   ;
 
-#Value
+Value
   : Object()
   | Array()
   | Boolean()
@@ -198,9 +200,7 @@ Below is an example of a simple json5 grammar.
 
 // { key: val, key: val }
 // ^^^^^^^^^^^^^^^^^^^^^^
-#Object -> {
-    return new \Ast\ObjectNode($token->getOffset(), $children);
-}
+Object
   : ::T_BRACE_OPEN::
       ( ObjectMember() (::T_COMMA:: ObjectMember())* ::T_COMMA::? )?
     ::T_BRACE_CLOSE::
@@ -208,17 +208,13 @@ Below is an example of a simple json5 grammar.
 
 // { key: val, key: val }
 //   ^^^^^^^^
-#ObjectMember -> {
-    return new \Ast\ObjectMemberNode($token->getOffset(), ...$children);
-}
+ObjectMember
   : (String() | Identifier()) ::T_COLON:: Value()
   ;
 
 // [ a, b, c ]
 // ^^^^^^^^^^^
-#Array -> {
-    return new \Ast\ArrayNode($token->getOffset(), $children);
-}
+Array
   : ::T_BRACKET_OPEN::
       ( Value() (::T_COMMA:: Value())* ::T_COMMA::? )?
     ::T_BRACKET_CLOSE::
@@ -226,127 +222,69 @@ Below is an example of a simple json5 grammar.
 
 // "string"
 // ^^^^^^^
-#String -> {
-    return new \Ast\StringNode($token->getOffset(), \substr($children->getValue(), 1, -1));
-}
+String
   : <T_DOUBLE_QUOTED_STRING>
   | <T_SINGLE_QUOTED_STRING>
   ;
 
 // true false
 // ^^^^ ^^^^^
-#Boolean -> {
-    return new \Ast\BooleanNode($token->getOffset(),
-        $children->getName() === 'T_BOOL_TRUE'
-    );
-}
+Boolean
   : <T_BOOL_TRUE>
   | <T_BOOL_FALSE>
   ;
 
 // null
 // ^^^^
-#Null -> {
-    return new \Ast\NullNode($token->getOffset());
-}
+Null
   : <T_NULL>
   ;
 
 // identifier
 // ^^^^^^^^^^
-#Identifier -> {
-    return new \Ast\IdentifierNode($token->getOffset(), $children->getValue());
-}
+Identifier
   : <T_IDENTIFIER>
   ;
 
 // +42 -23
 // ^   ^
-#Signed -> {
-    return \is_array($children) || $children->getName() === 'T_PLUS';
-}
+Signed
   : (<T_PLUS> | <T_MINUS>)?
   ;
 
 // +42e3 -23e-4
 //    ^^    ^^^
-#Inf -> {
-    return new \Ast\InfinityNumberNode($token->getOffset(), \reset($children));
-}
+Inf
   : Signed() ::T_INF::
   ;
 
 // NaN
 // ^^^
-#NaN -> {
-    return new \Ast\NotANumberNode($token->getOffset());
-}
+NaN
   : <T_NAN>
   ;
 
 // 0.4, .42, 42.
 // ^^^  ^^^  ^^^
-#Float -> {
-    return new \Ast\FloatNumberNode($token->getOffset(), \reset($children), \end($children)->getValue());
-}
+Float
   : Signed() (<T_FLOAT_LD_NUMBER> | <T_FLOAT_TG_NUMBER>)
   ;
 
 // 42
 // ^^
-#Int -> {
-    return new \Ast\IntNumberNode($token->getOffset(), \reset($children), \end($children)->getValue());
-}
+Int
   : Signed() <T_INT_NUMBER>
   ;
 
 // 42e3  .4e3
 //   ^^    ^^
-#Exponential -> {
-    return new \Ast\ExponentialNumberNode($token->getOffset(), \reset($children), \end($children)->getValue());
-}
+Exponential
   : (Float() | Int()) <T_EXPONENT_PART>
   ;
 
 // 0xDEADBEEF
 // ^^^^^^^^^^
-#Hex -> {
-    return new \Ast\HexadecimalNumberNode($token->getOffset(), \reset($children), \end($children)->getValue());
-}
+Hex
   : Signed() <T_HEX_NUMBER>
   ;
-```
-
-## Execution
-
-```php
-<?php
-use Phplrt\Compiler\Compiler;
-use Phplrt\Source\File;
-
-$compiler = new Compiler();
-$compiler->load(File::fromPathname('path/to/grammar-file.pp2'));
-
-echo $compiler->parse('{ key: "value" }');
-```
-
-## Result
-
-```xml
-<Json offset="0">
-    <Value offset="0">
-        <Object offset="0">
-            <ObjectMember offset="2">
-                <Identifier offset="2">
-                    <T_IDENTIFIER offset="2">key</T_IDENTIFIER>
-                </Identifier>
-                <Value offset="7">
-                    <String offset="7">
-                        <T_DOUBLE_QUOTED_STRING offset="7">"value"</T_DOUBLE_QUOTED_STRING>
-                    </String>
-                </Value>
-            </ObjectMember>
-        </Object>
-    </Value>
-</Json>
 ```

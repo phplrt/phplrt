@@ -49,9 +49,11 @@ require __DIR__ . '/vendor/autoload.php';
 $compiler = new \Phplrt\Compiler\Compiler();
 
 // Source grammar loading.
-$compiler->load(<<<'GRAMMAR'
+$compiler->load('
+
     // TODO
-GRAMMAR);
+
+');
 
 // Compiling the grammar into a set of
 // instructions for the parser.

@@ -1,6 +1,7 @@
 # Go! AOP Pointcuts
 
-Below is an example of a [Go! AOP](https://github.com/goaop/framework) pointcuts grammar
+Below is an example of a [Go! AOP](https://github.com/goaop/framework) pointcuts 
+grammar.
 
 ## Grammar
 
@@ -136,12 +137,12 @@ PropertyModifiers
 // -----------------------------------------------------------------------------
 //
 
-#BehaviourModifierExpression
+BehaviourModifierExpression
   : BehaviourModifierNegation()
   | BehaviourModifier()
   ;
 
-#BehaviourModifierNegation
+BehaviourModifierNegation
   : ::T_NEGATION:: BehaviourModifier()
   ;
 
@@ -155,7 +156,7 @@ BehaviourModifier
 // -----------------------------------------------------------------------------
 //
 
-#AccessModifierExpression
+AccessModifierExpression
   : AccessModifier() (
       ::T_ALTERNATION:: AccessModifier()
     )*
@@ -182,76 +183,76 @@ Pointcut
   | PointcutReference()
   ;
 
-#AccessPointcut
+AccessPointcut
   : ::T_ACCESS:: ::T_LEFT_PAREN::
       PropertyDefinition()
     ::T_RIGHT_PAREN::
   ;
 
-#AnnotatedAccessPointcut
+AnnotatedAccessPointcut
   : ::T_ANNOTATION:: ::T_ACCESS:: ::T_LEFT_PAREN::
       ClassDefinition()
     ::T_RIGHT_PAREN::
   ;
 
-#ExecutionPointcut
+ExecutionPointcut
   : ::T_EXECUTION:: ::T_LEFT_PAREN:: (
       FunctionDefinition() |
       MethodDefinition()
     ) ::T_RIGHT_PAREN::
   ;
 
-#AnnotatedExecutionPointcut
+AnnotatedExecutionPointcut
   : ::T_ANNOTATION:: ::T_EXECUTION:: ::T_LEFT_PAREN::
       ClassDefinition()
     ::T_RIGHT_PAREN::
   ;
 
-#WithinPointcut
+WithinPointcut
   : ::T_WITHIN:: ::T_LEFT_PAREN::
       ClassFilter()
     ::T_RIGHT_PAREN::
   ;
 
-#AnnotatedWithinPointcut
+AnnotatedWithinPointcut
   : ::T_ANNOTATION:: ::T_WITHIN:: ::T_LEFT_PAREN::
       ClassDefinition()
     ::T_RIGHT_PAREN::
   ;
 
-#InitializationPointcut
+InitializationPointcut
   : ::T_INIT:: ::T_LEFT_PAREN::
       ClassFilter()
     ::T_RIGHT_PAREN::
   ;
 
-#StaticInitializationPointcut
+StaticInitializationPointcut
   : ::T_INIT_STATIC:: ::T_LEFT_PAREN::
       ClassFilter()
     ::T_RIGHT_PAREN::
   ;
 
-#ControlFlowBelowPointcut
+ControlFlowBelowPointcut
   : ::T_CFLOW:: ::T_LEFT_PAREN::
       ExecutionPointcut()
     ::T_RIGHT_PAREN::
   ;
 
-#DynamicExecutionPointcut
+DynamicExecutionPointcut
   : ::T_DYNAMIC:: ::T_LEFT_PAREN::
       MethodDefinition()
     ::T_RIGHT_PAREN::
   ;
 
-#MatchInheritedPointcut
+MatchInheritedPointcut
   : ::T_MATCH:: ::T_LEFT_PAREN:: ::T_RIGHT_PAREN::
   ;
 
-#PointcutReference
+PointcutReference
   : PointcutReferenceContext() ::T_OBJECT_ACCESS:: PropertyDefinitionBody()
   ;
 
-#PointcutReferenceContext
+PointcutReferenceContext
   : NamespacePattern()
   | <T_THIS>
   ;
@@ -262,16 +263,16 @@ Pointcut
 // -----------------------------------------------------------------------------
 //
 
-#AccessType
+AccessType
   : ObjectAccess()
   | StaticAccess()
   ;
 
-#ObjectAccess
+ObjectAccess
   : <T_OBJECT_ACCESS>
   ;
 
-#StaticAccess
+StaticAccess
   : <T_STATIC_ACCESS>
   ;
 
@@ -281,20 +282,20 @@ Pointcut
 // -----------------------------------------------------------------------------
 //
 
-#FunctionDefinition
+FunctionDefinition
   : NamePattern() FunctionDefinitionArguments()
   ;
 
-#FunctionDefinitionArguments
+FunctionDefinitionArguments
   : FunctionAnyArguments()
   | FunctionNoArguments()
   ;
 
-#FunctionNoArguments
+FunctionNoArguments
   : ::T_LEFT_PAREN:: ::T_RIGHT_PAREN::
   ;
 
-#FunctionAnyArguments
+FunctionAnyArguments
   : ::T_LEFT_PAREN:: ::T_ASTERISK:: ::T_RIGHT_PAREN::
   ;
 
@@ -330,7 +331,7 @@ MethodDefinition
 // -----------------------------------------------------------------------------
 //
 
-#ClassDefinition
+ClassDefinition
   : NamespacePattern()
   ;
 
@@ -343,89 +344,31 @@ ClassFilter
   | ClassDefinition()
   ;
 
-#Expression
+Expression
   : AlternatedExpression()?
   ;
 
-#AlternatedExpression
+AlternatedExpression
   : ConjugatedExpression() (::T_LOGICAL_OR:: ConjugatedExpression())+
   | ConjugatedExpression()
   ;
 
-#ConjugatedExpression
+ConjugatedExpression
   : NegatedExpression() (::T_LOGICAL_AND:: NegatedExpression())+
   | NegatedExpression()
   ;
 
-#NegatedExpression
+NegatedExpression
   : ::T_NEGATION:: GroupExpression()
   | GroupExpression()
   ;
 
-#GroupExpression
+GroupExpression
   : ::T_LEFT_PAREN:: Expression() ::T_RIGHT_PAREN::
   | SinglePointcut()
   ;
 
-SinglePointcut -> {
-    return new Ast\Expression\PointcutExpressionNode();
-}
+SinglePointcut
   : Pointcut()
   ;
-```
-
-## Execution
-
-```php
-<?php
-use Phplrt\Compiler\Compiler;
-use Phplrt\Source\File;
-
-$compiler = new Compiler();
-$compiler->load(File::fromPathname('path/to/grammar-file.pp2'));
-
-$result = $compiler->parse('execution(final public Example\Aspect\*->method*(*))');
-
-echo $result;
-```
-
-## Result
-
-```xml
-<Expression offset="0">
-    <AlternatedExpression offset="0">
-        <ConjugatedExpression offset="0">
-            <NegatedExpression offset="0">
-                <GroupExpression offset="0">
-                    <ExecutionPointcut offset="0">
-                        <BehaviourModifierExpression offset="10">
-                            <T_MOD_FINAL offset="10">final</T_MOD_FINAL>
-                        </BehaviourModifierExpression>
-                        <AccessModifierExpression offset="16">
-                            <T_MOD_PUBLIC offset="16">public</T_MOD_PUBLIC>
-                        </AccessModifierExpression>
-                        <ClassDefinition offset="23">
-                            <T_NAME offset="23">Example</T_NAME>
-                            <T_NAME offset="31">Aspect</T_NAME>
-                            <T_ASTERISK offset="38">*</T_ASTERISK>
-                        </ClassDefinition>
-                        <AccessType offset="39">
-                            <ObjectAccess offset="39">
-                                <T_OBJECT_ACCESS offset="39">-></T_OBJECT_ACCESS>
-                            </ObjectAccess>
-                        </AccessType>
-                        <FunctionDefinition offset="41">
-                            <T_NAME offset="41">method</T_NAME>
-                            <T_ASTERISK offset="47">*</T_ASTERISK>
-                            <FunctionDefinitionArguments offset="48">
-                                <FunctionAnyArguments offset="48">
-                                </FunctionAnyArguments>
-                            </FunctionDefinitionArguments>
-                        </FunctionDefinition>
-                    </ExecutionPointcut>
-                </GroupExpression>
-            </NegatedExpression>
-        </ConjugatedExpression>
-    </AlternatedExpression>
-</Expression>
 ```

@@ -33,8 +33,9 @@
         "Contracts": "contracts"
     },
     "Examples": {
-        "Math Expression": "examples/simple-math",
-        "Calculator": "examples/calculator",
+        "Simple Math Expression": "examples/simple-math",
+        "Advanced Math Expression": "examples/advanced-math",
+        "PhpDoc Types (psalm/phpstan)": "examples/phpdoc-types",
         "JSON5": "examples/json5",
         "Go! AOP Pointcuts": "examples/go-aop"
     }
