@@ -83,7 +83,7 @@ trait ParserConfigsTrait
         $this->eoi = $token;
 
         return $this;
-
+    }
 
     /**
      * Sets an abstract syntax tree builder.
