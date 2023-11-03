@@ -17,29 +17,16 @@ class Readable implements ReadableInterface, MemoizableInterface
      */
     protected const HASH_ALGORITHM = 'crc32';
 
-    /**
-     * @var StreamReaderInterface
-     */
     private StreamReaderInterface $stream;
 
-    /**
-     * @var ContentReaderInterface
-     */
     private ContentReaderInterface $content;
 
-    /**
-     * @param StreamReaderInterface $stream
-     * @param ContentReaderInterface $content
-     */
     public function __construct(StreamReaderInterface $stream, ContentReaderInterface $content)
     {
         $this->stream = $stream;
         $this->content = $content;
     }
 
-    /**
-     * @return void
-     */
     public function refresh(): void
     {
         if ($this->stream instanceof MemoizableInterface) {
@@ -59,17 +46,11 @@ class Readable implements ReadableInterface, MemoizableInterface
         return $this->stream->getStream();
     }
 
-    /**
-     * @return string
-     */
     public function getContents(): string
     {
         return $this->content->getContents();
     }
 
-    /**
-     * @return string
-     */
     public function getHash(): string
     {
         return \hash(static::HASH_ALGORITHM, $this->getContents());

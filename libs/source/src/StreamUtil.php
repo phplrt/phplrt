@@ -8,7 +8,6 @@ final class StreamUtil
 {
     /**
      * @param resource $stream
-     * @return bool
      */
     public static function isStream($stream): bool
     {
@@ -17,7 +16,6 @@ final class StreamUtil
 
     /**
      * @param resource $stream
-     * @return bool
      */
     public static function isNonClosedStream($stream): bool
     {
@@ -26,7 +24,6 @@ final class StreamUtil
 
     /**
      * @param resource $stream
-     * @return bool
      */
     public static function isClosedStream($stream): bool
     {
@@ -35,7 +32,6 @@ final class StreamUtil
 
     /**
      * @param resource $resource
-     * @return array
      */
     public static function serialize($resource): array
     {
@@ -55,7 +51,6 @@ final class StreamUtil
     }
 
     /**
-     * @param array $data
      * @return resource
      */
     public static function unserialize(array $data)

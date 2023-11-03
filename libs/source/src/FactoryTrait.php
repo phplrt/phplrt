@@ -19,18 +19,12 @@ trait FactoryTrait
 {
     /**
      * @param string|null $pathname
-     * @return ReadableInterface
      */
     public static function empty(string $pathname = null): ReadableInterface
     {
         return static::fromSources('', $pathname);
     }
 
-    /**
-     * @param string $sources
-     * @param string $pathname
-     * @return ReadableInterface|FileInterface
-     */
     public static function fromSources(string $sources, string $pathname = null): ReadableInterface
     {
         $stream = new ContentStreamReader($sources);
@@ -45,7 +39,6 @@ trait FactoryTrait
 
     /**
      * @param mixed $sources
-     * @return ReadableInterface|FileInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
@@ -74,8 +67,6 @@ trait FactoryTrait
     }
 
     /**
-     * @param \SplFileInfo $info
-     * @return FileInterface
      * @throws NotFoundException
      * @throws NotReadableException
      */
@@ -85,8 +76,6 @@ trait FactoryTrait
     }
 
     /**
-     * @param string $pathname
-     * @return FileInterface
      * @throws NotFoundException
      * @throws NotReadableException
      */
@@ -98,9 +87,7 @@ trait FactoryTrait
     }
 
     /**
-     * @param StreamInterface $stream
      * @param string|null $pathname
-     * @return ReadableInterface
      * @throws \RuntimeException
      */
     public static function fromPsrStream(StreamInterface $stream, string $pathname = null): ReadableInterface
@@ -115,7 +102,6 @@ trait FactoryTrait
     /**
      * @param resource $resource
      * @param string|null $pathname
-     * @return ReadableInterface
      * @throws NotReadableException
      */
     public static function fromResource($resource, string $pathname = null): ReadableInterface

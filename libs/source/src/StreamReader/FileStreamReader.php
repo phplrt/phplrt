@@ -13,14 +13,8 @@ class FileStreamReader implements StreamReaderInterface
      */
     private const ERROR_NOT_READABLE = 'An error occurred while trying to open the file "%s" for reading';
 
-    /**
-     * @var string
-     */
     private string $pathname;
 
-    /**
-     * @param string $pathname
-     */
     public function __construct(string $pathname)
     {
         $this->pathname = $pathname;

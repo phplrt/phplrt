@@ -24,13 +24,9 @@ class File extends Readable implements FileInterface
      */
     private const ERROR_NOT_READABLE = 'Can not read the file "%s"';
 
-    /**
-     * @var string
-     */
     private string $pathname;
 
     /**
-     * @param string $pathname
      * @param StreamReaderInterface|null $stream
      * @param ContentReaderInterface|null $content
      */
@@ -48,8 +44,6 @@ class File extends Readable implements FileInterface
     }
 
     /**
-     * @param string $pathname
-     * @return void
      * @throws NotFoundException
      * @throws NotReadableException
      */

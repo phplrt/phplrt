@@ -6,8 +6,5 @@ namespace Phplrt\Source;
 
 interface MemoizableInterface
 {
-    /**
-     * @return void
-     */
     public function refresh(): void;
 }

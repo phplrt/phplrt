@@ -31,18 +31,11 @@ class StreamReader implements StreamReaderInterface
         return $this->stream;
     }
 
-    /**
-     * @return array
-     */
     public function __serialize(): array
     {
         return StreamUtil::serialize($this->stream);
     }
 
-    /**
-     * @param array $data
-     * @return void
-     */
     public function __unserialize(array $data): void
     {
         $this->stream = StreamUtil::unserialize($data);

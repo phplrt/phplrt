@@ -6,8 +6,5 @@ namespace Phplrt\Source\ContentReader;
 
 interface ContentReaderInterface
 {
-    /**
-     * @return string
-     */
     public function getContents(): string;
 }
