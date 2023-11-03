@@ -37,8 +37,6 @@ interface ProductionInterface extends RuleInterface
      *  }
      * </code>
      *
-     * @param BufferInterface $buffer
-     * @param \Closure $reduce
      * @return mixed|iterable|null
      */
     public function reduce(BufferInterface $buffer, \Closure $reduce);

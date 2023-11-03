@@ -69,14 +69,6 @@ final class Parser implements
     /**
      * @var non-empty-string
      */
-    private const ERROR_XDEBUG_NOTICE_MESSAGE =
-        'Please note that if Xdebug is enabled, a "Fatal error: Maximum function nesting level of "%d" ' .
-        'reached, aborting!" errors may occur. In the second case, it is worth increasing the ini value ' .
-        'or disabling the extension.';
-
-    /**
-     * @var non-empty-string
-     */
     private const ERROR_BUFFER_TYPE = 'Buffer class should implement %s interface';
 
     /**

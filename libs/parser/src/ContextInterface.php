@@ -17,15 +17,11 @@ interface ContextInterface extends ContextOptionsInterface
 {
     /**
      * Returns the source being processed.
-     *
-     * @return ReadableInterface
      */
     public function getSource(): ReadableInterface;
 
     /**
      * Returns a lexer's buffer.
-     *
-     * @return BufferInterface
      */
     public function getBuffer(): BufferInterface;
 
@@ -34,7 +30,7 @@ interface ContextInterface extends ContextOptionsInterface
      *
      * Note: Please note that this value is mutable and may change over time.
      *
-     * @return int<0, max>|non-empty-string
+     * @return array-key
      */
     public function getState();
 
@@ -42,8 +38,6 @@ interface ContextInterface extends ContextOptionsInterface
      * Returns the parser's current state rule.
      *
      * Note: Please note that this value is mutable and may change over time.
-     *
-     * @return RuleInterface
      */
     public function getRule(): RuleInterface;
 
@@ -54,8 +48,6 @@ interface ContextInterface extends ContextOptionsInterface
      * then the method will return NULL.
      *
      * Note: Please note that this value is mutable and may change over time.
-     *
-     * @return NodeInterface|null
      */
     public function getNode(): ?NodeInterface;
 
@@ -63,8 +55,6 @@ interface ContextInterface extends ContextOptionsInterface
      * Returns the current parsing token.
      *
      * Note: Please note that this value is mutable and may change over time.
-     *
-     * @return TokenInterface
      */
     public function getToken(): TokenInterface;
 }

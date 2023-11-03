@@ -14,12 +14,6 @@ class UnexpectedTokenException extends UnrecognizedTokenException
      */
     public const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unexpected %s';
 
-    /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $tok
-     * @param \Throwable|null $prev
-     * @return static
-     */
     public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
     {
         $message = \sprintf(self::ERROR_UNRECOGNIZED_TOKEN, self::getTokenValue($tok));

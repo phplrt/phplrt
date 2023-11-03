@@ -37,7 +37,7 @@ final class Factory implements SelectorInterface
 
     public function prepare(): void
     {
-        if ($this->isPrepared === true) {
+        if ($this->isPrepared) {
             return;
         }
 

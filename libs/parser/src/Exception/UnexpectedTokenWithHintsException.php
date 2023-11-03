@@ -8,10 +8,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 class UnexpectedTokenWithHintsException extends UnexpectedTokenException
 {
     /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $tok
      * @param \Throwable|null $prev
-     * @param array $possibleTokens
      * @return static
      */
     public static function fromToken(

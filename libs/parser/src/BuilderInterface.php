@@ -10,7 +10,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 interface BuilderInterface
 {
     /**
-     * @param ContextInterface $context
      * @param NodeInterface|TokenInterface|iterable<NodeInterface|TokenInterface> $result
      * @return mixed|null
      */

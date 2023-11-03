@@ -17,19 +17,13 @@ class UnrecognizedTokenException extends ParserRuntimeException
     public const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized %s';
 
     /**
-     * @var array
+     * @var array{list<non-empty-string>, list<non-empty-string>}
      */
     private const DEFAULT_REPLACEMENTS = [
         ["\0", "\n", "\t"],
         ['\0', '\n', '\t'],
     ];
 
-    /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $tok
-     * @param \Throwable|null $prev
-     * @return static
-     */
     public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
     {
         $message = \sprintf(self::ERROR_UNRECOGNIZED_TOKEN, self::getTokenValue($tok));
@@ -37,10 +31,6 @@ class UnrecognizedTokenException extends ParserRuntimeException
         return new static($message, $src, $tok, $prev);
     }
 
-    /**
-     * @param ExceptionContract $e
-     * @return static
-     */
     public static function fromLexerException(ExceptionContract $e): self
     {
         $token = $e->getToken();
@@ -49,10 +39,6 @@ class UnrecognizedTokenException extends ParserRuntimeException
         return static::fromToken($source, $token, $e);
     }
 
-    /**
-     * @param TokenInterface $token
-     * @return string
-     */
     protected static function getTokenValue(TokenInterface $token): string
     {
         if (\class_exists(Renderer::class)) {

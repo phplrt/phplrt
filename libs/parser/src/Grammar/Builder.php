@@ -39,9 +39,6 @@ class Builder implements \IteratorAggregate
      *      yield
      *  });
      * </code>
-     *
-     * @param \Closure $rules
-     * @return $this
      */
     public function extend(\Closure $rules): self
     {
@@ -69,7 +66,6 @@ class Builder implements \IteratorAggregate
 
     /**
      * @param int|string ...$of
-     * @return Concatenation
      */
     public function concat(...$of): Concatenation
     {
@@ -78,18 +74,12 @@ class Builder implements \IteratorAggregate
 
     /**
      * @param int|string ...$of
-     * @return Alternation
      */
     public function any(...$of): Alternation
     {
         return new Alternation($of);
     }
 
-    /**
-     * @param string $named
-     * @param bool $keep
-     * @return Lexeme
-     */
     public function token(string $named, bool $keep = true): Lexeme
     {
         return new Lexeme($named, $keep);
@@ -97,7 +87,6 @@ class Builder implements \IteratorAggregate
 
     /**
      * @param string|int $of
-     * @return Optional
      */
     public function maybe(...$of): Optional
     {
@@ -105,7 +94,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param array|string[]|int[] $args
+     * @param array<string|int> $args
      * @return int|string
      */
     private function unwrap(array $args)
@@ -117,19 +106,11 @@ class Builder implements \IteratorAggregate
         return \reset($args);
     }
 
-    /**
-     * @param mixed ...$of
-     * @return Repetition
-     */
     public function repeat(...$of): Repetition
     {
         return new Repetition($this->unwrap($of));
     }
 
-    /**
-     * @param \Closure $rules
-     * @return \Generator
-     */
     private function read(\Closure $rules): \Generator
     {
         $generator = $rules($this);
@@ -142,7 +123,6 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param RuleInterface $rule
      * @param int|string $id
      * @return int|string|null
      */

@@ -10,12 +10,6 @@ use Phplrt\Exception\RuntimeException;
 
 abstract class ParserRuntimeException extends RuntimeException
 {
-    /**
-     * @param string $message
-     * @param ReadableInterface $src
-     * @param TokenInterface|null $tok
-     * @param \Throwable|null $prev
-     */
     final public function __construct(
         string $message,
         ReadableInterface $src,
