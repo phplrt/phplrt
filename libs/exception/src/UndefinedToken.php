@@ -12,14 +12,8 @@ use Phplrt\Contracts\Position\PositionInterface;
  */
 final class UndefinedToken implements TokenInterface
 {
-    /**
-     * @var PositionInterface
-     */
     private PositionInterface $position;
 
-    /**
-     * @param PositionInterface $position
-     */
     public function __construct(PositionInterface $position)
     {
         $this->position = $position;

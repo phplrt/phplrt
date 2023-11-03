@@ -13,9 +13,6 @@ class LineReader
      */
     private array $lines = [];
 
-    /**
-     * @param ReadableInterface $source
-     */
     public function __construct(ReadableInterface $source)
     {
         $filter = static fn(string $line): string => \trim($line, "\r\0");
@@ -25,7 +22,6 @@ class LineReader
 
     /**
      * @param int<1, max> $line
-     * @return string
      */
     public function readLine(int $line): string
     {

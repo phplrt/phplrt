@@ -14,24 +14,13 @@ use Phplrt\Source\File;
 
 abstract class RuntimeException extends \RuntimeException implements RuntimeExceptionInterface
 {
-    /**
-     * @var TokenInterface|null
-     */
     private ?TokenInterface $token = null;
 
-    /**
-     * @var ReadableInterface|null
-     */
     private ?ReadableInterface $source = null;
 
-    /**
-     * @var string
-     */
     private string $original;
 
     /**
-     * @param string $message
-     * @param int $code
      * @param \Throwable|null $previous
      */
     public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
@@ -41,17 +30,11 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         parent::__construct($message, $code, $previous);
     }
 
-    /**
-     * @return string
-     */
     public function getOriginalMessage(): string
     {
         return $this->original;
     }
 
-    /**
-     * @return ReadableInterface
-     */
     public function getSource(): ReadableInterface
     {
         if ($this->source === null) {
@@ -63,7 +46,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
 
     /**
      * @param ReadableInterface|null $source
-     * @return void
      */
     public function setSource(?ReadableInterface $source): void
     {
@@ -72,9 +54,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         $this->sync();
     }
 
-    /**
-     * @return void
-     */
     protected function sync(): void
     {
         $file = $this->getSource();
@@ -89,17 +68,11 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         }
     }
 
-    /**
-     * @return PositionInterface
-     */
     public function getPosition(): PositionInterface
     {
         return Position::fromOffset($this->getSource(), $this->getToken()->getOffset());
     }
 
-    /**
-     * @return TokenInterface
-     */
     public function getToken(): TokenInterface
     {
         if ($this->token === null) {
@@ -113,7 +86,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
 
     /**
      * @param TokenInterface|null $token
-     * @return void
      */
     public function setToken(?TokenInterface $token): void
     {
@@ -122,11 +94,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         $this->sync();
     }
 
-    /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $token
-     * @return string
-     */
     private function getMessageSuffix(ReadableInterface $src, TokenInterface $token): string
     {
         $renderer = new ErrorInformationRenderer($src, $token);

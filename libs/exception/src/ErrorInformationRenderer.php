@@ -26,40 +26,18 @@ class ErrorInformationRenderer
      */
     public const DEFAULT_HIGHLIGHT_CHAR = '^';
 
-    /**
-     * @var PositionInterface
-     */
     private PositionInterface $position;
 
-    /**
-     * @var LineReader
-     */
     private LineReader $reader;
 
-    /**
-     * @var string
-     */
     private string $sourceTemplate = self::DEFAULT_SOURCE_TEMPLATE;
 
-    /**
-     * @var string
-     */
     private string $errorTemplate = self::DEFAULT_ERROR_TEMPLATE;
 
-    /**
-     * @var string
-     */
     private string $highlightChar = self::DEFAULT_HIGHLIGHT_CHAR;
 
-    /**
-     * @var TokenInterface
-     */
     private TokenInterface $token;
 
-    /**
-     * @param ReadableInterface $source
-     * @param TokenInterface $token
-     */
     public function __construct(ReadableInterface $source, TokenInterface $token)
     {
         $this->token = $token;
@@ -69,9 +47,6 @@ class ErrorInformationRenderer
         $this->reader = new LineReader($source);
     }
 
-    /**
-     * @return string
-     */
     public function render(): string
     {
         return \implode(\PHP_EOL, [
@@ -80,9 +55,6 @@ class ErrorInformationRenderer
         ]);
     }
 
-    /**
-     * @return string
-     */
     public function renderErrorLine(): string
     {
         $line = $this->position->getLine();
@@ -92,10 +64,6 @@ class ErrorInformationRenderer
         return $this->format($message, $line . '.');
     }
 
-    /**
-     * @param string $text
-     * @return string
-     */
     private function highlightError(string $text): string
     {
         if (!$this->isAnsiAllowed()) {
@@ -109,51 +77,31 @@ class ErrorInformationRenderer
         ]);
     }
 
-    /**
-     * @return bool
-     */
     private function isAnsiAllowed(): bool
     {
         return \PHP_SAPI === 'cli';
     }
 
-    /**
-     * @return int
-     */
     private function from(): int
     {
         return $this->position->getColumn() - 1;
     }
 
-    /**
-     * @return int
-     */
     private function length(): int
     {
         return $this->token->getBytes();
     }
 
-    /**
-     * @return int
-     */
     private function to(): int
     {
         return $this->from() + $this->length();
     }
 
-    /**
-     * @param string $message
-     * @param string $line
-     * @return string
-     */
     private function format(string $message, string $line = ''): string
     {
         return \sprintf($this->sourceTemplate, $line, $message);
     }
 
-    /**
-     * @return string
-     */
     public function renderErrorHighlighter(): string
     {
         $prefix = \str_repeat(' ', $this->from());

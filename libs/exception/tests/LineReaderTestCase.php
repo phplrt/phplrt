@@ -14,9 +14,6 @@ class LineReaderTestCase extends TestCase
      */
     private const MAX_LINES_PER_TEST = 100;
 
-    /**
-     * @return array
-     */
     public function dataProvider(): array
     {
         $lines = [];
@@ -31,11 +28,6 @@ class LineReaderTestCase extends TestCase
         ];
     }
 
-    /**
-     * @param array $lines
-     * @param string $delimiter
-     * @return LineReader
-     */
     private function create(array $lines, string $delimiter = "\n"): LineReader
     {
         return new LineReader(File::fromSources(\implode($delimiter, $lines)));
@@ -43,10 +35,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @param int $max
-     * @return void
      */
     public function testReadLine(LineReader $reader, int $max): void
     {
@@ -56,9 +44,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @return void
      */
     public function testReadLineUnderflow(LineReader $reader): void
     {
@@ -69,10 +54,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @param int $max
-     * @return void
      */
     public function testReadLineOverflow(LineReader $reader, int $max): void
     {
@@ -82,9 +63,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @return void
      */
     public function testReadLines(LineReader $reader): void
     {
@@ -93,9 +71,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @return void
      */
     public function testReadLinesInReverseOrder(LineReader $reader): void
     {
@@ -104,9 +79,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @return void
      */
     public function testReadLinesUnderflow(LineReader $reader): void
     {
@@ -115,10 +87,6 @@ class LineReaderTestCase extends TestCase
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param LineReader $reader
-     * @param int $max
-     * @return void
      */
     public function testReadLinesOverflow(LineReader $reader, int $max): void
     {
