@@ -25,7 +25,7 @@ final class SourceFactory implements SourceFactoryInterface
      *
      * @var non-empty-string
      */
-    public const DEFAULT_HASH_ALGO = 'xxh128';
+    public const DEFAULT_HASH_ALGO = 'md5';
 
     /**
      * Default name of the temporary streams.
