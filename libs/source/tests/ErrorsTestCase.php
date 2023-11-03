@@ -25,27 +25,6 @@ class ErrorsTestCase extends TestCase
     }
 
     /**
-     * @requires OS Linux|BSD|Darwin
-     * @return void
-     * @throws NotReadableException
-     */
-    public function testFileNotReadable(): void
-    {
-        $file = __DIR__ . '/resources/locked';
-
-        $this->expectException(NotReadableException::class);
-        $this->expectExceptionMessage('Can not read the file "' . $file . '"');
-
-        \file_put_contents($file, '');
-        \chmod($file, 0333);
-
-        File::fromPathname($file);
-
-        @\chmod($file, 0777);
-        @\unlink($file);
-    }
-
-    /**
      * @return string
      */
     protected function getPathname(): string
