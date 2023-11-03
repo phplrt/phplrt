@@ -24,19 +24,10 @@ use Phplrt\Visitor\TraverserInterface;
 
 class Compiler implements ParserInterface
 {
-    /**
-     * @var GrammarInterface
-     */
     private GrammarInterface $grammar;
 
-    /**
-     * @var Analyzer
-     */
     private Analyzer $analyzer;
 
-    /**
-     * @var TraverserInterface
-     */
     private TraverserInterface $preloader;
 
     /**
@@ -51,9 +42,6 @@ class Compiler implements ParserInterface
     }
 
     /**
-     * @param IdCollection $ids
-     * @return TraverserInterface
-     *
      * @psalm-suppress MixedArgumentTypeCoercion: Allow impure closure as traverser
      */
     private function bootPreloader(IdCollection $ids): TraverserInterface
@@ -66,7 +54,6 @@ class Compiler implements ParserInterface
     }
 
     /**
-     * @param ReadableInterface $source
      * @return iterable<Node>
      * @throws \Throwable
      *
@@ -102,9 +89,6 @@ class Compiler implements ParserInterface
         return $parser->parse($source);
     }
 
-    /**
-     * @return LexerInterface
-     */
     private function createLexer(): LexerInterface
     {
         if (\count($this->analyzer->tokens) === 1) {
@@ -137,17 +121,11 @@ class Compiler implements ParserInterface
         return $this;
     }
 
-    /**
-     * @return Analyzer
-     */
     public function getAnalyzer(): Analyzer
     {
         return $this->analyzer;
     }
 
-    /**
-     * @return Generator
-     */
     public function build(): Generator
     {
         return new Generator($this->analyzer, new LaminasRenderer());

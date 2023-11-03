@@ -12,8 +12,6 @@ use Phplrt\Source\Exception\NotAccessibleException;
 class GrammarException extends \LogicException
 {
     /**
-     * @param string $message
-     * @param ReadableInterface $source
      * @param int<0, max> $offset
      * @throws NotAccessibleException
      * @throws \RuntimeException

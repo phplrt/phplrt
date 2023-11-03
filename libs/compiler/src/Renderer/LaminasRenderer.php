@@ -17,7 +17,6 @@ class LaminasRenderer extends Renderer
     }
 
     /**
-     * @param bool $multiline
      * @return ValueGenerator::OUTPUT_*
      */
     private function getMultilineOption(bool $multiline): string

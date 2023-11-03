@@ -32,19 +32,11 @@ class IdCollection extends Visitor
         }
     }
 
-    /**
-     * @param string $name
-     * @return bool|null
-     */
     public function lexeme(string $name): ?bool
     {
         return $this->tokens[$name] ?? null;
     }
 
-    /**
-     * @param string $name
-     * @return bool|null
-     */
     public function rule(string $name): ?bool
     {
         return $this->rules[$name] ?? null;

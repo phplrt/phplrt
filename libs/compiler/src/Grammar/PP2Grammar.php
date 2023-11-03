@@ -36,13 +36,10 @@ use Phplrt\Parser\ParserConfigsInterface;
 
 class PP2Grammar implements GrammarInterface, BuilderInterface
 {
-    /**
-     * @var Parser
-     */
     private Parser $runtime;
 
     /**
-     * @var array|\Closure[]
+     * @var array<array-key, \Closure>
      */
     private array $reducers = [];
 
@@ -66,7 +63,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     }
 
     /**
-     * @return array<\Closure>
+     * @return array<array-key, \Closure>
      * @psalm-suppress all
      */
     private function reducers(): array
@@ -238,8 +235,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     }
 
     /**
-     * @param Context $context
-     * @param \Closure $next
      * @return mixed
      */
     protected function next(Context $context, \Closure $next)

@@ -16,14 +16,10 @@ class TokenStmt extends Statement
      */
     public string $name;
 
-    /**
-     * @var bool
-     */
     public bool $keep;
 
     /**
      * @param non-empty-string $name
-     * @param bool $keep
      */
     public function __construct(string $name, bool $keep)
     {

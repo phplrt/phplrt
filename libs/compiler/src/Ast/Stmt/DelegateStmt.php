@@ -11,14 +11,8 @@ namespace Phplrt\Compiler\Ast\Stmt;
  */
 class DelegateStmt extends Statement
 {
-    /**
-     * @var string|null
-     */
     public ?string $code;
 
-    /**
-     * @param string|null $code
-     */
     public function __construct(?string $code)
     {
         $this->code = $code;

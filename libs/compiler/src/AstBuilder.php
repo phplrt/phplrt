@@ -20,6 +20,6 @@ class AstBuilder implements BuilderInterface
         /** @var array<SampleNode> $result */
         $result = \is_array($result) ? $result : [$result];
 
-        return new SampleNode($token->getOffset(), (string)$context->getState(), $result);
+        return new SampleNode($token->getOffset(), $context->getState(), $result);
     }
 }

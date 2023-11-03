@@ -11,20 +11,10 @@ namespace Phplrt\Compiler\Ast\Stmt;
  */
 class RepetitionStmt extends Statement
 {
-    /**
-     * @var Statement
-     */
     public Statement $statement;
 
-    /**
-     * @var Quantifier
-     */
     public Quantifier $quantifier;
 
-    /**
-     * @param Statement $stmt
-     * @param Quantifier $quantifier
-     */
     public function __construct(Statement $stmt, Quantifier $quantifier)
     {
         $this->statement = $stmt;

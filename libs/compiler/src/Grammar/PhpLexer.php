@@ -14,14 +14,8 @@ use Phplrt\Source\Exception\NotAccessibleException;
 
 class PhpLexer implements LexerInterface
 {
-    /**
-     * @var bool
-     */
     private bool $inline;
 
-    /**
-     * @param bool $inline
-     */
     public function __construct(bool $inline = true)
     {
         $this->inline = $inline;
@@ -59,11 +53,6 @@ class PhpLexer implements LexerInterface
         yield new EndOfInput($offset);
     }
 
-    /**
-     * @param ReadableInterface $readable
-     * @param int $offset
-     * @return string
-     */
     private function read(ReadableInterface $readable, int $offset): string
     {
         $source = $readable->getContents();
@@ -75,7 +64,6 @@ class PhpLexer implements LexerInterface
 
     /**
      * @param int|string $id
-     * @return string
      */
     private function getName($id): string
     {

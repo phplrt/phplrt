@@ -44,9 +44,6 @@ class SampleNode implements NodeInterface
         yield 'children' => $this->children;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         return \implode("\n", $this->render(0));
@@ -89,9 +86,6 @@ class SampleNode implements NodeInterface
         return $result;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;

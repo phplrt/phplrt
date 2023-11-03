@@ -11,36 +11,16 @@ namespace Phplrt\Compiler\Ast\Def;
  */
 class TokenDef extends Definition
 {
-    /**
-     * @var string
-     */
     public string $name;
 
-    /**
-     * @var string
-     */
     public string $value;
 
-    /**
-     * @var bool
-     */
     public bool $keep;
 
-    /**
-     * @var string|null
-     */
     public ?string $state = null;
 
-    /**
-     * @var string|null
-     */
     public ?string $next = null;
 
-    /**
-     * @param string $name
-     * @param string $value
-     * @param bool $keep
-     */
     public function __construct(string $name, string $value, bool $keep = true)
     {
         $this->name  = $name;

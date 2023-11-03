@@ -12,9 +12,6 @@ use Phplrt\Source\Exception\NotAccessibleException;
 
 class PP2PHPLexer implements LexerInterface
 {
-    /**
-     * @var PhpLexer
-     */
     private PhpLexer $lexer;
 
     /**
@@ -22,9 +19,6 @@ class PP2PHPLexer implements LexerInterface
      */
     private int $depth = 0;
 
-    /**
-     * @param PhpLexer $lexer
-     */
     public function __construct(PhpLexer $lexer)
     {
         $this->lexer = $lexer;

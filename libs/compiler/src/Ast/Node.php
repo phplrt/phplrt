@@ -13,9 +13,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
  */
 abstract class Node implements NodeInterface
 {
-    /**
-     * @var ReadableInterface
-     */
     public ReadableInterface $file;
 
     /**

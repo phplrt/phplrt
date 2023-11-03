@@ -19,26 +19,14 @@ class RuleDef extends Definition
      */
     public string $name;
 
-    /**
-     * @var DelegateStmt
-     */
     public DelegateStmt $delegate;
 
-    /**
-     * @var Statement
-     */
     public Statement $body;
 
-    /**
-     * @var bool
-     */
     public bool $keep;
 
     /**
      * @param non-empty-string $name
-     * @param DelegateStmt $delegate
-     * @param Statement $body
-     * @param bool $keep
      */
     public function __construct(string $name, DelegateStmt $delegate, Statement $body, bool $keep = true)
     {

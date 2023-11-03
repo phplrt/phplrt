@@ -37,7 +37,6 @@ class IncludesExecutor extends Visitor
     }
 
     /**
-     * @param NodeInterface $node
      * @return mixed|null
      * @throws NotAccessibleException
      * @throws \RuntimeException
@@ -52,8 +51,6 @@ class IncludesExecutor extends Visitor
     }
 
     /**
-     * @param IncludeExpr $expr
-     * @return array
      * @throws NotAccessibleException
      * @throws \RuntimeException
      * @psalm-suppress InvalidReturnType
