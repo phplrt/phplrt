@@ -129,6 +129,7 @@ final class PositionFactory implements PositionFactoryInterface
             ++$column;
         }
 
+        /** @psalm-suppress InvalidArgument : Column cannot be less than 1 */
         return new Position($offset, $line, $column);
     }
 
