@@ -6,6 +6,4 @@ namespace Phplrt\Exception\Tests;
 
 use PHPUnit\Framework\TestCase as BastTestCase;
 
-abstract class TestCase extends BastTestCase
-{
-}
+abstract class TestCase extends BastTestCase {}

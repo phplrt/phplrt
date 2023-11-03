@@ -79,7 +79,7 @@ class Repetition extends Production
             $rollback = $buffer->key();
 
             if (($result = $reduce($this->rule)) === null) {
-                if (! $inRange) {
+                if (!$inRange) {
                     $buffer->seek($global);
 
                     return null;

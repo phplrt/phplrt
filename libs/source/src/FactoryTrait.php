@@ -120,7 +120,7 @@ trait FactoryTrait
      */
     public static function fromResource($resource, string $pathname = null): ReadableInterface
     {
-        if (! StreamUtil::isStream($resource)) {
+        if (!StreamUtil::isStream($resource)) {
             $message = 'First argument must be a valid resource, but %s given';
 
             throw new \InvalidArgumentException(\sprintf($message, \gettype($resource)));

@@ -60,7 +60,7 @@ class StreamContentReader implements ContentReaderInterface, MemoizableInterface
         if (\ftell($this->stream) !== 0) {
             // If at the same time the stream is not a seekable,
             // then we cannot reset its cursor.
-            if (! $this->isSeekable()) {
+            if (!$this->isSeekable()) {
                 throw new NotAccessibleException(self::ERROR_NOT_SEEKABLE);
             }
 

@@ -6,6 +6,4 @@ namespace Phplrt\Compiler\Grammar;
 
 use Phplrt\Contracts\Parser\ParserInterface;
 
-interface GrammarInterface extends ParserInterface
-{
-}
+interface GrammarInterface extends ParserInterface {}

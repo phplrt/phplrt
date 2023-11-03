@@ -301,7 +301,7 @@ final class Parser implements
                         $context->lastOrdinalToken = $context->buffer->current();
                     }
 
-                    if (! $context->rule->isKeep()) {
+                    if (!$context->rule->isKeep()) {
                         return [];
                     }
                 }

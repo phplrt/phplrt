@@ -105,7 +105,7 @@ class Generator
      */
     private function getRules(int $depth): array
     {
-        $map = fn (RuleInterface $rule): string => $this->getRuleAsString($rule, $depth);
+        $map = fn(RuleInterface $rule): string => $this->getRuleAsString($rule, $depth);
 
         return \array_map($map, $this->analyzer->rules);
     }

@@ -7,6 +7,4 @@ namespace Phplrt\Source\Exception;
 /**
  * The exception that occurs in the absence of a file in the file system.
  */
-class NotFoundException extends NotReadableException
-{
-}
+class NotFoundException extends NotReadableException {}

@@ -129,7 +129,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
         foreach ($tokens as $token) {
             unset($this->tokens[$token]);
 
-            $this->skip = \array_filter($this->skip, static fn (string $haystack): bool => $haystack !== $token);
+            $this->skip = \array_filter($this->skip, static fn(string $haystack): bool => $haystack !== $token);
         }
 
         return $this;

@@ -60,7 +60,7 @@ final class StreamUtil
      */
     public static function unserialize(array $data)
     {
-        if (! isset($data['uri'], $data['mode'], $data['seek'])) {
+        if (!isset($data['uri'], $data['mode'], $data['seek'])) {
             return \fopen('php://memory', 'rb');
         }
 

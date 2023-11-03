@@ -98,7 +98,7 @@ class ErrorInformationRenderer
      */
     private function highlightError(string $text): string
     {
-        if (! $this->isAnsiAllowed()) {
+        if (!$this->isAnsiAllowed()) {
             return $text;
         }
 

@@ -33,7 +33,7 @@ class FileStreamReader implements StreamReaderInterface
     {
         $stream = @\fopen($this->pathname, 'rb');
 
-        if (! \is_resource($stream)) {
+        if (!\is_resource($stream)) {
             throw new NotReadableException(\sprintf(self::ERROR_NOT_READABLE, $this->pathname));
         }
 

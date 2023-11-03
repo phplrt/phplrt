@@ -142,7 +142,7 @@ class Multistate implements LexerInterface
             /**
              * Checking the existence of the current state.
              */
-            if (! isset($this->states[$state])) {
+            if (!isset($this->states[$state])) {
                 /**
                  * @noinspection IssetArgumentExistenceInspection
                  * @psalm-suppress UndefinedVariable

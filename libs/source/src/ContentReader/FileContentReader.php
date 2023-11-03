@@ -51,7 +51,7 @@ class FileContentReader implements ContentReaderInterface, MemoizableInterface
     {
         $result = @\file_get_contents($this->pathname);
 
-        if (! \is_string($result)) {
+        if (!\is_string($result)) {
             throw new NotReadableException(\sprintf(self::ERROR_NOT_READABLE, $this->pathname));
         }
 

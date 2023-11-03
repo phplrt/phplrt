@@ -76,7 +76,7 @@ class MultistateLexerTestCase extends TestCase
 
         $this->assertSame(
             ['quote', 'char', 'escaped_quote', 'char', 'quote', 'T_EOI'],
-            \array_map(fn (TokenInterface $token): string => $token->getName(), [...$result])
+            \array_map(fn(TokenInterface $token): string => $token->getName(), [...$result])
         );
     }
 }

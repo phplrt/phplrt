@@ -25,7 +25,7 @@ abstract class TestCase extends BastTestCase
 
             public function __construct(array &$result)
             {
-                $this->result =& $result;
+                $this->result = &$result;
             }
 
             /**

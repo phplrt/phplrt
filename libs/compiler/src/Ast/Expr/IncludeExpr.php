@@ -52,7 +52,7 @@ class IncludeExpr extends Expression
      */
     public function getTargetPathname(): string
     {
-        if (! $this->file instanceof FileInterface) {
+        if (!$this->file instanceof FileInterface) {
             return $this->target;
         }
 

@@ -8,6 +8,4 @@ namespace Phplrt\Source\Exception;
  * An exception that occurs when there is no read access to the file,
  * such as "Access Denied".
  */
-class NotReadableException extends NotAccessibleException
-{
-}
+class NotReadableException extends NotAccessibleException {}

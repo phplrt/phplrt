@@ -55,13 +55,13 @@ class File extends Readable implements FileInterface
      */
     public static function assertValidPathname(string $pathname): void
     {
-        if (! \is_file($pathname)) {
+        if (!\is_file($pathname)) {
             $message = \sprintf(self::ERROR_NOT_FOUND, $pathname);
 
             throw new NotFoundException($message);
         }
 
-        if (! \is_readable($pathname)) {
+        if (!\is_readable($pathname)) {
             $message = \sprintf(self::ERROR_NOT_READABLE, \realpath($pathname));
 
             throw new NotReadableException($message);

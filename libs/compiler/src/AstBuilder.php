@@ -11,7 +11,7 @@ class AstBuilder implements BuilderInterface
 {
     public function build(ContextInterface $context, $result): ?SampleNode
     {
-        if (! \is_string($context->getState())) {
+        if (!\is_string($context->getState())) {
             return null;
         }
 

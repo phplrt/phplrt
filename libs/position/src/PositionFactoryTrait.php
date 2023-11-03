@@ -35,7 +35,7 @@ trait PositionFactoryTrait
         // Calculate the number of bytes that the transmitted
         // number of lines takes.
         //
-        while (! \feof($stream) && $cursor++ + 1 < $line) {
+        while (!\feof($stream) && $cursor++ + 1 < $line) {
             $offset += \strlen((string)\fgets($stream));
         }
 

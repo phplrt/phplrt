@@ -103,7 +103,7 @@ class Analyzer extends Visitor
         if ($node instanceof TokenDef) {
             $state = $node->state ?: self::STATE_DEFAULT;
 
-            if (! \array_key_exists($state, $this->tokens)) {
+            if (!\array_key_exists($state, $this->tokens)) {
                 $this->tokens[$state] = [];
             }
 
@@ -113,7 +113,7 @@ class Analyzer extends Visitor
                 $this->transitions[$state][$node->name] = $node->next;
             }
 
-            if (! $node->keep) {
+            if (!$node->keep) {
                 $this->skip[] = $node->name;
             }
         }
