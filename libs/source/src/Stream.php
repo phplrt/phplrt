@@ -174,7 +174,8 @@ class Stream extends Readable
      *  mode?: non-empty-string,
      *  seek?: int,
      *  algo?: string,
-     *  chunk?: int
+     *  chunk?: int,
+     *  ...
      * } $data
      *
      * @throws \ErrorException

@@ -62,7 +62,8 @@ class VirtualStreamingFile extends Stream implements VirtualFileInterface
      *  mode?: non-empty-string,
      *  seek?: int,
      *  algo?: string,
-     *  chunk?: int
+     *  chunk?: int,
+     *  ...
      * } $data
      *
      * @throws \ErrorException

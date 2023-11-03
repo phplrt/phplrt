@@ -90,8 +90,8 @@
     },
     "scripts": {
         "test": [
-            "@phpcs",
             "@phpunit",
+            "@phpcs",
             "@psalm"
         ],
         "psalm": "psalm --no-cache",

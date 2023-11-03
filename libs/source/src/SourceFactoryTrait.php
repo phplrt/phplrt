@@ -15,8 +15,16 @@ trait SourceFactoryTrait
     private static ?SourceFactoryInterface $sourceFactory = null;
 
     /**
-     * @return ($source is \SplFileInfo ? FileInterface : ReadableInterface)
+     * @return ($source is \SplFileInfo
+     *     ? FileInterface
+     *     : ($source is FileInterface
+     *         ? FileInterface
+     *         : ReadableInterface)
+     * )
+     *
      * @throws SourceExceptionInterface
+     *
+     * @psalm-suppress NoValue : Allow any value
      */
     public static function new($source): ReadableInterface
     {
