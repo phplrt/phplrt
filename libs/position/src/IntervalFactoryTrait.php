@@ -11,9 +11,6 @@ trait IntervalFactoryTrait
 {
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @param int $offset
-     * @param int $length
-     * @return IntervalInterface
      */
     public static function fromOffset($source, int $offset = 0, int $length = 0): IntervalInterface
     {
@@ -25,10 +22,6 @@ trait IntervalFactoryTrait
 
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @param int $line
-     * @param int $column
-     * @param int $length
-     * @return IntervalInterface
      */
     public static function fromPosition($source, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
     {

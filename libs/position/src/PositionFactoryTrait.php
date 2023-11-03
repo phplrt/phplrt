@@ -81,8 +81,6 @@ trait PositionFactoryTrait
 
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @param int $offset
-     * @return PositionInterface
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
@@ -124,7 +122,6 @@ trait PositionFactoryTrait
 
     /**
      * @param ReadableInterface|string|resource|mixed $source
-     * @return int
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
