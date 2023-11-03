@@ -50,22 +50,12 @@ trait ParserConfigsTrait
 
     private bool $useMutableBuffer = false;
 
+    private bool $allowTrailingTokens = false;
+
     /**
      * Step reducer.
      */
     private ?\Closure $step = null;
-
-    /**
-     * Sets a token name indicating the end of parsing.
-     *
-     * @param non-empty-string $token
-     */
-    public function completeAt(string $token): self
-    {
-        $this->eoi = $token;
-
-        return $this;
-    }
 
     /**
      * Initialize parser's configuration options.
@@ -79,8 +69,21 @@ trait ParserConfigsTrait
             ->buildUsing($options[Config::CONFIG_AST_BUILDER] ?? $this)
             ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
             ->possibleTokensSearching($options[Config::CONFIG_POSSIBLE_TOKENS_SEARCHING] ?? false)
+            ->allowTrailingTokens($options[Config::CONFIG_ALLOW_TRAILING_TOKENS] ?? false)
         ;
     }
+
+    /**
+     * Sets a token name indicating the end of parsing.
+     *
+     * @param non-empty-string $token
+     */
+    public function completeAt(string $token): self
+    {
+        $this->eoi = $token;
+
+        return $this;
+
 
     /**
      * Sets an abstract syntax tree builder.
@@ -144,6 +147,13 @@ trait ParserConfigsTrait
     {
         $this->possibleTokensSearching = $possibleTokensSearching;
         $this->useMutableBuffer = $this->possibleTokensSearching;
+
+        return $this;
+    }
+
+    public function allowTrailingTokens(bool $allow = true): self
+    {
+        $this->allowTrailingTokens = $allow;
 
         return $this;
     }

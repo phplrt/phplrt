@@ -201,7 +201,9 @@ final class Parser implements
     {
         $result = $this->next($context);
 
-        if (\is_iterable($result) && $this->isEoi($context->buffer)) {
+        if (\is_iterable($result)
+            && ($this->allowTrailingTokens || $this->isEoi($context->buffer))
+        ) {
             return $result;
         }
 
