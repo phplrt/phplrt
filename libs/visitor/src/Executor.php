@@ -354,7 +354,7 @@ class Executor implements ExecutorInterface
      * @param string|int $key
      * @param mixed $value
      */
-    private function updateNodeValue(NodeInterface $node, string $key, $value): void
+    private function updateNodeValue(NodeInterface $node, $key, $value): void
     {
         try {
             $node->$key = $value;
