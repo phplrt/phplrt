@@ -11,11 +11,6 @@ final class Position implements PositionInterface
     use PositionFactoryTrait;
 
     /**
-     * @var non-empty-string
-     */
-    protected const LINE_DELIMITER = "\n";
-
-    /**
      * @var int<0, max>
      */
     private int $offset;
@@ -40,9 +35,13 @@ final class Position implements PositionInterface
         int $line = self::MIN_LINE,
         int $column = self::MIN_COLUMN
     ) {
+        assert($offset >= 0, 'Offset must not be negative');
+        assert($line > 0, 'Line must be greater than 0');
+        assert($column > 0, 'Column must be greater than 0');
+
         $this->offset = $offset;
-        $this->line   = \max($line, static::MIN_LINE);
-        $this->column = \max($column, static::MIN_COLUMN);
+        $this->line = $line;
+        $this->column = $column;
     }
 
     public function getOffset(): int

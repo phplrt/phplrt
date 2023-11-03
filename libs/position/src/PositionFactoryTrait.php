@@ -4,129 +4,135 @@ declare(strict_types=1);
 
 namespace Phplrt\Position;
 
+use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
-use Phplrt\Source\File;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\SourceFactoryInterface;
+use Phplrt\Source\SourceFactory;
 
 trait PositionFactoryTrait
 {
-    /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @param int<1, max> $line
-     * @param int<1, max> $column
-     * @return PositionInterface
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
-     */
-    public static function fromPosition($source, int $line = 1, int $column = 1): PositionInterface
+    private static ?PositionFactoryInterface $positionFactory = null;
+
+    private static ?SourceFactoryInterface $sourceFactory = null;
+
+    public static function setPositionFactory(PositionFactoryInterface $factory): void
     {
-        \assert($line >= PositionInterface::MIN_LINE, 'Line argument should be greater than 1');
-        \assert($column >= PositionInterface::MIN_COLUMN, 'Column argument should be greater than 1');
+        self::$positionFactory = $factory;
+    }
 
-        if ($line === PositionInterface::MIN_LINE && $column === PositionInterface::MIN_COLUMN) {
-            return static::start();
+    public static function getPositionFactory(): PositionFactoryInterface
+    {
+        return self::$positionFactory ??= new PositionFactory();
+    }
+
+    public static function setSourceFactory(SourceFactoryInterface $factory): void
+    {
+        self::$sourceFactory = $factory;
+    }
+
+    public static function getSourceFactory(): SourceFactoryInterface
+    {
+        if (self::$sourceFactory !== null) {
+            return self::$sourceFactory;
         }
 
-        $stream = File::new($source)->getStream();
-        $offset = $cursor = 0;
+        if (!\class_exists(SourceFactory::class)) {
+            $message = 'Can not find and create instance of %s because the package'
+                . ' "phplrt/source" is not available. Please indicate it explicitly'
+                . ' using "%s::setSourceFactory()" method.';
 
-        //
-        // Calculate the number of bytes that the transmitted
-        // number of lines takes.
-        //
-        while (!\feof($stream) && $cursor++ + 1 < $line) {
-            $offset += \strlen((string)\fgets($stream));
+            throw new \LogicException(\vsprintf($message, [
+                SourceFactoryInterface::class,
+                static::class,
+            ]));
         }
 
-        //
-        // In the case that the column is not the first one, then
-        // we calculate the number of bytes contained in the very
-        // last source line not exceeding the size of the transmitted
-        // column.
-        //
-        if ($column !== 1) {
-            $last = (string)@\fread($stream, $column - 1);
-            $lines = \explode(static::LINE_DELIMITER, $last);
-            $offset += $column = \strlen((string)\reset($lines));
-        }
-
-        return new Position($offset, \max(1, $cursor), \max(1, $column));
+        return self::$sourceFactory = new SourceFactory();
     }
 
     /**
-     * @return PositionInterface
+     * An alternative factory function of the
+     * {@see PositionFactoryInterface::createFromPosition()} method.
+     *
+     * @param int<1, max> $line Expected line value of the position in the
+     *        passed source instance.
+     * @param int<1, max> $column Expected column value of the position in the
+     *        passed source instance.
+     *
+     * @throws SourceExceptionInterface In case of an error in creating the
+     *         source object.
+     */
+    public static function fromPosition(
+        $source,
+        int $line = PositionInterface::MIN_LINE,
+        int $column = PositionInterface::MIN_COLUMN
+    ): PositionInterface {
+        $factory = self::getPositionFactory();
+
+        if (!$source instanceof ReadableInterface) {
+            $sources = self::getSourceFactory();
+
+            $source = $sources->create($source);
+        }
+
+        return $factory->createFromPosition($source, $line, $column);
+    }
+
+    /**
+     * An alternative factory function of the
+     * {@see PositionFactoryInterface::createAtStarting()} method.
      */
     public static function start(): PositionInterface
     {
-        return new Position(
-            PositionInterface::MIN_OFFSET,
-            PositionInterface::MIN_LINE,
-            PositionInterface::MIN_COLUMN
-        );
+        $factory = self::getPositionFactory();
+
+        return $factory->createAtStarting();
     }
 
     /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @return PositionInterface
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
+     * An alternative factory function of the
+     * {@see PositionFactoryInterface::createAtEnding()} method.
+     *
+     * @throws SourceExceptionInterface In case of an error in creating the
+     *         source object.
      */
     public static function end($source): PositionInterface
     {
-        $source = File::new($source);
+        $factory = self::getPositionFactory();
 
-        return static::fromOffset($source, self::length($source));
+        if (!$source instanceof ReadableInterface) {
+            $sources = self::getSourceFactory();
+
+            $source = $sources->create($source);
+        }
+
+        return $factory->createAtEnding($source);
     }
 
     /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
+     * An alternative factory function of the
+     * {@see PositionFactoryInterface::createFromOffset()} method.
+     *
+     * @param int<0, max> $offset Expected offset of the position in the passed
+     *        source instance.
+     *
+     * @throws SourceExceptionInterface In case of an error in creating the
+     *         source object.
      */
-    public static function fromOffset($source, int $offset = 0): PositionInterface
-    {
-        if ($offset <= PositionInterface::MIN_OFFSET) {
-            return static::start();
+    public static function fromOffset(
+        $source,
+        int $offset = PositionInterface::MIN_OFFSET
+    ): PositionInterface {
+        $factory = self::getPositionFactory();
+
+        if (!$source instanceof ReadableInterface) {
+            $sources = self::getSourceFactory();
+
+            $source = $sources->create($source);
         }
 
-        $source = File::new($source);
-
-        if ($offset > self::length($source)) {
-            return static::end($source);
-        }
-
-        $sources = \fread($source->getStream(), $offset);
-
-        //
-        // Format the offset so that it does not exceed the allowable text
-        // size and is not less than zero.
-        //
-        $offset = \max(0, \min(\strlen($sources), $offset));
-
-        //
-        // The number of occurrences of lines found in the desired text slice.
-        //
-        $lines = \substr_count($sources, static::LINE_DELIMITER, 0, $offset) + 1;
-
-        //
-        // Go through the last line before the first occurrence
-        // of line break. This value will be a column.
-        //
-        for ($i = $offset, $column = 1; $i > 0 && $sources[$i - 1] !== static::LINE_DELIMITER; --$i) {
-            ++$column;
-        }
-
-        return new Position($offset, $lines, $column);
-    }
-
-    /**
-     * @param ReadableInterface|string|resource|mixed $source
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
-     */
-    private static function length($source): int
-    {
-        return \strlen(File::new($source)->getContents());
+        return $factory->createFromOffset($source, $offset);
     }
 }

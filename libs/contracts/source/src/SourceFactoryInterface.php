@@ -7,6 +7,19 @@ namespace Phplrt\Contracts\Source;
 interface SourceFactoryInterface
 {
     /**
+     * @return ($source is \SplFileInfo
+     *      ? FileInterface
+     *      : ($source is FileInterface
+     *          ? FileInterface
+     *          : ReadableInterface)
+     *  )
+     *
+     * @throws SourceExceptionInterface In case of an error in creating the
+     *         source object.
+     */
+    public function create($source): ReadableInterface;
+
+    /**
      * Create a new source object from a string.
      *
      * @param string $content String content with which to populate the
@@ -19,7 +32,7 @@ interface SourceFactoryInterface
      * @throws SourceExceptionInterface In case of an error in creating the
      *         source object.
      */
-    public function create(string $content = '', string $name = null): ReadableInterface;
+    public function createFromString(string $content = '', string $name = null): ReadableInterface;
 
     /**
      * Create a source object from an existing file.

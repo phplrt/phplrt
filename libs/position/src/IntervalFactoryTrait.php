@@ -7,6 +7,9 @@ namespace Phplrt\Position;
 use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
+/**
+ * @deprecated since phplrt 3.4 and will be removed in 4.0.
+ */
 trait IntervalFactoryTrait
 {
     /**

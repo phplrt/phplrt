@@ -7,6 +7,7 @@ namespace Phplrt\Source;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
 
@@ -72,7 +73,27 @@ final class SourceFactory implements SourceFactoryInterface
         $this->algo = $algo;
     }
 
-    public function create(string $content = '', string $name = null): ReadableInterface
+    public function create($source): ReadableInterface
+    {
+        switch (true) {
+            case $source instanceof ReadableInterface:
+                return $source;
+
+            case $source instanceof \SplFileInfo:
+                return $this->createFromFile($source->getPathname());
+
+            case \is_string($source):
+                return $this->createFromString($source);
+
+            case \is_resource($source):
+                return $this->createFromStream($source);
+
+            default:
+                throw NotCreatableException::fromInvalidType($source);
+        }
+    }
+
+    public function createFromString(string $content = '', string $name = null): ReadableInterface
     {
         assert($name !== '', 'Name must not be empty');
 

@@ -7,24 +7,17 @@ namespace Phplrt\Position;
 use Phplrt\Contracts\Position\IntervalInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 
+/**
+ * @deprecated since phplrt 3.4 and will be removed in 4.0.
+ */
 final class Interval implements IntervalInterface
 {
     use IntervalFactoryTrait;
 
-    /**
-     * @var PositionInterface
-     */
     private PositionInterface $from;
 
-    /**
-     * @var PositionInterface
-     */
     private PositionInterface $to;
 
-    /**
-     * @param PositionInterface $from
-     * @param PositionInterface $to
-     */
     public function __construct(PositionInterface $from, PositionInterface $to)
     {
         $this->from = $from;

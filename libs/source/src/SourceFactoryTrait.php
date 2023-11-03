@@ -14,6 +14,16 @@ trait SourceFactoryTrait
 {
     private static ?SourceFactoryInterface $sourceFactory = null;
 
+    public static function setSourceFactory(SourceFactoryInterface $factory): void
+    {
+        self::$sourceFactory = $factory;
+    }
+
+    public static function getSourceFactory(): SourceFactoryInterface
+    {
+        return self::$sourceFactory ??= new SourceFactory();
+    }
+
     /**
      * @return ($source is \SplFileInfo
      *     ? FileInterface
@@ -28,42 +38,17 @@ trait SourceFactoryTrait
      */
     public static function new($source): ReadableInterface
     {
-        switch (true) {
-            case $source instanceof ReadableInterface:
-                return $source;
-
-            case $source instanceof \SplFileInfo:
-                return static::fromSplFileInfo($source);
-
-            case \is_string($source):
-                return static::fromSources($source);
-
-            case $source instanceof StreamInterface:
-                return static::fromPsrStream($source);
-
-            case \is_resource($source):
-                return static::fromResource($source);
-
-            default:
-                $message = \vsprintf('Unrecognized readable file type "%s"', [
-                    \get_debug_type($source),
-                ]);
-                throw new \InvalidArgumentException($message);
+        if ($source instanceof StreamInterface) {
+            return static::fromPsrStream($source);
         }
-    }
 
-    public static function setSourceFactory(SourceFactoryInterface $factory): void
-    {
-        self::$sourceFactory = $factory;
-    }
+        $factory = self::getSourceFactory();
 
-    public static function getSourceFactory(): SourceFactoryInterface
-    {
-        return self::$sourceFactory ??= new SourceFactory();
+        return $factory->create($source);
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::create()} method.
+     * An alternative factory function of the {@see SourceFactoryInterface::createFromString()} method.
      *
      * @psalm-taint-sink file $pathname
      *
@@ -78,7 +63,7 @@ trait SourceFactoryTrait
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::create()} method.
+     * An alternative factory function of the {@see SourceFactoryInterface::createFromString()} method.
      *
      * @psalm-taint-sink file $pathname
      *
@@ -91,7 +76,7 @@ trait SourceFactoryTrait
     {
         $factory = static::getSourceFactory();
 
-        return $factory->create($sources, $pathname);
+        return $factory->createFromString($sources, $pathname);
     }
 
     /**
