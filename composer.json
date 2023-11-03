@@ -20,7 +20,15 @@
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
-        "laminas/laminas-code": "^4.0"
+        "laminas/laminas-code": "^4.0",
+        "symfony/deprecation-contracts": "^2.5|^3.0"
+    },
+    "provide": {
+        "phplrt/exception-contracts-implementation": "^3.4",
+        "phplrt/lexer-contracts-implementation": "^3.4",
+        "phplrt/parser-contracts-implementation": "^3.4",
+        "phplrt/position-contracts-implementation": "^3.4",
+        "phplrt/source-contracts-implementation": "^3.4"
     },
     "autoload": {
         "files": [
@@ -46,7 +54,7 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.17",
+        "friendsofphp/php-cs-fixer": "^3.30",
         "jetbrains/phpstorm-attributes": "^1.0",
         "laminas/laminas-diactoros": "^2.17",
         "phpunit/phpunit": "^9.5.20",
@@ -54,7 +62,7 @@
         "rector/rector": "^0.18",
         "symfony/var-dumper": "^5.4|^6.0",
         "symplify/monorepo-builder": "^11.2",
-        "vimeo/psalm": "^5.12"
+        "vimeo/psalm": "^5.15"
     },
     "autoload-dev": {
         "psr-4": {
