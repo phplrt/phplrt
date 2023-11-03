@@ -97,14 +97,11 @@
         "psalm": "psalm --no-cache",
         "phpunit": "phpunit --testdox",
         "phpcs": "@phpcs:check",
-        "phpcs:check": [
-            "rector --config=rector.php --dry-run",
-            "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run"
-        ],
-        "phpcs:fix": [
-            "rector --config=rector.php",
-            "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes"
-        ],
+        "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run",
+        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes",
+        "rector": "@rector:check",
+        "rector:check": "rector --config=rector.php --dry-run",
+        "rector:fix": "rector --config=rector.php",
         "merge": "monorepo-builder merge"
     },
     "extra": {
