@@ -49,7 +49,7 @@ class Source extends Readable implements PreferContentReadingInterface
     public function __construct(
         string $content,
         string $algo = SourceFactory::DEFAULT_HASH_ALGO,
-        string $temp = SourceFactory::DEFAULT_TEMP_STREAM,
+        string $temp = SourceFactory::DEFAULT_TEMP_STREAM
     ) {
         assert($algo !== '', 'Hashing algorithm name must not be empty');
         assert($temp !== '', 'Temporary stream name must not be empty');
