@@ -20,7 +20,9 @@
             <directory name="libs/buffer/tests"/>
             <directory name="libs/compiler/tests"/>
             <directory name="libs/exception/tests"/>
+            <directory name="libs/lexer/resources"/>
             <directory name="libs/lexer/tests"/>
+            <directory name="libs/parser/resources"/>
             <directory name="libs/parser/tests"/>
             <directory name="libs/position/tests"/>
             <directory name="libs/source/tests"/>

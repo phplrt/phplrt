@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser;
+namespace Phplrt\Parser\Context;
 
 /**
- * @mixin ContextOptionsInterface
+ * @mixin ContextOptionsProviderInterface
  */
 trait ContextOptionsTrait
 {

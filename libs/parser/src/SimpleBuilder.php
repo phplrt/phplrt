@@ -4,33 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Parser\Context\TreeBuilder;
+
 /**
- * @psalm-type Reducer = \Closure(ContextInterface, mixed): mixed
+ * @deprecated since phplrt 3.4 and will be removed in 4.0
  */
-final class SimpleBuilder implements BuilderInterface
-{
-    /**
-     * @var array<array-key, Reducer>
-     */
-    private array $reducers = [];
-
-    /**
-     * @param array<array-key, Reducer> $reducers
-     */
-    public function __construct(
-        array $reducers = []
-    ) {
-        $this->reducers = $reducers;
-    }
-
-    public function build(ContextInterface $context, $result)
-    {
-        $state = $context->getState();
-
-        if (isset($this->reducers[$state])) {
-            return ($this->reducers[$state])($context, $result);
-        }
-
-        return $result;
-    }
-}
+final class SimpleBuilder extends TreeBuilder {}

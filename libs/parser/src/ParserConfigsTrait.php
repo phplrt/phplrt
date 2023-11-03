@@ -15,11 +15,6 @@ use Phplrt\Parser\ParserConfigsInterface as Config;
 trait ParserConfigsTrait
 {
     /**
-     * An abstract syntax tree builder.
-     */
-    private BuilderInterface $builder;
-
-    /**
      * A buffer class that allows you to iterate over the stream of tokens and
      * return to the selected position.
      *
@@ -30,13 +25,6 @@ trait ParserConfigsTrait
     private string $buffer = ArrayBuffer::class;
 
     /**
-     * The initial state (initial rule identifier) of the parser.
-     *
-     * @var array-key|null
-     */
-    private $initial;
-
-    /**
      * Token indicating the end of parsing.
      *
      * @var non-empty-string
@@ -44,16 +32,28 @@ trait ParserConfigsTrait
     private string $eoi = TokenInterface::END_OF_INPUT;
 
     /**
-     * Possible tokens searching (enable if it is {@see true})
+     * Possible tokens searching (enable if it is {@see true}).
+     *
+     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
+     *             has no effect.
      */
     private bool $possibleTokensSearching = false;
 
+    /**
+     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
+     *             has no effect.
+     */
     private bool $useMutableBuffer = false;
 
+    /**
+     * Enables support for trailing tokens after a completed grammar.
+     */
     private bool $allowTrailingTokens = false;
 
     /**
      * Step reducer.
+     *
+     * @var (\Closure(Context, (\Closure(): mixed)): mixed)|null
      */
     private ?\Closure $step = null;
 
@@ -63,10 +63,8 @@ trait ParserConfigsTrait
     protected function bootParserConfigsTrait(array $options): void
     {
         $this
-            ->startsAt($options[Config::CONFIG_INITIAL_RULE] ?? \array_key_first($this->rules))
             ->completeAt($options[Config::CONFIG_EOI] ?? $this->eoi)
             ->withBuffer($options[Config::CONFIG_BUFFER] ?? $this->buffer)
-            ->buildUsing($options[Config::CONFIG_AST_BUILDER] ?? $this)
             ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
             ->possibleTokensSearching($options[Config::CONFIG_POSSIBLE_TOKENS_SEARCHING] ?? false)
             ->allowTrailingTokens($options[Config::CONFIG_ALLOW_TRAILING_TOKENS] ?? false)
@@ -86,16 +84,6 @@ trait ParserConfigsTrait
     }
 
     /**
-     * Sets an abstract syntax tree builder.
-     */
-    public function buildUsing(BuilderInterface $builder): self
-    {
-        $this->builder = $builder;
-
-        return $this;
-    }
-
-    /**
      * Allows to add an interceptor to each step of the parser. May be required
      * for debugging.
      *
@@ -106,6 +94,8 @@ trait ParserConfigsTrait
      *      return $next($ctx);
      *  });
      * </code>
+     *
+     * @param (callable(Context, (\Closure(): mixed)): mixed)|null $step
      */
     public function eachStepThrough(?callable $step): self
     {
@@ -117,7 +107,7 @@ trait ParserConfigsTrait
     /**
      * Sets a tokens buffer class.
      *
-     * @param class-string $class
+     * @param class-string<BufferInterface> $class
      */
     public function withBuffer(string $class): self
     {
@@ -129,19 +119,10 @@ trait ParserConfigsTrait
     }
 
     /**
-     * Sets an initial state (initial rule identifier) of the parser.
+     * Turn on/off for possible tokens searching.
      *
-     * @param array-key $initial
-     */
-    public function startsAt($initial): self
-    {
-        $this->initial = $initial;
-
-        return $this;
-    }
-
-    /**
-     * Turn on/off for possible tokens searching
+     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
+     *             has no effect.
      */
     public function possibleTokensSearching(bool $possibleTokensSearching): self
     {

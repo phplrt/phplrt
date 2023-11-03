@@ -110,7 +110,7 @@ This file will contain your compiled data that can be used in your custom parser
 use Phplrt\Lexer\Lexer;
 use Phplrt\Parser\Parser;
 use Phplrt\Parser\BuilderInterface;
-use Phplrt\Parser\ContextInterface;
+use Phplrt\Parser\Context;
 
 $data = require __DIR__ . '/grammar.php';
 
@@ -128,7 +128,7 @@ $parser = new Parser($lexer, $data['grammar'], [
     Parser::CONFIG_AST_BUILDER => new class($data['reducers']) implements BuilderInterface {
         public function __construct(private array $reducers) {}
 
-        public function build(ContextInterface $context, $result)
+        public function build(Context $context, $result)
         {
             $state = $context->getState();
 

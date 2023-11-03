@@ -24,7 +24,6 @@ use Phplrt\Lexer\Multistate;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Parser\BuilderInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Parser\ContextInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -266,7 +265,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
      *
      * @psalm-suppress MixedFunctionCall
      */
-    public function build(ContextInterface $context, $result)
+    public function build(Context $context, $result)
     {
         if (isset($this->reducers[$context->getState()])) {
             return $this->reducers[$context->getState()]($result);

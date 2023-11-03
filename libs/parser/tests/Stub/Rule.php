@@ -12,4 +12,9 @@ class Rule implements RuleInterface
     {
         return new self();
     }
+
+    public function getTerminals(array $rules): iterable
+    {
+        return [];
+    }
 }

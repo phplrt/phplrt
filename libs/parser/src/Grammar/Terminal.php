@@ -16,6 +16,11 @@ abstract class Terminal extends Rule implements TerminalInterface
         $this->keep = $keep;
     }
 
+    public function getTerminals(array $rules): iterable
+    {
+        return [$this];
+    }
+
     final public function isKeep(): bool
     {
         return $this->keep;

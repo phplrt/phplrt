@@ -8,6 +8,7 @@ use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Parser\Context\ContextOptionsTrait;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**

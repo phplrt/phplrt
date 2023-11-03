@@ -11,7 +11,6 @@ interface BuilderInterface
 {
     /**
      * @param NodeInterface|TokenInterface|iterable<NodeInterface|TokenInterface> $result
-     * @return mixed|null
      */
-    public function build(ContextInterface $context, $result);
+    public function build(Context $context, $result);
 }

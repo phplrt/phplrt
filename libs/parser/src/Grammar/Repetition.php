@@ -6,6 +6,9 @@ namespace Phplrt\Parser\Grammar;
 
 use Phplrt\Buffer\BufferInterface;
 
+/**
+ * @final marked as final since phplrt 3.4 and will be final since 4.0
+ */
 class Repetition extends Production
 {
     /**
@@ -44,6 +47,15 @@ class Repetition extends Production
         $this->rule = $rule;
         $this->gte  = $gte;
         $this->lte  = \is_infinite($lte) ? \INF : (int)$lte;
+    }
+
+    public function getTerminals(array $rules): iterable
+    {
+        if (!isset($rules[$this->rule])) {
+            return [];
+        }
+
+        return $rules[$this->rule]->getTerminals($rules);
     }
 
     /**

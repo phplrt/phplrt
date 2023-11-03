@@ -11,7 +11,9 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
- * Interface provides full information about execution context
+ * Interface provides full information about execution context.
+ *
+ * @deprecated since phplrt 3.4 and will be removed in 4.0, please use {@see Context} instead.
  */
 interface ContextInterface extends ContextOptionsInterface
 {

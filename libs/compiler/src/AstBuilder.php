@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Parser\BuilderInterface;
-use Phplrt\Parser\ContextInterface;
+use Phplrt\Parser\Context;
 
 class AstBuilder implements BuilderInterface
 {
-    public function build(ContextInterface $context, $result): ?SampleNode
+    public function build(Context $context, $result): ?SampleNode
     {
         if (!\is_string($context->getState())) {
             return null;

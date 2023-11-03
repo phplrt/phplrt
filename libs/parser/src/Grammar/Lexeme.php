@@ -7,6 +7,9 @@ namespace Phplrt\Parser\Grammar;
 use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
+/**
+ * @final marked as final since phplrt 3.4 and will be final since 4.0
+ */
 class Lexeme extends Terminal
 {
     /**

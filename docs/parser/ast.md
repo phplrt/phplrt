@@ -17,11 +17,11 @@ custom builder.
 
 ```php
 use Phplrt\Parser\Builder\BuilderInterface;
-use Phplrt\Parser\ContextInterface;
+use Phplrt\Parser\Context;
 
 class MyBuilder implements BuilderInterface
 {
-    public function build(ContextInterface $ctx, $children)
+    public function build(Context $ctx, $children)
     {
         switch ($ctx->getState()) {
             case 0: return new MyExampleNode($children);

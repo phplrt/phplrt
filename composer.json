@@ -99,11 +99,12 @@
     "scripts": {
         "test": [
             "@phpunit",
+            "@psalm",
             "@phpcs",
-            "@psalm"
+            "@rector"
         ],
         "psalm": "psalm --no-cache",
-        "phpunit": "phpunit --testdox",
+        "phpunit": "phpunit",
         "phpcs": "@phpcs:check",
         "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run",
         "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes",

@@ -10,7 +10,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Parser\BuilderInterface;
-use Phplrt\Parser\ContextInterface;
+use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Repetition;
@@ -20,12 +20,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 
 class SimpleSumParserTestCase extends TestCase implements BuilderInterface
 {
-    /**
-     * @param ContextInterface $context
-     * @param array|iterable|NodeInterface|TokenInterface $result
-     * @return mixed|void|null
-     */
-    public function build(ContextInterface $context, $result)
+    public function build(Context $context, $result)
     {
         if (\is_int($context->getState())) {
             return $result;

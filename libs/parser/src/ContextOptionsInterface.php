@@ -4,21 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-interface ContextOptionsInterface
-{
-    /**
-     * Returns arbitrary execution context options which were passed as
-     * arguments to the parsing method.
-     */
-    public function getOptions(): array;
+use Phplrt\Parser\Context\ContextOptionsProviderInterface;
 
-    /**
-     * Get the specified option value or $default argument instead.
-     */
-    public function getOption(string $name, $default = null);
-
-    /**
-     * Determine if the given option value exists.
-     */
-    public function hasOption(string $name): bool;
-}
+/**
+ * @deprecated since phplrt 3.4 and will be removed in 4.0, please
+ *             use {@see ContextOptionsProviderInterface} instead.
+ */
+interface ContextOptionsInterface extends ContextOptionsProviderInterface {}

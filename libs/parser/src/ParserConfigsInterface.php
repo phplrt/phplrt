@@ -43,6 +43,9 @@ interface ParserConfigsInterface
 
     /**
      * @var non-empty-string
+     *
+     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
+     *             has no effect.
      */
     public const CONFIG_POSSIBLE_TOKENS_SEARCHING = 'possibleTokensSearching';
 
