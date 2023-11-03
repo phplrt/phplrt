@@ -19,7 +19,6 @@ interface VisitorInterface
     /**
      * Called when entering a node.
      *
-     * @param NodeInterface $node
      * @return mixed
      */
     public function enter(NodeInterface $node);
@@ -27,7 +26,6 @@ interface VisitorInterface
     /**
      * Called when leaving a node.
      *
-     * @param NodeInterface $node
      * @return mixed
      */
     public function leave(NodeInterface $node);

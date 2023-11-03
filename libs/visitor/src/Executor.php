@@ -79,14 +79,8 @@ class Executor implements ExecutorInterface
      */
     private array $visitors = [];
 
-    /**
-     * @var bool
-     */
     private bool $stop = false;
 
-    /**
-     * @param array $visitors
-     */
     public function __construct(array $visitors = [])
     {
         $this->visitors = $visitors;
@@ -107,10 +101,6 @@ class Executor implements ExecutorInterface
         );
     }
 
-    /**
-     * @param iterable $ast
-     * @return iterable
-     */
     private function before(iterable $ast): iterable
     {
         foreach ($this->visitors as $visitor) {
@@ -361,12 +351,10 @@ class Executor implements ExecutorInterface
     }
 
     /**
-     * @param NodeInterface $node
      * @param string|int $key
      * @param mixed $value
-     * @return void
      */
-    private function updateNodeValue(NodeInterface $node, $key, $value): void
+    private function updateNodeValue(NodeInterface $node, string $key, $value): void
     {
         try {
             $node->$key = $value;
@@ -382,10 +370,6 @@ class Executor implements ExecutorInterface
         }
     }
 
-    /**
-     * @param iterable $ast
-     * @return iterable
-     */
     private function after(iterable $ast): iterable
     {
         foreach ($this->visitors as $visitor) {

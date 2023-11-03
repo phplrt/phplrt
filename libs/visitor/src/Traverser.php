@@ -62,7 +62,6 @@ class Traverser implements TraverserInterface
     }
 
     /**
-     * @param VisitorInterface ...$visitors
      * @return static
      */
     public static function through(VisitorInterface ...$visitors): self
@@ -71,8 +70,6 @@ class Traverser implements TraverserInterface
     }
 
     /**
-     * @param VisitorInterface $visitor
-     * @param bool $prepend
      * @return TraverserInterface|Traverser
      */
     public function with(VisitorInterface $visitor, bool $prepend = false): TraverserInterface
@@ -84,12 +81,11 @@ class Traverser implements TraverserInterface
     }
 
     /**
-     * @param VisitorInterface $visitor
      * @return TraverserInterface|Traverser
      */
     public function without(VisitorInterface $visitor): TraverserInterface
     {
-        $this->visitors = \array_filter($this->visitors, static function (VisitorInterface $haystack) use ($visitor) {
+        $this->visitors = \array_filter($this->visitors, static function (VisitorInterface $haystack) use ($visitor): bool {
             return $haystack !== $visitor;
         });
 
