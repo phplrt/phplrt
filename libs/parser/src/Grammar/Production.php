@@ -10,7 +10,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 abstract class Production extends Rule implements ProductionInterface
 {
     /**
-     * @param list<NodeInterface> $children
+     * @param list<NodeInterface|TokenInterface> $children
      * @param NodeInterface|TokenInterface $result
      * @return list<NodeInterface|TokenInterface>
      */

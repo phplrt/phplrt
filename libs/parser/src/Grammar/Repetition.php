@@ -10,26 +10,32 @@ class Repetition extends Production
 {
     /**
      * @var int<0, max>
+     *
      * @readonly
+     * @psalm-readonly-allow-private-mutation
      */
     public int $gte;
 
     /**
-     * @var int<0, max>|\INF
+     * @var int<0, max>|float
+     *
      * @readonly
+     * @psalm-readonly-allow-private-mutation
      */
     public $lte;
 
     /**
      * @var array-key
+     *
      * @readonly
+     * @psalm-readonly-allow-private-mutation
      */
     public $rule;
 
     /**
      * @param array-key $rule
      * @param int<0, max> $gte
-     * @param int<0, max>|\INF $lte
+     * @param int<0, max>|float $lte
      */
     public function __construct($rule, int $gte = 0, $lte = \INF)
     {
@@ -75,7 +81,7 @@ class Repetition extends Production
         $global = $buffer->key();
 
         do {
-            $inRange  = $iterations >= $this->gte && $iterations <= $this->lte;
+            $inRange = $iterations >= $this->gte && $iterations <= $this->lte;
             $rollback = $buffer->key();
 
             if (($result = $reduce($this->rule)) === null) {

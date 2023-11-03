@@ -90,7 +90,9 @@ final class Parser implements
      * Array of transition rules for the parser.
      *
      * @var array<array-key, RuleInterface>
+     *
      * @readonly
+     * @psalm-readonly-allow-private-mutation
      */
     private array $rules = [];
 

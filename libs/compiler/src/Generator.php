@@ -170,7 +170,7 @@ class Generator
     {
         $prefix = $this->renderer->prefix($depth + 1);
 
-        $lines[0] = $prefix . $lines[0] ?? '';
+        $lines[0] = $prefix . ($lines[0] ?? '');
 
         $lines = $this->addInjections($lines, [
             'file'   => $prefix . '$file = $ctx->getSource();',

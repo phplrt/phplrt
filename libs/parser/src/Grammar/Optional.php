@@ -10,7 +10,9 @@ class Optional extends Production
 {
     /**
      * @var array-key
+     *
      * @readonly
+     * @psalm-readonly-allow-private-mutation
      */
     public $rule;
 
