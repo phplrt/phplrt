@@ -9,24 +9,27 @@ use Phplrt\Buffer\BufferInterface;
 class Repetition extends Production
 {
     /**
-     * @var int
+     * @var int<0, max>
+     * @readonly
      */
     public int $gte;
 
     /**
-     * @var int|float
+     * @var int<0, max>|\INF
+     * @readonly
      */
     public $lte;
 
     /**
-     * @var int|string
+     * @var array-key
+     * @readonly
      */
     public $rule;
 
     /**
-     * @param int|string $rule
-     * @param int $gte
-     * @param int|float $lte
+     * @param array-key $rule
+     * @param int<0, max> $gte
+     * @param int<0, max>|\INF $lte
      */
     public function __construct($rule, int $gte = 0, $lte = \INF)
     {
@@ -38,8 +41,7 @@ class Repetition extends Production
     }
 
     /**
-     * @param int $times
-     * @return $this
+     * @param int<0, max> $times
      */
     public function from(int $times): self
     {
@@ -49,8 +51,7 @@ class Repetition extends Production
     }
 
     /**
-     * @param int $times
-     * @return $this
+     * @param int<0, max> $times
      */
     public function to(int $times): self
     {
@@ -59,9 +60,6 @@ class Repetition extends Production
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function inf(): self
     {
         $this->lte = \INF;

@@ -16,8 +16,6 @@ trait ParserConfigsTrait
 {
     /**
      * An abstract syntax tree builder.
-     *
-     * @var BuilderInterface
      */
     private BuilderInterface $builder;
 
@@ -34,7 +32,7 @@ trait ParserConfigsTrait
     /**
      * The initial state (initial rule identifier) of the parser.
      *
-     * @var non-empty-string|int<0, max>|null
+     * @var array-key|null
      */
     private $initial;
 
@@ -46,29 +44,21 @@ trait ParserConfigsTrait
     private string $eoi = TokenInterface::END_OF_INPUT;
 
     /**
-     * Possible tokens searching (enable if it is true)
-     *
-     * @var bool
+     * Possible tokens searching (enable if it is {@see true})
      */
     private bool $possibleTokensSearching = false;
 
-    /**
-     * @var bool
-     */
     private bool $useMutableBuffer = false;
 
     /**
-     * Step reducer
-     *
-     * @var \Closure|null
+     * Step reducer.
      */
     private ?\Closure $step = null;
 
     /**
-     * Sets an a token name indicating the end of parsing.
+     * Sets a token name indicating the end of parsing.
      *
      * @param non-empty-string $token
-     * @return $this
      */
     public function completeAt(string $token): self
     {
@@ -78,10 +68,7 @@ trait ParserConfigsTrait
     }
 
     /**
-     * Initialize parser's configuration options
-     *
-     * @param array $options
-     * @return void
+     * Initialize parser's configuration options.
      */
     protected function bootParserConfigsTrait(array $options): void
     {
@@ -97,9 +84,6 @@ trait ParserConfigsTrait
 
     /**
      * Sets an abstract syntax tree builder.
-     *
-     * @param BuilderInterface $builder
-     * @return $this
      */
     public function buildUsing(BuilderInterface $builder): self
     {
@@ -119,9 +103,6 @@ trait ParserConfigsTrait
      *      return $next($ctx);
      *  });
      * </code>
-     *
-     * @param callable|null $step
-     * @return $this
      */
     public function eachStepThrough(?callable $step): self
     {
@@ -134,7 +115,6 @@ trait ParserConfigsTrait
      * Sets a tokens buffer class.
      *
      * @param class-string $class
-     * @return $this
      */
     public function withBuffer(string $class): self
     {
@@ -148,8 +128,7 @@ trait ParserConfigsTrait
     /**
      * Sets an initial state (initial rule identifier) of the parser.
      *
-     * @param non-empty-string|int<0, max> $initial
-     * @return $this
+     * @param array-key $initial
      */
     public function startsAt($initial): self
     {
@@ -160,9 +139,6 @@ trait ParserConfigsTrait
 
     /**
      * Turn on/off for possible tokens searching
-     *
-     * @param bool $possibleTokensSearching
-     * @return $this
      */
     public function possibleTokensSearching(bool $possibleTokensSearching): self
     {

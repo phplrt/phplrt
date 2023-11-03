@@ -10,9 +10,9 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 abstract class Production extends Rule implements ProductionInterface
 {
     /**
-     * @param array|NodeInterface[] $children
-     * @param iterable|NodeInterface|TokenInterface $result
-     * @return array|NodeInterface[]|TokenInterface[]
+     * @param list<NodeInterface> $children
+     * @param NodeInterface|TokenInterface $result
+     * @return list<NodeInterface|TokenInterface>
      */
     protected function mergeWith(array $children, $result): array
     {

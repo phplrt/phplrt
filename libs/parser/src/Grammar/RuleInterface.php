@@ -7,6 +7,4 @@ namespace Phplrt\Parser\Grammar;
 /**
  * The base interface of all parser rules.
  */
-interface RuleInterface
-{
-}
+interface RuleInterface {}

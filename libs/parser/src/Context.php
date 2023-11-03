@@ -36,8 +36,6 @@ class Context implements ContextInterface
      *
      * Please note that this value contains the last in the list of processed
      * ones, and not the last in time that was processed.
-     *
-     * @var TokenInterface|null
      */
     public ?TokenInterface $lastOrdinalToken = null;
 
@@ -47,23 +45,17 @@ class Context implements ContextInterface
      *
      * Please note that this value contains the last token in time, and not
      * the last in order in the buffer, unlike the value of "$lastOrdinalToken".
-     *
-     * @var TokenInterface
      */
     public TokenInterface $lastProcessedToken;
 
     /**
      * Contains the NodeInterface object which was last successfully
      * processed while parsing.
-     *
-     * @var NodeInterface|null
      */
     public ?NodeInterface $node = null;
 
     /**
      * Contains the parser's current rule.
-     *
-     * @var RuleInterface|null
      */
     public ?RuleInterface $rule = null;
 
@@ -74,29 +66,22 @@ class Context implements ContextInterface
      * the future, it is necessary to delete this data with a replacement for
      * the stateless structure.
      *
-     * @var int<0, max>|non-empty-string
+     * @var array-key
      */
     public $state;
 
     /**
      * Contains information about the processed source.
-     *
-     * @var ReadableInterface
      */
     public ReadableInterface $source;
 
     /**
      * Contains a buffer of tokens that were collected from lexical analysis.
-     *
-     * @var BufferInterface
      */
     public BufferInterface $buffer;
 
     /**
-     * @param BufferInterface $buffer
-     * @param ReadableInterface $source
-     * @param int<0, max>|non-empty-string $state
-     * @param array $options
+     * @param array-key $state
      */
     public function __construct(BufferInterface $buffer, ReadableInterface $source, $state, array $options)
     {

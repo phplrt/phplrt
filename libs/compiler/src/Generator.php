@@ -15,14 +15,8 @@ use Phplrt\Parser\Grammar\RuleInterface;
 
 class Generator
 {
-    /**
-     * @var Analyzer
-     */
     protected Analyzer $analyzer;
 
-    /**
-     * @var RendererInterface
-     */
     private RendererInterface $renderer;
 
     /**

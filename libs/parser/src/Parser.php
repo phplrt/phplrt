@@ -15,6 +15,8 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Parser\Environment\Factory as EnvironmentFactory;
+use Phplrt\Parser\Environment\SelectorInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenWithHintsException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
@@ -65,7 +67,7 @@ final class Parser implements
     use ParserConfigsTrait;
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     private const ERROR_XDEBUG_NOTICE_MESSAGE =
         'Please note that if Xdebug is enabled, a "Fatal error: Maximum function nesting level of "%d" ' .
@@ -73,82 +75,60 @@ final class Parser implements
         'or disabling the extension.';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     private const ERROR_BUFFER_TYPE = 'Buffer class should implement %s interface';
 
     /**
      * The lexer instance.
      *
-     * @var LexerInterface
+     * @readonly
      */
     private LexerInterface $lexer;
 
     /**
+     * The {@see SelectorInterface} is responsible for preparing
+     * and analyzing the PHP environment for the parser to work.
+     *
+     * @readonly
+     */
+    private SelectorInterface $env;
+
+    /**
      * Array of transition rules for the parser.
      *
-     * @var array<RuleInterface>
+     * @var array<array-key, RuleInterface>
+     * @readonly
      */
     private array $rules = [];
 
     /**
      * Array of possible tokens for error or missing token.
      *
-     * @var array<TokenInterface>
+     * @var list<TokenInterface>
      */
     private array $possibleTokens = [];
 
     /**
-     * @param LexerInterface $lexer
-     * @param iterable|RuleInterface[] $grammar
-     * @param array $options
+     * @param iterable<array-key, RuleInterface> $grammar
      */
-    public function __construct(LexerInterface $lexer, iterable $grammar = [], array $options = [])
-    {
-        $this->initializeLexer($lexer);
-        $this->initializeGrammar($grammar);
-        $this->initializeOptions($options);
-    }
-
-    /**
-     * @param LexerInterface $lexer
-     * @return void
-     */
-    private function initializeLexer(LexerInterface $lexer): void
-    {
+    public function __construct(
+        LexerInterface $lexer,
+        iterable $grammar = [],
+        array $options = []
+    ) {
         $this->lexer = $lexer;
+        $this->env = new EnvironmentFactory();
+        $this->initializeGrammar($grammar);
+        $this->bootParserConfigsTrait($options);
     }
 
     /**
      * Initialize parser's grammar
-     *
-     * @param iterable $grammar
-     * @return void
      */
     private function initializeGrammar(iterable $grammar): void
     {
         $this->rules = $grammar instanceof \Traversable ? \iterator_to_array($grammar) : $grammar;
-    }
-
-    /**
-     * @param array $options
-     * @return void
-     */
-    private function initializeOptions(array $options): void
-    {
-        $this->bootParserConfigsTrait($options);
-
-        //
-        // In the case that the xdebug is enabled, then the parser may return
-        // an error due to the features of the recursive algorithm.
-        //
-        // Parser should notify about it.
-        //
-        if (\function_exists('\\xdebug_is_enabled')) {
-            @\trigger_error(\vsprintf(self::ERROR_XDEBUG_NOTICE_MESSAGE, [
-                \ini_get('xdebug.max_nesting_level'),
-            ]));
-        }
     }
 
     public function parse($source, array $options = []): iterable
@@ -157,13 +137,17 @@ final class Parser implements
             return [];
         }
 
-        return $this->run(File::new($source), $options);
+        $this->env->prepare();
+
+        try {
+            return $this->run(File::new($source), $options);
+        } finally {
+            $this->env->rollback();
+        }
     }
 
     /**
-     * @param ReadableInterface $source
-     * @param array $options
-     * @return iterable<NodeInterface>
+     * @return iterable<array-key, NodeInterface>
      * @throws \Throwable
      */
     private function run(ReadableInterface $source, array $options): iterable
@@ -175,10 +159,6 @@ final class Parser implements
         return $this->parseOrFail($context);
     }
 
-    /**
-     * @param \Generator $stream
-     * @return BufferInterface
-     */
     private function createBuffer(\Generator $stream): BufferInterface
     {
         \assert(
@@ -198,8 +178,7 @@ final class Parser implements
     }
 
     /**
-     * @param ReadableInterface $source
-     * @param int $offset
+     * @param int<0, max> $offset
      * @return \Generator|TokenInterface[]
      */
     public function lex($source, int $offset = 0): \Generator
@@ -213,12 +192,6 @@ final class Parser implements
         }
     }
 
-    /**
-     * @param BufferInterface $buffer
-     * @param ReadableInterface $source
-     * @param array $options
-     * @return Context
-     */
     protected function createExecutionContext(
         BufferInterface $buffer,
         ReadableInterface $source,
@@ -228,8 +201,6 @@ final class Parser implements
     }
 
     /**
-     * @param Context $context
-     * @return iterable
      * @throws ParserRuntimeException
      */
     private function parseOrFail(Context $context): iterable
@@ -240,7 +211,7 @@ final class Parser implements
             return $result;
         }
 
-        $token = clone($context->lastOrdinalToken ?? $context->buffer->current());
+        $token = $context->lastOrdinalToken ?? $context->buffer->current();
 
         if ($this->possibleTokensSearching) {
             $this->findPossibleTokensForUnexpected($context);
@@ -249,10 +220,6 @@ final class Parser implements
         throw UnexpectedTokenWithHintsException::fromToken($context->getSource(), $token, null, $this->possibleTokens);
     }
 
-    /**
-     * @param Context $context
-     * @return void
-     */
     private function findPossibleTokensForUnexpected(Context $context): void
     {
         $problemTokenOffset = $context->lastOrdinalToken->getOffset();
@@ -274,8 +241,7 @@ final class Parser implements
     }
 
     /**
-     * @param Context $context
-     * @return array|mixed|null
+     * @return mixed
      */
     private function next(Context $context)
     {
@@ -289,8 +255,7 @@ final class Parser implements
     }
 
     /**
-     * @param Context $context
-     * @return array|mixed|null
+     * @return mixed
      */
     private function runNextStep(Context $context)
     {
@@ -366,9 +331,6 @@ final class Parser implements
 
     /**
      * Matches a token identifier that marks the end of the source.
-     *
-     * @param BufferInterface $buffer
-     * @return bool
      */
     private function isEoi(BufferInterface $buffer): bool
     {

@@ -69,10 +69,8 @@ abstract class Buffer implements BufferInterface
      */
     protected function currentFrom(array $data): TokenInterface
     {
-        if (isset($data[$this->current])) {
-            return $data[$this->current];
-        }
-
-        return $data[\array_key_last($data)] ?? new EndOfInput();
+        return $data[$this->current]
+            ?? $data[\array_key_last($data)]
+            ?? new EndOfInput();
     }
 }

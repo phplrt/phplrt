@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\BuilderInterface;
 use Phplrt\Parser\ContextInterface;
 
 class AstBuilder implements BuilderInterface
 {
-    /**
-     * @param ContextInterface $context
-     * @param array|iterable|NodeInterface|TokenInterface $result
-     * @return mixed
-     */
-    public function build(ContextInterface $context, $result)
+    public function build(ContextInterface $context, $result): ?SampleNode
     {
         if (! \is_string($context->getState())) {
             return null;

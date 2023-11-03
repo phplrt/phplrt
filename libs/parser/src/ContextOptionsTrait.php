@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 /**
- * Trait ContextOptionsTrait
- *
  * @mixin ContextOptionsInterface
  */
 trait ContextOptionsTrait
 {
-    /**
-     * @var array
-     */
     protected array $options = [];
 
     public function getOptions(): array
