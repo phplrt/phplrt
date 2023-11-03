@@ -6,14 +6,8 @@ namespace Phplrt\Contracts\Position;
 
 interface IntervalInterface
 {
-    /**
-     * @return PositionInterface
-     */
     public function getFrom(): PositionInterface;
 
-    /**
-     * @return PositionInterface
-     */
     public function getTo(): PositionInterface;
 
     /**

@@ -9,13 +9,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
 
 interface RuntimeExceptionInterface extends \Throwable
 {
-    /**
-     * @return TokenInterface
-     */
     public function getToken(): TokenInterface;
 
-    /**
-     * @return ReadableInterface
-     */
     public function getSource(): ReadableInterface;
 }

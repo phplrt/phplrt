@@ -15,8 +15,6 @@ interface ReadableInterface
 
     /**
      * Returns the contents of the source.
-     *
-     * @return string
      */
     public function getContents(): string;
 

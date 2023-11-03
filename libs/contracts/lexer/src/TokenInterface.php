@@ -32,8 +32,6 @@ interface TokenInterface
 
     /**
      * Returns the value of the captured subgroup
-     *
-     * @return string
      */
     public function getValue(): string;
 
