@@ -6,7 +6,7 @@
     "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "parser", "syntax", "analysis", "language", "php"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/parser-contracts/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/parser-contracts"
     },
     "authors": [

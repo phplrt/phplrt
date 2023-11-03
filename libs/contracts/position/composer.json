@@ -6,7 +6,7 @@
     "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "analyzing", "visualization", "input", "position", "line", "column", "offset", "utils"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/position-contracts/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/position-contracts"
     },
     "authors": [

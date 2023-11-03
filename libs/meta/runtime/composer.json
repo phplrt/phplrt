@@ -6,7 +6,7 @@
     "keywords": ["runtime"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/runtime/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/runtime"
     },
     "authors": [
@@ -17,10 +17,10 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/lexer": "^3.2",
-        "phplrt/parser": "^3.2",
-        "phplrt/position": "^3.2",
-        "phplrt/visitor": "^3.2"
+        "phplrt/lexer": "^3.4",
+        "phplrt/parser": "^3.4",
+        "phplrt/position": "^3.4",
+        "phplrt/visitor": "^3.4"
     },
     "extra": {
         "branch-alias": {

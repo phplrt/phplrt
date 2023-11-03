@@ -21,9 +21,9 @@
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "phplrt/source": "^3.2",
-        "phplrt/lexer-contracts": "^3.2",
-        "phplrt/exception": "^3.2"
+        "phplrt/source": "^3.4",
+        "phplrt/lexer-contracts": "^3.4",
+        "phplrt/exception": "^3.4"
     },
     "autoload": {
         "psr-4": {
@@ -43,7 +43,7 @@
         }
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "^3.2"
+        "phplrt/lexer-contracts-implementation": "^3.4"
     },
     "extra": {
         "branch-alias": {

@@ -6,7 +6,7 @@
     "keywords": ["file", "source", "io", "disk", "read"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/source-contracts/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/source-contracts"
     },
     "authors": [

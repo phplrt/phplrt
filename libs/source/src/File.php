@@ -5,70 +5,135 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Source\ContentReader\ContentReaderInterface;
-use Phplrt\Source\ContentReader\FileContentReader;
-use Phplrt\Source\Exception\NotFoundException;
+use Phplrt\Source\Exception\HashCalculationException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\StreamReader\FileStreamReader;
-use Phplrt\Source\StreamReader\StreamReaderInterface;
 
 class File extends Readable implements FileInterface
 {
     /**
-     * @var string
+     * @var non-empty-string
+     * @psalm-readonly-allow-private-mutation
      */
-    private const ERROR_NOT_FOUND = 'File "%s" not found';
+    private string $filename;
 
     /**
-     * @var string
+     * @var non-empty-string
+     * @psalm-readonly-allow-private-mutation
      */
-    private const ERROR_NOT_READABLE = 'Can not read the file "%s"';
-
-    private string $pathname;
+    private string $algo = SourceFactory::DEFAULT_HASH_ALGO;
 
     /**
-     * @param StreamReaderInterface|null $stream
-     * @param ContentReaderInterface|null $content
+     * @var int<1, max>
+     * @psalm-readonly-allow-private-mutation
+     */
+    private int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE;
+
+    /**
+     * @psalm-taint-sink file $filename
+     *
+     * @param non-empty-string $filename
+     * @param non-empty-string $algo Hashing algorithm for the source.
+     * @param int<1, max> $chunkSize The chunk size used while non-blocking
+     *        reading the file inside the {@see \Fiber}.
      */
     public function __construct(
-        string $pathname,
-        StreamReaderInterface $stream = null,
-        ContentReaderInterface $content = null
+        string $filename,
+        string $algo = SourceFactory::DEFAULT_HASH_ALGO,
+        int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE
     ) {
-        $this->pathname = \realpath($pathname);
+        assert($filename !== '', 'Filename must not be empty');
+        assert($algo !== '', 'Hashing algorithm name must not be empty');
+        assert($chunkSize >= 1, 'Chunk size must be greater than 0');
 
-        $stream ??= new FileStreamReader($pathname);
-        $content ??= new FileContentReader($pathname);
+        $this->chunkSize = $chunkSize;
+        $this->algo = $algo;
+        $this->filename = $filename;
+    }
 
-        parent::__construct($stream, $content);
+    public function getContents(): string
+    {
+        try {
+            if (\PHP_MAJOR_VERSION >= 8
+                && \PHP_MINOR_VERSION >= 1
+                && \Fiber::getCurrent() !== null
+            ) {
+                return $this->asyncGetContents();
+            }
+
+            return $this->syncGetContents();
+        } catch (\Throwable $e) {
+            throw NotReadableException::fromInternalFileError($this->filename, $e);
+        }
     }
 
     /**
-     * @throws NotFoundException
-     * @throws NotReadableException
+     * @throws \Throwable
      */
-    public static function assertValidPathname(string $pathname): void
+    private function asyncGetContents(): string
     {
-        if (!\is_file($pathname)) {
-            $message = \sprintf(self::ERROR_NOT_FOUND, $pathname);
+        $file = \fopen($this->filename, 'rb');
+        \stream_set_blocking($file, false);
+        \flock($file, \LOCK_SH);
 
-            throw new NotFoundException($message);
+        \Fiber::suspend();
+        $buffer = '';
+
+        while (!\feof($file)) {
+            $buffer .= \fread($file, $this->chunkSize);
+
+            \Fiber::suspend();
         }
 
-        if (!\is_readable($pathname)) {
-            $message = \sprintf(self::ERROR_NOT_READABLE, \realpath($pathname));
+        \flock($file, \LOCK_UN);
+        \fclose($file);
 
-            throw new NotReadableException($message);
+        return $buffer;
+    }
+
+    /**
+     * @throws \ErrorException
+     */
+    private function syncGetContents(): string
+    {
+        \error_clear_last();
+
+        $result = @\file_get_contents($this->filename);
+
+        if ($result === false) {
+            throw NotReadableException::createFromLastInternalError();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws NotReadableException
+     */
+    public function getStream()
+    {
+        $stream = \fopen($this->filename, 'rb');
+
+        if (!\is_resource($stream)) {
+            throw NotReadableException::fromOpeningFile($this->filename);
+        }
+
+        return $stream;
+    }
+
+    /**
+     * @throws HashCalculationException
+     */
+    public function getHash(): string
+    {
+        try {
+            return \hash_file($this->algo, $this->filename);
+        } catch (\ValueError $e) {
+            throw HashCalculationException::fromInvalidHashAlgo($this->algo, $e);
         }
     }
 
     public function getPathname(): string
     {
-        return $this->pathname;
-    }
-
-    final public function getHash(): string
-    {
-        return \hash_file(static::HASH_ALGORITHM, $this->pathname);
+        return $this->filename;
     }
 }

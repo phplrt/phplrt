@@ -6,7 +6,7 @@
     "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "ast", "tree"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/ast-contracts/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/ast-contracts"
     },
     "authors": [

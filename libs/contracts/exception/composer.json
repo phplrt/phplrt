@@ -6,7 +6,7 @@
     "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "exception"],
     "homepage": "https://github.com/phplrt",
     "support": {
-        "issues": "https://github.com/phplrt/exception-contracts/issues",
+        "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/exception-contracts"
     },
     "authors": [
@@ -17,8 +17,8 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/lexer-contracts": "^3.2",
-        "phplrt/source-contracts": "^3.2"
+        "phplrt/lexer-contracts": "^3.4",
+        "phplrt/source-contracts": "^3.4"
     },
     "autoload": {
         "psr-4": {
