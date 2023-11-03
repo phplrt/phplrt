@@ -20,11 +20,6 @@ class UnexpectedTokenException extends UnrecognizedTokenException
         \Throwable $prev = null,
         array $expected = []
     ): self {
-        $tokens = \implode(', ', \array_map(
-            static fn (string $t): string => \sprintf('"%s"', $t),
-            $expected
-        ));
-
         switch (\count($expected)) {
             case 0:
                 $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
@@ -32,20 +27,35 @@ class UnexpectedTokenException extends UnrecognizedTokenException
                 ]);
 
                 return new static($message, $src, $tok, $prev);
+
             case 1:
                 $message = \vsprintf('Syntax error, unexpected %s, %s is expected', [
                     self::getTokenValue($tok),
-                    $tokens,
+                    self::formatTokenNames($expected),
                 ]);
 
                 return new static($message, $src, $tok, $prev);
+
             default:
                 $message = \vsprintf('Syntax error, unexpected %s, one of %s is expected', [
                     self::getTokenValue($tok),
-                    $tokens,
+                    self::formatTokenNames($expected),
                 ]);
 
                 return new static($message, $src, $tok, $prev);
         }
+    }
+
+    /**
+     * @param list<non-empty-string> $tokens
+     *
+     * @return ($tokens is non-empty-list<non-empty-string> ? non-empty-string : string)
+     */
+    private static function formatTokenNames(array $tokens): string
+    {
+        return \implode(', ', \array_map(
+            static fn(string $t): string => \sprintf('"%s"', $t),
+            $tokens,
+        ));
     }
 }
