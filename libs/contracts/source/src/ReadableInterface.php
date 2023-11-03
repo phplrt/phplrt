@@ -9,7 +9,7 @@ interface ReadableInterface
     /**
      * Returns the resource stream of the source.
      *
-     * @return resource
+     * @return resource Returns the streaming contents of a file.
      *
      * @throws SourceExceptionInterface May occur during the inability to
      *         open or some operations with the resource stream.
@@ -19,7 +19,7 @@ interface ReadableInterface
     /**
      * Returns the contents of the source.
      *
-     * @return string
+     * @return string Returns the string contents of a file.
      *
      * @throws SourceExceptionInterface May occur when it is not possible to
      *         read source's data and/or convert it to a string.
@@ -32,7 +32,7 @@ interface ReadableInterface
      * If the value of the source content changes, the hash value will
      * also be changed.
      *
-     * @return non-empty-string
+     * @return non-empty-string Returns hash of a file.
      *
      * @throws SourceExceptionInterface May occur when it is not possible to
      *         convert object state information into a hash.

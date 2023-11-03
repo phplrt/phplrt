@@ -19,10 +19,9 @@ class Source extends Readable implements PreferContentReadingInterface
     /**
      * @var resource|null
      */
-    private $stream = null;
+    private $stream;
 
     /**
-     * @var string
      * @psalm-readonly-allow-private-mutation
      */
     private string $content;
@@ -70,7 +69,6 @@ class Source extends Readable implements PreferContentReadingInterface
     public function getStream()
     {
         if (!\is_resource($this->stream)) {
-            /** @var resource $memory */
             $this->stream = \fopen($this->temp, 'rb+');
 
             if (@\fwrite($this->stream, $this->content) === false) {

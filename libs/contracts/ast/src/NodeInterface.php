@@ -17,14 +17,14 @@ namespace Phplrt\Contracts\Ast;
  * through several stages that the parser\compiler requires, and has a
  * strong impact on the final output of the parser\compiler.
  *
- * @template-extends \IteratorAggregate<non-empty-string, NodeInterface|array<NodeInterface>>
+ * @template-extends \IteratorAggregate<array-key, NodeInterface|array<NodeInterface>>
  */
 interface NodeInterface extends \IteratorAggregate
 {
     /**
      * Returns the list of children nodes.
      *
-     * @return \Traversable<non-empty-string, NodeInterface|array<NodeInterface>>
+     * @return \Traversable<array-key, NodeInterface|array<NodeInterface>>
      */
     public function getIterator(): \Traversable;
 }
