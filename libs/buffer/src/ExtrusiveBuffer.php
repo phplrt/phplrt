@@ -60,9 +60,6 @@ class ExtrusiveBuffer extends LazyBuffer
         parent::seek($offset);
     }
 
-    /**
-     * @return void
-     */
     public function next(): void
     {
         if ($this->nextValid() && $this->getBufferCurrentSize() > $this->size) {

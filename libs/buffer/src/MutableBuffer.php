@@ -10,9 +10,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  */
 class MutableBuffer implements BufferInterface
 {
-    /**
-     * @var BufferInterface
-     */
     private BufferInterface $parent;
 
     /**
@@ -20,9 +17,6 @@ class MutableBuffer implements BufferInterface
      */
     private array $overrides = [];
 
-    /**
-     * @param BufferInterface $parent
-     */
     public function __construct(BufferInterface $parent)
     {
         $this->parent = $parent;
@@ -30,8 +24,6 @@ class MutableBuffer implements BufferInterface
 
     /**
      * @param int<0, max> $offset
-     * @param TokenInterface $token
-     * @return void
      */
     public function set(int $offset, TokenInterface $token): void
     {
@@ -40,7 +32,6 @@ class MutableBuffer implements BufferInterface
 
     /**
      * @param int<0, max> $offset
-     * @return TokenInterface
      */
     public function get(int $offset): TokenInterface
     {
@@ -49,7 +40,6 @@ class MutableBuffer implements BufferInterface
 
     /**
      * @param int<0, max> $offset
-     * @return TokenInterface
      */
     private function poll(int $offset): TokenInterface
     {

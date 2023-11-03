@@ -94,9 +94,6 @@ class LazyBuffer extends Buffer
         $this->nextValid();
     }
 
-    /**
-     * @return bool
-     */
     protected function nextValid(): bool
     {
         ++$this->current;

@@ -18,7 +18,6 @@ interface BufferInterface extends \SeekableIterator
      * @see \SeekableIterator::seek()
      *
      * @param int<0, max> $offset
-     * @return void
      */
     public function seek($offset): void;
 
@@ -27,8 +26,6 @@ interface BufferInterface extends \SeekableIterator
      *
      * @link https://php.net/manual/en/iterator.current.php
      * @see \Iterator::current()
-     *
-     * @return TokenInterface
      */
     public function current(): TokenInterface;
 
@@ -47,8 +44,6 @@ interface BufferInterface extends \SeekableIterator
      *
      * @link https://php.net/manual/en/iterator.valid.php
      * @see \Iterator::valid()
-     *
-     * @return bool
      */
     public function valid(): bool;
 
@@ -57,8 +52,6 @@ interface BufferInterface extends \SeekableIterator
      *
      * @link https://php.net/manual/en/iterator.rewind.php
      * @see \Iterator::rewind()
-     *
-     * @return void
      */
     public function rewind(): void;
 
@@ -67,8 +60,6 @@ interface BufferInterface extends \SeekableIterator
      *
      * @link https://php.net/manual/en/iterator.next.php
      * @see \Iterator::next()
-     *
-     * @return void
      */
     public function next(): void;
 }
