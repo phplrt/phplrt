@@ -169,7 +169,7 @@ final class PositionFactory implements PositionFactoryInterface
         if ($column !== 1) {
             $last = (string)@\fread($stream, $column - 1);
             $lines = \explode(self::LINE_DELIMITER, $last);
-            $offset += $column = \strlen((string)\reset($lines));
+            $offset += $column = \strlen(\reset($lines));
         }
 
         return new Position($offset, \max(1, $cursor), \max(1, $column));
