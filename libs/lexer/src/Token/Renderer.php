@@ -32,14 +32,8 @@ final class Renderer
      */
     private const DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
 
-    /**
-     * @var int
-     */
     private int $length = self::DEFAULT_LENGTH;
 
-    /**
-     * @var string
-     */
     private string $wrap = self::DEFAULT_WRAP;
 
     /**
@@ -47,15 +41,8 @@ final class Renderer
      */
     private array $replacements = self::DEFAULT_REPLACEMENTS;
 
-    /**
-     * @var string
-     */
     private string $suffix = self::DEFAULT_OVERFLOW_SUFFIX;
 
-    /**
-     * @param TokenInterface $token
-     * @return string
-     */
     public function render(TokenInterface $token): string
     {
         switch (true) {
@@ -67,10 +54,6 @@ final class Renderer
         return \sprintf('%s (%s)', $this->value($token), $this->name($token));
     }
 
-    /**
-     * @param TokenInterface $token
-     * @return string
-     */
     public function value(TokenInterface $token): string
     {
         $value = $this->escape($this->inline($token->getValue()));
@@ -82,28 +65,16 @@ final class Renderer
         return $this->wrap . $this->replace($value) . $this->wrap;
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function escape(string $value): string
     {
         return \addcslashes($value, $this->wrap);
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function inline(string $value): string
     {
         return (string)(\preg_replace('/\h+/u', ' ', $value) ?? $value);
     }
 
-    /**
-     * @param string $value
-     * @return bool
-     */
     private function shouldBeShorten(string $value): bool
     {
         $length = \mb_strlen($value);
@@ -111,19 +82,11 @@ final class Renderer
         return $length > $this->length + \mb_strlen($this->suffix($value));
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function suffix(string $value): string
     {
         return \sprintf($this->suffix, \mb_strlen($value) - $this->length);
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function shorten(string $value): string
     {
         $prefix = $this->wrap(\mb_substr($value, 0, $this->length) . '…');
@@ -131,19 +94,11 @@ final class Renderer
         return $prefix . $this->suffix($value);
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function wrap(string $value): string
     {
         return $this->wrap . $this->replace($value) . $this->wrap;
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
     private function replace(string $value): string
     {
         [$from, $to] = $this->replacements;
@@ -151,10 +106,6 @@ final class Renderer
         return \str_replace($from, $to, $value);
     }
 
-    /**
-     * @param TokenInterface $token
-     * @return string
-     */
     public function name(TokenInterface $token): string
     {
         return $token->getName();

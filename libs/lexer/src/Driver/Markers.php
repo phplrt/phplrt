@@ -27,7 +27,6 @@ class Markers extends Driver
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
-     * @param ReadableInterface $source
      * @param int<0, max> $offset
      * @return iterable<TokenInterface>
      */
@@ -50,7 +49,6 @@ class Markers extends Driver
 
     /**
      * @param non-empty-string $pattern
-     * @param string $source
      * @param int<0, max> $offset
      * @return array<array<int<0, max>, array{string, int}>|array{MARK: non-empty-string}>
      *
@@ -67,7 +65,6 @@ class Markers extends Driver
     /**
      * @param non-empty-string $name
      * @param array<array{string, int<0, max>}> $payload
-     * @return TokenInterface
      */
     private function make(string $name, array $payload): TokenInterface
     {

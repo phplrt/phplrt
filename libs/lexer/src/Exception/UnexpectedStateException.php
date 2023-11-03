@@ -19,11 +19,6 @@ class UnexpectedStateException extends LexerRuntimeException
      */
     private const ERROR_NO_STATES = 'No state defined for the selected multistate lexer';
 
-    /**
-     * @param ReadableInterface $src
-     * @param \Throwable|null $e
-     * @return static
-     */
     public static function fromEmptyStates(ReadableInterface $src, \Throwable $e = null): self
     {
         return new static(self::ERROR_NO_STATES, $src, null, $e);
@@ -31,10 +26,6 @@ class UnexpectedStateException extends LexerRuntimeException
 
     /**
      * @param string|int $state
-     * @param ReadableInterface $src
-     * @param TokenInterface|null $tok
-     * @param \Throwable|null $e
-     * @return static
      */
     public static function fromState($state, ReadableInterface $src, ?TokenInterface $tok, \Throwable $e = null): self
     {

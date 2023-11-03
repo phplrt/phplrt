@@ -160,14 +160,8 @@ abstract class PCRECompiler implements CompilerInterface
      */
     protected array $flags = [];
 
-    /**
-     * @var string
-     */
     protected string $delimiter = self::DEFAULT_DELIMITER;
 
-    /**
-     * @var bool
-     */
     private bool $debug = false;
 
     /**
@@ -254,7 +248,6 @@ abstract class PCRECompiler implements CompilerInterface
     /**
      * @param non-empty-string $pattern
      * @param non-empty-string|null $original
-     * @return void
      */
     protected function test(string $pattern, string $original = null): void
     {
@@ -281,9 +274,7 @@ abstract class PCRECompiler implements CompilerInterface
     }
 
     /**
-     * @param string $message
      * @param string|null $token
-     * @return string
      */
     protected function formatException(string $message, string $token = null): string
     {

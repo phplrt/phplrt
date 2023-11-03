@@ -28,7 +28,6 @@ interface MutableLexerInterface
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
-     * @param bool $reverseOrder
      * @return MutableLexerInterface|$this
      */
     public function prependMany(array $tokens, bool $reverseOrder = true): self;

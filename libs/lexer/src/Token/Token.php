@@ -19,9 +19,6 @@ class Token extends BaseToken
      */
     private int $offset;
 
-    /**
-     * @var string
-     */
     private string $value;
 
     /**
@@ -31,7 +28,6 @@ class Token extends BaseToken
 
     /**
      * @param string|int<0, max> $name
-     * @param string $value
      * @param int<0, max> $offset
      */
     public function __construct($name, string $value, int $offset)
@@ -45,9 +41,6 @@ class Token extends BaseToken
         $this->offset = $offset;
     }
 
-    /**
-     * @return TokenInterface
-     */
     public static function empty(): TokenInterface
     {
         return new self(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
@@ -72,9 +65,6 @@ class Token extends BaseToken
         return $this->offset;
     }
 
-    /**
-     * @return string
-     */
     public function __toString(): string
     {
         if (\class_exists(Renderer::class)) {

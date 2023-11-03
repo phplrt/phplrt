@@ -16,14 +16,10 @@ interface DriverInterface
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
-     * @param ReadableInterface $source
      * @param int<0, max> $offset
      * @return iterable<TokenInterface>
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable;
 
-    /**
-     * @return void
-     */
     public function reset(): void;
 }

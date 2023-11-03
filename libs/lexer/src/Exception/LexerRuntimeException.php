@@ -10,12 +10,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 abstract class LexerRuntimeException extends RuntimeException implements LexerExceptionInterface
 {
-    /**
-     * @param string $message
-     * @param ReadableInterface $src
-     * @param TokenInterface|null $tok
-     * @param \Throwable|null $prev
-     */
     final public function __construct(
         string $message,
         ReadableInterface $src,

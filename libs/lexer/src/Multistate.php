@@ -109,7 +109,6 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param ReadableInterface $source
      * @param int<0, max> $offset
      * @return iterable<TokenInterface>
      * @throws RuntimeExceptionInterface

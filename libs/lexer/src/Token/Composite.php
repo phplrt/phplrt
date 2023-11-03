@@ -15,7 +15,6 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param non-empty-string|int<0, max> $name
-     * @param string $value
      * @param int<0, max> $offset
      * @param array<int, TokenInterface> $children
      */
@@ -28,7 +27,6 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param non-empty-array<int, TokenInterface> $tokens
-     * @return self
      */
     public static function fromArray(array $tokens): self
     {
@@ -53,7 +51,6 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param int $offset
-     * @return bool
      */
     public function offsetExists($offset): bool
     {
@@ -64,7 +61,6 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param int $offset
-     * @return TokenInterface|null
      */
     public function offsetGet($offset): ?TokenInterface
     {
@@ -76,7 +72,6 @@ class Composite extends Token implements CompositeTokenInterface
     /**
      * @param int $offset
      * @param TokenInterface $value
-     * @return void
      */
     public function offsetSet($offset, $value): void
     {
@@ -88,7 +83,6 @@ class Composite extends Token implements CompositeTokenInterface
 
     /**
      * @param int $offset
-     * @return void
      */
     public function offsetUnset($offset): void
     {
@@ -97,9 +91,6 @@ class Composite extends Token implements CompositeTokenInterface
         unset($this->children[$offset]);
     }
 
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return \count($this->children);

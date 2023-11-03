@@ -15,12 +15,6 @@ class UnrecognizedTokenException extends LexerRuntimeException
      */
     private const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized %s';
 
-    /**
-     * @param ReadableInterface $src
-     * @param TokenInterface $tok
-     * @param \Throwable|null $prev
-     * @return static
-     */
     public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
     {
         $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [

@@ -26,14 +26,8 @@ class Lexer implements LexerInterface, MutableLexerInterface
      */
     protected array $skip = [];
 
-    /**
-     * @var DriverInterface
-     */
     private DriverInterface $driver;
 
-    /**
-     * @var bool
-     */
     private bool $throwOnError = true;
 
     /**
@@ -48,26 +42,16 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->skip = $skip;
     }
 
-    /**
-     * @return void
-     */
     public function disableUnrecognizedTokenException(): void
     {
         $this->throwOnError = false;
     }
 
-    /**
-     * @return DriverInterface
-     */
     public function getDriver(): DriverInterface
     {
         return $this->driver;
     }
 
-    /**
-     * @param DriverInterface $driver
-     * @return $this
-     */
     public function setDriver(DriverInterface $driver): self
     {
         $this->driver = $driver;
@@ -90,9 +74,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         return $this;
     }
 
-    /**
-     * @return void
-     */
     private function reset(): void
     {
         $this->driver->reset();
@@ -148,7 +129,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param ReadableInterface $source
      * @param int<0, max> $offset
      *
      * @return iterable<TokenInterface>
@@ -196,7 +176,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
 
     /**
      * @param array<TokenInterface> $tokens
-     * @return TokenInterface
      */
     private function reduceUnknownToken(array $tokens): TokenInterface
     {
