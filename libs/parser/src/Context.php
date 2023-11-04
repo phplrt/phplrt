@@ -21,8 +21,6 @@ use Phplrt\Parser\Grammar\RuleInterface;
  *
  * @property-read ReadableInterface $source
  * @property-read BufferInterface $buffer
- *
- * @internal This is an internal implementation of parser
  */
 class Context implements ContextInterface
 {
