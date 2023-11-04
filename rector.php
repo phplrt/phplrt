@@ -8,6 +8,7 @@ use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodingStyle\Rector\Assign\SplitDoubleAssignRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\Node\RemoveNonExistingVarAnnotationRector;
 use Rector\EarlyReturn\Rector\Return_\ReturnBinaryOrToEarlyReturnRector;
 use Rector\Php74\Rector\Closure\ClosureToArrowFunctionRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
@@ -53,8 +54,7 @@ return static function (RectorConfig $config): void {
         ReturnBinaryOrToEarlyReturnRector::class,
         LocallyCalledStaticMethodToNonStaticRector::class,
         CallableThisArrayToAnonymousFunctionRector::class,
-
-        // TODO
         ClosureToArrowFunctionRector::class,
+        RemoveNonExistingVarAnnotationRector::class,
     ]);
 };
