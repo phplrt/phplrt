@@ -137,9 +137,8 @@ class Executor implements ExecutorInterface
 
         $nodes = $this->before($nodes);
         $nodes = $this->each($nodes);
-        $nodes = $this->after($nodes);
 
-        return $nodes;
+        return $this->after($nodes);
     }
 
     /**
