@@ -127,15 +127,15 @@ trait SourceFactoryTrait
      * An alternative factory function of the {@see SourceFactoryInterface::createFromStream()} method.
      *
      * @param resource $resource
-     * @param non-empty-string|null $name
+     * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
      * @throws SourceExceptionInterface
      */
-    public static function fromResource($resource, string $name = null): ReadableInterface
+    public static function fromResource($resource, string $pathname = null): ReadableInterface
     {
         $factory = static::getSourceFactory();
 
-        return $factory->createFromStream($resource, $name);
+        return $factory->createFromStream($resource, $pathname);
     }
 }

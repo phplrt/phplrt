@@ -141,13 +141,7 @@ class Stream extends Readable
     }
 
     /**
-     * @return array{}|array{
-     *  uri: non-empty-string,
-     *  mode: non-empty-string,
-     *  seek: int<0, max>,
-     *  algo: non-empty-string,
-     *  chunk: int<1, max>
-     * }
+     * @return array<non-empty-string, mixed>
      */
     public function __serialize(): array
     {
@@ -169,14 +163,7 @@ class Stream extends Readable
     }
 
     /**
-     * @param array{
-     *  uri?: non-empty-string,
-     *  mode?: non-empty-string,
-     *  seek?: int,
-     *  algo?: string,
-     *  chunk?: int,
-     *  ...
-     * } $data
+     * @param array<non-empty-string, mixed> $data
      *
      * @throws \ErrorException
      */

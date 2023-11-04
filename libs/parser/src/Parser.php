@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
-use Phplrt\Buffer\MutableBuffer;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -15,14 +14,11 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Lexer\Token\Token;
 use Phplrt\Parser\Context\TreeBuilder;
 use Phplrt\Parser\Environment\Factory as EnvironmentFactory;
 use Phplrt\Parser\Environment\SelectorInterface;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Parser\Exception\UnexpectedTokenWithHintsException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\ProductionInterface;
@@ -120,13 +116,6 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      * @psalm-readonly-allow-private-mutation
      */
     private array $rules = [];
-
-    /**
-     * Array of possible tokens for error or missing token.
-     *
-     * @var list<TokenInterface>
-     */
-    private array $possibleTokens = [];
 
     /**
      * @param iterable<array-key, RuleInterface> $grammar An iterable of the
@@ -373,13 +362,6 @@ final class Parser implements ParserInterface, ParserConfigsInterface
                     $context->state = $beforeState;
                     $context->lastProcessedToken = $beforeLastProcessedToken;
 
-                    if (
-                        DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()
-                        && !\in_array($context->rule->token, $this->possibleTokens, true)
-                    ) {
-                        $this->possibleTokens[] = $context->rule->token;
-                    }
-
                     return $result;
                 });
 
@@ -398,13 +380,6 @@ final class Parser implements ParserInterface, ParserConfigsInterface
                     if (!$context->rule->isKeep()) {
                         return [];
                     }
-                }
-
-                if (
-                    DriverInterface::UNKNOWN_TOKEN_NAME === $context->lastProcessedToken->getName()
-                    && !\in_array($context->rule->token, $this->possibleTokens, true)
-                ) {
-                    $this->possibleTokens[] = $context->rule->token;
                 }
 
                 break;
