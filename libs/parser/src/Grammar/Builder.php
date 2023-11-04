@@ -5,22 +5,21 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Grammar;
 
 /**
- * @template-implements \IteratorAggregate<int<0, max>|non-empty-string, RuleInterface>
+ * @template-implements \IteratorAggregate<array-key, RuleInterface>
+ *
+ * @deprecated since phplrt 3.4 and will be moved to separate package in 4.0.
  */
 class Builder implements \IteratorAggregate
 {
-    /**
-     * @var string
-     */
     private const ERROR_INVALID_PAYLOAD = 'Closure should return an instance of \Generator';
 
     /**
-     * @var array<int<0, max>|non-empty-string, RuleInterface>
+     * @var array<array-key, RuleInterface>
      */
     private array $grammar = [];
 
     /**
-     * @param \Closure|null $generator
+     * @param \Closure():\Generator|null $generator
      */
     public function __construct(\Closure $generator = null)
     {
@@ -30,15 +29,14 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * <code>
+     * ```
      *  $builder->extend(function () {
      *      // Example with named rule
      *      $name = yield 'RuleName' => new Concatenation([1, 2, 3])
-     *
-     *      // Example with anonymous rule
-     *      yield
      *  });
-     * </code>
+     * ```
+     *
+     * @param \Closure():\Generator $rules
      */
     public function extend(\Closure $rules): self
     {
@@ -65,7 +63,7 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param int|string ...$of
+     * @param array-key ...$of
      */
     public function concat(...$of): Concatenation
     {
@@ -73,20 +71,23 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param int|string ...$of
+     * @param array-key ...$of
      */
     public function any(...$of): Alternation
     {
         return new Alternation($of);
     }
 
+    /**
+     * @param non-empty-string $named
+     */
     public function token(string $named, bool $keep = true): Lexeme
     {
         return new Lexeme($named, $keep);
     }
 
     /**
-     * @param string|int $of
+     * @param array-key $of
      */
     public function maybe(...$of): Optional
     {
@@ -94,8 +95,8 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param array<string|int> $args
-     * @return int|string
+     * @param non-empty-list<array-key> $args
+     * @return array-key
      */
     private function unwrap(array $args)
     {
@@ -106,6 +107,9 @@ class Builder implements \IteratorAggregate
         return \reset($args);
     }
 
+    /**
+     * @param array-key ...$of
+     */
     public function repeat(...$of): Repetition
     {
         return new Repetition($this->unwrap($of));
@@ -123,12 +127,12 @@ class Builder implements \IteratorAggregate
     }
 
     /**
-     * @param int|string $id
-     * @return int|string|null
+     * @param array-key|null $id
+     * @return array-key
      */
     public function add(RuleInterface $rule, $id = null)
     {
-        \assert($id === null || \is_int($id) || \is_string($id)); /** @phpstan-ignore-line */
+        \assert($id === null || \is_int($id) || \is_string($id));
 
         if ($id === null) {
             $this->grammar[] = $rule;

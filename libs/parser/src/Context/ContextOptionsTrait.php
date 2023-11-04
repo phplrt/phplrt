@@ -6,11 +6,18 @@ namespace Phplrt\Parser\Context;
 
 /**
  * @mixin ContextOptionsProviderInterface
+ * @psalm-require-implements ContextOptionsProviderInterface
  */
 trait ContextOptionsTrait
 {
+    /**
+     * @var array<non-empty-string, mixed>
+     */
     protected array $options = [];
 
+    /**
+     * @return array<non-empty-string, mixed>
+     */
     public function getOptions(): array
     {
         return $this->options;

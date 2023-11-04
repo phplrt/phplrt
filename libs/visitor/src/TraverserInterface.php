@@ -20,8 +20,6 @@ interface TraverserInterface
      * For subsequent visitors VisitorInterface::enter() will still be
      * called on the current node and VisitorInterface::leave() will also
      * be invoked for the current node.
-     *
-     * @var int
      */
     public const DONT_TRAVERSE_CHILDREN = 0x01;
 
@@ -30,8 +28,6 @@ interface TraverserInterface
      * returns STOP_TRAVERSAL, traversal is aborted.
      *
      * The VisitorInterface::after() method will still be invoked.
-     *
-     * @var int
      */
     public const STOP_TRAVERSAL = 0x02;
 
@@ -41,8 +37,6 @@ interface TraverserInterface
      *
      * For subsequent visitors VisitorInterface::leave() will still be
      * invoked for the removed node.
-     *
-     * @var int
      */
     public const REMOVE_NODE = 0x03;
 
@@ -68,15 +62,11 @@ interface TraverserInterface
 
     /**
      * Adds a visitor.
-     *
-     * @return TraverserInterface|$this
      */
     public function with(VisitorInterface $visitor, bool $prepend = false): self;
 
     /**
      * Removes a visitor.
-     *
-     * @return TraverserInterface|$this
      */
     public function without(VisitorInterface $visitor): self;
 
@@ -84,8 +74,8 @@ interface TraverserInterface
      * Traverses the node and its descendants nodes using the
      * registered visitors.
      *
-     * @param NodeInterface|iterable<NodeInterface> $node
-     * @return NodeInterface|iterable<NodeInterface>
+     * @param iterable<array-key, object> $nodes
+     * @return iterable<array-key, object>
      */
-    public function traverse(iterable $node): iterable;
+    public function traverse(iterable $nodes): iterable;
 }

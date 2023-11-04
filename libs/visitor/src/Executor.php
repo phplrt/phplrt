@@ -1,5 +1,45 @@
 <?php
 
+/**
+ * This file is part of phplrt package and is a modified/adapted version of
+ * "nikic/PHP-Parser", which is distributed under the following license:
+ *
+ * Copyright (c) 2011-2018 by Nikita Popov.
+ *
+ * Some rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ *  * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ *
+ *  * The names of the contributors may not be used to endorse or
+ * promote products derived from this software without specific
+ * prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @see https://github.com/nikic/PHP-Parser
+ * @see https://github.com/nikic/PHP-Parser/blob/master/lib/PhpParser/NodeTraverser.php
+ */
+
 declare(strict_types=1);
 
 namespace Phplrt\Visitor;
@@ -87,42 +127,46 @@ class Executor implements ExecutorInterface
     }
 
     /**
-     * Traverses an array of nodes using the registered visitors.
+     * @param iterable<array-key, object> $nodes
      *
-     * @param iterable<object> $nodes Array of nodes
-     * @return iterable<object> Traversed array of nodes
+     * @return iterable<array-key, object>
      */
     public function execute(iterable $nodes): iterable
     {
         $this->stop = false;
 
-        return $this->after(
-            $this->each($this->before($nodes))
-        );
-    }
+        $nodes = $this->before($nodes);
+        $nodes = $this->each($nodes);
+        $nodes = $this->after($nodes);
 
-    private function before(iterable $ast): iterable
-    {
-        foreach ($this->visitors as $visitor) {
-            if (($result = $visitor->before($ast)) !== null) {
-                /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-                $ast = $result;
-            }
-        }
-
-        return $ast;
+        return $nodes;
     }
 
     /**
-     * @param iterable<array-key, object> $ast
-     * @return iterable<array-key, object>
+     * @param iterable<array-key, object> $nodes
      *
-     * @psalm-suppress InvalidReturnType
+     * @return iterable<array-key, object>
      */
-    private function each(iterable $ast): iterable
+    private function before(iterable $nodes): iterable
     {
-        if ($ast instanceof NodeInterface) {
-            $result = $this->traverseArray([$ast]);
+        foreach ($this->visitors as $visitor) {
+            if (($result = $visitor->before($nodes)) !== null) {
+                $nodes = $result;
+            }
+        }
+
+        return $nodes;
+    }
+
+    /**
+     * @param iterable<array-key, object> $nodes
+     *
+     * @return iterable<array-key, object>
+     */
+    private function each(iterable $nodes): iterable
+    {
+        if ($nodes instanceof NodeInterface) {
+            $result = $this->traverseArray([$nodes]);
             /** @var NodeInterface|false $first */
             $first = \reset($result);
 
@@ -130,22 +174,23 @@ class Executor implements ExecutorInterface
                 throw new BadMethodException(self::ERROR_ROOT_REMOVING);
             }
 
-            /** @psalm-suppress InvalidReturnStatement : NodeInterface is an iterable */
+            /** @var iterable<array-key, object> */
             return $first;
         }
 
-        if (\is_array($ast)) {
-            return $this->traverseArray($ast);
+        if (\is_array($nodes)) {
+            return $this->traverseArray($nodes);
         }
 
-        return $this->traverseArray(\iterator_to_array($ast, false));
+        return $this->traverseArray(\iterator_to_array($nodes, false));
     }
 
     /**
      * Recursively traverse array (usually of nodes).
      *
-     * @param array<object> $nodes Array to traverse
-     * @return array<object> Result of traversal (may be original array or changed one)
+     * @param array<array-key, object> $nodes Array to traverse
+     * @return array<array-key, object> Result of traversal. May be original
+     *         array or changed one.
      */
     protected function traverseArray(array $nodes): array
     {
@@ -370,14 +415,19 @@ class Executor implements ExecutorInterface
         }
     }
 
-    private function after(iterable $ast): iterable
+    /**
+     * @param iterable<array-key, object> $nodes
+     *
+     * @return iterable<array-key, object>
+     */
+    private function after(iterable $nodes): iterable
     {
         foreach ($this->visitors as $visitor) {
-            if (($result = $visitor->after($ast)) !== null) {
-                $ast = $result;
+            if (($result = $visitor->after($nodes)) !== null) {
+                $nodes = $result;
             }
         }
 
-        return $ast;
+        return $nodes;
     }
 }

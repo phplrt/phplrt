@@ -49,29 +49,23 @@ use Phplrt\Contracts\Ast\NodeInterface;
 class Traverser implements TraverserInterface
 {
     /**
-     * @var VisitorInterface[]
+     * @var list<VisitorInterface>
      */
     private array $visitors = [];
 
     /**
-     * @param array|VisitorInterface[] $visitors
+     * @param list<VisitorInterface> $visitors
      */
     final public function __construct(array $visitors = [])
     {
         $this->visitors = $visitors;
     }
 
-    /**
-     * @return static
-     */
     public static function through(VisitorInterface ...$visitors): self
     {
         return new static($visitors);
     }
 
-    /**
-     * @return TraverserInterface|Traverser
-     */
     public function with(VisitorInterface $visitor, bool $prepend = false): TraverserInterface
     {
         $fn = $prepend ? '\\array_unshift' : '\\array_push';
@@ -80,24 +74,21 @@ class Traverser implements TraverserInterface
         return $this;
     }
 
-    /**
-     * @return TraverserInterface|Traverser
-     */
     public function without(VisitorInterface $visitor): TraverserInterface
     {
-        $this->visitors = \array_filter($this->visitors, static function (VisitorInterface $haystack) use ($visitor): bool {
-            return $haystack !== $visitor;
-        });
+        $filter = static fn (VisitorInterface $haystack): bool => $haystack !== $visitor;
+        $this->visitors = \array_filter($this->visitors, $filter);
 
         return $this;
     }
 
     /**
-     * @param iterable|NodeInterface[] $node
-     * @return iterable|NodeInterface[]
+     * @param iterable<array-key, object> $nodes
+     *
+     * @return iterable<array-key, object>
      */
-    public function traverse(iterable $node): iterable
+    public function traverse(iterable $nodes): iterable
     {
-        return (new Executor($this->visitors))->execute($node);
+        return (new Executor($this->visitors))->execute($nodes);
     }
 }

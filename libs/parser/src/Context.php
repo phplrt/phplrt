@@ -21,6 +21,8 @@ use Phplrt\Parser\Grammar\RuleInterface;
  *
  * @property-read ReadableInterface $source
  * @property-read BufferInterface $buffer
+ *
+ * @final marked as final since phplrt 3.4 and will be final since 4.0
  */
 class Context implements ContextInterface
 {
@@ -71,16 +73,23 @@ class Context implements ContextInterface
 
     /**
      * Contains information about the processed source.
+     *
+     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
+     * @psalm-readonly-allow-private-mutation
      */
     public ReadableInterface $source;
 
     /**
      * Contains a buffer of tokens that were collected from lexical analysis.
+     *
+     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
+     * @psalm-readonly-allow-private-mutation
      */
     public BufferInterface $buffer;
 
     /**
      * @param array-key $state
+     * @param array<non-empty-string, mixed> $options
      */
     public function __construct(BufferInterface $buffer, ReadableInterface $source, $state, array $options)
     {

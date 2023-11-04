@@ -12,6 +12,7 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Lexer\Driver\DriverInterface;
 use Phplrt\Lexer\Token\EndOfInput;
@@ -194,6 +195,7 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      * @param array{
      *     initial?: array-key|null
      * } $options
+     * @param array<array-key, RuleInterface> $grammar
      *
      * @return array-key
      */
@@ -207,7 +209,7 @@ final class Parser implements ParserInterface, ParserConfigsInterface
 
         $result = \array_key_first($grammar);
 
-        if ($result === false) {
+        if ($result === false || $result === null) {
             return 0;
         }
 
@@ -240,6 +242,12 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         return $this;
     }
 
+    /**
+     * @param array<non-empty-string, mixed> $options
+     * @return iterable<array-key, object>
+     *
+     * @throws SourceExceptionInterface
+     */
     public function parse($source, array $options = []): iterable
     {
         if ($this->rules === []) {
