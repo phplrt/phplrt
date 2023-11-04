@@ -76,7 +76,7 @@ class Traverser implements TraverserInterface
 
     public function without(VisitorInterface $visitor): TraverserInterface
     {
-        $filter = static fn (VisitorInterface $haystack): bool => $haystack !== $visitor;
+        $filter = static fn(VisitorInterface $haystack): bool => $haystack !== $visitor;
         $this->visitors = \array_filter($this->visitors, $filter);
 
         return $this;
