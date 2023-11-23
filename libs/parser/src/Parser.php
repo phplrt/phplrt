@@ -118,6 +118,11 @@ final class Parser implements ParserInterface, ParserConfigsInterface
     private array $rules = [];
 
     /**
+     * @var Context|null
+     */
+    private ?Context $context = null;
+
+    /**
      * @param iterable<array-key, RuleInterface> $grammar An iterable of the
      *        transition rules for the parser.
      * @param array<ParserConfigsInterface::CONFIG_*, mixed> $options
@@ -250,9 +255,9 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         try {
             $buffer = $this->createBufferFromSource($source);
 
-            $context = new Context($buffer, $source, $this->initial, $options);
+            $this->context = new Context($buffer, $source, $this->initial, $options);
 
-            return $this->parseOrFail($context);
+            return $this->parseOrFail($this->context);
         } finally {
             $this->env->rollback();
         }
@@ -270,7 +275,7 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         return new $class($stream);
     }
 
-    public function createBufferFromSource(ReadableInterface $source): BufferInterface
+    private function createBufferFromSource(ReadableInterface $source): BufferInterface
     {
         try {
             return $this->createBufferFromTokens(
@@ -406,5 +411,23 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         $current = $buffer->current();
 
         return $current->getName() === $this->eoi;
+    }
+
+    /**
+     * Returns last execution context.
+     *
+     * Typically used in conjunction with the "tolerant" mode of the parser.
+     *
+     * ```php
+     *  $parser = new Parser(..., [Parser::CONFIG_ALLOW_TRAILING_TOKENS => true]);
+     *  $parser->parse('...');
+     *
+     *  $context = $parser->getLastExecutionContext();
+     *  var_dump($context->buffer->current()); // Returns the token where the parser stopped
+     * ```
+     */
+    public function getLastExecutionContext(): ?Context
+    {
+        return $this->context;
     }
 }
