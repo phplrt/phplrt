@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.1",
         "laminas/laminas-code": "^4.0",
         "phplrt/lexer": "^3.4",
         "phplrt/visitor": "^3.4",
