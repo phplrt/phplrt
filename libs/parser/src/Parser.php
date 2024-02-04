@@ -117,9 +117,6 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      */
     private array $rules = [];
 
-    /**
-     * @var Context|null
-     */
     private ?Context $context = null;
 
     /**
