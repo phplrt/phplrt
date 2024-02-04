@@ -29,15 +29,13 @@ abstract class Renderer implements RendererInterface
     }
 
     /**
-     * @param mixed $key
-     * @param mixed $value
      * @param int<0, max> $depth
      * @return non-empty-string
      *
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
      */
-    private function renderKeyValue($key, $value, int $depth = 0): string
+    private function renderKeyValue(mixed $key, mixed $value, int $depth = 0): string
     {
         return \sprintf('%s => %s', $this->prefix($depth) . $this->fromPhp($key), (string) $value);
     }
