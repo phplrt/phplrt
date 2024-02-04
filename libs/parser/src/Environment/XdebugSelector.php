@@ -52,7 +52,7 @@ final class XdebugSelector implements SelectorInterface
         $this->enabled = \extension_loaded('xdebug');
 
         $this->expectedRecursionDepth = $expectedRecursionDepth;
-        $this->actualRecursionDepth = (int)\ini_get('xdebug.max_nesting_level');
+        $this->actualRecursionDepth = (int) \ini_get('xdebug.max_nesting_level');
     }
 
     /**
@@ -61,7 +61,7 @@ final class XdebugSelector implements SelectorInterface
     public function prepare(): void
     {
         if ($this->enabled) {
-            \ini_set('xdebug.max_nesting_level', (string)$this->expectedRecursionDepth);
+            \ini_set('xdebug.max_nesting_level', (string) $this->expectedRecursionDepth);
         }
     }
 
@@ -71,7 +71,7 @@ final class XdebugSelector implements SelectorInterface
     public function rollback(): void
     {
         if ($this->enabled) {
-            \ini_set('xdebug.max_nesting_level', (string)$this->actualRecursionDepth);
+            \ini_set('xdebug.max_nesting_level', (string) $this->actualRecursionDepth);
         }
     }
 }

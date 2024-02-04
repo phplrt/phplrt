@@ -159,16 +159,16 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
             40 => static function (Composite $value): NodeInterface {
                 [$from, $to] = [$value[0]->getValue(), $value[1]->getValue()];
 
-                return new Quantifier((int)$from, (int)$to);
+                return new Quantifier((int) $from, (int) $to);
             },
             42 => static function (Composite $value): NodeInterface {
-                return new Quantifier((int)$value[0]->getValue(), \INF);
+                return new Quantifier((int) $value[0]->getValue(), \INF);
             },
             41 => static function (Composite $value): NodeInterface {
-                return new Quantifier(0, (int)$value[0]->getValue());
+                return new Quantifier(0, (int) $value[0]->getValue());
             },
             43 => static function (Composite $value): NodeInterface {
-                $count = (int)$value[0]->getValue();
+                $count = (int) $value[0]->getValue();
 
                 return new Quantifier($count, $count);
             },

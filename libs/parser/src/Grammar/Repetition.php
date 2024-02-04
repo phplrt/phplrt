@@ -46,7 +46,7 @@ class Repetition extends Production
 
         $this->rule = $rule;
         $this->gte  = $gte;
-        $this->lte  = \is_infinite($lte) ? \INF : (int)$lte;
+        $this->lte  = \is_infinite($lte) ? \INF : (int) $lte;
     }
 
     public function getTerminals(array $rules): iterable

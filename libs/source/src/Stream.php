@@ -53,7 +53,7 @@ class Stream extends Readable
         assert($chunkSize >= 1, 'Chunk size must be greater than 0');
 
         /** @psalm-suppress PropertyTypeCoercion */
-        $this->offset = (int)\ftell($stream);
+        $this->offset = (int) \ftell($stream);
         $this->chunkSize = $chunkSize;
         $this->algo = $algo;
         $this->stream = $stream;
@@ -169,9 +169,9 @@ class Stream extends Readable
      */
     public function __unserialize(array $data): void
     {
-        $this->algo = (string)($data['algo'] ?? SourceFactory::DEFAULT_HASH_ALGO);
-        $this->chunkSize = \max(1, (int)($data['chunk'] ?? SourceFactory::DEFAULT_CHUNK_SIZE));
-        $this->offset = \max(0, (int)($data['seek'] ?? 0));
+        $this->algo = (string) ($data['algo'] ?? SourceFactory::DEFAULT_HASH_ALGO);
+        $this->chunkSize = \max(1, (int) ($data['chunk'] ?? SourceFactory::DEFAULT_CHUNK_SIZE));
+        $this->offset = \max(0, (int) ($data['seek'] ?? 0));
 
         \error_clear_last();
 

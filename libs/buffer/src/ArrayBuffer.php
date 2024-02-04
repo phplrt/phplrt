@@ -54,7 +54,7 @@ class ArrayBuffer extends Buffer
 
         if ($offset > ($last = \array_key_last($this->buffer))) {
             throw new \OutOfRangeException(
-                \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (int)$last)
+                \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (int) $last)
             );
         }
 

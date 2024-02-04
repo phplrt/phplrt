@@ -25,7 +25,7 @@ abstract class Renderer implements RendererInterface
             return \sprintf("[%s%s]", \implode(', ', $result), $prefix);
         }
 
-        return (string)$data;
+        return (string) $data;
     }
 
     /**
@@ -39,7 +39,7 @@ abstract class Renderer implements RendererInterface
      */
     private function renderKeyValue($key, $value, int $depth = 0): string
     {
-        return \sprintf('%s => %s', $this->prefix($depth) . $this->fromPhp($key), (string)$value);
+        return \sprintf('%s => %s', $this->prefix($depth) . $this->fromPhp($key), (string) $value);
     }
 
     public function prefix(int $depth): string

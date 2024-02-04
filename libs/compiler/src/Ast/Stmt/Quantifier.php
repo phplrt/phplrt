@@ -33,6 +33,6 @@ class Quantifier extends Node
         assert($to >= 0, 'Maximum repetition times must be greater or equal than 0');
 
         $this->from = $from;
-        $this->to = \is_infinite($to) ? $to : (int)$to;
+        $this->to = \is_infinite($to) ? $to : (int) $to;
     }
 }

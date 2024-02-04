@@ -103,7 +103,7 @@ final class PositionFactory implements PositionFactoryInterface
 
         do {
             // Read chunk from source to buffer.
-            $chunk = (string)\fread($stream, \min($expected, $this->chunkSize));
+            $chunk = (string) \fread($stream, \min($expected, $this->chunkSize));
 
             // Increase the number of lines by the value of the occurrences of
             // the line breaks in this chunk.
@@ -122,7 +122,7 @@ final class PositionFactory implements PositionFactoryInterface
         //
         // The result will be the size of the string after the last occurrence
         // of a line break.
-        $column = \strlen($chunk) - (int)\strrpos($chunk, self::LINE_DELIMITER);
+        $column = \strlen($chunk) - (int) \strrpos($chunk, self::LINE_DELIMITER);
 
         // The first line does not contain any line breaks.
         if ($line === 1) {
@@ -157,7 +157,7 @@ final class PositionFactory implements PositionFactoryInterface
         // number of lines takes.
         //
         while (!\feof($stream) && $cursor++ + 1 < $line) {
-            $offset += \strlen((string)\fgets($stream));
+            $offset += \strlen((string) \fgets($stream));
         }
 
         //
@@ -167,7 +167,7 @@ final class PositionFactory implements PositionFactoryInterface
         // column.
         //
         if ($column !== 1) {
-            $last = (string)@\fread($stream, $column - 1);
+            $last = (string) @\fread($stream, $column - 1);
             $lines = \explode(self::LINE_DELIMITER, $last);
             $offset += $column = \strlen(\reset($lines));
         }

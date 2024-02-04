@@ -69,7 +69,7 @@ class LazyBuffer extends Buffer
         while ($offset > ($last = \array_key_last($this->buffer))) {
             if (!$this->valid()) {
                 throw new \OutOfRangeException(
-                    \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (string)$last)
+                    \sprintf(self::ERROR_STREAM_POSITION_EXCEED, $offset, (string) $last)
                 );
             }
 

@@ -35,7 +35,7 @@ abstract class Buffer implements BufferInterface
     protected function tokenToString(TokenInterface $token): string
     {
         if ($token instanceof \Stringable) {
-            return (string)$token;
+            return (string) $token;
         }
 
         return $token->getName();
