@@ -6,6 +6,7 @@ namespace Phplrt\Lexer\Buffer {
         !\class_exists(Buffer::class, false)
         && \class_exists(\Phplrt\Buffer\Buffer::class)
     ) {
+        /** @psalm-suppress UndefinedClass */
         \class_alias(\Phplrt\Buffer\Buffer::class, Buffer::class);
     }
 
@@ -13,6 +14,7 @@ namespace Phplrt\Lexer\Buffer {
         !\class_exists(ArrayBuffer::class, false)
         && \class_exists(\Phplrt\Buffer\ArrayBuffer::class)
     ) {
+        /** @psalm-suppress UndefinedClass */
         \class_alias(\Phplrt\Buffer\ArrayBuffer::class, ArrayBuffer::class);
     }
 
@@ -20,6 +22,7 @@ namespace Phplrt\Lexer\Buffer {
         !\class_exists(ExtrusiveBuffer::class, false)
         && \class_exists(\Phplrt\Buffer\ExtrusiveBuffer::class, false)
     ) {
+        /** @psalm-suppress UndefinedClass */
         \class_alias(\Phplrt\Buffer\ExtrusiveBuffer::class, ExtrusiveBuffer::class);
     }
 
@@ -27,6 +30,7 @@ namespace Phplrt\Lexer\Buffer {
         !\class_exists(LazyBuffer::class, false)
         && \class_exists(\Phplrt\Buffer\LazyBuffer::class)
     ) {
-        class_alias(\Phplrt\Buffer\LazyBuffer::class, LazyBuffer::class);
+        /** @psalm-suppress UndefinedClass */
+        \class_alias(\Phplrt\Buffer\LazyBuffer::class, LazyBuffer::class);
     }
 }
