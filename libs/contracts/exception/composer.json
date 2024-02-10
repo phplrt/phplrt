@@ -26,7 +26,13 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "^5.15"
+        "phpunit/phpunit": "^9.6",
+        "vimeo/psalm": "^5.21"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Contracts\\Exception\\Tests\\": "tests"
+        }
     },
     "extra": {
         "branch-alias": {
