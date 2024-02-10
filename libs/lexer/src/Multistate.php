@@ -16,12 +16,12 @@ use Phplrt\Source\File;
 class Multistate implements LexerInterface
 {
     /**
-     * @var array<LexerInterface>
+     * @var array<array-key, Lexer>
      */
     private array $states = [];
 
     /**
-     * @var int<0, max>|non-empty-string|null
+     * @var array-key|null
      */
     private $state;
 
@@ -31,9 +31,9 @@ class Multistate implements LexerInterface
     private array $transitions = [];
 
     /**
-     * @param array<non-empty-string|int<0, max>, LexerInterface> $states
-     * @param array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>> $transitions
-     * @param int<0, max>|non-empty-string|null $state
+     * @param array<array-key, Lexer> $states
+     * @param array<array-key, array<non-empty-string, array-key>> $transitions
+     * @param array-key|null $state
      */
     public function __construct(array $states, array $transitions = [], $state = null)
     {
@@ -59,14 +59,14 @@ class Multistate implements LexerInterface
 
     /**
      * @param array-key $name
-     * @param array<non-empty-string, non-empty-string>|LexerInterface $data
+     * @param array<non-empty-string, non-empty-string>|Lexer $data
      */
     public function setState($name, $data): self
     {
         assert(\is_string($name) || \is_int($name));
-        assert(\is_array($data) || $data instanceof LexerInterface);
+        assert(\is_array($data) || $data instanceof Lexer);
 
-        $this->states[$name] = $data instanceof LexerInterface ? $data : new Lexer($data);
+        $this->states[$name] = $data instanceof Lexer ? $data : new Lexer($data);
 
         return $this;
     }
@@ -108,10 +108,13 @@ class Multistate implements LexerInterface
     }
 
     /**
+     * @param ReadableInterface $source
      * @param int<0, max> $offset
-     * @return iterable<TokenInterface>
-     * @throws RuntimeExceptionInterface
      *
+     * @return iterable<TokenInterface>
+     *
+     * @throws RuntimeExceptionInterface
+     * @throws SourceExceptionInterface
      * @psalm-suppress UnusedVariable
      * @psalm-suppress TypeDoesNotContainType
      */
@@ -148,7 +151,6 @@ class Multistate implements LexerInterface
                 throw UnexpectedStateException::fromState($state, $source, $token ?? null);
             }
 
-            /** @psalm-suppress TooManyArguments */
             $stream = $this->states[$state]->lex($source, $offset);
 
             /**
