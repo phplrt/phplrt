@@ -6,9 +6,10 @@ namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Ast\Node;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Compiler\Generator\GeneratableInterface;
+use Phplrt\Compiler\Generator\PhpCodeGenerator;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
-use Phplrt\Compiler\Renderer\LaminasRenderer;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -126,8 +127,8 @@ class Compiler implements ParserInterface
         return $this->analyzer;
     }
 
-    public function build(): Generator
+    public function build(): GeneratableInterface
     {
-        return new Generator($this->analyzer, new LaminasRenderer());
+        return new PhpCodeGenerator($this->analyzer);
     }
 }

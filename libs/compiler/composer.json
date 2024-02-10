@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "laminas/laminas-code": "^4.0",
-        "phplrt/lexer": "^3.4",
-        "phplrt/visitor": "^3.4",
-        "phplrt/position": "^3.4",
-        "phplrt/parser": "^3.4"
+        "phplrt/lexer": "^3.6",
+        "phplrt/visitor": "^3.6",
+        "phplrt/position": "^3.6",
+        "phplrt/parser": "^3.6",
+        "symfony/polyfill-php80": "^1.29"
     },
     "autoload": {
         "psr-4": {
