@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Driver\Markers;
@@ -14,6 +15,9 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 
+/**
+ * @final Please use {@see Decorator} instead.
+ */
 class Lexer implements LexerInterface, MutableLexerInterface
 {
     /**
@@ -47,11 +51,17 @@ class Lexer implements LexerInterface, MutableLexerInterface
         $this->throwOnError = false;
     }
 
+    /**
+     * @deprecated since phplrt 3.6 and will be removed in 4.0.
+     */
     public function getDriver(): DriverInterface
     {
         return $this->driver;
     }
 
+    /**
+     * @deprecated since phplrt 3.6 and will be removed in 4.0.
+     */
     public function setDriver(DriverInterface $driver): self
     {
         $this->driver = $driver;
@@ -121,7 +131,9 @@ class Lexer implements LexerInterface, MutableLexerInterface
      *
      * @param string|resource|ReadableInterface $source
      * @param int<0, max> $offset
+     *
      * @return iterable<TokenInterface>
+     * @throws SourceExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable
     {
@@ -132,6 +144,7 @@ class Lexer implements LexerInterface, MutableLexerInterface
      * @param int<0, max> $offset
      *
      * @return iterable<TokenInterface>
+     * @throws SourceExceptionInterface
      */
     private function run(ReadableInterface $source, int $offset): iterable
     {
@@ -169,7 +182,6 @@ class Lexer implements LexerInterface, MutableLexerInterface
         }
 
         if (!\in_array(TokenInterface::END_OF_INPUT, $this->skip, true)) {
-            /** @psalm-suppress all : Psalm error: (offset) int<0, max> + (size) int<0, max> = int<0, max> */
             yield new EndOfInput(isset($token) ? $token->getOffset() + $token->getBytes() : 0);
         }
     }

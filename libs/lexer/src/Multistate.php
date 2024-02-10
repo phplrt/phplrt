@@ -8,6 +8,7 @@ use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
 use Phplrt\Source\File;
@@ -45,12 +46,11 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param non-empty-string|int<0, max>|null $state
-     * @return $this
+     * @param array-key|null $state
      */
     public function startsWith($state): self
     {
-        assert(\is_string($state) || \is_int($state) || $state === null); /** @phpstan-ignore-line */
+        assert(\is_string($state) || \is_int($state) || $state === null);
 
         $this->state = $state;
 
@@ -58,14 +58,13 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param non-empty-string|int<0, max> $name
+     * @param array-key $name
      * @param array<non-empty-string, non-empty-string>|LexerInterface $data
-     * @return $this
      */
     public function setState($name, $data): self
     {
-        assert(\is_string($name) || \is_int($name)); /** @phpstan-ignore-line */
-        assert(\is_array($data) || $data instanceof LexerInterface); /** @phpstan-ignore-line */
+        assert(\is_string($name) || \is_int($name));
+        assert(\is_array($data) || $data instanceof LexerInterface);
 
         $this->states[$name] = $data instanceof LexerInterface ? $data : new Lexer($data);
 
@@ -73,8 +72,7 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * @param non-empty-string|int<0, max> $name
-     * @return $this
+     * @param array-key $name
      */
     public function removeState($name): self
     {
@@ -85,9 +83,8 @@ class Multistate implements LexerInterface
 
     /**
      * @param non-empty-string $token
-     * @param non-empty-string|int<0, max> $in
-     * @param non-empty-string|int<0, max> $then
-     * @return $this
+     * @param array-key $in
+     * @param array-key $then
      */
     public function when(string $token, $in, $then): self
     {
@@ -99,9 +96,11 @@ class Multistate implements LexerInterface
     /**
      * {@inheritDoc}
      *
-     * @param string|resource|ReadableInterface $source
+     * @param mixed $source
      * @param int<0, max> $offset
+     *
      * @return iterable<TokenInterface>
+     * @throws SourceExceptionInterface
      */
     public function lex($source, int $offset = 0): iterable
     {
