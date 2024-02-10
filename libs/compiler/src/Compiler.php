@@ -126,6 +126,10 @@ class Compiler implements CompilerInterface, ParserInterface
      */
     public function getAnalyzer(): CompilerContext
     {
+        trigger_deprecation('phplrt/compiler', '3.6', <<<'MSG'
+            Using "%s::getAnalyzer()" is deprecated, please use "%1$s::getContext()" instead.
+            MSG, static::class);
+
         return $this->analyzer;
     }
 

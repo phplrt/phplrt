@@ -17,9 +17,7 @@ use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 /**
  * @final
  */
-class Lexer implements
-    PositionalLexerInterface,
-    MutableLexerInterface
+class Lexer implements PositionalLexerInterface, MutableLexerInterface
 {
     /**
      * @var array<non-empty-string, non-empty-string>
@@ -57,6 +55,10 @@ class Lexer implements
      */
     public function getDriver(): DriverInterface
     {
+        trigger_deprecation('phplrt/lexer', '3.6', <<<'MSG'
+            Using "%s::getDriver()" is deprecated.
+            MSG, static::class);
+
         return $this->driver;
     }
 
@@ -65,6 +67,10 @@ class Lexer implements
      */
     public function setDriver(DriverInterface $driver): self
     {
+        trigger_deprecation('phplrt/lexer', '3.6', <<<'MSG'
+            Using "%s::setDriver(DriverInterface $driver)" is deprecated.
+            MSG, static::class);
+
         $this->driver = $driver;
 
         return $this;
@@ -127,15 +133,6 @@ class Lexer implements
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param string|resource|ReadableInterface $source
-     * @param int<0, max> $offset
-     *
-     * @return iterable<TokenInterface>
-     * @throws SourceExceptionInterface
-     */
     public function lex($source, int $offset = 0): iterable
     {
         return $this->run(File::new($source), $offset);
