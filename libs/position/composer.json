@@ -17,8 +17,8 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/position-contracts": "^3.4",
-        "phplrt/source-contracts": "^3.4"
+        "phplrt/position-contracts": "^3.6",
+        "phplrt/source-contracts": "^3.6"
     },
     "autoload": {
         "psr-4": {
@@ -35,7 +35,7 @@
         }
     },
     "provide": {
-        "phplrt/position-contracts-implementation": "^3.4"
+        "phplrt/position-contracts-implementation": "^3.6"
     },
     "extra": {
         "branch-alias": {

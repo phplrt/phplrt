@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^7.4|^8.0",
-        "phplrt/source-contracts": "^3.4",
+        "phplrt/source-contracts": "^3.6",
         "symfony/deprecation-contracts": "^2.5|^3.0",
         "symfony/polyfill-php80": "^1.28"
     },
@@ -38,7 +38,7 @@
         }
     },
     "provide": {
-        "phplrt/source-contracts-implementation": "^3.4"
+        "phplrt/source-contracts-implementation": "^3.6"
     },
     "extra": {
         "branch-alias": {
