@@ -25,7 +25,7 @@ return static function (MBConfig $config): void {
             'friendsofphp/php-cs-fixer' => '^3.49',
             'phpunit/phpunit' => '^9.6|^10.0',
             'rector/rector' => '^1.0',
-            'symfony/var-dumper' => '^5.4|^6.0',
+            'symfony/var-dumper' => '^5.4|^6.0|^7.0',
             'symplify/monorepo-builder' => '^11.2',
             'vimeo/psalm' => '^5.21'
         ],
