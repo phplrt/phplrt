@@ -20,6 +20,10 @@ final class Interval implements IntervalInterface
 
     public function __construct(PositionInterface $from, PositionInterface $to)
     {
+        trigger_deprecation('phplrt/position', '3.4', <<<'MSG'
+            Using "%s::class" is deprecated.
+            MSG, self::class);
+
         $this->from = $from;
         $this->to = $to;
     }

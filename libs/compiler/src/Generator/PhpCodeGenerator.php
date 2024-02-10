@@ -62,7 +62,7 @@ final class PhpCodeGenerator extends CodeGenerator
     {
         trigger_deprecation('phplrt/compiler', '3.6', <<<'MSG'
             Using "%s::withClassUsage()" is deprecated, please use "%1$s::withClassReference()" instead.
-            MSG, static::class);
+            MSG, self::class);
 
         $this->classes[$class] = $alias;
 

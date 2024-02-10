@@ -214,6 +214,10 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      */
     public function startsAt($initial): self
     {
+        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
+            Using "%s::startsAt(array-key)" is deprecated, please use "%1$s::__construct()" instead.
+            MSG, self::class);
+
         $this->initial = $initial;
 
         return $this;
@@ -226,6 +230,10 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      */
     public function buildUsing(BuilderInterface $builder): self
     {
+        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
+            Using "%s::buildUsing(BuilderInterface)" is deprecated, please use "%1$s::__construct()" instead.
+            MSG, self::class);
+
         $this->builder = $builder;
 
         return $this;

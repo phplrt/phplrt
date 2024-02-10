@@ -126,6 +126,10 @@ trait ParserConfigsTrait
      */
     public function possibleTokensSearching(bool $possibleTokensSearching): self
     {
+        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
+            Using "%s::possibleTokensSearching(bool)" has no effect.
+            MSG, self::class);
+
         $this->possibleTokensSearching = $possibleTokensSearching;
         $this->useMutableBuffer = $this->possibleTokensSearching;
 

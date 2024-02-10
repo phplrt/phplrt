@@ -6,8 +6,6 @@ namespace Phplrt\Parser\Grammar;
 
 /**
  * @template-implements \IteratorAggregate<array-key, RuleInterface>
- *
- * @deprecated since phplrt 3.4 and will be moved to separate package in 4.0.
  */
 class Builder implements \IteratorAggregate
 {

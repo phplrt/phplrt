@@ -22,7 +22,8 @@
         "phplrt/exception": "^3.6",
         "phplrt/parser-contracts": "^3.6",
         "phplrt/lexer-contracts": "^3.6",
-        "phplrt/ast-contracts": "^3.6"
+        "phplrt/ast-contracts": "^3.6",
+        "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "replace": {
         "phplrt/grammar": "<=3.1",
