@@ -18,5 +18,5 @@ interface ParserInterface
      *
      * @throws RuntimeExceptionInterface
      */
-    public function parse($source): iterable;
+    public function parse(mixed $source): iterable;
 }

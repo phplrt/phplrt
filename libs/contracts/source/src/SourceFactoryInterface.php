@@ -17,7 +17,7 @@ interface SourceFactoryInterface
      * @throws SourceExceptionInterface In case of an error in creating the
      *         source object.
      */
-    public function create($source): ReadableInterface;
+    public function create(mixed $source): ReadableInterface;
 
     /**
      * Create a new source object from a string.
@@ -68,5 +68,5 @@ interface SourceFactoryInterface
      * @throws SourceExceptionInterface In case of an error in creating the
      *         source object.
      */
-    public function createFromStream($stream, string $name = null): ReadableInterface;
+    public function createFromStream(mixed $stream, string $name = null): ReadableInterface;
 }
