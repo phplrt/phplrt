@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
-use Phplrt\Compiler\Analyzer;
+use Phplrt\Compiler\Context\CompilerContext;
 
 abstract class CodeGenerator implements CodeGeneratorInterface
 {
@@ -27,9 +27,9 @@ abstract class CodeGenerator implements CodeGeneratorInterface
      * @readonly
      * @psalm-readonly-allow-private-mutation
      */
-    protected Analyzer $analyzer;
+    protected CompilerContext $analyzer;
 
-    public function __construct(Analyzer $analyzer)
+    public function __construct(CompilerContext $analyzer)
     {
         $this->analyzer = $analyzer;
     }

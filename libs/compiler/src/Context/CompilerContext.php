@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler;
+namespace Phplrt\Compiler\Context;
 
 use Phplrt\Compiler\Ast\Def\PragmaDef;
 use Phplrt\Compiler\Ast\Def\RuleDef;
@@ -26,7 +26,11 @@ use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Visitor\Visitor;
 
-class Analyzer extends Visitor
+/**
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
+ */
+class CompilerContext extends Visitor
 {
     /**
      * @var string

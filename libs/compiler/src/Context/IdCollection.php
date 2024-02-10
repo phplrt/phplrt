@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler;
+namespace Phplrt\Compiler\Context;
 
-use Phplrt\Visitor\Visitor;
 use Phplrt\Compiler\Ast\Def\RuleDef;
 use Phplrt\Compiler\Ast\Def\TokenDef;
 use Phplrt\Contracts\Ast\NodeInterface;
+use Phplrt\Visitor\Visitor;
 
+/**
+ * @internal This is an internal library class, please do not use it in your code.
+ * @psalm-internal Phplrt\Compiler
+ */
 class IdCollection extends Visitor
 {
     /**

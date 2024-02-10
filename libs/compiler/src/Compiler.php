@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Phplrt\Compiler;
 
 use Phplrt\Compiler\Ast\Node;
+use Phplrt\Compiler\Context\CompilerContext;
+use Phplrt\Compiler\Context\IdCollection;
 use Phplrt\Compiler\Exception\GrammarException;
-use Phplrt\Compiler\Generator\GeneratableInterface;
+use Phplrt\Compiler\Generator\CodeGeneratorInterface;
 use Phplrt\Compiler\Generator\PhpCodeGenerator;
 use Phplrt\Compiler\Grammar\GrammarInterface;
 use Phplrt\Compiler\Grammar\PP2Grammar;
+use Phplrt\Compiler\Runtime\PrintableNodeBuilder;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -23,11 +26,11 @@ use Phplrt\Source\File;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Visitor\TraverserInterface;
 
-class Compiler implements ParserInterface
+class Compiler implements CompilerInterface, ParserInterface
 {
     private GrammarInterface $grammar;
 
-    private Analyzer $analyzer;
+    private CompilerContext $analyzer;
 
     private TraverserInterface $preloader;
 
@@ -39,7 +42,7 @@ class Compiler implements ParserInterface
         $this->grammar = $grammar ?? new PP2Grammar();
 
         $this->preloader = $this->bootPreloader($ids = new IdCollection());
-        $this->analyzer = new Analyzer($ids);
+        $this->analyzer = new CompilerContext($ids);
     }
 
     /**
@@ -84,7 +87,7 @@ class Compiler implements ParserInterface
 
         $parser = new Parser($lexer, $this->analyzer->rules, [
             ParserConfigsInterface::CONFIG_INITIAL_RULE => $this->analyzer->initial,
-            ParserConfigsInterface::CONFIG_AST_BUILDER  => new AstBuilder(),
+            ParserConfigsInterface::CONFIG_AST_BUILDER  => new PrintableNodeBuilder(),
         ]);
 
         return $parser->parse($source);
@@ -93,7 +96,7 @@ class Compiler implements ParserInterface
     private function createLexer(): LexerInterface
     {
         if (\count($this->analyzer->tokens) === 1) {
-            return new Lexer($this->analyzer->tokens[Analyzer::STATE_DEFAULT], $this->analyzer->skip);
+            return new Lexer($this->analyzer->tokens[CompilerContext::STATE_DEFAULT], $this->analyzer->skip);
         }
 
         $states = [];
@@ -105,11 +108,6 @@ class Compiler implements ParserInterface
         return new Multistate($states, $this->analyzer->transitions);
     }
 
-    /**
-     * @param string|resource|ReadableInterface $source
-     * @return Compiler|$this
-     * @throws \Throwable
-     */
     public function load($source): self
     {
         /** @var iterable<NodeInterface> $ast */
@@ -122,13 +120,29 @@ class Compiler implements ParserInterface
         return $this;
     }
 
-    public function getAnalyzer(): Analyzer
+    /**
+     * @deprecated since phplrt 3.6 and will be removed in 4.0. Please
+     *             use {@see getContext()} instead.
+     */
+    public function getAnalyzer(): CompilerContext
     {
         return $this->analyzer;
     }
 
-    public function build(): GeneratableInterface
+    public function getContext(): CompilerContext
+    {
+        return $this->analyzer;
+    }
+
+    public function build(): CodeGeneratorInterface
     {
         return new PhpCodeGenerator($this->analyzer);
+    }
+
+    public function __toString(): string
+    {
+        $generator = $this->build();
+
+        return $generator->generate();
     }
 }

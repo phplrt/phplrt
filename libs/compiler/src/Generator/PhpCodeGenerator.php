@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
-use Phplrt\Compiler\Analyzer;
+use Phplrt\Compiler\Context\CompilerContext;
 use Phplrt\Compiler\Printer\PhpPrinter;
 use Phplrt\Compiler\Printer\PrintableValueInterface;
 use Phplrt\Compiler\Printer\PrinterInterface;
@@ -22,7 +22,7 @@ final class PhpCodeGenerator extends CodeGenerator
     private PrinterInterface $printer;
 
     public function __construct(
-        Analyzer $analyzer,
+        CompilerContext $analyzer,
         PrinterInterface $printer = null
     ) {
         $this->printer = $printer ?? new PhpPrinter();
