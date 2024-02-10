@@ -17,6 +17,12 @@
 
         <ignoreFiles>
             <directory name="vendor"/>
+            <directory name="libs/contracts/ast/tests"/>
+            <directory name="libs/contracts/exception/tests"/>
+            <directory name="libs/contracts/lexer/tests"/>
+            <directory name="libs/contracts/parser/tests"/>
+            <directory name="libs/contracts/position/tests"/>
+            <directory name="libs/contracts/source/tests"/>
             <directory name="libs/buffer/tests"/>
             <directory name="libs/compiler/tests"/>
             <directory name="libs/exception/tests"/>

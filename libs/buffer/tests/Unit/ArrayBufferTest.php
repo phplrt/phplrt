@@ -9,7 +9,7 @@ use Phplrt\Buffer\BufferInterface;
 
 class ArrayBufferTest extends TestCase
 {
-    protected function create(iterable $tokens): BufferInterface
+    protected static function create(iterable $tokens): BufferInterface
     {
         return new ArrayBuffer($tokens);
     }

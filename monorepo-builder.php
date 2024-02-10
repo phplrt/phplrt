@@ -23,8 +23,8 @@ return static function (MBConfig $config): void {
     $config->dataToAppend([
         'require-dev' => [
             'friendsofphp/php-cs-fixer' => '^3.49',
-            'phpunit/phpunit' => '^9.6',
-            'rector/rector' => '^0.19',
+            'phpunit/phpunit' => '^9.6|^10.0',
+            'rector/rector' => '^1.0',
             'symfony/var-dumper' => '^5.4|^6.0',
             'symplify/monorepo-builder' => '^11.2',
             'vimeo/psalm' => '^5.21'

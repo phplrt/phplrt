@@ -9,7 +9,7 @@ use Phplrt\Buffer\ExtrusiveBuffer;
 
 class ExtrusiveBufferTest extends TestCase
 {
-    protected function create(iterable $tokens): BufferInterface
+    protected static function create(iterable $tokens): BufferInterface
     {
         return new ExtrusiveBuffer($tokens);
     }

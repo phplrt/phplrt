@@ -11,50 +11,43 @@ use Phplrt\Lexer\Token\Token;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected int $bufferSize = 10;
+    protected static int $bufferSize = 10;
 
-    public function buffersDataProvider(): array
+    public static function buffersDataProvider(): array
     {
         return [
-            'Generator'        => [
-                $this->create(
-                    $this->createTokens($this->bufferSize)
-                ),
+            'Generator' => [
+                static::create(self::createTokens((static::$bufferSize))),
             ],
-            'array'            => [
-                $this->create([...$this->createTokens($this->bufferSize)]),
+            'array' => [
+                static::create([
+                    ...self::createTokens((static::$bufferSize)),
+                ]),
             ],
             'IteratorIterator' => [
-                $this->create(new \IteratorIterator($this->createTokens($this->bufferSize))),
+                static::create(new \IteratorIterator(
+                    self::createTokens((static::$bufferSize)),
+                )),
             ],
-            'ArrayIterator'    => [
-                $this->create(new \ArrayIterator([...$this->createTokens($this->bufferSize)])),
+            'ArrayIterator' => [
+                static::create(new \ArrayIterator([
+                    ...self::createTokens((static::$bufferSize)),
+                ])),
             ],
         ];
     }
 
-    /**
-     * @param iterable $tokens
-     * @return BufferInterface
-     */
-    abstract protected function create(iterable $tokens): BufferInterface;
+    abstract protected static function create(iterable $tokens): BufferInterface;
 
-    /**
-     * @param int $count
-     * @return \Generator
-     */
-    private function createTokens(int $count): \Generator
+    private static function createTokens(int $count): \Generator
     {
         for ($i = 0; $i < $count; ++$i) {
-            yield new Token((string) $i, 'Value#' . $i, $i);
+            yield new Token((string)$i, 'Value#' . $i, $i);
         }
     }
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testIsIterable(BufferInterface $buffer): void
     {
@@ -66,9 +59,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testKeysDoNotIntersect(BufferInterface $buffer): void
     {
@@ -79,9 +69,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testCurrentSameWithIteratorState(BufferInterface $buffer): void
     {
@@ -92,9 +79,6 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testKeySameWithIteratorState(BufferInterface $buffer): void
     {
@@ -105,17 +89,13 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testRewindable(BufferInterface $buffer): void
     {
         $needle = $buffer->current();
 
         // Iterate
-        foreach ($buffer as $token) {
-        }
+        foreach ($buffer as $token);
 
         $this->assertNotSame($needle, $buffer->current());
         $buffer->rewind();
@@ -124,53 +104,40 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testSeekAhead(BufferInterface $buffer): void
     {
-        $buffer->seek($this->bufferSize - 1);
+        $buffer->seek(static::$bufferSize - 1);
 
         $needle = $buffer->current();
 
         $buffer->rewind();
 
-        foreach ($buffer as $item) {
-        }
+        foreach ($buffer as $item);
 
         $this->assertSame($buffer->current(), $needle);
     }
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testSeekOverflow(BufferInterface $buffer): void
     {
         $this->expectException(\OutOfRangeException::class);
-        $buffer->seek($this->bufferSize + 1000);
+        $buffer->seek(static::$bufferSize + 1000);
     }
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testSeekUnderflow(BufferInterface $buffer): void
     {
         $this->expectException(\OutOfRangeException::class);
-        $buffer->seek($this->bufferSize + 1000);
+        $buffer->seek(static::$bufferSize + 1000);
     }
 
     /**
      * @dataProvider buffersDataProvider
-     *
-     * @param BufferInterface $buffer
-     * @return void
      */
     public function testSeekable(BufferInterface $buffer): void
     {
