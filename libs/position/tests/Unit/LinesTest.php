@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Position\Tests\Unit;
+
+use Phplrt\Position\Position;
+
+class LinesTest extends TestCase
+{
+    /**
+     * @dataProvider provider
+     */
+    public function testOffsetOverflow(string $text, int $lines): void
+    {
+        $position = Position::fromOffset($text, \PHP_INT_MAX);
+
+        $this->assertSame($lines, $position->getLine());
+    }
+
+    /**
+     * @dataProvider provider
+     */
+    public function testOffsetUnderflow(string $text, int $lines): void
+    {
+        $position = Position::fromOffset($text, \PHP_INT_MIN);
+
+        $this->assertSame(1, $position->getLine());
+    }
+
+    /**
+     * @dataProvider provider
+     */
+    public function testPosition(string $text): void
+    {
+        $line = 1;
+
+        for ($offset = 0, $length = \strlen($text); $offset < $length; ++$offset) {
+            $this->assertSame($line, Position::fromOffset($text, $offset)->getLine());
+
+            if ($text[$offset] === "\n") {
+                ++$line;
+            }
+        }
+    }
+}

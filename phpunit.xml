@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="true"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         backupGlobals="true"
          backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          colors="true"
@@ -7,19 +9,27 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false">
+         stopOnFailure="false"
+>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="memory_limit" value="-1"/>
+    </php>
+
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory suffix="TestCase.php">libs/*/tests</directory>
+        <testsuite name="unit">
+            <directory>libs/*/tests/Unit</directory>
+            <directory>libs/contracts/*/tests</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory>libs/*/tests/Functional</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/**/src</directory>
-        </whitelist>
-    </filter>
-    <php>
-        <ini name="error_reporting" value="-1" />
-        <ini name="memory_limit" value="-1" />
-    </php>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">libs/*/src</directory>
+            <directory suffix=".php">libs/contracts/*/src</directory>
+        </include>
+    </coverage>
 </phpunit>
