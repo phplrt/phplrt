@@ -4,147 +4,150 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
+use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;
+use Phplrt\Lexer\PositionalLexerInterface;
 
-final class PP2Lexer extends Lexer
+final class PP2Lexer implements PositionalLexerInterface
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_PRAGMA = 'T_PRAGMA';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_INCLUDE = 'T_INCLUDE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_TOKEN_DEF = 'T_TOKEN_DEF';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_SKIP_DEF = 'T_SKIP_DEF';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_OR = 'T_OR';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_TOKEN_SKIPPED = 'T_TOKEN_SKIPPED';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_TOKEN_KEPT = 'T_TOKEN_KEPT';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_TOKEN_STRING = 'T_TOKEN_STRING';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_INVOKE = 'T_INVOKE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_GROUP_OPEN = 'T_GROUP_OPEN';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_GROUP_CLOSE = 'T_GROUP_CLOSE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_ZERO_OR_ONE = 'T_REPEAT_ZERO_OR_ONE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_ONE_OR_MORE = 'T_REPEAT_ONE_OR_MORE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_ZERO_OR_MORE = 'T_REPEAT_ZERO_OR_MORE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_N_TO_M = 'T_REPEAT_N_TO_M';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_N_OR_MORE = 'T_REPEAT_N_OR_MORE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_ZERO_TO_M = 'T_REPEAT_ZERO_TO_M';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_REPEAT_EXACTLY_N = 'T_REPEAT_EXACTLY_N';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_KEPT_NAME = 'T_KEPT_NAME';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_NAME = 'T_NAME';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_EQ = 'T_EQ';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_END_OF_RULE = 'T_END_OF_RULE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_WHITESPACE = 'T_WHITESPACE';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_COMMENT = 'T_COMMENT';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_BLOCK_COMMENT = 'T_BLOCK_COMMENT';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_ARROW_RIGHT = 'T_ARROW_RIGHT';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_PHP_OPEN = 'T_PHP_OPEN';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const T_PHP_CLOSE = 'T_PHP_CLOSE';
 
@@ -195,9 +198,15 @@ final class PP2Lexer extends Lexer
         'T_BLOCK_COMMENT',
     ];
 
+    private LexerInterface $lexer;
+
     public function __construct()
     {
-        /** @psalm-suppress ArgumentTypeCoercion */
-        parent::__construct(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);
+        $this->lexer = new Lexer(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);
+    }
+
+    public function lex($source, int $offset = 0): iterable
+    {
+        return $this->lexer->lex($source, $offset);
     }
 }

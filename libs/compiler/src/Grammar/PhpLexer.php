@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\PositionalLexerInterface;
 use Phplrt\Source\File;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\Exception\NotAccessibleException;
 
-class PhpLexer implements LexerInterface
+class PhpLexer implements PositionalLexerInterface
 {
     private bool $inline;
 
@@ -21,13 +19,6 @@ class PhpLexer implements LexerInterface
         $this->inline = $inline;
     }
 
-    /**
-     * @param resource|string|ReadableInterface $source
-     * @param int<0, max> $offset
-     * @return iterable<TokenInterface>
-     * @throws NotAccessibleException
-     * @throws \RuntimeException
-     */
     public function lex($source, int $offset = 0): iterable
     {
         $tokens = \token_get_all($this->read(File::new($source), $offset));

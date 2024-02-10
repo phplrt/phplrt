@@ -10,15 +10,16 @@ use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Driver\Markers;
 use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 
 /**
- * @final Please use {@see Decorator} instead.
+ * @final
  */
-class Lexer implements LexerInterface, MutableLexerInterface
+class Lexer implements
+    PositionalLexerInterface,
+    MutableLexerInterface
 {
     /**
      * @var array<non-empty-string, non-empty-string>

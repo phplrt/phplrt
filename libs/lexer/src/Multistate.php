@@ -16,7 +16,7 @@ use Phplrt\Source\File;
 class Multistate implements LexerInterface
 {
     /**
-     * @var array<array-key, Lexer>
+     * @var array<array-key, PositionalLexerInterface>
      */
     private array $states = [];
 
@@ -31,7 +31,7 @@ class Multistate implements LexerInterface
     private array $transitions = [];
 
     /**
-     * @param array<array-key, Lexer> $states
+     * @param array<array-key, PositionalLexerInterface> $states
      * @param array<array-key, array<non-empty-string, array-key>> $transitions
      * @param array-key|null $state
      */
@@ -59,14 +59,18 @@ class Multistate implements LexerInterface
 
     /**
      * @param array-key $name
-     * @param array<non-empty-string, non-empty-string>|Lexer $data
+     * @param array<non-empty-string, non-empty-string>|PositionalLexerInterface $data
      */
     public function setState($name, $data): self
     {
         assert(\is_string($name) || \is_int($name));
-        assert(\is_array($data) || $data instanceof Lexer);
+        assert(\is_array($data) || $data instanceof PositionalLexerInterface);
 
-        $this->states[$name] = $data instanceof Lexer ? $data : new Lexer($data);
+        if (\is_array($data)) {
+            $data = new Lexer($data);
+        }
+
+        $this->states[$name] = $data;
 
         return $this;
     }
