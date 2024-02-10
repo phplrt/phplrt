@@ -198,7 +198,7 @@ final class PP2Lexer implements PositionalLexerInterface
         'T_BLOCK_COMMENT',
     ];
 
-    private LexerInterface $lexer;
+    private Lexer $lexer;
 
     public function __construct()
     {

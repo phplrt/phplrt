@@ -8,7 +8,7 @@ namespace Phplrt\Lexer\Compiler;
  * @deprecated since phplrt 3.6 and will be removed in 4.0.
  *
  * @internal This is an internal library class, please do not use it in your code.
- * @psalm-internal Phplrt\Lexer\Compiler
+ * @psalm-internal Phplrt\Lexer
  */
 class Markers extends PCRECompiler
 {
