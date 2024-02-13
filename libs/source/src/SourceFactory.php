@@ -10,6 +10,11 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Provider\PsrStreamSourceProvider;
+use Phplrt\Source\Provider\SourceProviderInterface;
+use Phplrt\Source\Provider\SplFileInfoSourceProvider;
+use Phplrt\Source\Provider\StreamSourceProvider;
+use Phplrt\Source\Provider\TextSourceProvider;
 
 final class SourceFactory implements SourceFactoryInterface
 {
@@ -38,19 +43,24 @@ final class SourceFactory implements SourceFactoryInterface
      * @var non-empty-string
      * @psalm-readonly-allow-private-mutation
      */
-    private string $algo = self::DEFAULT_HASH_ALGO;
+    public string $algo = self::DEFAULT_HASH_ALGO;
 
     /**
      * @var non-empty-string
      * @psalm-readonly-allow-private-mutation
      */
-    private string $temp = self::DEFAULT_TEMP_STREAM;
+    public string $temp = self::DEFAULT_TEMP_STREAM;
 
     /**
      * @var int<1, max>
      * @psalm-readonly-allow-private-mutation
      */
-    private int $chunkSize = self::DEFAULT_CHUNK_SIZE;
+    public int $chunkSize = self::DEFAULT_CHUNK_SIZE;
+
+    /**
+     * @var list<SourceProviderInterface>
+     */
+    private array $providers = [];
 
     /**
      * @param non-empty-string $algo Hashing algorithm for the sources.
@@ -58,11 +68,13 @@ final class SourceFactory implements SourceFactoryInterface
      *        used as a resource during the reading of the source.
      * @param int<1, max> $chunkSize The chunk size used while non-blocking
      *        reading the file inside the {@see \Fiber} context.
+     * @param list<SourceProviderInterface> $providers List of source providers.
      */
     public function __construct(
         string $algo = self::DEFAULT_HASH_ALGO,
         string $temp = self::DEFAULT_TEMP_STREAM,
-        int $chunkSize = self::DEFAULT_CHUNK_SIZE
+        int $chunkSize = self::DEFAULT_CHUNK_SIZE,
+        iterable $providers = []
     ) {
         assert($algo !== '', 'Hashing algorithm name must not be empty');
         assert($temp !== '', 'Temporary stream name must not be empty');
@@ -71,26 +83,57 @@ final class SourceFactory implements SourceFactoryInterface
         $this->chunkSize = $chunkSize;
         $this->temp = $temp;
         $this->algo = $algo;
+
+        $this->providers = [
+            ...$providers,
+            new PsrStreamSourceProvider($this),
+            new SplFileInfoSourceProvider($this),
+            new StreamSourceProvider($this),
+            new TextSourceProvider($this),
+        ];
+    }
+
+    /**
+     * Appends a new provider to the END of providers list.
+     *
+     * @psalm-immutable
+     */
+    public function withAppendedProvider(SourceProviderInterface $provider): self
+    {
+        $self = clone $this;
+        $self->providers[] = $provider;
+
+        return $self;
+    }
+
+    /**
+     * Prepends a new provider to the START of providers list.
+     *
+     * @psalm-immutable
+     */
+    public function withPrependedProvider(SourceProviderInterface $provider): self
+    {
+        $self = clone $this;
+        $self->providers = [$provider, ...$this->providers];
+
+        return $self;
     }
 
     public function create($source): ReadableInterface
     {
-        switch (true) {
-            case $source instanceof ReadableInterface:
-                return $source;
+        foreach ($this->providers as $provider) {
+            $readable = $provider->create($source);
 
-            case $source instanceof \SplFileInfo:
-                return $this->createFromFile($source->getPathname());
-
-            case \is_string($source):
-                return $this->createFromString($source);
-
-            case \is_resource($source):
-                return $this->createFromStream($source);
-
-            default:
-                throw NotCreatableException::fromInvalidType($source);
+            if ($readable instanceof ReadableInterface) {
+                return $readable;
+            }
         }
+
+        if ($source instanceof ReadableInterface) {
+            return $source;
+        }
+
+        throw NotCreatableException::fromInvalidType($source);
     }
 
     public function createFromString(string $content = '', string $name = null): ReadableInterface

@@ -48,8 +48,6 @@ trait SourceFactoryTrait
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromString()} method.
-     *
      * @psalm-taint-sink file $pathname
      *
      * @param non-empty-string|null $pathname
@@ -63,8 +61,6 @@ trait SourceFactoryTrait
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromString()} method.
-     *
      * @psalm-taint-sink file $pathname
      *
      * @param non-empty-string|null $pathname
@@ -76,12 +72,18 @@ trait SourceFactoryTrait
     {
         $factory = static::getSourceFactory();
 
-        return $factory->createFromString($sources, $pathname);
+        if ($factory instanceof SourceFactory) {
+            return $factory->createFromString($sources, $pathname);
+        }
+
+        if ($pathname === null) {
+            return new Source($sources);
+        }
+
+        return new VirtualFile($pathname, $sources);
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromFile()} method.
-     *
      * @throws SourceExceptionInterface
      */
     public static function fromSplFileInfo(\SplFileInfo $info): FileInterface
@@ -90,8 +92,6 @@ trait SourceFactoryTrait
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromFile()} method.
-     *
      * @param non-empty-string $pathname
      *
      * @throws SourceExceptionInterface
@@ -100,12 +100,14 @@ trait SourceFactoryTrait
     {
         $factory = static::getSourceFactory();
 
-        return $factory->createFromFile($pathname);
+        if ($factory instanceof SourceFactory) {
+            return $factory->createFromFile($pathname);
+        }
+
+        return new File($pathname);
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromStream()} method.
-     *
      * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
@@ -124,8 +126,6 @@ trait SourceFactoryTrait
     }
 
     /**
-     * An alternative factory function of the {@see SourceFactoryInterface::createFromStream()} method.
-     *
      * @param resource $resource
      * @param non-empty-string|null $pathname
      *
@@ -136,6 +136,14 @@ trait SourceFactoryTrait
     {
         $factory = static::getSourceFactory();
 
-        return $factory->createFromStream($resource, $pathname);
+        if ($factory instanceof SourceFactory) {
+            return $factory->createFromStream($resource, $pathname);
+        }
+
+        if ($pathname === null) {
+            return new Stream($resource);
+        }
+
+        return new VirtualStreamingFile($pathname, $resource);
     }
 }
