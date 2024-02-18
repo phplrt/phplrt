@@ -29,10 +29,7 @@ abstract class BaseToken implements TokenInterface, \JsonSerializable
 
     public function __toString(): string
     {
-        if (\class_exists(Renderer::class)) {
-            return (new Renderer())->render($this);
-        }
-
-        return $this->getName();
+        return (new Renderer())
+            ->render($this);
     }
 }

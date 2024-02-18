@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\TokenInterface;
@@ -19,27 +20,39 @@ use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
 class Markers extends Driver
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private const UNKNOWN_PATTERN = '.+?';
 
     /**
+     * @var non-empty-string
+     * @readonly
+     */
+    private string $unknown;
+
+    /**
      * @param MarkersCompiler|null $compiler
      */
-    public function __construct(MarkersCompiler $compiler = null)
-    {
+    public function __construct(
+        MarkersCompiler $compiler = null,
+        string $unknown = self::UNKNOWN_TOKEN_NAME
+    ) {
+        $this->unknown = $unknown;
+
         parent::__construct($compiler ?? new MarkersCompiler());
     }
 
     /**
-     * @param array<non-empty-string, non-empty-string> $tokens
+     * @param array<array-key, non-empty-string> $tokens
      * @param int<0, max> $offset
-     * @return iterable<TokenInterface>
+     *
+     * @return iterable<array-key, TokenInterface>
+     * @throws SourceExceptionInterface
      */
     public function run(array $tokens, ReadableInterface $source, int $offset = 0): iterable
     {
         $pattern = $this->getPattern(\array_merge($tokens, [
-            self::UNKNOWN_TOKEN_NAME => self::UNKNOWN_PATTERN,
+            $this->unknown => self::UNKNOWN_PATTERN,
         ]));
 
         $result = $this->match($pattern, $source->getContents(), $offset);
@@ -57,9 +70,6 @@ class Markers extends Driver
      * @param non-empty-string $pattern
      * @param int<0, max> $offset
      * @return array<array<int<0, max>, array{string, int}>|array{MARK: non-empty-string}>
-     *
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
      */
     private function match(string $pattern, string $source, int $offset): array
     {

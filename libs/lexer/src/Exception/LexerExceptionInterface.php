@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Exception;
 
-interface LexerExceptionInterface extends \Throwable {}
+use Phplrt\Contracts\Lexer\LexerExceptionInterface as BaseLexerExceptionInterface;
+
+interface LexerExceptionInterface extends BaseLexerExceptionInterface {}

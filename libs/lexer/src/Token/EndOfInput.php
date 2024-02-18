@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
+
 final class EndOfInput extends BaseToken
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     private const EOI_VALUE = "\0";
+
+    /**
+     * Name of the token that marks the end of the incoming data.
+     *
+     * @var non-empty-string
+     */
+    public const DEFAULT_TOKEN_NAME = TokenInterface::END_OF_INPUT;
 
     /**
      * @var int<0, max>

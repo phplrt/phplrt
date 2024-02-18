@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-
 class Token extends BaseToken
 {
     /**
@@ -15,22 +12,22 @@ class Token extends BaseToken
     private static int $anonymousId = 0;
 
     /**
-     * @var int<0, max>
+     * @var non-empty-string|int<0, max>
      */
-    private int $offset;
+    private $name;
 
     private string $value;
 
     /**
-     * @var non-empty-string|int<0, max>
+     * @var int<0, max>
      */
-    private $name;
+    private int $offset;
 
     /**
      * @param string|int<0, max> $name
      * @param int<0, max> $offset
      */
-    public function __construct($name, string $value, int $offset)
+    public function __construct($name, string $value, int $offset = 0)
     {
         if ($name === '') {
             $name = self::$anonymousId++;
@@ -41,9 +38,9 @@ class Token extends BaseToken
         $this->offset = $offset;
     }
 
-    public static function empty(): TokenInterface
+    public static function empty(): UnknownToken
     {
-        return new self(DriverInterface::UNKNOWN_TOKEN_NAME, '', 0);
+        return new UnknownToken('');
     }
 
     public function getName(): string
@@ -63,14 +60,5 @@ class Token extends BaseToken
     public function getOffset(): int
     {
         return $this->offset;
-    }
-
-    public function __toString(): string
-    {
-        if (\class_exists(Renderer::class)) {
-            return (new Renderer())->render($this);
-        }
-
-        return $this->getName();
     }
 }

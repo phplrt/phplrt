@@ -5,15 +5,25 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\SourceFactoryInterface;
+use Phplrt\Lexer\Config\HandlerInterface;
+use Phplrt\Lexer\Config\NullHandler;
+use Phplrt\Lexer\Config\PassthroughHandler;
+use Phplrt\Lexer\Config\PassthroughWhenTokenHandler;
+use Phplrt\Lexer\Config\ThrowErrorHandler;
+use Phplrt\Lexer\Exception\LexerException;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
 use Phplrt\Lexer\Exception\EndlessRecursionException;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Source\File;
+use Phplrt\Source\SourceFactory;
 
-class Multistate implements LexerInterface
+class Multistate implements PositionalLexerInterface
 {
     /**
      * @var array<array-key, PositionalLexerInterface>
@@ -30,23 +40,47 @@ class Multistate implements LexerInterface
      */
     private array $transitions = [];
 
+    private SourceFactoryInterface $sources;
+
+    private HandlerInterface $onEndOfInput;
+
     /**
      * @param array<array-key, PositionalLexerInterface> $states
      * @param array<array-key, array<non-empty-string, array-key>> $transitions
      * @param array-key|null $state
+     * @param HandlerInterface $onEndOfInput This setting is responsible for the
+     *        operation of the terminal token ({@see EndOfInput}).
+     *
+     *        See also {@see OnEndOfInput} for more details.
+     *
+     *        Note that you can also define your own {@see HandlerInterface} to
+     *        override behavior.
+     * @param non-empty-string $eoi
      */
-    public function __construct(array $states, array $transitions = [], $state = null)
-    {
+    public function __construct(
+        array $states,
+        array $transitions = [],
+        $state = null,
+        ?HandlerInterface $onEndOfInput = null,
+        ?SourceFactoryInterface $sources = null
+    ) {
         foreach ($states as $name => $data) {
             $this->setState($name, $data);
         }
 
         $this->transitions = $transitions;
         $this->state = $state;
+
+        $this->onEndOfInput = $onEndOfInput ?? new PassthroughWhenTokenHandler(
+            Lexer::DEFAULT_EOI_TOKEN_NAME,
+        );
+
+        $this->sources = $sources ?? new SourceFactory();
     }
 
     /**
      * @param array-key|null $state
+     * @api
      */
     public function startsWith($state): self
     {
@@ -60,6 +94,7 @@ class Multistate implements LexerInterface
     /**
      * @param array-key $name
      * @param array<non-empty-string, non-empty-string>|PositionalLexerInterface $data
+     * @api
      */
     public function setState($name, $data): self
     {
@@ -77,6 +112,7 @@ class Multistate implements LexerInterface
 
     /**
      * @param array-key $name
+     * @api
      */
     public function removeState($name): self
     {
@@ -89,6 +125,7 @@ class Multistate implements LexerInterface
      * @param non-empty-string $token
      * @param array-key $in
      * @param array-key $then
+     * @api
      */
     public function when(string $token, $in, $then): self
     {
@@ -98,30 +135,35 @@ class Multistate implements LexerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Returns a set of token objects from the passed source.
      *
-     * @param mixed $source
-     * @param int<0, max> $offset
+     * @psalm-immutable This method may not be pure, but it does not change
+     *                  the internal state of the lexer and can be used in
+     *                  asynchronous and parallel computing.
      *
-     * @return iterable<TokenInterface>
-     * @throws SourceExceptionInterface
+     * @param mixed $source Any source supported by the {@see SourceFactoryInterface::create()}.
+     * @param int<0, max> $offset Offset, starting from which you should
+     *         start analyzing the source.
+     *
+     * @return iterable<array-key, TokenInterface> List of analyzed tokens.
+     *
+     * @throws LexerExceptionInterface An error occurs before source processing
+     *         starts, when the given source cannot be recognized or if the
+     *         lexer settings contain errors.
+     * @throws LexerRuntimeExceptionInterface An exception that occurs after
+     *         starting the lexical analysis and indicates problems in the
+     *         analyzed source.
+     *
+     * @psalm-suppress TypeDoesNotContainType
      */
     public function lex($source, int $offset = 0): iterable
     {
-        yield from $this->run(File::new($source), $offset);
-    }
+        try {
+            $source = $this->sources->create($source);
+        } catch (\Throwable $e) {
+            throw LexerException::fromInternalError($e);
+        }
 
-    /**
-     * @param int<0, max> $offset
-     *
-     * @return iterable<TokenInterface>
-     *
-     * @throws RuntimeExceptionInterface
-     * @psalm-suppress UnusedVariable
-     * @psalm-suppress TypeDoesNotContainType
-     */
-    private function run(ReadableInterface $source, int $offset): iterable
-    {
         if ($this->states === []) {
             throw UnexpectedStateException::fromEmptyStates($source);
         }
@@ -164,7 +206,7 @@ class Multistate implements LexerInterface
             foreach ($stream as $token) {
                 yield $token;
 
-                if ($token->getName() === TokenInterface::END_OF_INPUT) {
+                if ($this->onEndOfInput->handle($source, $token)) {
                     return;
                 }
 
@@ -191,6 +233,7 @@ class Multistate implements LexerInterface
                         throw EndlessRecursionException::fromState($state, $source, $token);
                     }
 
+                    /** @psalm-suppress UnusedVariable */
                     $completed = false;
 
                     continue 2;

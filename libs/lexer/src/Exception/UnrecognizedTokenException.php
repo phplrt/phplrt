@@ -10,14 +10,9 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 class UnrecognizedTokenException extends LexerRuntimeException
 {
-    /**
-     * @var string
-     */
-    private const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unrecognized %s';
-
     public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
     {
-        $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
+        $message = \vsprintf('Syntax error, unrecognized %s', [
             (new Renderer())->render($tok),
         ]);
 
