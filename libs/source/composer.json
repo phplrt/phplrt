@@ -30,7 +30,7 @@
         "phpunit/phpunit": "^9.6|^10.0",
         "psr/http-message": "^1.0",
         "laminas/laminas-diactoros": "^2.17",
-        "vimeo/psalm": "^5.21"
+        "vimeo/psalm": "^5.22"
     },
     "autoload-dev": {
         "psr-4": {
