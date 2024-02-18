@@ -35,7 +35,7 @@ jobs:
           ini-values: "memory_limit=-1"
       - name: Get Composer Cache Directory
         id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       - name: Restore Composer Cache
         uses: actions/cache@v4
         with:
