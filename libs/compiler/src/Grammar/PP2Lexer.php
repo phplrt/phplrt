@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\PositionalLexerInterface;
 
