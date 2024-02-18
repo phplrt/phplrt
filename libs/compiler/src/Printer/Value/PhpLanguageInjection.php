@@ -99,7 +99,7 @@ final class PhpLanguageInjection extends LanguageInjection
         }
 
         return $prefix . $style->lineDelimiter
-            . $this->code;
+            . $style->indentation . \trim($this->code);
     }
 
     private function isVoid(): bool
