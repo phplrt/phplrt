@@ -14,7 +14,7 @@ class Composite extends Token implements CompositeTokenInterface
     private array $children = [];
 
     /**
-     * @param non-empty-string|int<0, max> $name
+     * @param array-key $name
      * @param int<0, max> $offset
      * @param array<int, TokenInterface> $children
      */

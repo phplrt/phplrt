@@ -366,7 +366,8 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
             return null;
         }
 
-        $eoi = new EndOfInput($last !== null ? $last->getOffset() + $last->getBytes() : 0);
+        $offset = $last !== null ? $last->getOffset() + $last->getBytes() : 0;
+        $eoi = new EndOfInput($offset, $this->eoi);
 
         return $this->onEndOfInput->handle($source, $eoi);
     }

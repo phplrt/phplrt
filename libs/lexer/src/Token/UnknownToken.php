@@ -14,7 +14,7 @@ class UnknownToken extends Token
     public const DEFAULT_TOKEN_NAME = 'T_UNKNOWN';
 
     /**
-     * @param string|int<0, max> $name
+     * @param array-key $name
      * @param int<0, max> $offset
      */
     public function __construct(

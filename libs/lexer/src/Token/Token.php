@@ -12,7 +12,7 @@ class Token extends BaseToken
     private static int $anonymousId = 0;
 
     /**
-     * @var non-empty-string|int<0, max>
+     * @var array-key
      */
     private $name;
 
@@ -24,7 +24,7 @@ class Token extends BaseToken
     private int $offset;
 
     /**
-     * @param string|int<0, max> $name
+     * @param array-key $name
      * @param int<0, max> $offset
      */
     public function __construct($name, string $value, int $offset = 0)

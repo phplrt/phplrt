@@ -26,16 +26,25 @@ final class EndOfInput extends BaseToken
     private int $offset;
 
     /**
-     * @param int<0, max> $offset
+     * @var array-key
      */
-    public function __construct(int $offset = 0)
-    {
+    private $name;
+
+    /**
+     * @param int<0, max> $offset
+     * @param array-key $name
+     */
+    public function __construct(
+        int $offset = 0,
+        $name = self::DEFAULT_TOKEN_NAME
+    ) {
         $this->offset = $offset;
+        $this->name = $name;
     }
 
     public function getName(): string
     {
-        return self::END_OF_INPUT;
+        return $this->name;
     }
 
     public function getOffset(): int
