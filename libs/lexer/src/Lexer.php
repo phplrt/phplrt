@@ -325,7 +325,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
             foreach ($this->driver->run($this->tokens, $source, $offset) as $token) {
                 // Process "hidden" tokens.
                 if (\in_array($token->getName(), $this->skip, true)) {
-                    if ($handledToken = $this->handleHiddenToken($source, $token)) {
+                    if (($handledToken = $this->handleHiddenToken($source, $token)) !== null) {
                         yield $handledToken;
                     }
 
@@ -352,7 +352,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
             yield $token = $result;
         }
 
-        if ($eoi = $this->handleEoiToken($source, $token ?? null)) {
+        if (($eoi = $this->handleEoiToken($source, $token ?? null)) !== null) {
             yield $eoi;
         }
     }

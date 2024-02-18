@@ -206,7 +206,7 @@ class Multistate implements PositionalLexerInterface
             foreach ($stream as $token) {
                 yield $token;
 
-                if ($this->onEndOfInput->handle($source, $token)) {
+                if ($this->onEndOfInput->handle($source, $token) !== null) {
                     return;
                 }
 
