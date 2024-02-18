@@ -26,6 +26,9 @@ use Phplrt\Source\File;
 use Phplrt\Visitor\Traverser;
 use Phplrt\Visitor\TraverserInterface;
 
+/**
+ * @template-implements ParserInterface<Node>
+ */
 class Compiler implements CompilerInterface, ParserInterface
 {
     private GrammarInterface $grammar;
