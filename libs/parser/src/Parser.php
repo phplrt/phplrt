@@ -8,13 +8,15 @@ use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserExceptionInterface;
+use Phplrt\Contracts\Parser\ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Parser\Context\TreeBuilder;
 use Phplrt\Parser\Environment\Factory as EnvironmentFactory;
 use Phplrt\Parser\Environment\SelectorInterface;
+use Phplrt\Parser\Exception\ParserException;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Exception\UnrecognizedTokenException;
@@ -57,8 +59,12 @@ use Phplrt\Source\SourceFactory;
  *          Expression = Number { Operator } ;
  *      *)
  * </code>
+ *
+ * @template TNode of object
+ *
+ * @template-implements ConfigurableParserInterface<TNode>
  */
-final class Parser implements ParserInterface, ParserConfigsInterface
+final class Parser implements ConfigurableParserInterface, ParserConfigsInterface
 {
     use ParserConfigsTrait;
 
@@ -100,7 +106,7 @@ final class Parser implements ParserInterface, ParserConfigsInterface
     /**
      * The initial state (initial rule identifier) of the parser.
      *
-     * @var array-key|null
+     * @var array-key
      * @psalm-readonly-allow-private-mutation
      */
     private $initial;
@@ -151,9 +157,6 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      */
     private static function bootBuilder(array $options): BuilderInterface
     {
-        /**
-         * @var BuilderInterface|iterable<int|non-empty-string, \Closure(Context,mixed):mixed> $builder
-         */
         $builder = $options[self::CONFIG_AST_BUILDER] ?? [];
 
         if ($builder instanceof BuilderInterface) {
@@ -240,10 +243,20 @@ final class Parser implements ParserInterface, ParserConfigsInterface
     }
 
     /**
-     * @param array<non-empty-string, mixed> $options
-     * @return iterable<array-key, object>
+     * Parses sources into an abstract source tree (AST) or list of AST nodes.
      *
-     * @throws SourceExceptionInterface
+     * @param mixed $source Any source supported by the {@see SourceFactoryInterface::create()}.
+     * @param array<non-empty-string, mixed> $options List of additional
+     *        runtime options for the parser (parsing context).
+     *
+     * @return iterable<array-key, TNode>
+     *
+     * @throws ParserExceptionInterface An error occurs before source processing
+     *         starts, when the given source cannot be recognized or if the
+     *         parser settings contain errors.
+     * @throws ParserRuntimeExceptionInterface An exception that occurs after
+     *         starting the parsing and indicates problems in the analyzed
+     *         source.
      */
     public function parse($source, array $options = []): iterable
     {
@@ -253,7 +266,11 @@ final class Parser implements ParserInterface, ParserConfigsInterface
 
         $this->env->prepare();
 
-        $source = $this->sources->create($source);
+        try {
+            $source = $this->sources->create($source);
+        } catch (\Throwable $e) {
+            throw ParserException::fromInternalError($e);
+        }
 
         try {
             $buffer = $this->createBufferFromSource($source);
@@ -278,14 +295,21 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         return new $class($stream);
     }
 
+    /**
+     * @throws ParserRuntimeExceptionInterface
+     */
     private function createBufferFromSource(ReadableInterface $source): BufferInterface
     {
         try {
             return $this->createBufferFromTokens(
-                $this->lexer->lex(File::new($source)),
+                $this->lexer->lex($source),
             );
         } catch (RuntimeExceptionInterface $e) {
-            throw UnrecognizedTokenException::fromLexerException($e);
+            throw UnrecognizedTokenException::fromRuntimeException($e);
+        } catch (LexerRuntimeExceptionInterface $e) {
+            throw UnrecognizedTokenException::fromLexerRuntimeException($e);
+        } catch (\Throwable $e) {
+            throw ParserException::fromInternalError($e);
         }
     }
 
@@ -317,7 +341,11 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      */
     private function lookupExpectedTokens(Context $context): array
     {
-        $rule = $context->rule ?? $this->rules[$this->initial];
+        $rule = $context->rule ?? $this->rules[$this->initial] ?? null;
+
+        if ($rule === null) {
+            return [];
+        }
 
         $tokens = [];
 
@@ -348,14 +376,17 @@ final class Parser implements ParserInterface, ParserConfigsInterface
         return $this->runNextStep($context);
     }
 
+    /**
+     * @return mixed
+     */
     private function runNextStep(Context $context)
     {
-        $context->rule = $this->rules[$context->state];
+        $rule = $context->rule = $this->rules[$context->state];
         $result = null;
 
         switch (true) {
-            case $context->rule instanceof ProductionInterface:
-                $result = $context->rule->reduce($context->buffer, function ($state) use ($context) {
+            case $rule instanceof ProductionInterface:
+                $result = $rule->reduce($context->buffer, function ($state) use ($context) {
                     // Keep current state
                     $beforeState = $context->state;
                     $beforeLastProcessedToken = $context->lastProcessedToken;
@@ -375,17 +406,18 @@ final class Parser implements ParserInterface, ParserConfigsInterface
 
                 break;
 
-            case $context->rule instanceof TerminalInterface:
-                $result = $context->rule->reduce($context->buffer);
+            case $rule instanceof TerminalInterface:
+                $result = $rule->reduce($context->buffer);
 
                 if ($result !== null) {
                     $context->buffer->next();
 
-                    if ($context->buffer->current()->getOffset() > $context->lastOrdinalToken->getOffset()) {
+                    if ($context->lastOrdinalToken === null
+                        || $context->buffer->current()->getOffset() > $context->lastOrdinalToken->getOffset()) {
                         $context->lastOrdinalToken = $context->buffer->current();
                     }
 
-                    if (!$context->rule->isKeep()) {
+                    if (!$rule->isKeep()) {
                         return [];
                     }
                 }
@@ -399,7 +431,7 @@ final class Parser implements ParserInterface, ParserConfigsInterface
 
         $result = $this->builder->build($context, $result) ?? $result;
 
-        if ($result instanceof NodeInterface) {
+        if (\is_object($result)) {
             $context->node = $result;
         }
 
@@ -428,6 +460,8 @@ final class Parser implements ParserInterface, ParserConfigsInterface
      *  $context = $parser->getLastExecutionContext();
      *  var_dump($context->buffer->current()); // Returns the token where the parser stopped
      * ```
+     *
+     * @api
      */
     public function getLastExecutionContext(): ?Context
     {

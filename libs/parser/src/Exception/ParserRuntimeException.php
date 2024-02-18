@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\RuntimeException;
 
-abstract class ParserRuntimeException extends RuntimeException
+abstract class ParserRuntimeException extends RuntimeException implements ParserRuntimeExceptionInterface
 {
     final public function __construct(
         string $message,

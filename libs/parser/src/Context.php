@@ -50,10 +50,10 @@ class Context implements ContextInterface
     public TokenInterface $lastProcessedToken;
 
     /**
-     * Contains the NodeInterface object which was last successfully
+     * Contains the node object which was last successfully
      * processed while parsing.
      */
-    public ?NodeInterface $node = null;
+    public ?object $node = null;
 
     /**
      * Contains the parser's current rule.
@@ -111,15 +111,13 @@ class Context implements ContextInterface
         return $this->source;
     }
 
-    public function getNode(): ?NodeInterface
+    public function getNode(): ?object
     {
         return $this->node;
     }
 
-    public function getRule(): RuleInterface
+    public function getRule(): ?RuleInterface
     {
-        assert($this->rule !== null, 'Context not initialized');
-
         return $this->rule;
     }
 
@@ -130,8 +128,6 @@ class Context implements ContextInterface
 
     public function getState()
     {
-        assert($this->state !== null, 'Context not initialized');
-
         return $this->state;
     }
 }

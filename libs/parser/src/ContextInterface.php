@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -41,7 +40,7 @@ interface ContextInterface extends ContextOptionsInterface
      *
      * Note: Please note that this value is mutable and may change over time.
      */
-    public function getRule(): RuleInterface;
+    public function getRule(): ?RuleInterface;
 
     /**
      * Returns the parser's current AST node.
@@ -51,7 +50,7 @@ interface ContextInterface extends ContextOptionsInterface
      *
      * Note: Please note that this value is mutable and may change over time.
      */
-    public function getNode(): ?NodeInterface;
+    public function getNode(): ?object;
 
     /**
      * Returns the current parsing token.

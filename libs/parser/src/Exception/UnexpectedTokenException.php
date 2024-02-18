@@ -9,8 +9,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 
 class UnexpectedTokenException extends UnrecognizedTokenException
 {
-    public const ERROR_UNRECOGNIZED_TOKEN = 'Syntax error, unexpected %s';
-
     /**
      * @param list<non-empty-string> $expected
      */
@@ -22,7 +20,7 @@ class UnexpectedTokenException extends UnrecognizedTokenException
     ): self {
         switch (\count($expected)) {
             case 0:
-                $message = \vsprintf(self::ERROR_UNRECOGNIZED_TOKEN, [
+                $message = \vsprintf('Syntax error, unexpected %s', [
                     self::getTokenValue($tok),
                 ]);
 
