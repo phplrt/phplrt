@@ -77,7 +77,7 @@ final class PhpPrinter extends Printer implements PrinterInterface
             return '[]';
         }
 
-        $values = \array_is_list($data)
+        $values = $this->arrayIsList($data)
             ? $this->listValues($data, $multiline)
             : $this->arrayValues($data, $multiline);
 
@@ -88,6 +88,27 @@ final class PhpPrinter extends Printer implements PrinterInterface
         }
 
         return '[' . \rtrim($values, " \n\r\t\v\0,") . ']';
+    }
+
+    private function arrayIsList(array $array): bool
+    {
+        if (\function_exists('\\array_is_list')) {
+            return \array_is_list($array);
+        }
+
+        if ($array === [] || \array_values($array) === $array) {
+            return true;
+        }
+
+        $nextKey = -1;
+
+        foreach ($array as $key => $_) {
+            if ($key !== ++$nextKey) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
