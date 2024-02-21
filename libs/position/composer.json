@@ -27,6 +27,7 @@
         }
     },
     "require-dev": {
+        "phplrt/source": "^3.6",
         "phpunit/phpunit": "^9.6|^10.0",
         "vimeo/psalm": "^5.22"
     },
