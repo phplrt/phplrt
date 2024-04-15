@@ -44,9 +44,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         return $this->source;
     }
 
-    /**
-     * @param ReadableInterface|null $source
-     */
     public function setSource(?ReadableInterface $source): void
     {
         $this->source = $source;
@@ -84,9 +81,6 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
         return $this->token;
     }
 
-    /**
-     * @param TokenInterface|null $token
-     */
     public function setToken(?TokenInterface $token): void
     {
         $this->token = $token;
