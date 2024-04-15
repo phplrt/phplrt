@@ -62,13 +62,10 @@ trait ParserConfigsTrait
      */
     protected function bootParserConfigsTrait(array $options): void
     {
-        $this
-            ->completeAt($options[Config::CONFIG_EOI] ?? $this->eoi)
+        $this->completeAt($options[Config::CONFIG_EOI] ?? $this->eoi)
             ->withBuffer($options[Config::CONFIG_BUFFER] ?? $this->buffer)
             ->eachStepThrough($options[Config::CONFIG_STEP_REDUCER] ?? null)
-            ->possibleTokensSearching($options[Config::CONFIG_POSSIBLE_TOKENS_SEARCHING] ?? false)
-            ->allowTrailingTokens($options[Config::CONFIG_ALLOW_TRAILING_TOKENS] ?? false)
-        ;
+            ->allowTrailingTokens($options[Config::CONFIG_ALLOW_TRAILING_TOKENS] ?? false);
     }
 
     /**
