@@ -325,7 +325,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
         try {
             foreach ($this->driver->run($this->tokens, $source, $offset) as $token) {
                 // Process "hidden" tokens.
-                if (\isset($skip[$token->getName()])) {
+                if (isset($skip[$token->getName()])) {
                     if (($handledToken = $this->handleHiddenToken($source, $token)) !== null) {
                         yield $handledToken;
                     }
