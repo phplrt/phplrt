@@ -26,7 +26,7 @@ class Multistate implements PositionalLexerInterface
     /**
      * @var array-key|null
      */
-    private $state;
+    private string|int|null $state;
 
     /**
      * @var array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>>
@@ -75,10 +75,8 @@ class Multistate implements PositionalLexerInterface
      *
      * @param array-key|null $state
      */
-    public function startsWith($state): self
+    public function startsWith(int|string|null $state): self
     {
-        assert(\is_string($state) || \is_int($state) || $state === null);
-
         $this->state = $state;
 
         return $this;
@@ -90,11 +88,8 @@ class Multistate implements PositionalLexerInterface
      * @param array-key $name
      * @param array<non-empty-string, non-empty-string>|PositionalLexerInterface $data
      */
-    public function setState($name, $data): self
+    public function setState(string|int $name, array|PositionalLexerInterface $data): self
     {
-        assert(\is_string($name) || \is_int($name));
-        assert(\is_array($data) || $data instanceof PositionalLexerInterface);
-
         if (\is_array($data)) {
             $data = new Lexer($data);
         }
@@ -109,7 +104,7 @@ class Multistate implements PositionalLexerInterface
      *
      * @param array-key $name
      */
-    public function removeState($name): self
+    public function removeState(string|int $name): self
     {
         unset($this->states[$name]);
 
@@ -123,7 +118,7 @@ class Multistate implements PositionalLexerInterface
      * @param array-key $in
      * @param array-key $then
      */
-    public function when(string $token, $in, $then): self
+    public function when(string $token, string|int $in, string|int $then): self
     {
         $this->transitions[$in][$token] = $then;
 
@@ -151,7 +146,7 @@ class Multistate implements PositionalLexerInterface
      *
      * @psalm-suppress TypeDoesNotContainType
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         try {
             $source = $this->sources->create($source);

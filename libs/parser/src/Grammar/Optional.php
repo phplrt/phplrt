@@ -14,16 +14,14 @@ class Optional extends Production
     /**
      * @var array-key
      *
-     * @readonly
-     *
      * @psalm-readonly-allow-private-mutation
      */
-    public $rule;
+    public readonly string|int $rule;
 
     /**
      * @param array-key $rule
      */
-    public function __construct($rule)
+    public function __construct(string|int $rule)
     {
         $this->rule = $rule;
     }

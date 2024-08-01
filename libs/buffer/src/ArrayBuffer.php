@@ -45,7 +45,7 @@ class ArrayBuffer extends Buffer
         return $tokens;
     }
 
-    public function seek($offset): void
+    public function seek(mixed $offset): void
     {
         if ($offset < $this->initial) {
             throw new \OutOfRangeException(

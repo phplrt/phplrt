@@ -14,7 +14,7 @@ class Token extends BaseToken
     /**
      * @var array-key
      */
-    private $name;
+    private string|int $name;
 
     private string $value;
 
@@ -27,7 +27,7 @@ class Token extends BaseToken
      * @param array-key $name
      * @param int<0, max> $offset
      */
-    public function __construct($name, string $value, int $offset = 0)
+    public function __construct(string|int $name, string $value, int $offset = 0)
     {
         if ($name === '') {
             $name = self::$anonymousId++;

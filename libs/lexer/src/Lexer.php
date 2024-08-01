@@ -319,7 +319,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         try {
             $source = $this->sources->create($source);

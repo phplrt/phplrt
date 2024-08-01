@@ -9,7 +9,7 @@ interface PrinterInterface
     /**
      * Converts given payload to string representation.
      */
-    public function print($data, bool $multiline = true): string;
+    public function print(mixed $data, bool $multiline = true): string;
 
     /**
      * Returns printer style definition.

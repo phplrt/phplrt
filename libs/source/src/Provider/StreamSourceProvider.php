@@ -19,7 +19,7 @@ final class StreamSourceProvider implements SourceProviderInterface
         $this->parent = $parent;
     }
 
-    public function create($source): ?ReadableInterface
+    public function create(mixed $source): ?ReadableInterface
     {
         if (!\is_resource($source)) {
             return null;

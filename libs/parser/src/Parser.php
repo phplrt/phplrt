@@ -107,7 +107,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *
      * @psalm-readonly-allow-private-mutation
      */
-    private $initial;
+    private string|int $initial;
 
     /**
      * Array of transition rules for the parser.
@@ -190,7 +190,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *
      * @return array-key
      */
-    private static function bootInitialRule(array $options, array $grammar)
+    private static function bootInitialRule(array $options, array $grammar): int|string
     {
         $initial = $options[self::CONFIG_INITIAL_RULE] ?? null;
 
@@ -208,40 +208,6 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     }
 
     /**
-     * Sets an initial state (initial rule identifier) of the parser.
-     *
-     * @param array-key $initial
-     *
-     * @deprecated since phplrt 3.4 and will be removed in 4.0
-     */
-    public function startsAt($initial): self
-    {
-        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
-            Using "%s::startsAt(array-key)" is deprecated, please use "%1$s::__construct()" instead.
-            MSG, self::class);
-
-        $this->initial = $initial;
-
-        return $this;
-    }
-
-    /**
-     * Sets an abstract syntax tree builder.
-     *
-     * @deprecated since phplrt 3.4 and will be removed in 4.0
-     */
-    public function buildUsing(BuilderInterface $builder): self
-    {
-        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
-            Using "%s::buildUsing(BuilderInterface)" is deprecated, please use "%1$s::__construct()" instead.
-            MSG, self::class);
-
-        $this->builder = $builder;
-
-        return $this;
-    }
-
-    /**
      * Parses sources into an abstract source tree (AST) or list of AST nodes.
      *
      * @param mixed $source any source supported by the {@see SourceFactoryInterface::create()}
@@ -256,7 +222,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *         starting the parsing and indicates problems in the analyzed
      *         source
      */
-    public function parse($source, array $options = []): iterable
+    public function parse(mixed $source, array $options = []): iterable
     {
         if ($this->rules === []) {
             return [];

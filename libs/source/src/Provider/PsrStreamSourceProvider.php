@@ -20,7 +20,7 @@ final class PsrStreamSourceProvider implements SourceProviderInterface
         $this->parent = $parent;
     }
 
-    public function create($source): ?ReadableInterface
+    public function create(mixed $source): ?ReadableInterface
     {
         if (!$source instanceof StreamInterface) {
             return null;

@@ -24,7 +24,7 @@ trait ContextOptionsTrait
         return $this->options;
     }
 
-    public function getOption(string $name, $default = null)
+    public function getOption(string $name, mixed $default = null): mixed
     {
         return $this->options[$name] ?? $default;
     }

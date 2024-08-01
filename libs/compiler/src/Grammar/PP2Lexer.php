@@ -203,7 +203,7 @@ final class PP2Lexer implements PositionalLexerInterface
         $this->lexer = new Lexer(self::LEXER_TOKENS, self::LEXER_SKIPPED_TOKENS);
     }
 
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         return $this->lexer->lex($source, $offset);
     }

@@ -6,7 +6,7 @@ namespace Phplrt\Compiler\Printer;
 
 final class PhpPrinter extends Printer implements PrinterInterface
 {
-    public function print($data, bool $multiline = true): string
+    public function print(mixed $data, bool $multiline = true): string
     {
         switch (true) {
             case $data === null:
@@ -115,7 +115,7 @@ final class PhpPrinter extends Printer implements PrinterInterface
      *
      * @return non-empty-string
      */
-    private function scalar($scalar): string
+    private function scalar(mixed $scalar): string
     {
         /** @var non-empty-string */
         return \var_export($scalar, true);

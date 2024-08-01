@@ -13,5 +13,5 @@ interface SourceFactoryInterface
      * @throws SourceExceptionInterface in case of an error in creating the
      *         source object
      */
-    public function create($source): ReadableInterface;
+    public function create(mixed $source): ReadableInterface;
 }

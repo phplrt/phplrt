@@ -19,7 +19,7 @@ final class SplFileInfoSourceProvider implements SourceProviderInterface
         $this->parent = $parent;
     }
 
-    public function create($source): ?ReadableInterface
+    public function create(mixed $source): ?ReadableInterface
     {
         if (!$source instanceof \SplFileInfo) {
             return null;

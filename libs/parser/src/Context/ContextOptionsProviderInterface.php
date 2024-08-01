@@ -24,7 +24,7 @@ interface ContextOptionsProviderInterface
      *
      * @return TArgDefault|mixed
      */
-    public function getOption(string $name, $default = null);
+    public function getOption(string $name, mixed $default = null): mixed;
 
     /**
      * Determine if the given option value exists.

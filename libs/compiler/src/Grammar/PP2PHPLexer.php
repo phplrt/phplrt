@@ -16,7 +16,7 @@ class PP2PHPLexer implements PositionalLexerInterface
         $this->lexer = $lexer;
     }
 
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $depth = 0;
 

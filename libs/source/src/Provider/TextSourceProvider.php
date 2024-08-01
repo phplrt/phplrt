@@ -19,7 +19,7 @@ final class TextSourceProvider implements SourceProviderInterface
         $this->parent = $parent;
     }
 
-    public function create($source): ?ReadableInterface
+    public function create(mixed $source): ?ReadableInterface
     {
         if (!\is_string($source)) {
             return null;

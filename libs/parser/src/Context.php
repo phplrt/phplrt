@@ -92,7 +92,7 @@ class Context implements ContextInterface
      * @param array-key $state
      * @param array<non-empty-string, mixed> $options
      */
-    public function __construct(BufferInterface $buffer, ReadableInterface $source, $state, array $options)
+    public function __construct(BufferInterface $buffer, ReadableInterface $source, int|string $state, array $options)
     {
         $this->state = $state;
         $this->source = $source;

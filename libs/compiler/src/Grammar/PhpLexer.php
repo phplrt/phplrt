@@ -19,7 +19,7 @@ class PhpLexer implements PositionalLexerInterface
         $this->inline = $inline;
     }
 
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         $tokens = \token_get_all($this->read(File::new($source), $offset));
 
@@ -53,10 +53,7 @@ class PhpLexer implements PositionalLexerInterface
         return $prefix . ($offset === 0 ? $source : \substr($source, $offset));
     }
 
-    /**
-     * @param int|string $id
-     */
-    private function getName($id): string
+    private function getName(string|int $id): string
     {
         if (\is_string($id)) {
             return $id;

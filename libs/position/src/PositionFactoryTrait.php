@@ -98,7 +98,7 @@ trait PositionFactoryTrait
      * @throws SourceExceptionInterface in case of an error in creating the
      *         source object
      */
-    public static function end($source): PositionInterface
+    public static function end(mixed $source): PositionInterface
     {
         $factory = self::getPositionFactory();
 

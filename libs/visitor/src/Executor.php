@@ -394,10 +394,7 @@ class Executor implements ExecutorInterface
         return $node;
     }
 
-    /**
-     * @param string|int $key
-     */
-    private function updateNodeValue(NodeInterface $node, $key, $value): void
+    private function updateNodeValue(NodeInterface $node, int|string $key, mixed $value): void
     {
         try {
             // @phpstan-ignore-next-line
