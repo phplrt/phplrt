@@ -8,7 +8,6 @@ use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
-use Psr\Http\Message\StreamInterface;
 
 trait SourceFactoryTrait
 {
@@ -37,10 +36,6 @@ trait SourceFactoryTrait
      */
     public static function new(mixed $source): ReadableInterface
     {
-        if ($source instanceof StreamInterface) {
-            return static::fromPsrStream($source);
-        }
-
         $factory = self::getSourceFactory();
 
         return $factory->create($source);
@@ -51,7 +46,6 @@ trait SourceFactoryTrait
      * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
-     * @throws SourceExceptionInterface
      */
     public static function empty(?string $pathname = null): ReadableInterface
     {
@@ -63,7 +57,6 @@ trait SourceFactoryTrait
      * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
-     * @throws SourceExceptionInterface
      */
     public static function fromSources(string $sources, ?string $pathname = null): ReadableInterface
     {
