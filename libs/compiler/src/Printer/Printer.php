@@ -6,12 +6,7 @@ namespace Phplrt\Compiler\Printer;
 
 abstract class Printer implements PrinterInterface
 {
-    /**
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected Style $style;
+    protected readonly Style $style;
 
     public function __construct(?Style $style = null)
     {

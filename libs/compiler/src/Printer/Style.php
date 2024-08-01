@@ -7,18 +7,8 @@ namespace Phplrt\Compiler\Printer;
 class Style
 {
     public function __construct(
-        /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         */
-        public string $lineDelimiter = "\n",
-        /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         */
-        public string $indentation = '    '
+        public readonly string $lineDelimiter = "\n",
+        public readonly string $indentation = '    ',
     ) {}
 
     /**

@@ -73,45 +73,33 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     /**
      * The {@see SelectorInterface} is responsible for preparing
      * and analyzing the PHP environment for the parser to work.
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private SelectorInterface $env;
+    private readonly SelectorInterface $env;
 
     /**
      * The {@see BuilderInterface} is responsible for building the Abstract
      * Syntax Tree.
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private BuilderInterface $builder;
+    private readonly BuilderInterface $builder;
 
     /**
      * Sources factory.
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private SourceFactoryInterface $sources;
+    private readonly SourceFactoryInterface $sources;
 
     /**
      * The initial state (initial rule identifier) of the parser.
      *
      * @var array-key
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private string|int $initial;
+    private readonly string|int $initial;
 
     /**
      * Array of transition rules for the parser.
      *
      * @var array<array-key, RuleInterface>
-     *
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private array $rules = [];
+    private readonly array $rules;
 
     private ?Context $context = null;
 
@@ -123,10 +111,8 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     public function __construct(
         /**
          * The lexer instance.
-         *
-         * @psalm-readonly-allow-private-mutation
          */
-        private LexerInterface $lexer,
+        private readonly LexerInterface $lexer,
         iterable $grammar = [],
         array $options = [],
         ?SourceFactoryInterface $sources = null

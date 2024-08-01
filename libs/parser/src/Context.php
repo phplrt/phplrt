@@ -18,9 +18,6 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * parser, since direct access is several times faster than using methods of
  * setting values or creating a new class at each step of the parser.
  *
- * @property-read ReadableInterface $source
- * @property-read BufferInterface $buffer
- *
  * @final marked as final since phplrt 3.4 and will be final since 4.0
  */
 class Context implements ContextInterface
@@ -68,27 +65,21 @@ class Context implements ContextInterface
      *
      * @var array-key
      */
-    public $state;
+    public string|int $state;
 
     /**
      * @param array-key $state
      * @param array<non-empty-string, mixed> $options
      */
-    public function __construct(/**
-     * Contains a buffer of tokens that were collected from lexical analysis.
-     *
-     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-        public BufferInterface $buffer, /**
-     * Contains information about the processed source.
-     *
-     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-        public ReadableInterface $source,
+    public function __construct(
+        /**
+         * Contains a buffer of tokens that were collected from lexical analysis.
+         */
+        public readonly BufferInterface $buffer,
+        /**
+         * Contains information about the processed source.
+         */
+        public readonly ReadableInterface $source,
         int|string $state,
         array $options
     ) {
@@ -123,7 +114,7 @@ class Context implements ContextInterface
         return $this->lastProcessedToken;
     }
 
-    public function getState()
+    public function getState(): int|string
     {
         return $this->state;
     }

@@ -16,10 +16,7 @@ final class PassthroughWhenTokenHandler implements HandlerInterface
      * @param non-empty-string $name
      */
     public function __construct(
-        /**
-         * @readonly
-         */
-        private string $name
+        private readonly string $name,
     ) {}
 
     public function handle(ReadableInterface $source, TokenInterface $token): ?TokenInterface

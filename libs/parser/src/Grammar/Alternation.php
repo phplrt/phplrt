@@ -15,12 +15,7 @@ class Alternation extends Production
      * @param list<array-key> $sequence
      */
     public function __construct(
-        /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         */
-        public array $sequence
+        public readonly array $sequence,
     ) {}
 
     public function getTerminals(array $rules): iterable

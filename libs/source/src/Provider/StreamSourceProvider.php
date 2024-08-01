@@ -10,10 +10,7 @@ use Phplrt\Source\SourceFactory;
 final class StreamSourceProvider implements SourceProviderInterface
 {
     public function __construct(
-        /**
-         * @readonly
-         */
-        private SourceFactory $parent
+        private readonly SourceFactory $parent,
     ) {}
 
     public function create(mixed $source): ?ReadableInterface

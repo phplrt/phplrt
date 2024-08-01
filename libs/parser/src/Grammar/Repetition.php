@@ -13,37 +13,26 @@ class Repetition extends Production
 {
     /**
      * @var int<0, max>
-     *
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    public int $gte;
+    public readonly int $gte;
 
     /**
      * @var int<0, max>|float
-     *
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    public int|float $lte;
+    public readonly int|float $lte;
 
     /**
      * @param array-key $rule
      * @param int<0, max> $gte
      * @param int<0, max>|float $lte
      */
-    public function __construct(/**
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-        public string|int $rule,
+    public function __construct(
+        public readonly string|int $rule,
         int $gte = 0,
         int|float $lte = \INF
     ) {
         \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
+
         $this->gte = $gte;
         $this->lte = \is_infinite($lte) ? \INF : (int) $lte;
     }

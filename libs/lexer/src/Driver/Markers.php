@@ -26,10 +26,7 @@ class Markers extends Driver
 
     public function __construct(
         ?MarkersCompiler $compiler = null,
-        /**
-         * @readonly
-         */
-        private string $unknown = self::UNKNOWN_TOKEN_NAME
+        private readonly string $unknown = self::UNKNOWN_TOKEN_NAME
     ) {
         parent::__construct($compiler ?? new MarkersCompiler());
     }

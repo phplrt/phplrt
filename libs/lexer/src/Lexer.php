@@ -55,15 +55,10 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
 
     /**
      * @var non-empty-string
-     *
-     * @readonly
      */
-    private string $unknown;
+    private readonly string $unknown;
 
-    /**
-     * @readonly
-     */
-    private SourceFactoryInterface $sources;
+    private readonly SourceFactoryInterface $sources;
 
     /**
      * @param array<array-key, non-empty-string> $tokens list of

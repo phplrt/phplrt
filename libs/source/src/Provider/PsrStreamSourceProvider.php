@@ -11,10 +11,7 @@ use Psr\Http\Message\StreamInterface;
 final class PsrStreamSourceProvider implements SourceProviderInterface
 {
     public function __construct(
-        /**
-         * @readonly
-         */
-        private SourceFactory $parent
+        private readonly SourceFactory $parent,
     ) {}
 
     public function create(mixed $source): ?ReadableInterface

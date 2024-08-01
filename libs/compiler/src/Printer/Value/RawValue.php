@@ -10,10 +10,7 @@ use Phplrt\Compiler\Printer\PrinterInterface;
 final class RawValue implements PrintableValueInterface
 {
     public function __construct(
-        /**
-         * @readonly
-         */
-        private string $code
+        private readonly string $code,
     ) {}
 
     public function print(PrinterInterface $printer): string

@@ -24,12 +24,7 @@ abstract class CodeGenerator implements CodeGeneratorInterface
     protected array $constants = [];
 
     public function __construct(
-        /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         */
-        protected CompilerContext $analyzer
+        protected readonly CompilerContext $analyzer,
     ) {}
 
     public function withClassReference(string $class, ?string $alias = null): CodeGeneratorInterface

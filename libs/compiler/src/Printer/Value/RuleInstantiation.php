@@ -15,12 +15,7 @@ use Phplrt\Parser\Grammar\RuleInterface;
 abstract class RuleInstantiation implements PrintableValueInterface
 {
     public function __construct(
-        /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         */
-        protected RuleInterface $rule
+        protected readonly RuleInterface $rule,
     ) {}
 
     protected function getArguments(): array
