@@ -14,8 +14,8 @@ jobs:
   #   Static Analysis
   # ----------------------------------------------------------------------------
 
-  psalm:
-    name: Psalm
+  linter:
+    name: Linter
     runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     strategy:
@@ -47,7 +47,7 @@ jobs:
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
       - name: Execute Static Analysis
-        run: vendor/bin/psalm --shepherd --stats --output-format=github --php-version=${{ matrix.php }}
+        run: composer linter:check -- --error-format=github
 
   # ----------------------------------------------------------------------------
   #   Rector
@@ -88,4 +88,4 @@ jobs:
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
       - name: Check Rector
-        run: vendor/bin/rector --config=rector.php --dry-run
+        run: composer rector:check
