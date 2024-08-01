@@ -30,18 +30,13 @@ abstract class RuleInstantiation implements PrintableValueInterface
     {
         $rule = $this->rule;
 
-        switch (true) {
-            case $rule instanceof Alternation:
-            case $rule instanceof Concatenation:
-                return [$rule->sequence];
-            case $rule instanceof Lexeme:
-                return [$rule->token, $rule->keep];
-            case $rule instanceof Optional:
-                return [$rule->rule];
-            case $rule instanceof Repetition:
-                return [$rule->rule, $rule->gte, $rule->lte];
-            default:
-                return [];
-        }
+        return match (true) {
+            $rule instanceof Alternation,
+            $rule instanceof Concatenation => [$rule->sequence],
+            $rule instanceof Lexeme => [$rule->token, $rule->keep],
+            $rule instanceof Optional => [$rule->rule],
+            $rule instanceof Repetition => [$rule->rule, $rule->gte, $rule->lte],
+            default => [],
+        };
     }
 }

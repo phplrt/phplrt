@@ -8,21 +8,16 @@ final class PhpPrinter extends Printer implements PrinterInterface
 {
     public function print(mixed $data, bool $multiline = true): string
     {
-        switch (true) {
-            case $data === null:
-                return 'null';
-            case \is_scalar($data):
-                return $this->scalar($data);
-            case \is_array($data):
-                return $this->array($data, $multiline);
-            case $data instanceof PrintableValueInterface:
-                return $data->print($this);
-            default:
-                throw new \InvalidArgumentException(\sprintf(
-                    'Could not print value of type %s',
-                    \get_debug_type($data),
-                ));
-        }
+        return match (true) {
+            $data === null => 'null',
+            \is_scalar($data) => $this->scalar($data),
+            \is_array($data) => $this->array($data, $multiline),
+            $data instanceof PrintableValueInterface => $data->print($this),
+            default => throw new \InvalidArgumentException(\sprintf(
+                'Could not print value of type %s',
+                \get_debug_type($data),
+            )),
+        };
     }
 
     private function listValues(array $data, bool $multiline): string
