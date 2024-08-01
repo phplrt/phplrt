@@ -227,12 +227,12 @@ class Executor implements ExecutorInterface
 
                         case \is_array($return):
                             $error = self::ERROR_ENTER_RETURN_ARRAY;
-                            $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
+                            $error = \sprintf($error, $visitor::class, \gettype($visitor));
 
                             throw new BadMethodException($error, static::ERROR_CODE_ARRAY_ENTERING);
                         default:
                             $error = self::ERROR_ENTER_RETURN_TYPE;
-                            $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
+                            $error = \sprintf($error, $visitor::class, \gettype($visitor));
 
                             throw new BadReturnTypeException($error, static::ERROR_CODE_ARRAY_ENTERING);
                     }
@@ -271,7 +271,7 @@ class Executor implements ExecutorInterface
 
                         default:
                             $error = self::ERROR_LEAVE_RETURN_TYPE;
-                            $error = \sprintf($error, \get_class($visitor), \gettype($return));
+                            $error = \sprintf($error, $visitor::class, \gettype($return));
 
                             throw new BadReturnTypeException($error, static::ERROR_CODE_ARRAY_LEAVING);
                     }
@@ -338,7 +338,7 @@ class Executor implements ExecutorInterface
 
                             default:
                                 $error = self::ERROR_ENTER_RETURN_TYPE;
-                                $error = \sprintf($error, \get_class($visitor), \gettype($return));
+                                $error = \sprintf($error, $visitor::class, \gettype($return));
 
                                 throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_ENTERING);
                         }
@@ -373,12 +373,12 @@ class Executor implements ExecutorInterface
 
                             case \is_array($return):
                                 $error = self::ERROR_MODIFY_BY_ARRAY;
-                                $error = \sprintf($error, \get_class($visitor));
+                                $error = \sprintf($error, $visitor::class);
 
                                 throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
                             default:
                                 $error = self::ERROR_LEAVE_RETURN_TYPE;
-                                $error = \sprintf($error, \get_class($visitor), \gettype($return));
+                                $error = \sprintf($error, $visitor::class, \gettype($return));
 
                                 throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
                         }
@@ -405,7 +405,7 @@ class Executor implements ExecutorInterface
             }
 
             $error = self::ERROR_READONLY_MODIFY;
-            $error = \sprintf($error, $key, \get_class($node));
+            $error = \sprintf($error, $key, $node::class);
 
             throw new AttributeException($error);
         }

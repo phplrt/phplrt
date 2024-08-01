@@ -16,7 +16,7 @@ final class PhpRuleInstantiation extends RuleInstantiation
 
     public function __construct(RuleInterface $rule)
     {
-        $this->class = \get_class($rule);
+        $this->class = $rule::class;
 
         parent::__construct($rule);
     }

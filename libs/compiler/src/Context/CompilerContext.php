@@ -237,7 +237,7 @@ class CompilerContext extends Visitor
                 return $this->ruleRelation($statement);
 
             default:
-                $error = \sprintf('Unsupported statement %s', \get_class($statement));
+                $error = \sprintf('Unsupported statement %s', $statement::class);
 
                 throw new GrammarException($error, $statement->file, $statement->offset);
         }
