@@ -6,7 +6,7 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-abstract class BaseToken implements TokenInterface, \JsonSerializable
+abstract class BaseToken implements TokenInterface, \JsonSerializable, \Stringable
 {
     /**
      * @var int<0, max>|null
