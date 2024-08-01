@@ -52,7 +52,7 @@ class Multistate implements PositionalLexerInterface
     public function __construct(
         array $states,
         array $transitions = [],
-        $state = null,
+        string|int|null $state = null,
         ?HandlerInterface $onEndOfInput = null,
         ?SourceFactoryInterface $sources = null
     ) {
