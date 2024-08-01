@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests\Unit;
 
-use Laminas\Diactoros\StreamFactory;
+use HttpSoft\Message\StreamFactory;
 use Phplrt\Source\File;
 use Phplrt\Source\Tests\TestCase as UnitTestCase;
 
