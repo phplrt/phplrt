@@ -23,16 +23,6 @@ class Multistate implements PositionalLexerInterface
      */
     private array $states = [];
 
-    /**
-     * @var array-key|null
-     */
-    private string|int|null $state;
-
-    /**
-     * @var array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>>
-     */
-    private array $transitions = [];
-
     private SourceFactoryInterface $sources;
 
     private HandlerInterface $onEndOfInput;
@@ -51,17 +41,14 @@ class Multistate implements PositionalLexerInterface
      */
     public function __construct(
         array $states,
-        array $transitions = [],
-        string|int|null $state = null,
+        private array $transitions = [],
+        private string|int|null $state = null,
         ?HandlerInterface $onEndOfInput = null,
         ?SourceFactoryInterface $sources = null
     ) {
         foreach ($states as $name => $data) {
             $this->setState($name, $data);
         }
-
-        $this->transitions = $transitions;
-        $this->state = $state;
 
         $this->onEndOfInput = $onEndOfInput ?? new PassthroughWhenTokenHandler(
             Lexer::DEFAULT_EOI_TOKEN_NAME,

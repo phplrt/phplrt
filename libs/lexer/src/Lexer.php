@@ -45,16 +45,6 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      */
     public const DEFAULT_EOI_TOKEN_NAME = EndOfInput::DEFAULT_TOKEN_NAME;
 
-    /**
-     * @var array<array-key, non-empty-string>
-     */
-    protected array $tokens = [];
-
-    /**
-     * @var list<non-empty-string>
-     */
-    protected array $skip = [];
-
     private DriverInterface $driver;
 
     private HandlerInterface $onHiddenToken;
@@ -69,13 +59,6 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      * @readonly
      */
     private string $unknown;
-
-    /**
-     * @var non-empty-string
-     *
-     * @readonly
-     */
-    private string $eoi;
 
     /**
      * @readonly
@@ -117,22 +100,20 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      * @param non-empty-string $eoi
      */
     public function __construct(
-        array $tokens = [],
-        array $skip = [],
+        protected array $tokens = [],
+        protected array $skip = [],
         ?DriverInterface $driver = null,
         ?HandlerInterface $onHiddenToken = null,
         ?HandlerInterface $onUnknownToken = null,
         ?HandlerInterface $onEndOfInput = null,
         string $unknown = Lexer::DEFAULT_UNKNOWN_TOKEN_NAME,
-        string $eoi = Lexer::DEFAULT_EOI_TOKEN_NAME,
+        /**
+         * @readonly
+         */
+        private string $eoi = Lexer::DEFAULT_EOI_TOKEN_NAME,
         ?SourceFactoryInterface $sources = null
     ) {
-        $this->tokens = $tokens;
-        $this->skip = $skip;
-
         $this->driver = $driver ?? new Markers(new MarkersCompiler(), $unknown);
-
-        $this->eoi = $eoi;
         $this->unknown = $unknown;
 
         $this->onHiddenToken = $onHiddenToken ?? new NullHandler();

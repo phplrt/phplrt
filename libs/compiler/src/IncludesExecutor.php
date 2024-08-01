@@ -24,17 +24,9 @@ class IncludesExecutor extends Visitor
     private const FILE_EXTENSIONS = ['', '.pp2', '.pp'];
 
     /**
-     * @var \Closure(non-empty-string):iterable<Node>
-     */
-    private \Closure $loader;
-
-    /**
      * @param \Closure(non-empty-string):iterable<Node> $loader
      */
-    public function __construct(\Closure $loader)
-    {
-        $this->loader = $loader;
-    }
+    public function __construct(private \Closure $loader) {}
 
     /**
      * @throws NotAccessibleException

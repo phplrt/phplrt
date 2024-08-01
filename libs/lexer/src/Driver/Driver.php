@@ -19,12 +19,7 @@ abstract class Driver implements DriverInterface
      */
     private ?string $pattern = null;
 
-    private CompilerInterface $compiler;
-
-    public function __construct(CompilerInterface $compiler)
-    {
-        $this->compiler = $compiler;
-    }
+    public function __construct(private CompilerInterface $compiler) {}
 
     public function reset(): void
     {

@@ -14,31 +14,11 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 final class PrintableNode implements NodeInterface, \Stringable
 {
     /**
-     * @var int<0, max>
-     */
-    private int $offset;
-
-    /**
-     * @var non-empty-string
-     */
-    private string $state;
-
-    /**
-     * @var array<array-key, PrintableNode|TokenInterface>
-     */
-    public array $children = [];
-
-    /**
      * @param int<0, max> $offset
      * @param non-empty-string $state
      * @param array<array-key, PrintableNode|TokenInterface> $children
      */
-    public function __construct(int $offset, string $state, array $children)
-    {
-        $this->offset = $offset;
-        $this->state = $state;
-        $this->children = $children;
-    }
+    public function __construct(private int $offset, private string $state, public array $children) {}
 
     /**
      * @return \Traversable<non-empty-string, array<array-key, PrintableNode>>

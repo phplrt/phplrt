@@ -12,10 +12,5 @@ namespace Phplrt\Compiler\Ast\Stmt;
  */
 class DelegateStmt extends Statement
 {
-    public ?string $code;
-
-    public function __construct(?string $code)
-    {
-        $this->code = $code;
-    }
+    public function __construct(public ?string $code) {}
 }

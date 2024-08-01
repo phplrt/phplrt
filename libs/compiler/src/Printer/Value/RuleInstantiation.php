@@ -14,17 +14,14 @@ use Phplrt\Parser\Grammar\RuleInterface;
 
 abstract class RuleInstantiation implements PrintableValueInterface
 {
-    /**
-     * @readonly
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected RuleInterface $rule;
-
-    public function __construct(RuleInterface $rule)
-    {
-        $this->rule = $rule;
-    }
+    public function __construct(
+        /**
+         * @readonly
+         *
+         * @psalm-readonly-allow-private-mutation
+         */
+        protected RuleInterface $rule
+    ) {}
 
     protected function getArguments(): array
     {

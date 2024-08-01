@@ -71,13 +71,6 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     private const ERROR_BUFFER_TYPE = 'Buffer class should implement %s interface';
 
     /**
-     * The lexer instance.
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private LexerInterface $lexer;
-
-    /**
      * The {@see SelectorInterface} is responsible for preparing
      * and analyzing the PHP environment for the parser to work.
      *
@@ -128,12 +121,16 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      * @param array<ParserConfigsInterface::CONFIG_*, mixed> $options
      */
     public function __construct(
-        LexerInterface $lexer,
+        /**
+         * The lexer instance.
+         *
+         * @psalm-readonly-allow-private-mutation
+         */
+        private LexerInterface $lexer,
         iterable $grammar = [],
         array $options = [],
         ?SourceFactoryInterface $sources = null
     ) {
-        $this->lexer = $lexer;
         $this->env = new EnvironmentFactory();
 
         $this->rules = self::bootGrammar($grammar);

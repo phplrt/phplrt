@@ -12,19 +12,14 @@ use Phplrt\Buffer\BufferInterface;
 class Optional extends Production
 {
     /**
-     * @var array-key
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    public readonly string|int $rule;
-
-    /**
      * @param array-key $rule
      */
-    public function __construct(string|int $rule)
-    {
-        $this->rule = $rule;
-    }
+    public function __construct(
+        /**
+         * @psalm-readonly-allow-private-mutation
+         */
+        public readonly string|int $rule
+    ) {}
 
     public function getTerminals(array $rules): iterable
     {

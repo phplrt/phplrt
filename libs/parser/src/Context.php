@@ -71,32 +71,28 @@ class Context implements ContextInterface
     public $state;
 
     /**
-     * Contains information about the processed source.
-     *
-     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
-     *
-     * @psalm-readonly-allow-private-mutation
+     * @param array-key $state
+     * @param array<non-empty-string, mixed> $options
      */
-    public ReadableInterface $source;
-
-    /**
+    public function __construct(/**
      * Contains a buffer of tokens that were collected from lexical analysis.
      *
      * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
      *
      * @psalm-readonly-allow-private-mutation
      */
-    public BufferInterface $buffer;
-
-    /**
-     * @param array-key $state
-     * @param array<non-empty-string, mixed> $options
+        public BufferInterface $buffer, /**
+     * Contains information about the processed source.
+     *
+     * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
+     *
+     * @psalm-readonly-allow-private-mutation
      */
-    public function __construct(BufferInterface $buffer, ReadableInterface $source, int|string $state, array $options)
-    {
+        public ReadableInterface $source,
+        int|string $state,
+        array $options
+    ) {
         $this->state = $state;
-        $this->source = $source;
-        $this->buffer = $buffer;
         $this->options = $options;
 
         $this->lastOrdinalToken = $this->lastProcessedToken = $this->buffer->current();

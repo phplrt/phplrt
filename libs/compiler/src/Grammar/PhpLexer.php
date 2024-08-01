@@ -12,12 +12,7 @@ use Phplrt\Source\File;
 
 class PhpLexer implements PositionalLexerInterface
 {
-    private bool $inline;
-
-    public function __construct(bool $inline = true)
-    {
-        $this->inline = $inline;
-    }
+    public function __construct(private bool $inline = true) {}
 
     public function lex(mixed $source, int $offset = 0): iterable
     {

@@ -22,11 +22,6 @@ class Source extends Readable implements PreferContentReadingInterface
     private $stream;
 
     /**
-     * @psalm-readonly-allow-private-mutation
-     */
-    private string $content;
-
-    /**
      * @var non-empty-string
      *
      * @psalm-readonly-allow-private-mutation
@@ -47,7 +42,10 @@ class Source extends Readable implements PreferContentReadingInterface
      *        used as a resource during the reading of the source
      */
     public function __construct(
-        string $content,
+        /**
+         * @psalm-readonly-allow-private-mutation
+         */
+        private string $content,
         string $algo = SourceFactory::DEFAULT_HASH_ALGO,
         string $temp = SourceFactory::DEFAULT_TEMP_STREAM
     ) {
@@ -56,7 +54,6 @@ class Source extends Readable implements PreferContentReadingInterface
 
         $this->temp = $temp;
         $this->algo = $algo;
-        $this->content = $content;
     }
 
     public function getContents(): string

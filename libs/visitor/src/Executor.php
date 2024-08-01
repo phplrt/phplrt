@@ -114,17 +114,14 @@ class Executor implements ExecutorInterface
     private const ERROR_NESTED_ARRAY =
         'Nested arrays are not a valid traversable AST structure';
 
-    /**
-     * @var array|VisitorInterface[]
-     */
-    private array $visitors = [];
-
     private bool $stop = false;
 
-    public function __construct(array $visitors = [])
-    {
-        $this->visitors = $visitors;
-    }
+    public function __construct(
+        /**
+         * @var array|VisitorInterface[]
+         */
+        private array $visitors = []
+    ) {}
 
     /**
      * @param iterable<array-key, object> $nodes

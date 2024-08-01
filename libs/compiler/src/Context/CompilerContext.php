@@ -84,12 +84,7 @@ class CompilerContext extends Visitor
      */
     private array $aliases = [];
 
-    private IdCollection $ids;
-
-    public function __construct(IdCollection $ids)
-    {
-        $this->ids = $ids;
-    }
+    public function __construct(private IdCollection $ids) {}
 
     /**
      * @psalm-suppress PropertyTypeCoercion
