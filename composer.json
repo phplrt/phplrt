@@ -19,8 +19,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
-        "ext-spl": "*",
-        "symfony/deprecation-contracts": "^2.5|^3.0"
+        "ext-spl": "*"
     },
     "provide": {
         "phplrt/exception-contracts-implementation": "^4.0",

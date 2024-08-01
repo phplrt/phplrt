@@ -169,20 +169,6 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
         return $self;
     }
 
-    /**
-     * @deprecated since phplrt 3.6 and will be removed in 4.0.
-     *
-     * @api
-     */
-    public function getDriver(): DriverInterface
-    {
-        trigger_deprecation('phplrt/lexer', '3.6', <<<'MSG'
-            Using "%s::getDriver()" is deprecated.
-            MSG, static::class);
-
-        return $this->driver;
-    }
-
     public function skip(string ...$tokens): self
     {
         $this->skip = \array_merge($this->skip, $tokens);
