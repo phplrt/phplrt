@@ -16,23 +16,20 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.1",
         "ext-spl": "*",
         "ext-pcre": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "phplrt/source": "^3.6",
-        "phplrt/lexer-contracts": "^3.6",
-        "phplrt/exception": "^3.6",
+        "phplrt/source": "^4.0",
+        "phplrt/lexer-contracts": "^4.0",
+        "phplrt/exception": "^4.0",
         "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Lexer\\": "src"
-        },
-        "files": [
-            "src/polyfill.php"
-        ]
+        }
     },
     "require-dev": {
         "phpunit/phpunit": "^9.6|^10.0",
@@ -46,12 +43,12 @@
         }
     },
     "provide": {
-        "phplrt/lexer-contracts-implementation": "^3.6"
+        "phplrt/lexer-contracts-implementation": "^4.0"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev",
-            "dev-main": "3.x-dev"
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
         }
     },
     "config": {

@@ -15,27 +15,21 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.1",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
-        "symfony/deprecation-contracts": "^2.5|^3.0",
-        "symfony/polyfill-php80": "^1.29"
+        "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "provide": {
-        "phplrt/exception-contracts-implementation": "^3.6",
-        "phplrt/lexer-contracts-implementation": "^3.6",
-        "phplrt/parser-contracts-implementation": "^3.6",
-        "phplrt/position-contracts-implementation": "^3.6",
-        "phplrt/source-contracts-implementation": "^3.6"
+        "phplrt/exception-contracts-implementation": "^4.0",
+        "phplrt/lexer-contracts-implementation": "^4.0",
+        "phplrt/parser-contracts-implementation": "^4.0",
+        "phplrt/position-contracts-implementation": "^4.0",
+        "phplrt/source-contracts-implementation": "^4.0"
     },
     "autoload": {
-        "files": [
-            "libs/contracts/lexer/src/polyfill.php",
-            "libs/lexer/src/polyfill.php",
-            "libs/parser/src/polyfill.php"
-        ],
         "psr-4": {
             "Phplrt\\Buffer\\": "libs/buffer/src",
             "Phplrt\\Compiler\\": "libs/compiler/src",
@@ -54,7 +48,7 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.61",
+        "friendsofphp/php-cs-fixer": "^4.01",
         "jetbrains/phpstorm-attributes": "^1.0",
         "httpsoft/http-message": "^1.1",
         "phpunit/phpunit": "^9.6|^10.0",
@@ -124,8 +118,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev",
-            "dev-main": "3.x-dev"
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
         }
     },
     "config": {

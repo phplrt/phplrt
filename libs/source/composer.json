@@ -16,10 +16,9 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
-        "phplrt/source-contracts": "^3.6",
-        "symfony/deprecation-contracts": "^2.5|^3.0",
-        "symfony/polyfill-php80": "^1.29"
+        "php": "^8.1",
+        "phplrt/source-contracts": "^4.0",
+        "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -40,12 +39,12 @@
         }
     },
     "provide": {
-        "phplrt/source-contracts-implementation": "^3.6"
+        "phplrt/source-contracts-implementation": "^4.0"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev",
-            "dev-main": "3.x-dev"
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
         }
     },
     "config": {
