@@ -18,18 +18,6 @@ class CompatibilityTest extends TestCase
         self::expectNotToPerformAssertions();
 
         new class () implements LexerInterface {
-            public function lex($source): iterable {}
-        };
-    }
-
-    /**
-     * @requires PHP 8.0
-     */
-    public function testLexerWithMixedCompatibility(): void
-    {
-        self::expectNotToPerformAssertions();
-
-        new class () implements LexerInterface {
             public function lex(mixed $source): iterable {}
         };
     }

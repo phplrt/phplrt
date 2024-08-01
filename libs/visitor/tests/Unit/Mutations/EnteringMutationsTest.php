@@ -10,16 +10,12 @@ use Phplrt\Visitor\Executor;
 use Phplrt\Visitor\Tests\Unit\Stub\Node;
 use Phplrt\Visitor\Tests\Unit\TestCase;
 use Phplrt\Visitor\Visitor;
-use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Framework\Attributes\TestDox;
 
-/**
- * @testdox A set of tests that verify an AST modification using the Visitor::enter() method.
- */
+#[TestDox('A set of tests that verify an AST modification using the Visitor::enter() method.')]
 class EnteringMutationsTest extends TestCase
 {
-    /**
-     * @testdox Modifying a collection of AST nodes using array return
-     */
+    #[TestDox('Modifying a collection of AST nodes using array return')]
     public function testUpdateRootsByArrayWhenEntering(): void
     {
         $this->expectException(BadMethodException::class);
@@ -33,9 +29,7 @@ class EnteringMutationsTest extends TestCase
         });
     }
 
-    /**
-     * @testdox Modifying an AST node using array return
-     */
+    #[TestDox('Modifying an AST node using array return')]
     public function testUpdateRootByArrayWhenEntering(): void
     {
         $this->expectException(BadMethodException::class);
@@ -49,9 +43,7 @@ class EnteringMutationsTest extends TestCase
         });
     }
 
-    /**
-     * @testdox Modifying a collection of AST nodes using a new node object return
-     */
+    #[TestDox('Modifying a collection of AST nodes using a new node object return')]
     public function testUpdateRootsByNodeWhenEntering(): void
     {
         $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
@@ -65,9 +57,7 @@ class EnteringMutationsTest extends TestCase
         $this->assertNotSame($original, $actual);
     }
 
-    /**
-     * @testdox Modifying an AST node using a new node object return
-     */
+    #[TestDox('Modifying an AST node using a new node object return')]
     public function testUpdateRootByNodeWhenEntering(): void
     {
         $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
