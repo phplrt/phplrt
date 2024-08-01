@@ -15,6 +15,7 @@ class Repetition extends Production
      * @var int<0, max>
      *
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public int $gte;
@@ -23,6 +24,7 @@ class Repetition extends Production
      * @var int<0, max>|float
      *
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public $lte;
@@ -31,6 +33,7 @@ class Repetition extends Production
      * @var array-key
      *
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public $rule;

@@ -12,7 +12,7 @@ interface CodeGeneratorInterface extends GeneratableInterface
      *
      * @psalm-immutable
      */
-    public function withClassReference(string $class, string $alias = null): self;
+    public function withClassReference(string $class, ?string $alias = null): self;
 
     /**
      * @param non-empty-string $function
@@ -20,7 +20,7 @@ interface CodeGeneratorInterface extends GeneratableInterface
      *
      * @psalm-immutable
      */
-    public function withFunctionReference(string $function, string $alias = null): self;
+    public function withFunctionReference(string $function, ?string $alias = null): self;
 
     /**
      * @param non-empty-string $const
@@ -28,5 +28,5 @@ interface CodeGeneratorInterface extends GeneratableInterface
      *
      * @psalm-immutable
      */
-    public function withConstReference(string $const, string $alias = null): self;
+    public function withConstReference(string $const, ?string $alias = null): self;
 }

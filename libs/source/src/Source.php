@@ -28,22 +28,23 @@ class Source extends Readable implements PreferContentReadingInterface
 
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $algo = SourceFactory::DEFAULT_HASH_ALGO;
 
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $temp = SourceFactory::DEFAULT_TEMP_STREAM;
 
     /**
      * @psalm-taint-sink file $temp
-     *
-     * @param non-empty-string $algo Hashing algorithm for the source.
-     * @param non-empty-string $temp The name of the temporary stream, which is
-     *        used as a resource during the reading of the source.
+     * @param non-empty-string $algo hashing algorithm for the source
+     * @param non-empty-string $temp the name of the temporary stream, which is
+     *        used as a resource during the reading of the source
      */
     public function __construct(
         string $content,

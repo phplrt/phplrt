@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 trait SourceFactoryTrait
@@ -31,7 +31,6 @@ trait SourceFactoryTrait
      *         ? FileInterface
      *         : ReadableInterface)
      * )
-     *
      * @throws SourceExceptionInterface
      *
      * @psalm-suppress NoValue : Allow any value
@@ -49,26 +48,24 @@ trait SourceFactoryTrait
 
     /**
      * @psalm-taint-sink file $pathname
-     *
      * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
      * @throws SourceExceptionInterface
      */
-    public static function empty(string $pathname = null): ReadableInterface
+    public static function empty(?string $pathname = null): ReadableInterface
     {
         return static::fromSources('', $pathname);
     }
 
     /**
      * @psalm-taint-sink file $pathname
-     *
      * @param non-empty-string|null $pathname
      *
      * @return ($pathname is null ? ReadableInterface : FileInterface)
      * @throws SourceExceptionInterface
      */
-    public static function fromSources(string $sources, string $pathname = null): ReadableInterface
+    public static function fromSources(string $sources, ?string $pathname = null): ReadableInterface
     {
         $factory = static::getSourceFactory();
 
@@ -115,7 +112,7 @@ trait SourceFactoryTrait
      *
      * @deprecated since phplrt 3.4 and will be removed in 4.0, use {@see fromResource()} instead.
      */
-    public static function fromPsrStream(StreamInterface $stream, string $pathname = null): ReadableInterface
+    public static function fromPsrStream(StreamInterface $stream, ?string $pathname = null): ReadableInterface
     {
         trigger_deprecation('phplrt/source', '3.4', <<<'MSG'
             Using "%s::fromPsrStream($stream)" with %s argument is deprecated,
@@ -132,7 +129,7 @@ trait SourceFactoryTrait
      * @return ($pathname is null ? ReadableInterface : FileInterface)
      * @throws SourceExceptionInterface
      */
-    public static function fromResource($resource, string $pathname = null): ReadableInterface
+    public static function fromResource($resource, ?string $pathname = null): ReadableInterface
     {
         $factory = static::getSourceFactory();
 

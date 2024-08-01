@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Driver;
 
-use Phplrt\Contracts\Source\SourceExceptionInterface;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\Token\Composite;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
+use Phplrt\Lexer\Token\Composite;
+use Phplrt\Lexer\Token\Token;
 
 /**
  * @deprecated since phplrt 3.6 and will be removed in 4.0.
  *
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
 class Markers extends Driver
@@ -26,15 +26,13 @@ class Markers extends Driver
 
     /**
      * @var non-empty-string
+     *
      * @readonly
      */
     private string $unknown;
 
-    /**
-     * @param MarkersCompiler|null $compiler
-     */
     public function __construct(
-        MarkersCompiler $compiler = null,
+        ?MarkersCompiler $compiler = null,
         string $unknown = self::UNKNOWN_TOKEN_NAME
     ) {
         $this->unknown = $unknown;
@@ -69,6 +67,7 @@ class Markers extends Driver
     /**
      * @param non-empty-string $pattern
      * @param int<0, max> $offset
+     *
      * @return array<array<int<0, max>, array{string, int}>|array{MARK: non-empty-string}>
      */
     private function match(string $pattern, string $source, int $offset): array
@@ -94,6 +93,7 @@ class Markers extends Driver
     /**
      * @param non-empty-string $name
      * @param non-empty-array<array-key, array{string, int<0, max>}> $payload
+     *
      * @return non-empty-array<int, TokenInterface>
      */
     private function transform(string $name, array $payload): array

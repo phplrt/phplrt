@@ -6,7 +6,7 @@ namespace Phplrt\Buffer;
 
 final class Factory implements FactoryInterface
 {
-    public function create(iterable $tokens, int $size = null): BufferInterface
+    public function create(iterable $tokens, ?int $size = null): BufferInterface
     {
         if ($size === null) {
             return new ArrayBuffer($tokens);

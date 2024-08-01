@@ -8,7 +8,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler\Runtime
  */
 final class PrintableNode implements NodeInterface
@@ -55,6 +55,7 @@ final class PrintableNode implements NodeInterface
 
     /**
      * @param int<0, max> $depth
+     *
      * @return array<string>
      */
     public function render(int $depth): array

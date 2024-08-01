@@ -27,7 +27,7 @@ use Phplrt\Source\Exception\NotAccessibleException;
 use Phplrt\Visitor\Visitor;
 
 /**
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler
  */
 class CompilerContext extends Visitor
@@ -92,8 +92,6 @@ class CompilerContext extends Visitor
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @psalm-suppress PropertyTypeCoercion
      */
     public function enter(NodeInterface $node): void
@@ -125,8 +123,6 @@ class CompilerContext extends Visitor
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @psalm-suppress PropertyTypeCoercion
      */
     public function leave(NodeInterface $node): void
@@ -151,6 +147,7 @@ class CompilerContext extends Visitor
 
     /**
      * @param non-empty-string $rule
+     *
      * @return non-empty-string|int<0, max>
      */
     private function name(string $rule)
@@ -164,9 +161,10 @@ class CompilerContext extends Visitor
 
     /**
      * @param non-empty-string|null $name
+     *
      * @return non-empty-string|int<0, max>
      */
-    private function register(RuleInterface $rule, string $name = null)
+    private function register(RuleInterface $rule, ?string $name = null)
     {
         if ($name === null) {
             $this->rules[$this->counter] = $rule;
@@ -208,6 +206,7 @@ class CompilerContext extends Visitor
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
+     *
      * @psalm-suppress PossiblyInvalidArgument
      */
     private function reduce(Statement $statement)
@@ -249,6 +248,7 @@ class CompilerContext extends Visitor
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
+     *
      * @psalm-suppress ArgumentTypeCoercion
      */
     private function loadForAlternation(AlternationStmt $choice): array
@@ -270,6 +270,7 @@ class CompilerContext extends Visitor
 
     /**
      * @param RuleInterface|non-empty-string|int<0, max> $rule
+     *
      * @return RuleInterface|non-empty-string|int<0, max>
      */
     private function map($rule)
@@ -283,6 +284,7 @@ class CompilerContext extends Visitor
 
     /**
      * @param Statement|array<Statement> $stmt
+     *
      * @return RuleInterface|non-empty-string|int<0, max>|array<RuleInterface|non-empty-string|int<0, max>>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
@@ -299,6 +301,7 @@ class CompilerContext extends Visitor
 
     /**
      * @param array<RuleInterface|non-empty-string|int<0, max>> $rules
+     *
      * @return array<RuleInterface|non-empty-string|int<0, max>>
      */
     private function mapAll(array $rules): array
@@ -314,6 +317,7 @@ class CompilerContext extends Visitor
 
     /**
      * @param array<Statement> $statements
+     *
      * @return array<RuleInterface|non-empty-string|int<0, max>>
      * @throws NotAccessibleException
      * @throws ParserRuntimeException

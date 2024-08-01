@@ -14,6 +14,7 @@ final class PassthroughWhenTokenHandler implements HandlerInterface
 {
     /**
      * @var non-empty-string
+     *
      * @readonly
      */
     private string $name;

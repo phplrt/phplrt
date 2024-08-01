@@ -9,7 +9,7 @@ use Phplrt\Lexer\Exception\CompilationException;
 /**
  * @deprecated since phplrt 3.6 and will be removed in 4.0.
  *
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
 abstract class PCRECompiler implements CompilerInterface
@@ -172,9 +172,8 @@ abstract class PCRECompiler implements CompilerInterface
 
     /**
      * @param array<PCRECompiler::FLAG_*>|null $flags
-     * @param bool|null $debug
      */
-    public function __construct(array $flags = null, bool $debug = null)
+    public function __construct(?array $flags = null, ?bool $debug = null)
     {
         /** @psalm-suppress PropertyTypeCoercion */
         $this->flags = $flags ?? self::DEFAULT_FLAGS;
@@ -189,6 +188,7 @@ abstract class PCRECompiler implements CompilerInterface
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
+     *
      * @return non-empty-string
      * @throws CompilationException
      */
@@ -203,12 +203,14 @@ abstract class PCRECompiler implements CompilerInterface
 
     /**
      * @param array<non-empty-string> $chunks
+     *
      * @return non-empty-string
      */
     abstract protected function buildTokens(array $chunks): string;
 
     /**
      * @param array<non-empty-string, non-empty-string> $tokens
+     *
      * @return array<non-empty-string>
      */
     private function buildChunks(array $tokens): array
@@ -227,12 +229,14 @@ abstract class PCRECompiler implements CompilerInterface
     /**
      * @param non-empty-string $name
      * @param non-empty-string $pattern
+     *
      * @return non-empty-string
      */
     abstract protected function buildToken(string $name, string $pattern): string;
 
     /**
      * @param non-empty-string $name
+     *
      * @return non-empty-string
      */
     protected function name(string $name): string
@@ -243,6 +247,7 @@ abstract class PCRECompiler implements CompilerInterface
 
     /**
      * @param non-empty-string $pattern
+     *
      * @return non-empty-string
      */
     protected function pattern(string $pattern): string
@@ -255,7 +260,7 @@ abstract class PCRECompiler implements CompilerInterface
      * @param non-empty-string $pattern
      * @param non-empty-string|null $original
      */
-    protected function test(string $pattern, string $original = null): void
+    protected function test(string $pattern, ?string $original = null): void
     {
         if ($this->debug) {
             \error_clear_last();
@@ -272,6 +277,7 @@ abstract class PCRECompiler implements CompilerInterface
 
     /**
      * @param non-empty-string $pcre
+     *
      * @return non-empty-string
      */
     protected function wrap(string $pcre): string
@@ -279,7 +285,7 @@ abstract class PCRECompiler implements CompilerInterface
         return $this->delimiter . $pcre . $this->delimiter . \implode('', $this->flags);
     }
 
-    protected function formatException(string $message, string $token = null): string
+    protected function formatException(string $message, ?string $token = null): string
     {
         $suffix = \sprintf(' in %s token definition', $token ?? '<unknown>');
 

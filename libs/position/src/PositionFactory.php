@@ -27,13 +27,14 @@ final class PositionFactory implements PositionFactoryInterface
 
     /**
      * @var int<1, max>
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private int $chunkSize = self::DEFAULT_CHUNK_SIZE;
 
     /**
-     * @param int<1, max> $chunkSize The chunk size used while non-blocking
-     *        reading the file inside the {@see \Fiber} context.
+     * @param int<1, max> $chunkSize the chunk size used while non-blocking
+     *        reading the file inside the {@see \Fiber} context
      */
     public function __construct(
         int $chunkSize = self::DEFAULT_CHUNK_SIZE

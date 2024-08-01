@@ -8,13 +8,13 @@ class VirtualStreamingFile extends Stream implements VirtualFileInterface
 {
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $filename;
 
     /**
      * @psalm-taint-sink file $filename
-     *
      * @param non-empty-string $filename
      * @param resource $stream
      * @param non-empty-string $algo

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
@@ -41,18 +41,21 @@ final class SourceFactory implements SourceFactoryInterface
 
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public string $algo = self::DEFAULT_HASH_ALGO;
 
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public string $temp = self::DEFAULT_TEMP_STREAM;
 
     /**
      * @var int<1, max>
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public int $chunkSize = self::DEFAULT_CHUNK_SIZE;
@@ -63,12 +66,12 @@ final class SourceFactory implements SourceFactoryInterface
     private array $providers = [];
 
     /**
-     * @param non-empty-string $algo Hashing algorithm for the sources.
-     * @param non-empty-string $temp The name of the temporary stream, which is
-     *        used as a resource during the reading of the source.
-     * @param int<1, max> $chunkSize The chunk size used while non-blocking
-     *        reading the file inside the {@see \Fiber} context.
-     * @param list<SourceProviderInterface> $providers List of source providers.
+     * @param non-empty-string $algo hashing algorithm for the sources
+     * @param non-empty-string $temp the name of the temporary stream, which is
+     *        used as a resource during the reading of the source
+     * @param int<1, max> $chunkSize the chunk size used while non-blocking
+     *        reading the file inside the {@see \Fiber} context
+     * @param list<SourceProviderInterface> $providers list of source providers
      */
     public function __construct(
         string $algo = self::DEFAULT_HASH_ALGO,
@@ -136,7 +139,7 @@ final class SourceFactory implements SourceFactoryInterface
         throw NotCreatableException::fromInvalidType($source);
     }
 
-    public function createFromString(string $content = '', string $name = null): ReadableInterface
+    public function createFromString(string $content = '', ?string $name = null): ReadableInterface
     {
         assert($name !== '', 'Name must not be empty');
 
@@ -163,7 +166,7 @@ final class SourceFactory implements SourceFactoryInterface
     /**
      * @throws NotReadableException
      */
-    public function createFromStream($stream, string $name = null): ReadableInterface
+    public function createFromStream($stream, ?string $name = null): ReadableInterface
     {
         assert($name !== '', 'Name must not be empty');
 

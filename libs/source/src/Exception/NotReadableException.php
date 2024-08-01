@@ -71,7 +71,7 @@ class NotReadableException extends NotAccessibleException
      *
      * @return static
      */
-    public static function fromOpeningFile(string $filename, \Throwable $prev = null): self
+    public static function fromOpeningFile(string $filename, ?\Throwable $prev = null): self
     {
         $message = 'An error occurred while trying to open the file "%s" for reading';
 

@@ -56,13 +56,13 @@ trait PositionFactoryTrait
      * An alternative factory function of the
      * {@see PositionFactoryInterface::createFromPosition()} method.
      *
-     * @param int<1, max> $line Expected line value of the position in the
-     *        passed source instance.
-     * @param int<1, max> $column Expected column value of the position in the
-     *        passed source instance.
+     * @param int<1, max> $line expected line value of the position in the
+     *        passed source instance
+     * @param int<1, max> $column expected column value of the position in the
+     *        passed source instance
      *
-     * @throws SourceExceptionInterface In case of an error in creating the
-     *         source object.
+     * @throws SourceExceptionInterface in case of an error in creating the
+     *         source object
      */
     public static function fromPosition(
         $source,
@@ -95,8 +95,8 @@ trait PositionFactoryTrait
      * An alternative factory function of the
      * {@see PositionFactoryInterface::createAtEnding()} method.
      *
-     * @throws SourceExceptionInterface In case of an error in creating the
-     *         source object.
+     * @throws SourceExceptionInterface in case of an error in creating the
+     *         source object
      */
     public static function end($source): PositionInterface
     {
@@ -115,11 +115,11 @@ trait PositionFactoryTrait
      * An alternative factory function of the
      * {@see PositionFactoryInterface::createFromOffset()} method.
      *
-     * @param int<0, max> $offset Expected offset of the position in the passed
-     *        source instance.
+     * @param int<0, max> $offset expected offset of the position in the passed
+     *        source instance
      *
-     * @throws SourceExceptionInterface In case of an error in creating the
-     *         source object.
+     * @throws SourceExceptionInterface in case of an error in creating the
+     *         source object
      */
     public static function fromOffset(
         $source,

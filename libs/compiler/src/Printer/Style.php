@@ -8,12 +8,14 @@ class Style
 {
     /**
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public string $lineDelimiter;
 
     /**
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public string $indentation;

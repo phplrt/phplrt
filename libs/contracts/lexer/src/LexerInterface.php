@@ -18,14 +18,13 @@ interface LexerInterface
      *                  the internal state of the lexer and can be used in
      *                  asynchronous and parallel computing.
      *
-     * @return iterable<array-key, TokenInterface> List of analyzed tokens.
-     *
-     * @throws LexerExceptionInterface An error occurs before source processing
+     * @return iterable<array-key, TokenInterface> list of analyzed tokens
+     * @throws LexerExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
-     *         lexer settings contain errors.
-     * @throws LexerRuntimeExceptionInterface An exception that occurs after
+     *         lexer settings contain errors
+     * @throws LexerRuntimeExceptionInterface an exception that occurs after
      *         starting the lexical analysis and indicates problems in the
-     *         analyzed source.
+     *         analyzed source
      */
     public function lex(ReadableInterface $source): iterable;
 }

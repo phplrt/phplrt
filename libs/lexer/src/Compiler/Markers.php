@@ -7,7 +7,7 @@ namespace Phplrt\Lexer\Compiler;
 /**
  * @deprecated since phplrt 3.6 and will be removed in 4.0.
  *
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
 class Markers extends PCRECompiler
@@ -24,6 +24,7 @@ class Markers extends PCRECompiler
 
     /**
      * @param array<array-key, string> $chunks
+     *
      * @return non-empty-string
      *
      * @psalm-suppress MoreSpecificReturnType
@@ -37,6 +38,7 @@ class Markers extends PCRECompiler
     /**
      * @param non-empty-string $name
      * @param non-empty-string $pattern
+     *
      * @return non-empty-string
      */
     protected function buildToken(string $name, string $pattern): string

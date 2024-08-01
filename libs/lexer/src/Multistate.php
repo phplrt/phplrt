@@ -4,23 +4,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Lexer\Config\HandlerInterface;
-use Phplrt\Lexer\Config\NullHandler;
-use Phplrt\Lexer\Config\PassthroughHandler;
 use Phplrt\Lexer\Config\PassthroughWhenTokenHandler;
-use Phplrt\Lexer\Config\ThrowErrorHandler;
+use Phplrt\Lexer\Exception\EndlessRecursionException;
 use Phplrt\Lexer\Exception\LexerException;
 use Phplrt\Lexer\Exception\UnexpectedStateException;
-use Phplrt\Lexer\Exception\EndlessRecursionException;
 use Phplrt\Lexer\Token\EndOfInput;
-use Phplrt\Source\File;
 use Phplrt\Source\SourceFactory;
 
 class Multistate implements PositionalLexerInterface
@@ -55,7 +48,6 @@ class Multistate implements PositionalLexerInterface
      *
      *        Note that you can also define your own {@see HandlerInterface} to
      *        override behavior.
-     * @param non-empty-string $eoi
      */
     public function __construct(
         array $states,
@@ -79,8 +71,9 @@ class Multistate implements PositionalLexerInterface
     }
 
     /**
-     * @param array-key|null $state
      * @api
+     *
+     * @param array-key|null $state
      */
     public function startsWith($state): self
     {
@@ -92,9 +85,10 @@ class Multistate implements PositionalLexerInterface
     }
 
     /**
+     * @api
+     *
      * @param array-key $name
      * @param array<non-empty-string, non-empty-string>|PositionalLexerInterface $data
-     * @api
      */
     public function setState($name, $data): self
     {
@@ -111,8 +105,9 @@ class Multistate implements PositionalLexerInterface
     }
 
     /**
-     * @param array-key $name
      * @api
+     *
+     * @param array-key $name
      */
     public function removeState($name): self
     {
@@ -122,10 +117,11 @@ class Multistate implements PositionalLexerInterface
     }
 
     /**
+     * @api
+     *
      * @param non-empty-string $token
      * @param array-key $in
      * @param array-key $then
-     * @api
      */
     public function when(string $token, $in, $then): self
     {
@@ -141,18 +137,17 @@ class Multistate implements PositionalLexerInterface
      *                  the internal state of the lexer and can be used in
      *                  asynchronous and parallel computing.
      *
-     * @param mixed $source Any source supported by the {@see SourceFactoryInterface::create()}.
-     * @param int<0, max> $offset Offset, starting from which you should
-     *         start analyzing the source.
+     * @param mixed $source any source supported by the {@see SourceFactoryInterface::create()}
+     * @param int<0, max> $offset offset, starting from which you should
+     *         start analyzing the source
      *
-     * @return iterable<array-key, TokenInterface> List of analyzed tokens.
-     *
-     * @throws LexerExceptionInterface An error occurs before source processing
+     * @return iterable<array-key, TokenInterface> list of analyzed tokens
+     * @throws LexerExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
-     *         lexer settings contain errors.
-     * @throws LexerRuntimeExceptionInterface An exception that occurs after
+     *         lexer settings contain errors
+     * @throws LexerRuntimeExceptionInterface an exception that occurs after
      *         starting the lexical analysis and indicates problems in the
-     *         analyzed source.
+     *         analyzed source
      *
      * @psalm-suppress TypeDoesNotContainType
      */
@@ -190,6 +185,7 @@ class Multistate implements PositionalLexerInterface
             if (!isset($this->states[$state])) {
                 /**
                  * @noinspection IssetArgumentExistenceInspection
+                 *
                  * @psalm-suppress UndefinedVariable
                  */
                 throw UnexpectedStateException::fromState($state, $source, $token ?? null);

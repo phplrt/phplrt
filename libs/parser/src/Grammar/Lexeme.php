@@ -14,6 +14,7 @@ class Lexeme extends Terminal
 {
     /**
      * @var non-empty-string|int
+     *
      * @readonly
      */
     public $token;

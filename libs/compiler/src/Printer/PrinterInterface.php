@@ -8,8 +8,6 @@ interface PrinterInterface
 {
     /**
      * Converts given payload to string representation.
-     *
-     * @param mixed $data
      */
     public function print($data, bool $multiline = true): string;
 

@@ -188,6 +188,7 @@ class Executor implements ExecutorInterface
      * Recursively traverse array (usually of nodes).
      *
      * @param array<array-key, object> $nodes Array to traverse
+     *
      * @return array<array-key, object> Result of traversal. May be original
      *         array or changed one.
      */
@@ -229,7 +230,6 @@ class Executor implements ExecutorInterface
                             $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
 
                             throw new BadMethodException($error, static::ERROR_CODE_ARRAY_ENTERING);
-
                         default:
                             $error = self::ERROR_ENTER_RETURN_TYPE;
                             $error = \sprintf($error, \get_class($visitor), \gettype($visitor));
@@ -297,7 +297,8 @@ class Executor implements ExecutorInterface
     /**
      * Recursively traverse a node.
      *
-     * @param NodeInterface $node NodeInterface to traverse.
+     * @param NodeInterface $node nodeInterface to traverse
+     *
      * @return NodeInterface Result of traversal (may be original node or new one)
      */
     protected function traverseNode(NodeInterface $node): NodeInterface
@@ -375,7 +376,6 @@ class Executor implements ExecutorInterface
                                 $error = \sprintf($error, \get_class($visitor));
 
                                 throw new BadReturnTypeException($error, static::ERROR_CODE_NODE_LEAVING);
-
                             default:
                                 $error = self::ERROR_LEAVE_RETURN_TYPE;
                                 $error = \sprintf($error, \get_class($visitor), \gettype($return));
@@ -396,7 +396,6 @@ class Executor implements ExecutorInterface
 
     /**
      * @param string|int $key
-     * @param mixed $value
      */
     private function updateNodeValue(NodeInterface $node, $key, $value): void
     {

@@ -38,6 +38,7 @@ class LazyBuffer extends Buffer
 
     /**
      * @param iterable<TokenInterface> $stream
+     *
      * @return \Generator<mixed, TokenInterface, mixed, mixed>
      */
     private function toGenerator(iterable $stream): \Generator
@@ -113,7 +114,6 @@ class LazyBuffer extends Buffer
     }
 
     /**
-     * {@inheritDoc}
      * @psalm-suppress MixedReturnTypeCoercion
      */
     public function key(): int

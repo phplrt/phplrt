@@ -44,8 +44,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Visitor;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-
 class Traverser implements TraverserInterface
 {
     /**

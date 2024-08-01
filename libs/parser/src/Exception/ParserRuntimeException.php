@@ -15,7 +15,7 @@ abstract class ParserRuntimeException extends RuntimeException implements Parser
         string $message,
         ReadableInterface $src,
         ?TokenInterface $tok,
-        \Throwable $prev = null
+        ?\Throwable $prev = null
     ) {
         parent::__construct($message, 0, $prev);
 

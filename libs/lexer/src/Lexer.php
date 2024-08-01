@@ -6,6 +6,8 @@ namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Lexer\Compiler\Markers as MarkersCompiler;
@@ -13,13 +15,11 @@ use Phplrt\Lexer\Config\HandlerInterface;
 use Phplrt\Lexer\Config\NullHandler;
 use Phplrt\Lexer\Config\PassthroughHandler;
 use Phplrt\Lexer\Config\ThrowErrorHandler;
-use Phplrt\Lexer\Exception\LexerException;
-use Phplrt\Lexer\Token\UnknownToken;
-use Phplrt\Lexer\Driver\Markers;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Lexer\Driver\DriverInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Driver\Markers;
+use Phplrt\Lexer\Exception\LexerException;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\UnknownToken;
 use Phplrt\Source\SourceFactory;
 
 /**
@@ -31,6 +31,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      * Default token name for unidentified tokens.
      *
      * @var non-empty-string
+     *
      * @final
      */
     public const DEFAULT_UNKNOWN_TOKEN_NAME = UnknownToken::DEFAULT_TOKEN_NAME;
@@ -39,6 +40,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      * Default token name for end of input.
      *
      * @var non-empty-string
+     *
      * @final
      */
     public const DEFAULT_EOI_TOKEN_NAME = EndOfInput::DEFAULT_TOKEN_NAME;
@@ -63,12 +65,14 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
 
     /**
      * @var non-empty-string
+     *
      * @readonly
      */
     private string $unknown;
 
     /**
      * @var non-empty-string
+     *
      * @readonly
      */
     private string $eoi;
@@ -79,9 +83,9 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     private SourceFactoryInterface $sources;
 
     /**
-     * @param array<array-key, non-empty-string> $tokens List of
-     *        token names/identifiers and its patterns.
-     * @param list<array-key> $skip List of hidden token names/identifiers.
+     * @param array<array-key, non-empty-string> $tokens list of
+     *        token names/identifiers and its patterns
+     * @param list<array-key> $skip list of hidden token names/identifiers
      * @param HandlerInterface $onUnknownToken This setting is responsible for
      *        the behavior of the lexer in case of detection of unrecognized
      *        tokens.
@@ -115,7 +119,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     public function __construct(
         array $tokens = [],
         array $skip = [],
-        DriverInterface $driver = null,
+        ?DriverInterface $driver = null,
         ?HandlerInterface $onHiddenToken = null,
         ?HandlerInterface $onUnknownToken = null,
         ?HandlerInterface $onEndOfInput = null,
@@ -154,12 +158,13 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param HandlerInterface $handler A handler that defines the behavior of
-     *        the lexer in the case of a "hidden" token.
-     *
      * @psalm-immutable This method returns a new {@see LexerInterface} instance
      *                  and does not change the current state of the lexer.
+     *
      * @api
+     *
+     * @param HandlerInterface $handler a handler that defines the behavior of
+     *        the lexer in the case of a "hidden" token
      */
     public function withHiddenTokenHandler(HandlerInterface $handler): self
     {
@@ -170,12 +175,13 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param HandlerInterface $handler A handler that defines the behavior of
-     *        the lexer in the case of an "unknown" token.
-     *
      * @psalm-immutable This method returns a new {@see LexerInterface} instance
      *                  and does not change the current state of the lexer.
+     *
      * @api
+     *
+     * @param HandlerInterface $handler a handler that defines the behavior of
+     *        the lexer in the case of an "unknown" token
      */
     public function withUnknownTokenHandler(HandlerInterface $handler): self
     {
@@ -186,12 +192,13 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     }
 
     /**
-     * @param HandlerInterface $handler A handler that defines the behavior of
-     *        the lexer in the case of an "end of input" token.
-     *
      * @psalm-immutable This method returns a new {@see LexerInterface} instance
      *                  and does not change the current state of the lexer.
+     *
      * @api
+     *
+     * @param HandlerInterface $handler a handler that defines the behavior of
+     *        the lexer in the case of an "end of input" token
      */
     public function withEndOfInputHandler(HandlerInterface $handler): self
     {
@@ -203,6 +210,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
 
     /**
      * @deprecated since phplrt 3.6 and will be removed in 4.0.
+     *
      * @api
      */
     public function getDriver(): DriverInterface
@@ -216,6 +224,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
 
     /**
      * @deprecated since phplrt 3.6 and will be removed in 4.0.
+     *
      * @api
      */
     public function setDriver(DriverInterface $driver): self
@@ -298,18 +307,17 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      *                  the internal state of the lexer and can be used in
      *                  asynchronous and parallel computing.
      *
-     * @param mixed $source Any source supported by the {@see SourceFactoryInterface::create()}.
-     * @param int<0, max> $offset Offset, starting from which you should
-     *         start analyzing the source.
+     * @param mixed $source any source supported by the {@see SourceFactoryInterface::create()}
+     * @param int<0, max> $offset offset, starting from which you should
+     *         start analyzing the source
      *
-     * @return iterable<array-key, TokenInterface> List of analyzed tokens.
-     *
-     * @throws LexerExceptionInterface An error occurs before source processing
+     * @return iterable<array-key, TokenInterface> list of analyzed tokens
+     * @throws LexerExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
-     *         lexer settings contain errors.
-     * @throws LexerRuntimeExceptionInterface An exception that occurs after
+     *         lexer settings contain errors
+     * @throws LexerRuntimeExceptionInterface an exception that occurs after
      *         starting the lexical analysis and indicates problems in the
-     *         analyzed source.
+     *         analyzed source
      */
     public function lex($source, int $offset = 0): iterable
     {

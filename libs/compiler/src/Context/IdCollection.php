@@ -10,7 +10,7 @@ use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Visitor\Visitor;
 
 /**
- * @internal This is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler
  */
 class IdCollection extends Visitor

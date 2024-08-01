@@ -8,6 +8,7 @@ class VirtualFile extends Source implements VirtualFileInterface
 {
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $filename;
@@ -15,7 +16,6 @@ class VirtualFile extends Source implements VirtualFileInterface
     /**
      * @psalm-taint-sink file $filename
      * @psalm-taint-sink file $temp
-     *
      * @param non-empty-string $filename
      * @param non-empty-string $algo
      * @param non-empty-string $temp

@@ -11,7 +11,7 @@ use Phplrt\Lexer\Token\UnknownToken;
 /**
  * @deprecated since phplrt 3.6 and will be removed in 4.0.
  *
- * @internal This is an internal library interface, please do not use it in your code.
+ * @internal this is an internal library interface, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
 interface DriverInterface

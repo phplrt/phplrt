@@ -12,29 +12,31 @@ class File extends Readable implements FileInterface
 {
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $filename;
 
     /**
      * @var non-empty-string
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private string $algo = SourceFactory::DEFAULT_HASH_ALGO;
 
     /**
      * @var int<1, max>
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE;
 
     /**
      * @psalm-taint-sink file $filename
-     *
      * @param non-empty-string $filename
-     * @param non-empty-string $algo Hashing algorithm for the source.
-     * @param int<1, max> $chunkSize The chunk size used while non-blocking
-     *        reading the file inside the {@see \Fiber}.
+     * @param non-empty-string $algo hashing algorithm for the source
+     * @param int<1, max> $chunkSize the chunk size used while non-blocking
+     *        reading the file inside the {@see \Fiber}
      */
     public function __construct(
         string $filename,

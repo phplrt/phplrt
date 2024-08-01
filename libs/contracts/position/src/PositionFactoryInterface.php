@@ -35,10 +35,10 @@ interface PositionFactoryInterface
      * The interface does not mark such exceptions in any way through the
      * "@throws" annotation, because this is a design error, breach of contract.
      *
-     * @param ReadableInterface $source The source object from which to get the
-     *        position object.
-     * @param int<0, max> $offset Offset value in bytes, relative to which the
-     *        position will be calculated.
+     * @param ReadableInterface $source the source object from which to get the
+     *        position object
+     * @param int<0, max> $offset offset value in bytes, relative to which the
+     *        position will be calculated
      */
     public function createFromOffset(
         ReadableInterface $source,
@@ -62,8 +62,8 @@ interface PositionFactoryInterface
      * The interface does not mark such exceptions in any way through the
      * "@throws" annotation, because this is a design error, breach of contract.
      *
-     * @param ReadableInterface $source The source object from which to get the
-     *        position object.
+     * @param ReadableInterface $source the source object from which to get the
+     *        position object
      * @param int<1, max> $line
      * @param int<1, max> $column
      */

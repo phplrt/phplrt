@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
@@ -24,7 +23,6 @@ use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\ProductionInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Grammar\TerminalInterface;
-use Phplrt\Source\File;
 use Phplrt\Source\SourceFactory;
 
 /**
@@ -61,7 +59,6 @@ use Phplrt\Source\SourceFactory;
  * </code>
  *
  * @template TNode of object
- *
  * @template-implements ConfigurableParserInterface<TNode>
  */
 final class Parser implements ConfigurableParserInterface, ParserConfigsInterface
@@ -107,6 +104,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      * The initial state (initial rule identifier) of the parser.
      *
      * @var array-key
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private $initial;
@@ -117,6 +115,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      * @var array<array-key, RuleInterface>
      *
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     private array $rules = [];
@@ -124,8 +123,8 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     private ?Context $context = null;
 
     /**
-     * @param iterable<array-key, RuleInterface> $grammar An iterable of the
-     *        transition rules for the parser.
+     * @param iterable<array-key, RuleInterface> $grammar an iterable of the
+     *        transition rules for the parser
      * @param array<ParserConfigsInterface::CONFIG_*, mixed> $options
      */
     public function __construct(
@@ -245,18 +244,17 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     /**
      * Parses sources into an abstract source tree (AST) or list of AST nodes.
      *
-     * @param mixed $source Any source supported by the {@see SourceFactoryInterface::create()}.
-     * @param array<non-empty-string, mixed> $options List of additional
-     *        runtime options for the parser (parsing context).
+     * @param mixed $source any source supported by the {@see SourceFactoryInterface::create()}
+     * @param array<non-empty-string, mixed> $options list of additional
+     *        runtime options for the parser (parsing context)
      *
      * @return iterable<array-key, TNode>
-     *
-     * @throws ParserExceptionInterface An error occurs before source processing
+     * @throws ParserExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
-     *         parser settings contain errors.
-     * @throws ParserRuntimeExceptionInterface An exception that occurs after
+     *         parser settings contain errors
+     * @throws ParserRuntimeExceptionInterface an exception that occurs after
      *         starting the parsing and indicates problems in the analyzed
-     *         source.
+     *         source
      */
     public function parse($source, array $options = []): iterable
     {
@@ -362,9 +360,6 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
         return \array_values($tokens);
     }
 
-    /**
-     * @return mixed
-     */
     private function next(Context $context)
     {
         if ($this->step !== null) {
@@ -376,9 +371,6 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
         return $this->runNextStep($context);
     }
 
-    /**
-     * @return mixed
-     */
     private function runNextStep(Context $context)
     {
         $rule = $context->rule = $this->rules[$context->state];

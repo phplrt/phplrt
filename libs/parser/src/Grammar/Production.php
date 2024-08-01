@@ -12,6 +12,7 @@ abstract class Production extends Rule implements ProductionInterface
     /**
      * @param list<NodeInterface|TokenInterface> $children
      * @param NodeInterface|TokenInterface|array $result
+     *
      * @return list<NodeInterface|TokenInterface>
      */
     protected function mergeWith(array $children, $result): array

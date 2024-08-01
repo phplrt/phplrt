@@ -23,7 +23,7 @@ final class PhpCodeGenerator extends CodeGenerator
 
     public function __construct(
         CompilerContext $analyzer,
-        PrinterInterface $printer = null
+        ?PrinterInterface $printer = null
     ) {
         $this->printer = $printer ?? new PhpPrinter();
 
@@ -58,7 +58,7 @@ final class PhpCodeGenerator extends CodeGenerator
      * @param non-empty-string $class
      * @param non-empty-string|null $alias
      */
-    public function withClassUsage(string $class, string $alias = null): self
+    public function withClassUsage(string $class, ?string $alias = null): self
     {
         trigger_deprecation('phplrt/compiler', '3.6', <<<'MSG'
             Using "%s::withClassUsage()" is deprecated, please use "%1$s::withClassReference()" instead.

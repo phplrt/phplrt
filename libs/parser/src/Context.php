@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context\ContextOptionsTrait;
@@ -75,6 +74,7 @@ class Context implements ContextInterface
      * Contains information about the processed source.
      *
      * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public ReadableInterface $source;
@@ -83,6 +83,7 @@ class Context implements ContextInterface
      * Contains a buffer of tokens that were collected from lexical analysis.
      *
      * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
+     *
      * @psalm-readonly-allow-private-mutation
      */
     public BufferInterface $buffer;

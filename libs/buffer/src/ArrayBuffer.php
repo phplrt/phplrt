@@ -33,6 +33,7 @@ class ArrayBuffer extends Buffer
 
     /**
      * @param iterable<int<0, max>, TokenInterface> $tokens
+     *
      * @return array<int<0, max>, TokenInterface>
      */
     private function iterableToArray(iterable $tokens): array

@@ -10,12 +10,14 @@ abstract class Reference implements PrintableValueInterface
 {
     /**
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     protected string $reference;
 
     /**
      * @readonly
+     *
      * @psalm-readonly-allow-private-mutation
      */
     protected ?string $alias = null;

@@ -9,7 +9,7 @@ interface ExecutorInterface
     /**
      * Traverses an array of nodes using the registered visitors.
      *
-     * @param iterable<array-key, object> $nodes List of nodes.
+     * @param iterable<array-key, object> $nodes list of nodes
      *
      * @return iterable<array-key, object> Traversed list of nodes
      */

@@ -1,7 +1,6 @@
 <?php
 
 namespace Phplrt\Grammar {
-
     if (
         !\class_exists(Alternation::class, false)
         && \class_exists(\Phplrt\Parser\Grammar\Alternation::class)

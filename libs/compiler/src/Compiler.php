@@ -37,10 +37,7 @@ class Compiler implements CompilerInterface, ParserInterface
 
     private TraverserInterface $preloader;
 
-    /**
-     * @param GrammarInterface|null $grammar
-     */
-    public function __construct(GrammarInterface $grammar = null)
+    public function __construct(?GrammarInterface $grammar = null)
     {
         $this->grammar = $grammar ?? new PP2Grammar();
 
@@ -81,7 +78,6 @@ class Compiler implements CompilerInterface, ParserInterface
     }
 
     /**
-     * {@inheritDoc}
      * @throws \Throwable
      */
     public function parse($source): iterable

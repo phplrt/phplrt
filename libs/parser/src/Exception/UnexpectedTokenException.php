@@ -15,7 +15,7 @@ class UnexpectedTokenException extends UnrecognizedTokenException
     public static function fromToken(
         ReadableInterface $src,
         TokenInterface $tok,
-        \Throwable $prev = null,
+        ?\Throwable $prev = null,
         array $expected = []
     ): self {
         switch (\count($expected)) {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
-use Phplrt\Compiler\Ast\Node;
-use Phplrt\Visitor\Visitor;
-use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Compiler\Ast\Expr\IncludeExpr;
+use Phplrt\Compiler\Ast\Node;
 use Phplrt\Compiler\Exception\GrammarException;
+use Phplrt\Contracts\Ast\NodeInterface;
 use Phplrt\Source\Exception\NotAccessibleException;
+use Phplrt\Visitor\Visitor;
 
 class IncludesExecutor extends Visitor
 {
@@ -53,6 +53,7 @@ class IncludesExecutor extends Visitor
     /**
      * @throws NotAccessibleException
      * @throws \RuntimeException
+     *
      * @psalm-suppress InvalidReturnType
      * @psalm-suppress InvalidReturnStatement
      */
@@ -74,6 +75,7 @@ class IncludesExecutor extends Visitor
     /**
      * @psalm-taint-sink file $pathname
      * @param non-empty-string $pathname
+     *
      * @return iterable<Node>
      */
     private function execute(string $pathname): iterable

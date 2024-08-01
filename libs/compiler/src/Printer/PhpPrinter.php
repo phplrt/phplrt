@@ -81,7 +81,6 @@ final class PhpPrinter extends Printer implements PrinterInterface
             ? $this->listValues($data, $multiline)
             : $this->arrayValues($data, $multiline);
 
-
         if ($multiline) {
             /** @var non-empty-string */
             return \implode($this->style->lineDelimiter, ['[', $values, ']']);
@@ -113,6 +112,7 @@ final class PhpPrinter extends Printer implements PrinterInterface
 
     /**
      * @param scalar $scalar
+     *
      * @return non-empty-string
      */
     private function scalar($scalar): string

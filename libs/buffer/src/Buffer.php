@@ -60,6 +60,7 @@ abstract class Buffer implements BufferInterface
 
     /**
      * @param array<TokenInterface> $data
+     *
      * @psalm-suppress PossiblyNullArrayOffset
      */
     protected function currentFrom(array $data): TokenInterface

@@ -63,6 +63,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
 
     /**
      * @return array<array-key, \Closure>
+     *
      * @psalm-suppress all
      */
     private function reducers(): array
@@ -233,14 +234,10 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
         ];
     }
 
-    /**
-     * @return mixed
-     */
     protected function next(Context $context, \Closure $next)
     {
         $offset = $context->getToken()->getOffset();
 
-        /** @var mixed $result */
         $result = $next($context);
 
         if ($result instanceof Node) {
@@ -252,7 +249,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     }
 
     /**
-     * {@inheritDoc}
      * @throws \Throwable
      */
     public function parse($source, array $options = []): iterable
@@ -261,8 +257,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @psalm-suppress MixedFunctionCall
      */
     public function build(Context $context, $result)

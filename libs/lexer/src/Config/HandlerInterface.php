@@ -16,7 +16,7 @@ interface HandlerInterface
     /**
      * The method itself, which is executed while processing a token.
      *
-     * @throws LexerRuntimeExceptionInterface May throw an exception while handling the token.
+     * @throws LexerRuntimeExceptionInterface may throw an exception while handling the token
      */
     public function handle(ReadableInterface $source, TokenInterface $token): ?TokenInterface;
 }

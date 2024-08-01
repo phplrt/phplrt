@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Grammar;
 
-use Phplrt\Lexer\PositionalLexerInterface;
-use Phplrt\Source\File;
-use Phplrt\Lexer\Token\Token;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\PositionalLexerInterface;
+use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\Token;
+use Phplrt\Source\File;
 
 class PhpLexer implements PositionalLexerInterface
 {

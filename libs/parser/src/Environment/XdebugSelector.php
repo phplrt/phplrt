@@ -39,6 +39,7 @@ final class XdebugSelector implements SelectorInterface
 
     /**
      * @var int<0, max>
+     *
      * @readonly
      */
     private int $expectedRecursionDepth;

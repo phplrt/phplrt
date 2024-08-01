@@ -18,7 +18,7 @@ class HashCalculationException extends \LogicException implements SourceExceptio
         parent::__construct($message, $code, $previous);
     }
 
-    public static function fromInvalidHashAlgo(string $algo, \Throwable $prev = null): self
+    public static function fromInvalidHashAlgo(string $algo, ?\Throwable $prev = null): self
     {
         $message = 'Cannot get the source hash because the algorithm "%s" '
             . 'is not supported by the PHP environment or is incorrect';

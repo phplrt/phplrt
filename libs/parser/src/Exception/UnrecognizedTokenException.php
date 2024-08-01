@@ -12,7 +12,7 @@ use Phplrt\Lexer\Token\Renderer;
 
 class UnrecognizedTokenException extends ParserRuntimeException
 {
-    public static function fromToken(ReadableInterface $src, TokenInterface $tok, \Throwable $prev = null): self
+    public static function fromToken(ReadableInterface $src, TokenInterface $tok, ?\Throwable $prev = null): self
     {
         $message = \sprintf('Syntax error, unrecognized %s', self::getTokenValue($tok));
 
