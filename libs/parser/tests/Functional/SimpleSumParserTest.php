@@ -55,21 +55,21 @@ class SimpleSumParserTest extends TestCase implements BuilderInterface
     {
         $lexer = new Lexer([
             'T_WHITESPACE' => '\s+',
-            'T_DIGIT'      => '\d+',
-            'T_PLUS'       => '\+',
+            'T_DIGIT' => '\d+',
+            'T_PLUS' => '\+',
         ], ['T_WHITESPACE']);
 
         $grammar = [
-            0        => new Lexeme('T_DIGIT'),
-            1        => new Lexeme('T_PLUS'),
-            2        => new Repetition('suffix'),
-            'sum'    => new Concatenation([0, 2]),
+            0 => new Lexeme('T_DIGIT'),
+            1 => new Lexeme('T_PLUS'),
+            2 => new Repetition('suffix'),
+            'sum' => new Concatenation([0, 2]),
             'suffix' => new Concatenation([1, 0]),
         ];
 
         $parser = new Parser($lexer, $grammar, [
             Parser::CONFIG_INITIAL_RULE => 'sum',
-            Parser::CONFIG_AST_BUILDER  => $this,
+            Parser::CONFIG_AST_BUILDER => $this,
         ]);
 
         return $parser->parse($expr);

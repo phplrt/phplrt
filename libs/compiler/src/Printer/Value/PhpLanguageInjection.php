@@ -14,12 +14,12 @@ final class PhpLanguageInjection extends LanguageInjection
      * @var array<non-empty-string, non-empty-string>
      */
     private const CODE_INJECTIONS = [
-        '$file'   => '$file = $ctx->source;',
+        '$file' => '$file = $ctx->source;',
         '$source' => '$source = $ctx->source;',
         '$offset' => '$offset = $ctx->lastProcessedToken->getOffset();',
-        '$token'  => '$token = $ctx->lastProcessedToken;',
-        '$state'  => '$state = $ctx->state;',
-        '$rule'   => '$rule = $ctx->rule;',
+        '$token' => '$token = $ctx->lastProcessedToken;',
+        '$state' => '$state = $ctx->state;',
+        '$rule' => '$rule = $ctx->rule;',
     ];
 
     /**

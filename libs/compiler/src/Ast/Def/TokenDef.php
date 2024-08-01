@@ -23,8 +23,8 @@ class TokenDef extends Definition
 
     public function __construct(string $name, string $value, bool $keep = true)
     {
-        $this->name  = $name;
+        $this->name = $name;
         $this->value = $value;
-        $this->keep  = $keep;
+        $this->keep = $keep;
     }
 }

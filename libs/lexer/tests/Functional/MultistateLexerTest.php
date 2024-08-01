@@ -48,8 +48,8 @@ class MultistateLexerTest extends TestCase
         $result = (new Multistate([
             'string' => [
                 'escaped_quote' => '\\\\"',
-                'quote'         => '"',
-                'char'          => '\w',
+                'quote' => '"',
+                'char' => '\w',
             ],
             'default' => [
                 'quote' => '"'

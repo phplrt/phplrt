@@ -20,7 +20,7 @@ class LineReaderTest extends TestCase
         }
 
         return [
-            '\n'   => [self::create($lines, "\n"), self::MAX_LINES_PER_TEST],
+            '\n' => [self::create($lines, "\n"), self::MAX_LINES_PER_TEST],
             '\r\n' => [self::create($lines, "\r\n"), self::MAX_LINES_PER_TEST],
         ];
     }

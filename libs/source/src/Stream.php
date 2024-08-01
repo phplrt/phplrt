@@ -154,10 +154,10 @@ class Stream extends Readable
         }
 
         return [
-            'uri'   => $meta['uri'],
-            'mode'  => $meta['mode'],
-            'seek'  => $this->offset,
-            'algo'  => $this->algo,
+            'uri' => $meta['uri'],
+            'mode' => $meta['mode'],
+            'seek' => $this->offset,
+            'algo' => $this->algo,
             'chunk' => $this->chunkSize,
         ];
     }

@@ -10,9 +10,9 @@ use Phplrt\Visitor\VisitorInterface;
 class Counter implements VisitorInterface
 {
     public $before = 0;
-    public $after  = 0;
-    public $enter  = 0;
-    public $leave  = 0;
+    public $after = 0;
+    public $enter = 0;
+    public $leave = 0;
 
     public function before(iterable $nodes): ?iterable
     {

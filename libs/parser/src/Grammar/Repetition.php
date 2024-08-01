@@ -45,8 +45,8 @@ class Repetition extends Production
         \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
 
         $this->rule = $rule;
-        $this->gte  = $gte;
-        $this->lte  = \is_infinite($lte) ? \INF : (int) $lte;
+        $this->gte = $gte;
+        $this->lte = \is_infinite($lte) ? \INF : (int) $lte;
     }
 
     public function getTerminals(array $rules): iterable

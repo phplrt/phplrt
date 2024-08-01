@@ -21,7 +21,7 @@ class PP2PHPLexer implements PositionalLexerInterface
         $depth = 0;
 
         $children = [];
-        $value  = '';
+        $value = '';
 
         foreach ($this->lexer->lex($source, $offset) as $inner) {
             if ($inner->getName() === '{') {

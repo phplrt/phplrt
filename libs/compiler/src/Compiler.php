@@ -90,7 +90,7 @@ class Compiler implements CompilerInterface, ParserInterface
 
         $parser = new Parser($lexer, $this->analyzer->rules, [
             ParserConfigsInterface::CONFIG_INITIAL_RULE => $this->analyzer->initial,
-            ParserConfigsInterface::CONFIG_AST_BUILDER  => new PrintableNodeBuilder(),
+            ParserConfigsInterface::CONFIG_AST_BUILDER => new PrintableNodeBuilder(),
         ]);
 
         return $parser->parse($source);

@@ -48,10 +48,10 @@ class GrammarGeneratorTest extends TestCase
         });
 
         $expected = [
-            0     => new Lexeme('digit'),
-            1     => new Lexeme('plus'),
-            2     => new Concatenation([1, 0]),
-            3     => new Repetition(2),
+            0 => new Lexeme('digit'),
+            1 => new Lexeme('plus'),
+            2 => new Concatenation([1, 0]),
+            3 => new Repetition(2),
             'sum' => new Concatenation([0, 3]),
         ];
 
