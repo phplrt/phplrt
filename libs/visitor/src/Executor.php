@@ -400,7 +400,7 @@ class Executor implements ExecutorInterface
             // @phpstan-ignore-next-line
             $node->$key = $value;
         } catch (\Error $e) {
-            if (\strpos($e->getMessage(), 'Cannot access') !== 0) {
+            if (!\str_starts_with($e->getMessage(), 'Cannot access')) {
                 throw $e;
             }
 
