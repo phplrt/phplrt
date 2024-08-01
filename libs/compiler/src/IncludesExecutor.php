@@ -37,11 +37,10 @@ class IncludesExecutor extends Visitor
     }
 
     /**
-     * @return mixed|null
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    public function leave(NodeInterface $node)
+    public function leave(NodeInterface $node): array|NodeInterface
     {
         if ($node instanceof IncludeExpr) {
             return $this->lookup($node);
