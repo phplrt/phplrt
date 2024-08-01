@@ -15,8 +15,10 @@ class Lexeme extends Terminal
     /**
      * @param non-empty-string|int $token
      */
-    public function __construct(public readonly string|int $token, bool $keep = true)
-    {
+    public function __construct(
+        public readonly string|int $token,
+        bool $keep = true,
+    ) {
         parent::__construct($keep);
     }
 

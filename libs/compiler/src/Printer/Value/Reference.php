@@ -12,5 +12,8 @@ abstract class Reference implements PrintableValueInterface
      * @param non-empty-string $reference
      * @param non-empty-string|null $alias
      */
-    public function __construct(protected string $reference, protected ?string $alias = null) {}
+    public function __construct(
+        protected string $reference,
+        protected ?string $alias = null,
+    ) {}
 }

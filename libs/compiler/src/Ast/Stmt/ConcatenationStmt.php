@@ -15,7 +15,9 @@ class ConcatenationStmt extends Statement
     /**
      * @param array<Statement> $statements
      */
-    public function __construct(public array $statements) {}
+    public function __construct(
+        public array $statements,
+    ) {}
 
     /**
      * @return \Traversable<non-empty-string, array<Statement>>

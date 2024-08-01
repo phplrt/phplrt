@@ -6,6 +6,7 @@ namespace Phplrt\Compiler\Exception;
 
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Position\Position;
 use Phplrt\Source\Exception\NotAccessibleException;
 
@@ -16,6 +17,7 @@ class GrammarException extends \LogicException
      *
      * @throws NotAccessibleException
      * @throws \RuntimeException
+     * @throws SourceExceptionInterface
      */
     public function __construct(string $message, ReadableInterface $source, int $offset)
     {

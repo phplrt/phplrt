@@ -36,8 +36,10 @@ class ErrorInformationRenderer
 
     private string $highlightChar = self::DEFAULT_HIGHLIGHT_CHAR;
 
-    public function __construct(ReadableInterface $source, private TokenInterface $token)
-    {
+    public function __construct(
+        ReadableInterface $source,
+        private readonly TokenInterface $token,
+    ) {
         $this->position = Position::fromOffset($source, $this->token->getOffset());
 
         $this->reader = new LineReader($source);

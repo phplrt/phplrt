@@ -18,7 +18,11 @@ final class PrintableNode implements NodeInterface, \Stringable
      * @param non-empty-string $state
      * @param array<array-key, PrintableNode|TokenInterface> $children
      */
-    public function __construct(private int $offset, private string $state, public array $children) {}
+    public function __construct(
+        private readonly int $offset,
+        private readonly string $state,
+        public readonly array $children,
+    ) {}
 
     /**
      * @return \Traversable<non-empty-string, array<array-key, PrintableNode>>

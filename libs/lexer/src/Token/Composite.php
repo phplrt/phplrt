@@ -13,8 +13,12 @@ class Composite extends Token implements CompositeTokenInterface
      * @param int<0, max> $offset
      * @param array<int, TokenInterface> $children
      */
-    public function __construct(int|string $name, string $value, int $offset, private array $children)
-    {
+    public function __construct(
+        int|string $name,
+        string $value,
+        int $offset,
+        private array $children,
+    ) {
         parent::__construct($name, $value, $offset);
     }
 

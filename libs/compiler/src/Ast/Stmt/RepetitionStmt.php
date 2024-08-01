@@ -12,7 +12,10 @@ namespace Phplrt\Compiler\Ast\Stmt;
  */
 class RepetitionStmt extends Statement
 {
-    public function __construct(public Statement $statement, public Quantifier $quantifier) {}
+    public function __construct(
+        public readonly Statement $statement,
+        public readonly Quantifier $quantifier,
+    ) {}
 
     /**
      * @return \Traversable<non-empty-string, Statement|Quantifier>
