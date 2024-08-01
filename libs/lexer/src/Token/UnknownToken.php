@@ -20,7 +20,7 @@ class UnknownToken extends Token
     public function __construct(
         string $value,
         int $offset = 0,
-        $name = self::DEFAULT_TOKEN_NAME
+        string|int $name = self::DEFAULT_TOKEN_NAME
     ) {
         parent::__construct($name, $value, $offset);
     }
