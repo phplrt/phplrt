@@ -246,8 +246,7 @@ return (new PhpCsFixer\Config())
             'stick_comment_to_next_continuous_control_statement' => true,
         ],
         'switch_continue_to_break' => true,
-        // PHP 7.4 doesn't support this rule.
-        'trailing_comma_in_multiline' => false,
+        'trailing_comma_in_multiline' => true,
         'trim_array_spaces' => true,
         'type_declaration_spaces' => true,
         'types_spaces' => true,

@@ -22,7 +22,7 @@ class NotCreatableException extends NotAccessibleException
     {
         $message = \vsprintf('Cannot create %s instance from %s', [
             ReadableInterface::class,
-            \get_debug_type($source)
+            \get_debug_type($source),
         ]);
 
         return new static($message, self::CODE_INVALID_TYPE);
