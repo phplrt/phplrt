@@ -279,12 +279,9 @@ abstract class PCRECompiler implements CompilerInterface
         return $this->delimiter . $pcre . $this->delimiter . \implode('', $this->flags);
     }
 
-    /**
-     * @param string|null $token
-     */
     protected function formatException(string $message, string $token = null): string
     {
-        $suffix = \sprintf(' in %s token definition', $token ?: '<unknown>');
+        $suffix = \sprintf(' in %s token definition', $token ?? '<unknown>');
 
         $message = \str_replace('Compilation failed: ', '', $message);
         $message = \preg_replace('/([\w_]+\(\):\h+)/', '', $message);

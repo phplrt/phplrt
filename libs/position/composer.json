@@ -29,7 +29,9 @@
     "require-dev": {
         "phplrt/source": "^3.6",
         "phpunit/phpunit": "^9.6|^10.0",
-        "vimeo/psalm": "^5.22"
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan-strict-rules": "^1.6"
     },
     "autoload-dev": {
         "psr-4": {

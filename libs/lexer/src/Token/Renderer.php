@@ -73,7 +73,7 @@ final class Renderer
 
     private function inline(string $value): string
     {
-        return (string) (\preg_replace('/\h+/u', ' ', $value) ?? $value);
+        return \preg_replace('/\h+/u', ' ', $value) ?? $value;
     }
 
     private function shouldBeShorten(string $value): bool

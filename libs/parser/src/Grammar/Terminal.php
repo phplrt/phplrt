@@ -9,9 +9,9 @@ abstract class Terminal extends Rule implements TerminalInterface
     /**
      * @readonly Should not be modified in runtime.
      */
-    public bool $keep = true;
+    public bool $keep;
 
-    public function __construct(bool $keep)
+    public function __construct(bool $keep = true)
     {
         $this->keep = $keep;
     }

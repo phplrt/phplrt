@@ -24,14 +24,14 @@ final class PrintableNode implements NodeInterface
     private string $state;
 
     /**
-     * @var array<array-key, PrintableNode>
+     * @var array<array-key, PrintableNode|TokenInterface>
      */
     public array $children = [];
 
     /**
      * @param int<0, max> $offset
      * @param non-empty-string $state
-     * @param array<array-key, PrintableNode> $children
+     * @param array<array-key, PrintableNode|TokenInterface> $children
      */
     public function __construct(int $offset, string $state, array $children)
     {

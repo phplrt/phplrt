@@ -401,6 +401,7 @@ class Executor implements ExecutorInterface
     private function updateNodeValue(NodeInterface $node, $key, $value): void
     {
         try {
+            // @phpstan-ignore-next-line
             $node->$key = $value;
         } catch (\Error $e) {
             if (\strpos($e->getMessage(), 'Cannot access') !== 0) {

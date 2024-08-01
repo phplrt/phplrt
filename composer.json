@@ -62,7 +62,9 @@
         "rector/rector": "^1.0",
         "symfony/var-dumper": "^5.4|^6.0|^7.0",
         "symplify/monorepo-builder": "^11.2",
-        "vimeo/psalm": "^5.22"
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^1.11",
+        "phpstan/phpstan-strict-rules": "^1.6"
     },
     "autoload-dev": {
         "psr-4": {
@@ -110,8 +112,8 @@
         "test:unit": "phpunit --testdox --testsuite=unit",
         "test:functional": "phpunit --testdox --testsuite=functional",
         "linter": "@linter:check",
-        "linter:check": "psalm --no-cache",
-        "linter:fix": "psalm --no-cache --alter",
+        "linter:check": "phpstan analyse --configuration phpstan.neon",
+        "linter:baseline": "phpstan analyse --configuration phpstan.neon --generate-baseline",
         "phpcs": "@phpcs:check",
         "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run --verbose --diff",
         "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff",
@@ -128,8 +130,8 @@
     },
     "config": {
         "sort-packages": true,
-        "platform": {
-            "php": "8.4.4"
+        "allow-plugins": {
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "dev",

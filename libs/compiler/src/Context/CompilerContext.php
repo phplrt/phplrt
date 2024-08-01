@@ -99,7 +99,7 @@ class CompilerContext extends Visitor
     public function enter(NodeInterface $node): void
     {
         if ($node instanceof TokenDef) {
-            $state = $node->state ?: self::STATE_DEFAULT;
+            $state = $node->state ?? self::STATE_DEFAULT;
 
             if (!\array_key_exists($state, $this->tokens)) {
                 $this->tokens[$state] = [];

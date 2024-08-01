@@ -1,0 +1,25 @@
+includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+parameters:
+  level: 1
+  strictRules:
+    allRules: true
+  fileExtensions:
+    - php
+  paths:
+    - libs/contracts/ast/src
+    - libs/contracts/exception/src
+    - libs/contracts/lexer/src
+    - libs/contracts/parser/src
+    - libs/contracts/position/src
+    - libs/contracts/source/src
+    - libs/buffer/src
+    - libs/compiler/src
+    - libs/exception/src
+    - libs/lexer/src
+    - libs/parser/src
+    - libs/position/src
+    - libs/source/src
+    - libs/visitor/src
+  tmpDir: vendor/.cache.phpstan
+  reportUnmatchedIgnoredErrors: false

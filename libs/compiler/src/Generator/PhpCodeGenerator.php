@@ -72,13 +72,14 @@ final class PhpCodeGenerator extends CodeGenerator
     public function generate(): string
     {
         $style = $this->printer->getStyle();
+        $filter = static fn(string $line): bool => \trim($line) !== '';
 
         return \implode($style->lineDelimiter, \array_filter([
             '<?php',
             $this->getStrictTypesResult(),
             $this->getReferencesResult(),
             $this->getBodyResult(),
-        ]));
+        ], $filter));
     }
 
     private function getStrictTypesResult(): string
