@@ -13,8 +13,8 @@ namespace Phplrt\Compiler\Ast\Stmt;
 class RepetitionStmt extends Statement
 {
     public function __construct(
-        public readonly Statement $statement,
-        public readonly Quantifier $quantifier,
+        public Statement $statement,
+        public Quantifier $quantifier,
     ) {}
 
     /**
