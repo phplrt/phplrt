@@ -42,7 +42,7 @@ interface PositionFactoryInterface
      */
     public function createFromOffset(
         ReadableInterface $source,
-        int $offset = PositionInterface::MIN_OFFSET
+        int $offset = PositionInterface::MIN_OFFSET,
     ): PositionInterface;
 
     /**
@@ -70,6 +70,6 @@ interface PositionFactoryInterface
     public function createFromPosition(
         ReadableInterface $source,
         int $line = PositionInterface::MIN_LINE,
-        int $column = PositionInterface::MIN_COLUMN
+        int $column = PositionInterface::MIN_COLUMN,
     ): PositionInterface;
 }

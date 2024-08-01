@@ -119,21 +119,6 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
     }
 
     /**
-     * @deprecated since phplrt 3.6 and will be removed in 4.0. Please use
-     *             "$onUnknownToken" argument of the {@see __construct()}
-     *             or {@see Lexer::withUnknownTokenHandler()} method instead.
-     */
-    public function disableUnrecognizedTokenException(): void
-    {
-        trigger_deprecation('phplrt/lexer', '3.6', <<<'MSG'
-            Using "%s::disableUnrecognizedTokenException()" is deprecated.
-            Please use %1$s::withUnknownTokenHandler() instead.
-            MSG, static::class);
-
-        $this->onUnknownToken = new PassthroughHandler();
-    }
-
-    /**
      * @psalm-immutable This method returns a new {@see LexerInterface} instance
      *                  and does not change the current state of the lexer.
      *
@@ -196,22 +181,6 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
             MSG, static::class);
 
         return $this->driver;
-    }
-
-    /**
-     * @deprecated since phplrt 3.6 and will be removed in 4.0.
-     *
-     * @api
-     */
-    public function setDriver(DriverInterface $driver): self
-    {
-        trigger_deprecation('phplrt/lexer', '3.6', <<<'MSG'
-            Using "%s::setDriver(DriverInterface $driver)" is deprecated.
-            MSG, static::class);
-
-        $this->driver = $driver;
-
-        return $this;
     }
 
     public function skip(string ...$tokens): self

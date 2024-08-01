@@ -52,23 +52,6 @@ final class PhpCodeGenerator extends CodeGenerator
         return $self;
     }
 
-    /**
-     * @deprecated Since 4.0, please use immutable {@see CodeGeneratorInterface::withClassReference()} method instead.
-     *
-     * @param non-empty-string $class
-     * @param non-empty-string|null $alias
-     */
-    public function withClassUsage(string $class, ?string $alias = null): self
-    {
-        trigger_deprecation('phplrt/compiler', '3.6', <<<'MSG'
-            Using "%s::withClassUsage()" is deprecated, please use "%1$s::withClassReference()" instead.
-            MSG, self::class);
-
-        $this->classes[$class] = $alias;
-
-        return $this;
-    }
-
     public function generate(): string
     {
         $style = $this->printer->getStyle();

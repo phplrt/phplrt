@@ -6,7 +6,7 @@ namespace Phplrt\Parser;
 
 use Phplrt\Buffer\ArrayBuffer;
 use Phplrt\Buffer\BufferInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Parser\ParserConfigsInterface as Config;
 
 /**
@@ -29,21 +29,7 @@ trait ParserConfigsTrait
      *
      * @var non-empty-string
      */
-    private string $eoi = TokenInterface::END_OF_INPUT;
-
-    /**
-     * Possible tokens searching (enable if it is {@see true}).
-     *
-     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
-     *             has no effect.
-     */
-    private bool $possibleTokensSearching = false;
-
-    /**
-     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
-     *             has no effect.
-     */
-    private bool $useMutableBuffer = false;
+    private string $eoi = EndOfInput::DEFAULT_TOKEN_NAME;
 
     /**
      * Enables support for trailing tokens after a completed grammar.
@@ -111,24 +97,6 @@ trait ParserConfigsTrait
         \assert(\is_subclass_of($class, BufferInterface::class));
 
         $this->buffer = $class;
-
-        return $this;
-    }
-
-    /**
-     * Turn on/off for possible tokens searching.
-     *
-     * @deprecated since phplrt 3.4 and will be removed in 4.0. Now this option
-     *             has no effect.
-     */
-    public function possibleTokensSearching(bool $possibleTokensSearching): self
-    {
-        trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
-            Using "%s::possibleTokensSearching(bool)" has no effect.
-            MSG, self::class);
-
-        $this->possibleTokensSearching = $possibleTokensSearching;
-        $this->useMutableBuffer = $this->possibleTokensSearching;
 
         return $this;
     }

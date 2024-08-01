@@ -6,6 +6,7 @@ namespace Phplrt\Exception\Tests\Unit;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Exception\UndefinedToken;
+use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Position\Position;
 
 class UndefinedTokenTest extends TestCase
@@ -19,7 +20,7 @@ class UndefinedTokenTest extends TestCase
     {
         $token = $this->create();
 
-        $this->assertSame(TokenInterface::END_OF_INPUT, $token->getName());
+        $this->assertSame(EndOfInput::DEFAULT_TOKEN_NAME, $token->getName());
     }
 
     public function testOffset(): void

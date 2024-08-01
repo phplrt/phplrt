@@ -119,19 +119,6 @@ class Compiler implements CompilerInterface, ParserInterface, \Stringable
         return $this;
     }
 
-    /**
-     * @deprecated since phplrt 3.6 and will be removed in 4.0. Please
-     *             use {@see getContext()} instead.
-     */
-    public function getAnalyzer(): CompilerContext
-    {
-        trigger_deprecation('phplrt/compiler', '3.6', <<<'MSG'
-            Using "%s::getAnalyzer()" is deprecated, please use "%1$s::getContext()" instead.
-            MSG, static::class);
-
-        return $this->analyzer;
-    }
-
     public function getContext(): CompilerContext
     {
         return $this->analyzer;

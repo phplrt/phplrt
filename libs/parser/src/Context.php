@@ -17,10 +17,8 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * The presence of public modifiers in fields is required only to speed up the
  * parser, since direct access is several times faster than using methods of
  * setting values or creating a new class at each step of the parser.
- *
- * @final marked as final since phplrt 3.4 and will be final since 4.0
  */
-class Context implements ContextInterface
+final class Context
 {
     use ContextOptionsTrait;
 

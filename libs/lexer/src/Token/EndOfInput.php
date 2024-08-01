@@ -18,7 +18,7 @@ final class EndOfInput extends BaseToken
      *
      * @var non-empty-string
      */
-    public const DEFAULT_TOKEN_NAME = TokenInterface::END_OF_INPUT;
+    public const DEFAULT_TOKEN_NAME = 'T_EOI';
 
     /**
      * @param int<0, max> $offset
