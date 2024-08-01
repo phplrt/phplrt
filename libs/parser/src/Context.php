@@ -57,17 +57,6 @@ class Context implements ContextInterface
     public ?RuleInterface $rule = null;
 
     /**
-     * Contains the identifier of the current state of the parser.
-     *
-     * Note: This is a stateful data and may cause a race condition error. In
-     * the future, it is necessary to delete this data with a replacement for
-     * the stateless structure.
-     *
-     * @var array-key
-     */
-    public string|int $state;
-
-    /**
      * @param array-key $state
      * @param array<non-empty-string, mixed> $options
      */
@@ -80,12 +69,17 @@ class Context implements ContextInterface
          * Contains information about the processed source.
          */
         public readonly ReadableInterface $source,
-        int|string $state,
+        /**
+         * Contains the identifier of the current state of the parser.
+         *
+         * Note: This is a stateful data and may cause a race condition error. In
+         * the future, it is necessary to delete this data with a replacement for
+         * the stateless structure.
+         */
+        public string|int $state,
         array $options
     ) {
-        $this->state = $state;
         $this->options = $options;
-
         $this->lastOrdinalToken = $this->lastProcessedToken = $this->buffer->current();
     }
 
