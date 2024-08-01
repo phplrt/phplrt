@@ -14,7 +14,7 @@ return static function (RectorConfig $config): void {
     ]);
 
     $config->sets([
-        LevelSetList::UP_TO_PHP_74,
+        LevelSetList::UP_TO_PHP_80,
         SetList::TYPE_DECLARATION,
     ]);
 
