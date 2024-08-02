@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Token;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
-
 final class EndOfInput extends BaseToken
 {
     /**
