@@ -290,7 +290,7 @@ class CompilerContext extends Visitor
      * @throws ParserRuntimeException
      * @throws \RuntimeException
      */
-    private function load($stmt)
+    private function load(mixed $stmt): mixed
     {
         if (\is_array($stmt)) {
             return $this->mapAll($this->reduceAll($stmt));

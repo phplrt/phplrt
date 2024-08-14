@@ -129,7 +129,7 @@ class Builder implements \IteratorAggregate
      *
      * @return array-key
      */
-    public function add(RuleInterface $rule, $id = null)
+    public function add(RuleInterface $rule, mixed $id = null): mixed
     {
         \assert($id === null || \is_int($id) || \is_string($id));
 
