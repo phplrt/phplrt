@@ -23,11 +23,11 @@
         "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "provide": {
-        "phplrt/exception-contracts-implementation": "^3.6",
-        "phplrt/lexer-contracts-implementation": "^3.6",
-        "phplrt/parser-contracts-implementation": "^3.6",
-        "phplrt/position-contracts-implementation": "^3.6",
-        "phplrt/source-contracts-implementation": "^3.6"
+        "phplrt/exception-contracts-implementation": "^3.7",
+        "phplrt/lexer-contracts-implementation": "^3.7",
+        "phplrt/parser-contracts-implementation": "^3.7",
+        "phplrt/position-contracts-implementation": "^3.7",
+        "phplrt/source-contracts-implementation": "^3.7"
     },
     "autoload": {
         "files": [
@@ -53,7 +53,7 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.61",
+        "friendsofphp/php-cs-fixer": "^3.71",
         "jetbrains/phpstorm-attributes": "^1.0",
         "httpsoft/http-message": "^1.1",
         "phpunit/phpunit": "^9.6|^10.0",

@@ -17,12 +17,12 @@
     ],
     "require": {
         "php": "^8.1",
-        "phplrt/source": "^3.6",
-        "phplrt/buffer": "^3.6",
-        "phplrt/exception": "^3.6",
-        "phplrt/parser-contracts": "^3.6",
-        "phplrt/lexer-contracts": "^3.6",
-        "phplrt/ast-contracts": "^3.6",
+        "phplrt/source": "^3.7",
+        "phplrt/buffer": "^3.7",
+        "phplrt/exception": "^3.7",
+        "phplrt/parser-contracts": "^3.7",
+        "phplrt/lexer-contracts": "^3.7",
+        "phplrt/ast-contracts": "^3.7",
         "symfony/deprecation-contracts": "^2.5|^3.0"
     },
     "replace": {
@@ -38,8 +38,8 @@
         ]
     },
     "require-dev": {
-        "phplrt/visitor": "^3.6",
-        "phplrt/lexer": "^3.6",
+        "phplrt/visitor": "^3.7",
+        "phplrt/lexer": "^3.7",
         "phpunit/phpunit": "^9.6|^10.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^1.11",
@@ -52,7 +52,7 @@
         }
     },
     "provide": {
-        "phplrt/parser-contracts-implementation": "^3.6"
+        "phplrt/parser-contracts-implementation": "^3.7"
     },
     "extra": {
         "branch-alias": {
