@@ -22,14 +22,14 @@ return static function (MBConfig $config): void {
 
     $config->dataToAppend([
         'require-dev' => [
-            'friendsofphp/php-cs-fixer' => '^3.53',
-            'phpunit/phpunit' => '^9.6|^10.0',
-            'rector/rector' => '^1.0',
-            'symfony/var-dumper' => '^5.4|^6.0|^7.0',
-            'symplify/monorepo-builder' => '^11.2',
+            'friendsofphp/php-cs-fixer' => '^3.62',
             'phpstan/extension-installer' => '^1.4',
             'phpstan/phpstan' => '^1.11',
-            'phpstan/phpstan-strict-rules' => '^1.6'
+            'phpstan/phpstan-strict-rules' => '^1.6',
+            'phpunit/phpunit' => '^9.6|^10.0',
+            'rector/rector' => '^1.2',
+            'symfony/var-dumper' => '^5.4|^6.0|^7.0',
+            'symplify/monorepo-builder' => '^11.2',
         ],
     ]);
 
