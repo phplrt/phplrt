@@ -6,6 +6,7 @@ namespace Phplrt\Exception\Tests\Unit;
 
 use Phplrt\Exception\LineReader;
 use Phplrt\Source\File;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LineReaderTest extends TestCase
 {
@@ -30,18 +31,14 @@ class LineReaderTest extends TestCase
         return new LineReader(File::fromSources(\implode($delimiter, $lines)));
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLine(LineReader $reader, int $max): void
     {
         $this->assertSame('line-1', $reader->readLine(1));
         $this->assertSame('line-' . $max, $reader->readLine($max));
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLineUnderflow(LineReader $reader): void
     {
         $this->assertSame('', $reader->readLine(0));
@@ -49,42 +46,32 @@ class LineReaderTest extends TestCase
         $this->assertSame('', $reader->readLine(\PHP_INT_MIN));
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLineOverflow(LineReader $reader, int $max): void
     {
         $this->assertSame('', $reader->readLine($max + 1));
         $this->assertSame('', $reader->readLine(\PHP_INT_MAX));
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLines(LineReader $reader): void
     {
         $this->assertEquals(['line-1', 'line-2'], [...$reader->readLines(1, 2)]);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLinesInReverseOrder(LineReader $reader): void
     {
         $this->assertEquals(['line-1', 'line-2'], [...$reader->readLines(2, 1)]);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLinesUnderflow(LineReader $reader): void
     {
         $this->assertEquals(['line-1', 'line-2', 'line-3'], [...$reader->readLines(-1, 3)]);
     }
 
-    /**
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testReadLinesOverflow(LineReader $reader, int $max): void
     {
         $haystack = ['line-' . ($max - 2), 'line-' . ($max - 1), 'line-' . $max];

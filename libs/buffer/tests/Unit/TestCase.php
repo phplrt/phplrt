@@ -8,6 +8,7 @@ use Phplrt\Buffer\BufferInterface;
 use Phplrt\Buffer\Tests\TestCase as BaseTestCase;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -46,9 +47,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testIsIterable(BufferInterface $buffer): void
     {
         foreach ($buffer as $index => $token) {
@@ -57,9 +56,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testKeysDoNotIntersect(BufferInterface $buffer): void
     {
         $buffer = \iterator_to_array($buffer, true);
@@ -67,9 +64,7 @@ abstract class TestCase extends BaseTestCase
         $this->assertCount(10, $buffer);
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testCurrentSameWithIteratorState(BufferInterface $buffer): void
     {
         foreach ($buffer as $token) {
@@ -77,9 +72,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testKeySameWithIteratorState(BufferInterface $buffer): void
     {
         foreach ($buffer as $index => $token) {
@@ -87,9 +80,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testRewindable(BufferInterface $buffer): void
     {
         $needle = $buffer->current();
@@ -102,9 +93,7 @@ abstract class TestCase extends BaseTestCase
         $this->assertSame($needle, $buffer->current());
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testSeekAhead(BufferInterface $buffer): void
     {
         $buffer->seek(static::$bufferSize - 1);
@@ -118,27 +107,21 @@ abstract class TestCase extends BaseTestCase
         $this->assertSame($buffer->current(), $needle);
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testSeekOverflow(BufferInterface $buffer): void
     {
         $this->expectException(\OutOfRangeException::class);
         $buffer->seek(static::$bufferSize + 1000);
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testSeekUnderflow(BufferInterface $buffer): void
     {
         $this->expectException(\OutOfRangeException::class);
         $buffer->seek(static::$bufferSize + 1000);
     }
 
-    /**
-     * @dataProvider buffersDataProvider
-     */
+    #[DataProvider('buffersDataProvider')]
     public function testSeekable(BufferInterface $buffer): void
     {
         $needle = [];

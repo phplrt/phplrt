@@ -6,12 +6,11 @@ namespace Phplrt\Source\Tests\Unit;
 
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class FileTest extends TestCase
 {
-    /**
-     * @dataProvider provider
-     */
+    #[DataProvider('provider')]
     public function testSources(\Closure $factory): void
     {
         $readable = $factory();
@@ -19,9 +18,7 @@ class FileTest extends TestCase
         $this->assertSame($this->getSources(), $readable->getContents());
     }
 
-    /**
-     * @dataProvider provider
-     */
+    #[DataProvider('provider')]
     public function testCloneable(\Closure $factory): void
     {
         $readable = $factory();
@@ -29,9 +26,7 @@ class FileTest extends TestCase
         $this->assertSame($this->getSources(), (clone $readable)->getContents());
     }
 
-    /**
-     * @dataProvider provider
-     */
+    #[DataProvider('provider')]
     public function testSerializable(\Closure $factory): void
     {
         $readable = $factory();
@@ -48,9 +43,7 @@ class FileTest extends TestCase
         return \array_filter(static::provider(), $filter);
     }
 
-    /**
-     * @dataProvider filesDataProvider
-     */
+    #[DataProvider('filesDataProvider')]
     public function testPathname(\Closure $factory): void
     {
         /** @var ReadableInterface $readable */

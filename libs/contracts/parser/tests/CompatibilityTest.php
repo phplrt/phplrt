@@ -17,18 +17,6 @@ class CompatibilityTest extends TestCase
         self::expectNotToPerformAssertions();
 
         new class () implements ParserInterface {
-            public function parse($source): iterable {}
-        };
-    }
-
-    /**
-     * @requires PHP 8.0
-     */
-    public function testParserWithMixedCompatibility(): void
-    {
-        self::expectNotToPerformAssertions();
-
-        new class () implements ParserInterface {
             public function parse(mixed $source): iterable {}
         };
     }
