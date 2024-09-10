@@ -386,9 +386,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      */
     private function reduceUnknownToken(array $tokens): TokenInterface
     {
-        $concat = static function (string $data, TokenInterface $token): string {
-            return $data . $token->getValue();
-        };
+        $concat = static fn(string $data, TokenInterface $token): string => $data . $token->getValue();
 
         $value = \array_reduce($tokens, $concat, '');
 

@@ -360,12 +360,10 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
         return \array_values($tokens);
     }
 
-    private function next(Context $context)
+    private function next(Context $context): mixed
     {
         if ($this->step !== null) {
-            return ($this->step)($context, function () use ($context) {
-                return $this->runNextStep($context);
-            });
+            return ($this->step)($context, fn($context) => $this->runNextStep($context));
         }
 
         return $this->runNextStep($context);
@@ -445,7 +443,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *
      * Typically used in conjunction with the "tolerant" mode of the parser.
      *
-     * ```php
+     * ```
      *  $parser = new Parser(..., [Parser::CONFIG_ALLOW_TRAILING_TOKENS => true]);
      *  $parser->parse('...');
      *
