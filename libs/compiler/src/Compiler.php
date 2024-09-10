@@ -29,7 +29,7 @@ use Phplrt\Visitor\TraverserInterface;
 /**
  * @template-implements ParserInterface<Node>
  */
-class Compiler implements CompilerInterface, ParserInterface
+class Compiler implements CompilerInterface, ParserInterface, \Stringable
 {
     private GrammarInterface $grammar;
 

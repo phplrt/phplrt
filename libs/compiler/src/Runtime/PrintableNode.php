@@ -11,7 +11,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler\Runtime
  */
-final class PrintableNode implements NodeInterface
+final class PrintableNode implements NodeInterface, \Stringable
 {
     /**
      * @var int<0, max>
