@@ -23,24 +23,12 @@ class Multistate implements PositionalLexerInterface
      */
     private array $states = [];
 
-    /**
-     * @var array-key|null
-     */
-    private $state;
-
-    /**
-     * @var array<non-empty-string|int<0, max>, array<non-empty-string, non-empty-string|int<0, max>>>
-     */
-    private array $transitions = [];
-
     private SourceFactoryInterface $sources;
 
     private HandlerInterface $onEndOfInput;
 
     /**
      * @param array<array-key, PositionalLexerInterface> $states
-     * @param array<array-key, array<non-empty-string, array-key>> $transitions
-     * @param array-key|null $state
      * @param HandlerInterface $onEndOfInput This setting is responsible for the
      *        operation of the terminal token ({@see EndOfInput}).
      *
@@ -51,17 +39,20 @@ class Multistate implements PositionalLexerInterface
      */
     public function __construct(
         array $states,
-        array $transitions = [],
-        $state = null,
+        /**
+         * @var array<array-key, array<non-empty-string, array-key>>
+         */
+        private array $transitions = [],
+        /**
+         * @var array-key|null
+         */
+        private int|string|null $state = null,
         ?HandlerInterface $onEndOfInput = null,
         ?SourceFactoryInterface $sources = null
     ) {
         foreach ($states as $name => $data) {
             $this->setState($name, $data);
         }
-
-        $this->transitions = $transitions;
-        $this->state = $state;
 
         $this->onEndOfInput = $onEndOfInput ?? new PassthroughWhenTokenHandler(
             Lexer::DEFAULT_EOI_TOKEN_NAME,

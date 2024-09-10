@@ -9,19 +9,16 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class Composite extends Token implements CompositeTokenInterface
 {
     /**
-     * @var array<int, TokenInterface>
-     */
-    private array $children = [];
-
-    /**
      * @param array-key $name
      * @param int<0, max> $offset
      * @param array<int, TokenInterface> $children
      */
-    public function __construct($name, string $value, int $offset, array $children)
-    {
-        $this->children = $children;
-
+    public function __construct(
+        string|int $name,
+        string $value,
+        int $offset,
+        private array $children,
+    ) {
         parent::__construct($name, $value, $offset);
     }
 

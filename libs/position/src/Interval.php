@@ -14,18 +14,13 @@ final class Interval implements IntervalInterface
 {
     use IntervalFactoryTrait;
 
-    private PositionInterface $from;
-
-    private PositionInterface $to;
-
-    public function __construct(PositionInterface $from, PositionInterface $to)
-    {
+    public function __construct(
+        private PositionInterface $from,
+        private PositionInterface $to,
+    ) {
         trigger_deprecation('phplrt/position', '3.4', <<<'MSG'
             Using "%s::class" is deprecated.
             MSG, self::class);
-
-        $this->from = $from;
-        $this->to = $to;
     }
 
     public function getFrom(): PositionInterface

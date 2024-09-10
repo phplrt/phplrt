@@ -47,17 +47,11 @@ namespace Phplrt\Visitor;
 class Traverser implements TraverserInterface
 {
     /**
-     * @var list<VisitorInterface>
-     */
-    private array $visitors = [];
-
-    /**
      * @param list<VisitorInterface> $visitors
      */
-    final public function __construct(array $visitors = [])
-    {
-        $this->visitors = $visitors;
-    }
+    final public function __construct(
+        private array $visitors = [],
+    ) {}
 
     public static function through(VisitorInterface ...$visitors): self
     {

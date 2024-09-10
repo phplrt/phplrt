@@ -12,18 +12,12 @@ namespace Phplrt\Compiler\Ast\Stmt;
  */
 class AlternationStmt extends Statement
 {
-    /**
-     * @var array<Statement>
-     */
-    public array $statements = [];
-
-    /**
-     * @param array<Statement> $statements
-     */
-    public function __construct(array $statements)
-    {
-        $this->statements = $statements;
-    }
+    public function __construct(
+        /**
+         * @var array<array-key, Statement>
+         */
+        public array $statements,
+    ) {}
 
     /**
      * @return \Traversable<non-empty-string, array<Statement>>

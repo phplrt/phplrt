@@ -12,21 +12,15 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  */
 class Lexeme extends Terminal
 {
-    /**
-     * @var non-empty-string|int
-     *
-     * @readonly
-     */
-    public $token;
-
-    /**
-     * @param non-empty-string|int $token
-     */
-    public function __construct($token, bool $keep = true)
-    {
+    public function __construct(
+        /**
+         * @readonly
+         * @var non-empty-string|int
+         */
+        public string|int $token,
+        bool $keep = true,
+    ) {
         parent::__construct($keep);
-
-        $this->token = $token;
     }
 
     public function reduce(BufferInterface $buffer): ?TokenInterface
