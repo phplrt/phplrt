@@ -7,28 +7,21 @@ namespace Phplrt\Source;
 class VirtualStreamingFile extends Stream implements VirtualFileInterface
 {
     /**
-     * @var non-empty-string
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private string $filename;
-
-    /**
      * @psalm-taint-sink file $filename
-     * @param non-empty-string $filename
      * @param resource $stream
      * @param non-empty-string $algo
      * @param int<1, max> $chunkSize
      */
     public function __construct(
-        string $filename,
-        $stream,
+        /**
+         * @var non-empty-string
+         */
+        private readonly string $filename,
+        mixed $stream,
         string $algo = SourceFactory::DEFAULT_HASH_ALGO,
         int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE
     ) {
         assert($filename !== '', 'Filename must not be empty');
-
-        $this->filename = $filename;
 
         parent::__construct($stream, $algo, $chunkSize);
     }

@@ -22,7 +22,7 @@ class Quantifier extends Node
     /**
      * @var int<0, max>|float
      */
-    public $to;
+    public int|float $to;
 
     /**
      * @param int<0, max> $from

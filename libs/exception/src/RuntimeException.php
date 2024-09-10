@@ -19,7 +19,7 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     private ?ReadableInterface $source = null;
 
     public function __construct(
-        private string $original = '',
+        private readonly string $original = '',
         int $code = 0,
         ?\Throwable $previous = null,
     ) {

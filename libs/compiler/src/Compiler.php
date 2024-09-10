@@ -31,11 +31,11 @@ use Phplrt\Visitor\TraverserInterface;
  */
 class Compiler implements CompilerInterface, ParserInterface, \Stringable
 {
-    private GrammarInterface $grammar;
+    private readonly GrammarInterface $grammar;
 
-    private CompilerContext $analyzer;
+    private readonly CompilerContext $analyzer;
 
-    private TraverserInterface $preloader;
+    private readonly TraverserInterface $preloader;
 
     public function __construct(?GrammarInterface $grammar = null)
     {

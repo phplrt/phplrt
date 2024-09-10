@@ -120,7 +120,7 @@ class Executor implements ExecutorInterface
         /**
          * @var array<array-key, VisitorInterface>
          */
-        private array $visitors = [],
+        private readonly array $visitors = [],
     ) {}
 
     /**

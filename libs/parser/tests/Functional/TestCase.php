@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
         $result = [];
 
         Traverser::through(new class ($result) extends Visitor {
-            private $result;
+            private array $result;
 
             public function __construct(array &$result)
             {

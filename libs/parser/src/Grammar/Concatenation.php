@@ -13,13 +13,9 @@ class Concatenation extends Production
 {
     public function __construct(
         /**
-         * @readonly
-         *
-         * @psalm-readonly-allow-private-mutation
-         *
          * @var list<array-key>
          */
-        public array $sequence,
+        public readonly array $sequence,
     ) {}
 
     public function getTerminals(array $rules): iterable

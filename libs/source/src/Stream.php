@@ -15,42 +15,27 @@ class Stream extends Readable
      * reading the data.
      *
      * @var int<0, max>
-     *
-     * @psalm-readonly-allow-private-mutation
      */
-    private int $offset;
+    private readonly int $offset;
 
-    /**
-     * @var resource
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private $stream;
-
-    /**
-     * @var non-empty-string
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private string $algo = SourceFactory::DEFAULT_HASH_ALGO;
-
-    /**
-     * @var int<1, max>
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE;
-
-    /**
-     * @param resource $stream
-     * @param non-empty-string $algo hashing algorithm for the source
-     * @param int<1, max> $chunkSize the chunk size used while non-blocking
-     *        reading the file inside the {@see \Fiber}
-     */
     public function __construct(
-        $stream,
-        string $algo = SourceFactory::DEFAULT_HASH_ALGO,
-        int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE
+        /**
+         * @var resource
+         */
+        private readonly mixed $stream,
+        /**
+         * Hashing algorithm for the source.
+         *
+         * @var non-empty-string
+         */
+        private readonly string $algo = SourceFactory::DEFAULT_HASH_ALGO,
+        /**
+         * The chunk size used while non-blocking reading the file inside
+         * the {@see \Fiber}.
+         *
+         * @var int<1, max>
+         */
+        private readonly int $chunkSize = SourceFactory::DEFAULT_CHUNK_SIZE
     ) {
         assert(\is_resource($stream), 'Stream argument must be a valid resource stream');
         assert($algo !== '', 'Hashing algorithm name must not be empty');
@@ -58,18 +43,12 @@ class Stream extends Readable
 
         /** @psalm-suppress PropertyTypeCoercion */
         $this->offset = (int) \ftell($stream);
-        $this->chunkSize = $chunkSize;
-        $this->algo = $algo;
-        $this->stream = $stream;
     }
 
     public function getContents(): string
     {
         try {
-            if (\PHP_MAJOR_VERSION >= 8
-                && \PHP_MINOR_VERSION >= 1
-                && \Fiber::getCurrent() !== null
-            ) {
+            if (\Fiber::getCurrent() !== null) {
                 return $this->asyncGetContents();
             }
 

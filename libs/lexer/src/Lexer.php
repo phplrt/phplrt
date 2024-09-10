@@ -53,10 +53,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
 
     private HandlerInterface $onEndOfInput;
 
-    /**
-     * @readonly
-     */
-    private SourceFactoryInterface $sources;
+    private readonly SourceFactoryInterface $sources;
 
     /**
      * @param HandlerInterface $onUnknownToken This setting is responsible for
@@ -107,16 +104,12 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
          * parameter), otherwise it makes no sense.
          *
          * @var non-empty-string
-         *
-         * @readonly
          */
-        private string $unknown = Lexer::DEFAULT_UNKNOWN_TOKEN_NAME,
+        private readonly string $unknown = Lexer::DEFAULT_UNKNOWN_TOKEN_NAME,
         /**
          * @var non-empty-string
-         *
-         * @readonly
          */
-        private string $eoi = Lexer::DEFAULT_EOI_TOKEN_NAME,
+        private readonly string $eoi = Lexer::DEFAULT_EOI_TOKEN_NAME,
         ?SourceFactoryInterface $sources = null,
     ) {
         $this->driver = $driver ?? new Markers(new MarkersCompiler(), $unknown);

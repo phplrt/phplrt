@@ -26,9 +26,9 @@ class ErrorInformationRenderer
      */
     public const DEFAULT_HIGHLIGHT_CHAR = '^';
 
-    private PositionInterface $position;
+    private readonly PositionInterface $position;
 
-    private LineReader $reader;
+    private readonly LineReader $reader;
 
     private string $sourceTemplate = self::DEFAULT_SOURCE_TEMPLATE;
 
@@ -38,7 +38,7 @@ class ErrorInformationRenderer
 
     public function __construct(
         ReadableInterface $source,
-        private TokenInterface $token,
+        private readonly TokenInterface $token,
     ) {
         $this->position = Position::fromOffset($source, $this->token->getOffset());
 

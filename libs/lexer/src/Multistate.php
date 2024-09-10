@@ -23,9 +23,9 @@ class Multistate implements PositionalLexerInterface
      */
     private array $states = [];
 
-    private SourceFactoryInterface $sources;
+    private readonly SourceFactoryInterface $sources;
 
-    private HandlerInterface $onEndOfInput;
+    private readonly HandlerInterface $onEndOfInput;
 
     /**
      * @param array<array-key, PositionalLexerInterface> $states

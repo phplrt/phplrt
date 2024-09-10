@@ -17,7 +17,7 @@ class IncludeExpr extends Expression
     /**
      * @var non-empty-string
      */
-    private string $target;
+    private readonly string $target;
 
     /**
      * @param non-empty-string $file

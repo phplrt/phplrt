@@ -40,52 +40,39 @@ final class SourceFactory implements SourceFactoryInterface
     public const DEFAULT_TEMP_STREAM = 'php://memory';
 
     /**
-     * @var non-empty-string
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    public string $algo = self::DEFAULT_HASH_ALGO;
-
-    /**
-     * @var non-empty-string
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    public string $temp = self::DEFAULT_TEMP_STREAM;
-
-    /**
-     * @var int<1, max>
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    public int $chunkSize = self::DEFAULT_CHUNK_SIZE;
-
-    /**
      * @var list<SourceProviderInterface>
      */
     private array $providers = [];
 
     /**
-     * @param non-empty-string $algo hashing algorithm for the sources
-     * @param non-empty-string $temp the name of the temporary stream, which is
-     *        used as a resource during the reading of the source
-     * @param int<1, max> $chunkSize the chunk size used while non-blocking
-     *        reading the file inside the {@see \Fiber} context
      * @param list<SourceProviderInterface> $providers list of source providers
      */
     public function __construct(
-        string $algo = self::DEFAULT_HASH_ALGO,
-        string $temp = self::DEFAULT_TEMP_STREAM,
-        int $chunkSize = self::DEFAULT_CHUNK_SIZE,
+        /**
+         * Hashing algorithm for the sources.
+         *
+         * @var non-empty-string
+         */
+        public readonly string $algo = self::DEFAULT_HASH_ALGO,
+        /**
+         * The name of the temporary stream, which is used as a resource
+         * during the reading of the source.
+         *
+         * @var non-empty-string
+         */
+        public readonly string $temp = self::DEFAULT_TEMP_STREAM,
+        /**
+         * The chunk size used while non-blocking reading the file
+         * inside the {@see \Fiber} context.
+         *
+         * @var int<1, max>
+         */
+        public readonly int $chunkSize = self::DEFAULT_CHUNK_SIZE,
         iterable $providers = []
     ) {
         assert($algo !== '', 'Hashing algorithm name must not be empty');
         assert($temp !== '', 'Temporary stream name must not be empty');
         assert($chunkSize >= 1, 'Chunk size must be greater than 0');
-
-        $this->chunkSize = $chunkSize;
-        $this->temp = $temp;
-        $this->algo = $algo;
 
         $this->providers = [
             ...$providers,

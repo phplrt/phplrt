@@ -65,20 +65,12 @@ class Context implements ContextInterface
     public function __construct(
         /**
          * Contains a buffer of tokens that were collected from lexical analysis.
-         *
-         * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
-         *
-         * @psalm-readonly-allow-private-mutation
          */
-        public BufferInterface $buffer,
+        public readonly BufferInterface $buffer,
         /**
          * Contains information about the processed source.
-         *
-         * @readonly marked as readonly since phplrt 3.4 and will be readonly since 4.0
-         *
-         * @psalm-readonly-allow-private-mutation
          */
-        public ReadableInterface $source,
+        public readonly ReadableInterface $source,
         /**
          * Contains the identifier of the current state of the parser.
          *

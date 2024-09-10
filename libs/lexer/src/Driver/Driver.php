@@ -20,7 +20,7 @@ abstract class Driver implements DriverInterface
     private ?string $pattern = null;
 
     public function __construct(
-        private CompilerInterface $compiler,
+        private readonly CompilerInterface $compiler,
     ) {}
 
     public function reset(): void

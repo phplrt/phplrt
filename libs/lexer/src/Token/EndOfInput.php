@@ -25,8 +25,8 @@ final class EndOfInput extends BaseToken
      * @param array-key $name
      */
     public function __construct(
-        private int $offset = 0,
-        private string|int $name = self::DEFAULT_TOKEN_NAME,
+        private readonly int $offset = 0,
+        private readonly string|int $name = self::DEFAULT_TOKEN_NAME,
     ) {}
 
     public function getName(): string

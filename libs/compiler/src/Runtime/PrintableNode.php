@@ -19,8 +19,8 @@ final class PrintableNode implements NodeInterface, \Stringable
      * @param array<array-key, PrintableNode|TokenInterface> $children
      */
     public function __construct(
-        private int $offset,
-        private string $state,
+        private readonly int $offset,
+        private readonly string $state,
         public array $children,
     ) {}
 

@@ -10,7 +10,7 @@ use Phplrt\Lexer\Token\Composite;
 class PP2PHPLexer implements PositionalLexerInterface
 {
     public function __construct(
-        private PhpLexer $lexer,
+        private readonly PhpLexer $lexer,
     ) {}
 
     public function lex($source, int $offset = 0): iterable

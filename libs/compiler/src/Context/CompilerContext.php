@@ -72,7 +72,7 @@ class CompilerContext extends Visitor
     /**
      * @var non-empty-string|int|null
      */
-    public $initial;
+    public string|int|null $initial = null;
 
     /**
      * @var int<0, max>
@@ -85,7 +85,7 @@ class CompilerContext extends Visitor
     private array $aliases = [];
 
     public function __construct(
-        private IdCollection $ids,
+        private readonly IdCollection $ids,
     ) {}
 
     /**

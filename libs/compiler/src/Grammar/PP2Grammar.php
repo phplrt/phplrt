@@ -35,7 +35,7 @@ use Phplrt\Parser\ParserConfigsInterface;
 
 class PP2Grammar implements GrammarInterface, BuilderInterface
 {
-    private Parser $runtime;
+    private readonly Parser $runtime;
 
     /**
      * @var array<array-key, \Closure>

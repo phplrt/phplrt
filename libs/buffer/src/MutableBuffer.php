@@ -16,7 +16,7 @@ class MutableBuffer implements BufferInterface
     private array $overrides = [];
 
     public function __construct(
-        private BufferInterface $parent,
+        private readonly BufferInterface $parent,
     ) {}
 
     /**

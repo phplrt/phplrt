@@ -12,7 +12,7 @@ final class PhpRuleInstantiation extends RuleInstantiation
     /**
      * @var class-string<RuleInterface>
      */
-    private string $class;
+    private readonly string $class;
 
     public function __construct(RuleInterface $rule)
     {

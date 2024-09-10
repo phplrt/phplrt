@@ -8,10 +8,8 @@ final class Factory implements SelectorInterface
 {
     /**
      * @var list<SelectorInterface>
-     *
-     * @readonly
      */
-    private array $selectors;
+    private readonly array $selectors;
 
     /**
      * Factory "prepared" state.

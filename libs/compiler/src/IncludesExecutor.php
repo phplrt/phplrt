@@ -27,7 +27,7 @@ class IncludesExecutor extends Visitor
      * @param \Closure(non-empty-string):iterable<Node> $loader
      */
     public function __construct(
-        private \Closure $loader,
+        private readonly \Closure $loader,
     ) {}
 
     /**

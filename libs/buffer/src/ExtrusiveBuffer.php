@@ -28,7 +28,7 @@ class ExtrusiveBuffer extends LazyBuffer
         /**
          * @var int<1, max>
          */
-        private int $size = self::BUFFER_DEFAULT_SIZE,
+        private readonly int $size = self::BUFFER_DEFAULT_SIZE,
     ) {
         /** @psalm-suppress RedundantCondition */
         assert($this->size > 0, 'Buffer size must be greater than 0, but ' . $this->size . ' passed');

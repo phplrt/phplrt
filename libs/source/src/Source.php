@@ -25,27 +25,20 @@ class Source extends Readable implements PreferContentReadingInterface
      * @psalm-taint-sink file $temp
      */
     public function __construct(
-        /**
-         * @psalm-readonly-allow-private-mutation
-         */
-        private string $content,
+        private readonly string $content,
         /**
          * Hashing algorithm for the source.
          *
          * @var non-empty-string
-         *
-         * @psalm-readonly-allow-private-mutation
          */
-        private string $algo = SourceFactory::DEFAULT_HASH_ALGO,
+        private readonly string $algo = SourceFactory::DEFAULT_HASH_ALGO,
         /**
          * The name of the temporary stream, which is used as a resource during
          * the reading of the source.
          *
          * @var non-empty-string
-         *
-         * @psalm-readonly-allow-private-mutation
          */
-        private string $temp = SourceFactory::DEFAULT_TEMP_STREAM
+        private readonly string $temp = SourceFactory::DEFAULT_TEMP_STREAM
     ) {
         assert($algo !== '', 'Hashing algorithm name must not be empty');
         assert($temp !== '', 'Temporary stream name must not be empty');
