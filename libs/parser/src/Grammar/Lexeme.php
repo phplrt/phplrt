@@ -15,6 +15,7 @@ class Lexeme extends Terminal
     public function __construct(
         /**
          * @readonly
+         *
          * @var non-empty-string|int
          */
         public string|int $token,

@@ -120,7 +120,7 @@ class Context implements ContextInterface
         return $this->lastProcessedToken;
     }
 
-    public function getState()
+    public function getState(): int|string
     {
         return $this->state;
     }

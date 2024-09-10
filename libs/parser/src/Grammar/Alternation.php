@@ -14,7 +14,9 @@ class Alternation extends Production
     public function __construct(
         /**
          * @readonly
+         *
          * @psalm-readonly-allow-private-mutation
+         *
          * @var list<array-key>
          */
         public array $sequence,

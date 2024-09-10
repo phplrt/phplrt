@@ -40,6 +40,7 @@ final class XdebugSelector implements SelectorInterface
     public function __construct(
         /**
          * @readonly
+         *
          * @var int<0, max>
          */
         private int $expectedRecursionDepth = self::DEFAULT_EXPECTED_RECURSION_DEPTH

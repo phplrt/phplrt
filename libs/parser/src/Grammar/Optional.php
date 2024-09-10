@@ -14,7 +14,9 @@ class Optional extends Production
     public function __construct(
         /**
          * @readonly
+         *
          * @psalm-readonly-allow-private-mutation
+         *
          * @var array-key
          */
         public string|int $rule,

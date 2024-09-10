@@ -27,13 +27,17 @@ class Repetition extends Production
     public function __construct(
         /**
          * @readonly
+         *
          * @psalm-readonly-allow-private-mutation
+         *
          * @var array-key
          */
         public int|string $rule,
         /**
          * @readonly
+         *
          * @psalm-readonly-allow-private-mutation
+         *
          * @var int<0, max>
          */
         public int $gte = 0,
