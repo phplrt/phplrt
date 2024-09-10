@@ -51,9 +51,7 @@ class Compiler implements CompilerInterface, ParserInterface
     private function bootPreloader(IdCollection $ids): TraverserInterface
     {
         return (new Traverser())
-            ->with(new IncludesExecutor(function (string $pathname): iterable {
-                return $this->run(File::fromPathname($pathname));
-            }))
+            ->with(new IncludesExecutor(fn(string $pathname): iterable => $this->run(File::fromPathname($pathname))))
             ->with($ids);
     }
 

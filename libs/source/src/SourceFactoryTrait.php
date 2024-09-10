@@ -117,7 +117,7 @@ trait SourceFactoryTrait
         trigger_deprecation('phplrt/source', '3.4', <<<'MSG'
             Using "%s::fromPsrStream($stream)" with %s argument is deprecated,
             use "%1$s::fromResource($stream->detach())" instead.
-            MSG, static::class, \get_class($stream));
+            MSG, static::class, $stream::class);
 
         return static::fromResource($stream->detach(), $pathname);
     }
