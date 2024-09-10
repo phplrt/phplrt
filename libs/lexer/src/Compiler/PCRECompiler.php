@@ -293,6 +293,6 @@ abstract class PCRECompiler implements CompilerInterface
         $message = \preg_replace('/([\w_]+\(\):\h+)/', '', $message);
         $message = \preg_replace('/\h*at\h+offset\h+\d+/', '', $message);
 
-        return \ucfirst($message) . (\is_string($token) ? $suffix : '');
+        return \ucfirst((string) $message) . (\is_string($token) ? $suffix : '');
     }
 }

@@ -77,7 +77,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
                 $delegate = \reset($delegates);
 
                 if ($delegate->getName() === 'T_PHP_CODE') {
-                    return new DelegateStmt(\trim($delegate->getValue()));
+                    return new DelegateStmt(\trim((string) $delegate->getValue()));
                 }
 
                 return new ClassDelegateStmt($delegate->getValue());
