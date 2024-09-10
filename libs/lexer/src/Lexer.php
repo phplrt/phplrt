@@ -31,19 +31,15 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      * Default token name for unidentified tokens.
      *
      * @var non-empty-string
-     *
-     * @final
      */
-    public const DEFAULT_UNKNOWN_TOKEN_NAME = UnknownToken::DEFAULT_TOKEN_NAME;
+    final public const DEFAULT_UNKNOWN_TOKEN_NAME = UnknownToken::DEFAULT_TOKEN_NAME;
 
     /**
      * Default token name for end of input.
      *
      * @var non-empty-string
-     *
-     * @final
      */
-    public const DEFAULT_EOI_TOKEN_NAME = EndOfInput::DEFAULT_TOKEN_NAME;
+    final public const DEFAULT_EOI_TOKEN_NAME = EndOfInput::DEFAULT_TOKEN_NAME;
 
     private DriverInterface $driver;
 
@@ -296,7 +292,7 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
      */
-    public function lex($source, int $offset = 0): iterable
+    public function lex(mixed $source, int $offset = 0): iterable
     {
         try {
             $source = $this->sources->create($source);

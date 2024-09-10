@@ -201,7 +201,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *
      * @deprecated since phplrt 3.4 and will be removed in 4.0
      */
-    public function startsAt($initial): self
+    public function startsAt(string|int $initial): self
     {
         trigger_deprecation('phplrt/parser', '3.4', <<<'MSG'
             Using "%s::startsAt(array-key)" is deprecated, please use "%1$s::__construct()" instead.

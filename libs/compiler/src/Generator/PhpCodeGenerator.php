@@ -23,7 +23,7 @@ final class PhpCodeGenerator extends CodeGenerator
 
     public function __construct(
         CompilerContext $analyzer,
-        ?PrinterInterface $printer = null
+        ?PrinterInterface $printer = null,
     ) {
         $this->printer = $printer ?? new PhpPrinter();
 
