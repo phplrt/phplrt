@@ -350,7 +350,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
     private function next(Context $context): mixed
     {
         if ($this->step !== null) {
-            return ($this->step)($context, fn($context) => $this->runNextStep($context));
+            return ($this->step)($context, fn($context): mixed => $this->runNextStep($context));
         }
 
         return $this->runNextStep($context);
