@@ -51,12 +51,12 @@ abstract class RuntimeException extends \RuntimeException implements RuntimeExce
     {
         $file = $this->getSource();
 
-        if ($file instanceof FileInterface && $this->token) {
+        if ($file instanceof FileInterface && $this->token !== null) {
             $this->file = $file->getPathname();
             $this->line = $this->getPosition()->getLine();
         }
 
-        if ($this->source && $this->token) {
+        if ($this->source !== null && $this->token !== null) {
             $this->message = $this->original . $this->getMessageSuffix($this->source, $this->token);
         }
     }

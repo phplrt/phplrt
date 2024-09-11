@@ -319,9 +319,13 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
                     continue;
                 }
 
-                if ($unknown !== [] && ($result = $this->handleUnknownToken($source, $unknown))) {
-                    yield $result;
-                    $unknown = [];
+                if ($unknown !== []) {
+                    $result = $this->handleUnknownToken($source, $unknown);
+
+                    if ($result !== null) {
+                        yield $result;
+                        $unknown = [];
+                    }
                 }
 
                 yield $token;
@@ -330,11 +334,17 @@ class Lexer implements PositionalLexerInterface, MutableLexerInterface
             throw LexerException::fromInternalError($e);
         }
 
-        if ($unknown !== [] && $result = $this->handleUnknownToken($source, $unknown)) {
-            yield $token = $result;
+        if ($unknown !== []) {
+            $result = $this->handleUnknownToken($source, $unknown);
+
+            if ($result !== null) {
+                yield $token = $result;
+            }
         }
 
-        if (($eoi = $this->handleEoiToken($source, $token ?? null)) !== null) {
+        $eoi = $this->handleEoiToken($source, $token ?? null);
+
+        if ($eoi !== null) {
             yield $eoi;
         }
     }

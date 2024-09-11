@@ -26,7 +26,7 @@ class Quantifier extends Node
      * @param int<0, max> $from
      * @param float|int<0, max> $to
      */
-    public function __construct(int $from, float $to)
+    public function __construct(int $from, float|int $to)
     {
         assert($from >= 0, 'Minimal repetition times must be greater or equal than 0');
         assert($to >= 0, 'Maximum repetition times must be greater or equal than 0');

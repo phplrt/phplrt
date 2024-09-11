@@ -131,7 +131,7 @@ class Stream extends Readable
 
         $meta = @\stream_get_meta_data($this->stream);
 
-        if (\error_get_last()) {
+        if (\error_get_last() !== null) {
             return [];
         }
 

@@ -99,7 +99,7 @@ class CompilerContext extends Visitor
 
             $this->tokens[$state][$node->name] = $node->value;
 
-            if ($node->next) {
+            if ($node->next !== null) {
                 $this->transitions[$state][$node->name] = $node->next;
             }
 
@@ -245,8 +245,11 @@ class CompilerContext extends Visitor
         foreach ($choice->statements as $stmt) {
             $choices[] = $this->map($this->reduce($stmt));
 
-            /** @var string $relation */
             foreach (\array_diff_assoc($choices, \array_unique($choices)) as $relation) {
+                if (!\is_scalar($relation)) {
+                    $relation = \get_debug_type($relation);
+                }
+
                 $error = 'The alternation (OR condition) contains excess repeating relation %s';
                 throw new GrammarException(\sprintf($error, $relation), $stmt->file, $stmt->offset);
             }

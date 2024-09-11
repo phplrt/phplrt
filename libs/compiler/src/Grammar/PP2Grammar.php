@@ -83,7 +83,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
             14 => static fn(Composite $include): NodeInterface => new IncludeExpr($include[0]->getValue()),
             13 => static fn(Composite $pragma): NodeInterface => new PragmaDef($pragma[0]->getValue(), $pragma[1]->getValue()),
             15 => static function (Composite $token): NodeInterface {
-                /** @var TokenInterface[] $token */
+                /** @var iterable<TokenInterface> $token */
                 [$state, $name, $pattern, $next] = $token;
 
                 $result = new TokenDef($name->getValue(), $pattern->getValue());
@@ -93,7 +93,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
                     $result->state = $state->getValue();
                 }
 
-                if ($next) {
+                if ($next !== null) {
                     $result->next = $next->getValue();
                 }
 

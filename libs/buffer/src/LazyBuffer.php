@@ -99,7 +99,7 @@ class LazyBuffer extends Buffer
         if (!isset($this->buffer[$this->current])) {
             $current = $this->stream->current();
 
-            if ($current) {
+            if ((bool) $current) {
                 $this->buffer[$this->current] = $current;
                 $this->stream->next();
 

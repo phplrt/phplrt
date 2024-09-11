@@ -268,7 +268,7 @@ abstract class PCRECompiler implements CompilerInterface
 
             @\preg_match_all($this->wrap($pattern), '', $matches, $flags);
 
-            if ($error = \error_get_last()) {
+            if (($error = \error_get_last()) !== null) {
                 throw new CompilationException($this->formatException($error['message'], $original));
             }
         }
