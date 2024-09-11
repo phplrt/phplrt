@@ -129,9 +129,11 @@ class CompilerContext extends Visitor
             switch ($node->name) {
                 case self::PRAGMA_ROOT:
                     $this->initial = $this->name($node->value);
+
                     return;
                 case self::PRAGMA_LEXER_CHECK_UNKNOWN_TOKENS:
                     $this->checkUnknownTokens = (bool) $node->value;
+
                     return;
                 default:
                     throw new GrammarException(
