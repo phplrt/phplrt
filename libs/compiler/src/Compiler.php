@@ -78,7 +78,7 @@ class Compiler implements CompilerInterface, ParserInterface, \Stringable
     /**
      * @throws \Throwable
      */
-    public function parse($source): iterable
+    public function parse(mixed $source): iterable
     {
         $lexer = $this->createLexer();
 
@@ -105,7 +105,7 @@ class Compiler implements CompilerInterface, ParserInterface, \Stringable
         return new Multistate($states, $this->analyzer->transitions);
     }
 
-    public function load($source): self
+    public function load(mixed $source): self
     {
         /** @var iterable<NodeInterface> $ast */
         $ast = $this->run(File::new($source));

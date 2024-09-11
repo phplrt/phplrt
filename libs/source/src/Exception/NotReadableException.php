@@ -81,7 +81,7 @@ class NotReadableException extends NotAccessibleException
     /**
      * @return static
      */
-    public static function fromInvalidResource($stream): self
+    public static function fromInvalidResource(mixed $stream): self
     {
         $message = 'The "%s" is not valid resource stream';
         $message = \sprintf($message, \str_replace("\0", '\0', \get_debug_type($stream)));
@@ -94,7 +94,7 @@ class NotReadableException extends NotAccessibleException
      *
      * @return static
      */
-    public static function fromInvalidStream($stream): self
+    public static function fromInvalidStream(mixed $stream): self
     {
         assert(\is_resource($stream));
 

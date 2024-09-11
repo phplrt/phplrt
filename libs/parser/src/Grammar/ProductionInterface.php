@@ -22,7 +22,7 @@ interface ProductionInterface extends RuleInterface
      * An example of "Optional" (like ebnf "Some?") rule implementation, where
      * ebnf "Some" defined as state 42
      *
-     * <code>
+     * ```
      *  public function reduce(BufferInterface $buffer, \Closure $reduce)
      *  {
      *      // When result of state 42 return non-null result then we
@@ -35,9 +35,9 @@ interface ProductionInterface extends RuleInterface
      *      // An "Optional" rule always returns a non-null result.
      *      return [];
      *  }
-     * </code>
+     * ```
      *
      * @return mixed|iterable|null
      */
-    public function reduce(BufferInterface $buffer, \Closure $reduce);
+    public function reduce(BufferInterface $buffer, \Closure $reduce): mixed;
 }

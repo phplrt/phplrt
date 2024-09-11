@@ -26,9 +26,8 @@ abstract class TestCase extends BaseTestCase
 
             /**
              * @param NodeInterface|AstNode $node
-             * @return mixed|void|null
              */
-            public function enter(NodeInterface $node)
+            public function enter(NodeInterface $node): void
             {
                 $this->result[] = [$node->name, \iterator_count($node->getIterator())];
             }

@@ -14,7 +14,7 @@ interface CompilerInterface
      *
      * @return $this
      */
-    public function load($source): self;
+    public function load(mixed $source): self;
 
     /**
      * Returns loaded context.

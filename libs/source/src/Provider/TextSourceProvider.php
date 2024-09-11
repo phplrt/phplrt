@@ -13,7 +13,7 @@ final class TextSourceProvider implements SourceProviderInterface
         private readonly SourceFactory $parent,
     ) {}
 
-    public function create($source): ?ReadableInterface
+    public function create(mixed $source): ?ReadableInterface
     {
         if (!\is_string($source)) {
             return null;

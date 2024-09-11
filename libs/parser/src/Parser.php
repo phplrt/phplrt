@@ -177,7 +177,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *
      * @return array-key
      */
-    private static function bootInitialRule(array $options, array $grammar)
+    private static function bootInitialRule(array $options, array $grammar): int|string
     {
         $initial = $options[self::CONFIG_INITIAL_RULE] ?? null;
 
@@ -243,7 +243,7 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
      *         starting the parsing and indicates problems in the analyzed
      *         source
      */
-    public function parse($source, array $options = []): iterable
+    public function parse(mixed $source, array $options = []): iterable
     {
         if ($this->rules === []) {
             return [];
@@ -356,14 +356,14 @@ final class Parser implements ConfigurableParserInterface, ParserConfigsInterfac
         return $this->runNextStep($context);
     }
 
-    private function runNextStep(Context $context)
+    private function runNextStep(Context $context): mixed
     {
         $rule = $context->rule = $this->rules[$context->state];
         $result = null;
 
         switch (true) {
             case $rule instanceof ProductionInterface:
-                $result = $rule->reduce($context->buffer, function ($state) use ($context) {
+                $result = $rule->reduce($context->buffer, function (int|string $state) use ($context) {
                     // Keep current state
                     $beforeState = $context->state;
                     $beforeLastProcessedToken = $context->lastProcessedToken;

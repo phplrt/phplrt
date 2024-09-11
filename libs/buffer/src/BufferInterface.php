@@ -20,7 +20,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @param int<0, max> $offset
      */
-    public function seek($offset): void;
+    public function seek(int $offset): void;
 
     /**
      * Return the current token.

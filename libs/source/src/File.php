@@ -93,7 +93,7 @@ class File extends Readable implements FileInterface
     /**
      * @throws NotReadableException
      */
-    public function getStream()
+    public function getStream(): mixed
     {
         $stream = \fopen($this->filename, 'rb');
 

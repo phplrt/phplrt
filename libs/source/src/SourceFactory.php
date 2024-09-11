@@ -109,7 +109,7 @@ final class SourceFactory implements SourceFactoryInterface
         return $self;
     }
 
-    public function create($source): ReadableInterface
+    public function create(mixed $source): ReadableInterface
     {
         foreach ($this->providers as $provider) {
             $readable = $provider->create($source);
@@ -153,7 +153,7 @@ final class SourceFactory implements SourceFactoryInterface
     /**
      * @throws NotReadableException
      */
-    public function createFromStream($stream, ?string $name = null): ReadableInterface
+    public function createFromStream(mixed $stream, ?string $name = null): ReadableInterface
     {
         assert($name !== '', 'Name must not be empty');
 

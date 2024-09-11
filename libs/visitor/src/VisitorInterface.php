@@ -19,11 +19,15 @@ interface VisitorInterface
 
     /**
      * Called when entering a node.
+     *
+     * @return mixed|void will be replaced by the "mixed" type since phplrt 4.0
      */
     public function enter(NodeInterface $node);
 
     /**
      * Called when leaving a node.
+     *
+     * @return mixed|void will be replaced by the "mixed" type since phplrt 4.0
      */
     public function leave(NodeInterface $node);
 

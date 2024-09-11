@@ -147,7 +147,7 @@ class CompilerContext extends Visitor
      *
      * @return non-empty-string|int<0, max>
      */
-    private function name(string $rule)
+    private function name(string $rule): string|int
     {
         if ($this->ids->rule($rule) === false) {
             return $this->aliases[$rule] ??= $this->counter++;
@@ -161,7 +161,7 @@ class CompilerContext extends Visitor
      *
      * @return non-empty-string|int<0, max>
      */
-    private function register(RuleInterface $rule, ?string $name = null)
+    private function register(RuleInterface $rule, ?string $name = null): string|int
     {
         if ($name === null) {
             $this->rules[$this->counter] = $rule;
@@ -206,7 +206,7 @@ class CompilerContext extends Visitor
      *
      * @psalm-suppress PossiblyInvalidArgument
      */
-    private function reduce(Statement $statement)
+    private function reduce(Statement $statement): int|string|RuleInterface
     {
         switch (true) {
             case $statement instanceof AlternationStmt:
@@ -270,7 +270,7 @@ class CompilerContext extends Visitor
      *
      * @return RuleInterface|non-empty-string|int<0, max>
      */
-    private function map($rule)
+    private function map(mixed $rule): mixed
     {
         if ($rule instanceof RuleInterface) {
             return $this->register($rule);
@@ -351,7 +351,7 @@ class CompilerContext extends Visitor
      * @throws NotAccessibleException
      * @throws \RuntimeException
      */
-    private function ruleRelation(RuleStmt $rule)
+    private function ruleRelation(RuleStmt $rule): int|string
     {
         if ($this->ids->rule($rule->name) === null) {
             $error = \sprintf('Rule "%s" has not been defined', $rule->name);

@@ -97,7 +97,7 @@ class Stream extends Readable
         return $result;
     }
 
-    public function getStream()
+    public function getStream(): mixed
     {
         return $this->stream;
     }

@@ -54,7 +54,7 @@ class CompatibilityTest extends TestCase
             public function create(mixed $source): ReadableInterface {}
             public function createFromString(string $content = '', ?string $name = null): ReadableInterface {}
             public function createFromFile(string $filename): FileInterface {}
-            public function createFromStream($stream, ?string $name = null): ReadableInterface {}
+            public function createFromStream(mixed $stream, ?string $name = null): ReadableInterface {}
         };
     }
 }

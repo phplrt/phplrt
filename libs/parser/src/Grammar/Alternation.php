@@ -31,7 +31,7 @@ class Alternation extends Production
         return $result;
     }
 
-    public function reduce(BufferInterface $buffer, \Closure $reduce)
+    public function reduce(BufferInterface $buffer, \Closure $reduce): mixed
     {
         $rollback = $buffer->key();
 

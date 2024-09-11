@@ -198,7 +198,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
         ];
     }
 
-    protected function next(Context $context, \Closure $next)
+    protected function next(Context $context, \Closure $next): mixed
     {
         $offset = $context->getToken()->getOffset();
 
@@ -215,7 +215,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     /**
      * @throws \Throwable
      */
-    public function parse($source, array $options = []): iterable
+    public function parse(mixed $source, array $options = []): iterable
     {
         return $this->runtime->parse($source, $options);
     }
@@ -223,7 +223,7 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
     /**
      * @psalm-suppress MixedFunctionCall
      */
-    public function build(Context $context, $result)
+    public function build(Context $context, mixed $result): mixed
     {
         if (isset($this->reducers[$context->getState()])) {
             return $this->reducers[$context->getState()]($result);

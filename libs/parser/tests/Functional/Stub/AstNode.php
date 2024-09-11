@@ -22,7 +22,7 @@ class AstNode implements NodeInterface
         return new \ArrayIterator($this->children);
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value): void
     {
         $this->children[$name] = $value;
     }

@@ -13,7 +13,7 @@ use Phplrt\Parser\Context;
  */
 class PrintableNodeBuilder implements BuilderInterface
 {
-    public function build(Context $context, $result): ?PrintableNode
+    public function build(Context $context, mixed $result): ?PrintableNode
     {
         if (!\is_string($context->getState())) {
             return null;

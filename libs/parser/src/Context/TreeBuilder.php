@@ -30,7 +30,7 @@ class TreeBuilder implements BuilderInterface
         $this->reducers = $reducers;
     }
 
-    public function build(Context $context, $result)
+    public function build(Context $context, mixed $result): mixed
     {
         if (isset($this->reducers[$context->state])) {
             return ($this->reducers[$context->state])($context, $result);

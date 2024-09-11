@@ -44,7 +44,7 @@ class ExtrusiveBuffer extends LazyBuffer
         return $this->size;
     }
 
-    public function seek($offset): void
+    public function seek(int $offset): void
     {
         if ($offset < \array_key_first($this->buffer)) {
             $message = \sprintf(self::ERROR_BUFFER_MEMORY_ALREADY_FREED, $offset, $this->size);

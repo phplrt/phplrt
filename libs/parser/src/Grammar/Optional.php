@@ -27,7 +27,7 @@ class Optional extends Production
         return $rules[$this->rule]->getTerminals($rules);
     }
 
-    public function reduce(BufferInterface $buffer, \Closure $reduce)
+    public function reduce(BufferInterface $buffer, \Closure $reduce): mixed
     {
         $rollback = $buffer->key();
 

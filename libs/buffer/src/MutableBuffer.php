@@ -51,7 +51,7 @@ class MutableBuffer implements BufferInterface
         }
     }
 
-    public function seek($offset): void
+    public function seek(int $offset): void
     {
         $this->parent->seek($offset);
     }

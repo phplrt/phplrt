@@ -18,7 +18,7 @@ trait IntervalFactoryTrait
      *
      * @throws SourceExceptionInterface
      */
-    public static function fromOffset($source, int $offset = 0, int $length = 0): IntervalInterface
+    public static function fromOffset(mixed $source, int $offset = 0, int $length = 0): IntervalInterface
     {
         return new Interval(
             Position::fromOffset($source, $offset),
@@ -33,7 +33,7 @@ trait IntervalFactoryTrait
      *
      * @throws SourceExceptionInterface
      */
-    public static function fromPosition($source, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
+    public static function fromPosition(mixed $source, int $line = 1, int $column = 1, int $length = 0): IntervalInterface
     {
         return new Interval(
             $from = Position::fromPosition($source, $line, $column),

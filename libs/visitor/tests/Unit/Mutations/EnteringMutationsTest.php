@@ -22,7 +22,7 @@ class EnteringMutationsTest extends TestCase
         $this->expectExceptionCode(Executor::ERROR_CODE_ARRAY_ENTERING);
 
         $this->traverse($original = $this->nodes(2), new class () extends Visitor {
-            public function enter(NodeInterface $node)
+            public function enter(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
             }
@@ -36,7 +36,7 @@ class EnteringMutationsTest extends TestCase
         $this->expectExceptionCode(Executor::ERROR_CODE_ARRAY_ENTERING);
 
         $this->traverse($original = $this->node(), new class () extends Visitor {
-            public function enter(NodeInterface $node)
+            public function enter(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
             }
@@ -47,7 +47,7 @@ class EnteringMutationsTest extends TestCase
     public function testUpdateRootsByNodeWhenEntering(): void
     {
         $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
-            public function enter(NodeInterface $node)
+            public function enter(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }
@@ -61,7 +61,7 @@ class EnteringMutationsTest extends TestCase
     public function testUpdateRootByNodeWhenEntering(): void
     {
         $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
-            public function enter(NodeInterface $node)
+            public function enter(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }

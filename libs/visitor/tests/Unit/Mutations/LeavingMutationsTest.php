@@ -18,7 +18,7 @@ class LeavingMutationsTest extends TestCase
     public function testUpdateRootsByArrayWhenLeaving(): void
     {
         $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
-            public function leave(NodeInterface $node)
+            public function leave(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
             }
@@ -34,7 +34,7 @@ class LeavingMutationsTest extends TestCase
         $this->expectException(BadMethodException::class);
 
         $this->traverse($original = $this->node(), new class () extends Visitor {
-            public function leave(NodeInterface $node)
+            public function leave(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? [] : $node;
             }
@@ -45,7 +45,7 @@ class LeavingMutationsTest extends TestCase
     public function testUpdateRootsByNodeWhenLeaving(): void
     {
         $actual = $this->traverse($original = $this->nodes(2), new class () extends Visitor {
-            public function leave(NodeInterface $node)
+            public function leave(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }
@@ -59,7 +59,7 @@ class LeavingMutationsTest extends TestCase
     public function testUpdateRootByNodeWhenLeaving(): void
     {
         $actual = $this->traverse($original = $this->node(), new class () extends Visitor {
-            public function leave(NodeInterface $node)
+            public function leave(NodeInterface $node): mixed
             {
                 return $node instanceof Node && $node->getId() === 0 ? new Node(42) : $node;
             }
