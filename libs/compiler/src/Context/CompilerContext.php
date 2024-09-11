@@ -33,14 +33,19 @@ use Phplrt\Visitor\Visitor;
 class CompilerContext extends Visitor
 {
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const STATE_DEFAULT = 'default';
 
     /**
-     * @var string
+     * @var non-empty-string
      */
     public const PRAGMA_ROOT = 'root';
+
+    /**
+     * @var non-empty-string
+     */
+    public const PRAGMA_LEXER_CHECK_UNKNOWN_TOKENS = 'check_tokens';
 
     /**
      * @var array<RuleInterface>
@@ -73,6 +78,8 @@ class CompilerContext extends Visitor
      * @var non-empty-string|int|null
      */
     public string|int|null $initial = null;
+
+    public bool $checkUnknownTokens = true;
 
     /**
      * @var int<0, max>
@@ -119,12 +126,20 @@ class CompilerContext extends Visitor
     public function leave(NodeInterface $node): void
     {
         if ($node instanceof PragmaDef) {
-            if ($node->name !== self::PRAGMA_ROOT) {
-                $error = 'Unrecognized pragma "%s"';
-                throw new GrammarException(\sprintf($error, $node->name), $node->file, $node->offset);
+            switch ($node->name) {
+                case self::PRAGMA_ROOT:
+                    $this->initial = $this->name($node->value);
+                    return;
+                case self::PRAGMA_LEXER_CHECK_UNKNOWN_TOKENS:
+                    $this->checkUnknownTokens = (bool) $node->value;
+                    return;
+                default:
+                    throw new GrammarException(
+                        message: \sprintf('Unrecognized pragma "%s"', $node->name),
+                        source: $node->file,
+                        offset: $node->offset,
+                    );
             }
-
-            $this->initial = $this->name($node->value);
         }
 
         if ($node instanceof RuleDef) {
@@ -330,7 +345,7 @@ class CompilerContext extends Visitor
      */
     private function tokenRelation(TokenStmt $token): Lexeme
     {
-        if ($this->ids->lexeme($token->name) === null) {
+        if ($this->checkUnknownTokens && $this->ids->lexeme($token->name) === null) {
             $error = \sprintf('Token "%s" has not been defined', $token->name);
 
             throw new GrammarException($error, $token->file, $token->offset);
