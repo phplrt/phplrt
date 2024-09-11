@@ -23,13 +23,10 @@ class LazyBuffer extends Buffer
      */
     public function __construct(iterable $stream)
     {
-        /** @psalm-suppress MixedPropertyTypeCoercion */
         $this->stream = $this->toGenerator($stream);
 
         if ($this->stream->valid()) {
-            /** @psalm-suppress MixedAssignment */
             $this->initial = $this->current = $this->stream->key();
-            /** @psalm-suppress MixedArrayOffset */
             $this->buffer[$this->current] = $this->stream->current();
 
             $this->stream->next();
@@ -113,9 +110,6 @@ class LazyBuffer extends Buffer
         return false;
     }
 
-    /**
-     * @psalm-suppress MixedReturnTypeCoercion
-     */
     public function key(): int
     {
         if (!$this->valid()) {

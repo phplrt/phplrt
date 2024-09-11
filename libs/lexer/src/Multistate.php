@@ -136,8 +136,6 @@ class Multistate implements PositionalLexerInterface
      * @throws LexerRuntimeExceptionInterface an exception that occurs after
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
-     *
-     * @psalm-suppress TypeDoesNotContainType
      */
     public function lex(mixed $source, int $offset = 0): iterable
     {
@@ -173,8 +171,6 @@ class Multistate implements PositionalLexerInterface
             if (!isset($this->states[$state])) {
                 /**
                  * @noinspection IssetArgumentExistenceInspection
-                 *
-                 * @psalm-suppress UndefinedVariable
                  */
                 throw UnexpectedStateException::fromState($state, $source, $token ?? null);
             }
@@ -217,7 +213,6 @@ class Multistate implements PositionalLexerInterface
                         throw EndlessRecursionException::fromState($state, $source, $token);
                     }
 
-                    /** @psalm-suppress UnusedVariable */
                     $completed = false;
 
                     continue 2;

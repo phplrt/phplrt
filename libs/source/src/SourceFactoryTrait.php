@@ -32,8 +32,6 @@ trait SourceFactoryTrait
      *         : ReadableInterface)
      * )
      * @throws SourceExceptionInterface
-     *
-     * @psalm-suppress NoValue : Allow any value
      */
     public static function new(mixed $source): ReadableInterface
     {

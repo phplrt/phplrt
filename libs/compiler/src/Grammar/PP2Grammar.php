@@ -63,8 +63,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
 
     /**
      * @return array<array-key, \Closure>
-     *
-     * @psalm-suppress all
      */
     private function reducers(): array
     {
@@ -220,9 +218,6 @@ class PP2Grammar implements GrammarInterface, BuilderInterface
         return $this->runtime->parse($source, $options);
     }
 
-    /**
-     * @psalm-suppress MixedFunctionCall
-     */
     public function build(Context $context, mixed $result): mixed
     {
         if (isset($this->reducers[$context->getState()])) {

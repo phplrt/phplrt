@@ -7,8 +7,6 @@ namespace Phplrt\Compiler\Ast\Stmt;
 /**
  * @internal this is an internal class, please do not use it in your application code
  * @psalm-internal Phplrt\Compiler
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 class PatternStmt extends Statement
 {
@@ -34,7 +32,6 @@ class PatternStmt extends Statement
     {
         assert($pattern !== '', 'Pattern must not be empty');
 
-        /** @psalm-suppress PropertyTypeCoercion: This replacement cannot make a non-empty string empty */
         $this->pattern = \str_replace('\"', '"', $pattern);
 
         $this->name = $this->getId();

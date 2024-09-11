@@ -50,7 +50,6 @@ class Markers extends Driver
             /** @var non-empty-string $name */
             $name = \array_pop($payload);
 
-            /** @psalm-suppress InvalidArgument */
             yield $this->make($name, $payload);
         }
     }

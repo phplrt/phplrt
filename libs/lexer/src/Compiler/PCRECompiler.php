@@ -175,7 +175,6 @@ abstract class PCRECompiler implements CompilerInterface
      */
     public function __construct(?array $flags = null, ?bool $debug = null)
     {
-        /** @psalm-suppress PropertyTypeCoercion */
         $this->flags = $flags ?? self::DEFAULT_FLAGS;
 
         if ($debug === null) {

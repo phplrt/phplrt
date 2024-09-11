@@ -30,7 +30,6 @@ class ExtrusiveBuffer extends LazyBuffer
          */
         private readonly int $size = self::BUFFER_DEFAULT_SIZE,
     ) {
-        /** @psalm-suppress RedundantCondition */
         assert($this->size > 0, 'Buffer size must be greater than 0, but ' . $this->size . ' passed');
 
         parent::__construct($stream);
@@ -58,7 +57,6 @@ class ExtrusiveBuffer extends LazyBuffer
     public function next(): void
     {
         if ($this->nextValid() && $this->getBufferCurrentSize() > $this->size) {
-            /** @psalm-suppress PossiblyNullArrayOffset */
             unset($this->buffer[\array_key_first($this->buffer)]);
         }
     }

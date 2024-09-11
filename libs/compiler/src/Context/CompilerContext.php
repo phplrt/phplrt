@@ -88,9 +88,6 @@ class CompilerContext extends Visitor
         private readonly IdCollection $ids,
     ) {}
 
-    /**
-     * @psalm-suppress PropertyTypeCoercion
-     */
     public function enter(NodeInterface $node): void
     {
         if ($node instanceof TokenDef) {
@@ -119,9 +116,6 @@ class CompilerContext extends Visitor
         }
     }
 
-    /**
-     * @psalm-suppress PropertyTypeCoercion
-     */
     public function leave(NodeInterface $node): void
     {
         if ($node instanceof PragmaDef) {
@@ -203,8 +197,6 @@ class CompilerContext extends Visitor
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
-     *
-     * @psalm-suppress PossiblyInvalidArgument
      */
     private function reduce(Statement $statement): int|string|RuleInterface
     {
@@ -245,8 +237,6 @@ class CompilerContext extends Visitor
      * @throws NotAccessibleException
      * @throws ParserRuntimeException
      * @throws \RuntimeException
-     *
-     * @psalm-suppress ArgumentTypeCoercion
      */
     private function loadForAlternation(AlternationStmt $choice): array
     {

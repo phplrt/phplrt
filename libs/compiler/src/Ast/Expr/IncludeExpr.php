@@ -9,8 +9,6 @@ use Phplrt\Contracts\Source\FileInterface;
 /**
  * @internal this is an internal class, please do not use it in your application code
  * @psalm-internal Phplrt\Compiler
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 class IncludeExpr extends Expression
 {
@@ -47,9 +45,6 @@ class IncludeExpr extends Expression
 
     /**
      * @return non-empty-string
-     *
-     * @psalm-suppress MoreSpecificReturnType
-     * @psalm-suppress LessSpecificReturnStatement
      */
     public function getTargetPathname(): string
     {

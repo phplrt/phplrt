@@ -26,9 +26,6 @@ class Markers extends PCRECompiler
      * @param array<array-key, string> $chunks
      *
      * @return non-empty-string
-     *
-     * @psalm-suppress MoreSpecificReturnType
-     * @psalm-suppress LessSpecificReturnStatement
      */
     protected function buildTokens(array $chunks): string
     {

@@ -41,7 +41,6 @@ class Stream extends Readable
         assert($algo !== '', 'Hashing algorithm name must not be empty');
         assert($chunkSize >= 1, 'Chunk size must be greater than 0');
 
-        /** @psalm-suppress PropertyTypeCoercion */
         $this->offset = (int) \ftell($stream);
     }
 

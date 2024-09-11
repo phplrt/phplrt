@@ -45,9 +45,6 @@ class Compiler implements CompilerInterface, ParserInterface, \Stringable
         $this->analyzer = new CompilerContext($ids);
     }
 
-    /**
-     * @psalm-suppress MixedArgumentTypeCoercion: Allow impure closure as traverser
-     */
     private function bootPreloader(IdCollection $ids): TraverserInterface
     {
         return (new Traverser())
@@ -58,9 +55,6 @@ class Compiler implements CompilerInterface, ParserInterface, \Stringable
     /**
      * @return iterable<Node>
      * @throws \Throwable
-     *
-     * @psalm-suppress MoreSpecificReturnType
-     * @psalm-suppress LessSpecificReturnStatement
      */
     private function run(ReadableInterface $source): iterable
     {

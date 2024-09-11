@@ -53,7 +53,6 @@ final class PrintableNode implements NodeInterface, \Stringable
         foreach ($this->children as $child) {
             switch (true) {
                 case $child instanceof self:
-                    /** @psalm-suppress RedundantFunctionCall: PHP 7.4 unpacking expect only integer keys */
                     $result = [
                         ...\array_values($result),
                         ...\array_values($child->render($depth + 1))
