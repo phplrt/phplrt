@@ -290,7 +290,7 @@ abstract class PCRECompiler implements CompilerInterface
 
         $message = \str_replace('Compilation failed: ', '', $message);
         $message = \preg_replace('/([\w_]+\(\):\h+)/', '', $message);
-        $message = \preg_replace('/\h*at\h+offset\h+\d+/', '', $message);
+        $message = \preg_replace('/\h*at\h+offset\h+\d+/', '', (string) $message);
 
         return \ucfirst((string) $message) . (\is_string($token) ? $suffix : '');
     }
