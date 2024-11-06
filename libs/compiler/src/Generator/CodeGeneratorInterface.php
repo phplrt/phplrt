@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
-interface CodeGeneratorInterface extends GeneratableInterface
+interface CodeGeneratorInterface extends GeneratorInterface
 {
     /**
      * @param non-empty-string $class
