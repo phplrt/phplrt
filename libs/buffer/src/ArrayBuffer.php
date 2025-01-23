@@ -9,7 +9,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 class ArrayBuffer extends Buffer
 {
     /**
-     * @var array<int<0, max>, TokenInterface>
+     * @var list<TokenInterface>
      */
     private array $buffer = [];
 
@@ -25,24 +25,20 @@ class ArrayBuffer extends Buffer
     {
         $this->buffer = $this->iterableToArray($stream);
         $this->size = \count($this->buffer);
-
-        if ($this->buffer !== []) {
-            $this->initial = $this->current = \array_key_first($this->buffer);
-        }
     }
 
     /**
      * @param iterable<int<0, max>, TokenInterface> $tokens
      *
-     * @return array<int<0, max>, TokenInterface>
+     * @return list<TokenInterface>
      */
     private function iterableToArray(iterable $tokens): array
     {
         if ($tokens instanceof \Traversable) {
-            return \iterator_to_array($tokens);
+            return \iterator_to_array($tokens, false);
         }
 
-        return $tokens;
+        return \array_values($tokens);
     }
 
     public function seek(int $offset): void
