@@ -39,7 +39,7 @@ class ArrayBuffer extends Buffer
     private function iterableToArray(iterable $tokens): array
     {
         if ($tokens instanceof \Traversable) {
-            return \iterator_to_array($tokens, false);
+            return \iterator_to_array($tokens);
         }
 
         return $tokens;
