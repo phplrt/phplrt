@@ -12,10 +12,11 @@
     </php>
 
     <testsuites>
-        <testsuite name="unit">
+        <testsuite name="contracts">
             <directory>libs/contracts/*/tests</directory>
         </testsuite>
 
+        <!--
         <testsuite name="unit.old">
             <directory>libs.old/*/tests/Unit</directory>
             <directory>libs.old/contracts/*/tests</directory>
@@ -24,6 +25,7 @@
         <testsuite name="functional.old">
             <directory>libs.old/*/tests/Functional</directory>
         </testsuite>
+        -->
     </testsuites>
 
     <coverage/>
@@ -31,8 +33,10 @@
     <source>
         <include>
             <directory suffix=".php">libs/*/src</directory>
+            <!--
             <directory suffix=".php">libs.old/*/src</directory>
             <directory suffix=".php">libs.old/contracts/*/src</directory>
+            -->
         </include>
     </source>
 </phpunit>

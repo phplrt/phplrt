@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Source;
 
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+
 interface SourceFactoryInterface
 {
     /**

@@ -20,12 +20,6 @@ return static function (MBConfig $config): void {
         __DIR__ . '/libs.old/meta'
     ]);
 
-    $config->dataToAppend([
-        'require-dev' => [
-
-        ],
-    ]);
-
     $services = $config->services();
 
     # Release Workers

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Exception;
 
-use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
 /**
  * The exception that occurs in case of file access errors, like "Permission Denied".

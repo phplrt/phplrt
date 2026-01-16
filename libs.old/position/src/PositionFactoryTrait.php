@@ -6,8 +6,8 @@ namespace Phplrt\Position;
 
 use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Source\SourceFactory;
 

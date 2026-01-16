@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Position;
 
 use Phplrt\Contracts\Position\IntervalInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
 /**
  * @deprecated since phplrt 3.4 and will be removed in 4.0.

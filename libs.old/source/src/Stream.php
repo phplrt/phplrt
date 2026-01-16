@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Source\Exception\HashCalculationException;
 use Phplrt\Source\Exception\NotReadableException;
 

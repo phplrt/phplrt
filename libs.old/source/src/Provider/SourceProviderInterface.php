@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Provider;
 
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceExceptionInterface;
 
 interface SourceProviderInterface
 {

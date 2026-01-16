@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Exception;
 
-use Phplrt\Contracts\Source\SourceExceptionInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
 class HashCalculationException extends \LogicException implements SourceExceptionInterface
 {

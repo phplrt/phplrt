@@ -1,13 +1,15 @@
 <?php
 
 const DIR_INCLUDE = [
+    # Contracts
+    __DIR__ . '/libs/contracts/lexer/src',
+    __DIR__ . '/libs/contracts/source/src',
+
     # Legacy Components
     __DIR__ . '/libs.old/contracts/ast/src',
     __DIR__ . '/libs.old/contracts/exception/src',
-    __DIR__ . '/libs.old/contracts/lexer/src',
     __DIR__ . '/libs.old/contracts/parser/src',
     __DIR__ . '/libs.old/contracts/position/src',
-    __DIR__ . '/libs.old/contracts/source/src',
     __DIR__ . '/libs.old/buffer/src',
     __DIR__ . '/libs.old/compiler/src',
     __DIR__ . '/libs.old/exception/src',

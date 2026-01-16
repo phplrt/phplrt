@@ -22,6 +22,8 @@ jobs:
           # Contracts
           - local_path: 'libs/contracts/lexer'
             split_repository: 'lexer-contracts'
+          - local_path: 'libs/contracts/source'
+            split_repository: 'source-contracts'
           # Metadata
           - local_path: 'libs.old/meta/runtime'
             split_repository: 'runtime'
@@ -54,8 +56,6 @@ jobs:
             split_repository: 'parser-contracts'
           - local_path: 'libs.old/contracts/position'
             split_repository: 'position-contracts'
-          - local_path: 'libs.old/contracts/source'
-            split_repository: 'source-contracts'
     steps:
       - uses: actions/checkout@v4
 

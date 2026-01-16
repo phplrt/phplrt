@@ -31,7 +31,7 @@
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs.old/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs.old/contracts/position/src",
-            "Phplrt\\Contracts\\Source\\": "libs.old/contracts/source/src",
+            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Exception\\": "libs.old/exception/src",
             "Phplrt\\Lexer\\": "libs.old/lexer/src",
             "Phplrt\\Parser\\": "libs.old/parser/src",
@@ -64,7 +64,7 @@
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs.old/contracts/parser/tests",
             "Phplrt\\Contracts\\Position\\Tests\\": "libs.old/contracts/position/tests",
-            "Phplrt\\Contracts\\Source\\Tests\\": "libs.old/contracts/source/tests",
+            "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
             "Phplrt\\Exception\\Tests\\": "libs.old/exception/tests",
             "Phplrt\\Lexer\\Tests\\": "libs.old/lexer/tests",
             "Phplrt\\Parser\\Tests\\": "libs.old/parser/tests",
@@ -112,7 +112,7 @@
         "phpcs:fix": ["phpcs", "cs", "psr", "per"]
     },
     "scripts": {
-        "test:unit": "phpunit --testdox --testsuite=unit",
+        "test:unit": "phpunit --testdox",
         "linter:check": "phpstan analyse --configuration phpstan.neon --memory-limit 256M",
         "linter:baseline": "@linter:check --generate-baseline",
         "phpcs:check": "@phpcs:fix --dry-run",
