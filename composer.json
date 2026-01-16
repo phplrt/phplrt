@@ -28,7 +28,7 @@
             "Phplrt\\Compiler\\": "libs.old/compiler/src",
             "Phplrt\\Contracts\\Ast\\": "libs.old/contracts/ast/src",
             "Phplrt\\Contracts\\Exception\\": "libs.old/contracts/exception/src",
-            "Phplrt\\Contracts\\Lexer\\": "libs.old/contracts/lexer/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs.old/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs.old/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs.old/contracts/source/src",
@@ -40,7 +40,6 @@
             "Phplrt\\Visitor\\": "libs.old/visitor/src"
         },
         "files": [
-            "libs.old/contracts/lexer/src/polyfill.php",
             "libs.old/lexer/src/polyfill.php",
             "libs.old/parser/src/polyfill.php"
         ]
@@ -62,7 +61,7 @@
             "Phplrt\\Compiler\\Tests\\": "libs.old/compiler/tests",
             "Phplrt\\Contracts\\Ast\\Tests\\": "libs.old/contracts/ast/tests",
             "Phplrt\\Contracts\\Exception\\Tests\\": "libs.old/contracts/exception/tests",
-            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs.old/contracts/lexer/tests",
+            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs.old/contracts/parser/tests",
             "Phplrt\\Contracts\\Position\\Tests\\": "libs.old/contracts/position/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs.old/contracts/source/tests",
@@ -108,16 +107,11 @@
         }
     },
     "scripts-aliases": {
-        "test": ["phpunit", "unit"],
+        "test:unit": ["test", "phpunit", "unit"],
         "linter:check": ["linter", "stan"],
         "phpcs:fix": ["phpcs", "cs", "psr", "per"]
     },
     "scripts": {
-        "test": [
-            "@test:unit",
-            "@test:functional"
-        ],
-        "test:functional": "phpunit --testdox --testsuite=functional",
         "test:unit": "phpunit --testdox --testsuite=unit",
         "linter:check": "phpstan analyse --configuration phpstan.neon --memory-limit 256M",
         "linter:baseline": "@linter:check --generate-baseline",

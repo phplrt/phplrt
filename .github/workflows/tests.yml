@@ -3,6 +3,8 @@ name: build
 on:
   push:
   pull_request:
+  schedule:
+    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.1', '8.2', '8.3', '8.4' ]
+        php: [ '8.4', '8.5' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
     steps:
@@ -49,4 +51,4 @@ jobs:
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
       - name: Execute Tests
-        run: vendor/bin/phpunit --colors=always
+        run: composer test

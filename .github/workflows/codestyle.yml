@@ -1,4 +1,4 @@
-name: codestyle
+name: CodeStyle
 
 on:
   push:
@@ -19,14 +19,18 @@ jobs:
         php: [ '8.4' ]
         os: [ ubuntu-latest ]
     steps:
+      - name: Set Git To Use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2
-          coverage: none
+      - name: Validate Composer
+        run: composer validate
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -42,5 +46,5 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Check Coding Standards
-        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run
+      - name: Check Code Style
+        run: composer phpcs:check

@@ -19,7 +19,16 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          # Kernel Libraries
+          # Contracts
+          - local_path: 'libs/contracts/lexer'
+            split_repository: 'lexer-contracts'
+          # Metadata
+          - local_path: 'libs.old/meta/runtime'
+            split_repository: 'runtime'
+          # Documentation
+          - local_path: 'docs'
+            split_repository: 'docs'
+          # Legacy: Kernel Libraries
           - local_path: 'libs.old/compiler'
             split_repository: 'compiler'
           - local_path: 'libs.old/buffer'
@@ -36,25 +45,17 @@ jobs:
             split_repository: 'source'
           - local_path: 'libs.old/visitor'
             split_repository: 'visitor'
-          # Contracts
+          # Legacy: Contracts
           - local_path: 'libs.old/contracts/ast'
             split_repository: 'ast-contracts'
           - local_path: 'libs.old/contracts/exception'
             split_repository: 'exception-contracts'
-          - local_path: 'libs.old/contracts/lexer'
-            split_repository: 'lexer-contracts'
           - local_path: 'libs.old/contracts/parser'
             split_repository: 'parser-contracts'
           - local_path: 'libs.old/contracts/position'
             split_repository: 'position-contracts'
           - local_path: 'libs.old/contracts/source'
             split_repository: 'source-contracts'
-          # Metadata
-          - local_path: 'libs.old/meta/runtime'
-            split_repository: 'runtime'
-          # Documentation
-          - local_path: 'docs'
-            split_repository: 'docs'
     steps:
       - uses: actions/checkout@v4
 

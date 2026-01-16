@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Lexer;
+namespace Phplrt\Contracts\Lexer\Exception;
 
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -13,12 +14,16 @@ use Phplrt\Contracts\Source\ReadableInterface;
 interface LexerRuntimeExceptionInterface extends LexerExceptionInterface
 {
     /**
-     * Returns the source object in which the error occurred.
+     * Gets the source object in which the error occurred.
      */
-    public function getSource(): ReadableInterface;
+    public ReadableInterface $source {
+        get;
+    }
 
     /**
-     * Returns the token on which the error occurred.
+     * Gets the token on which the error occurred.
      */
-    public function getToken(): TokenInterface;
+    public TokenInterface $token {
+        get;
+    }
 }

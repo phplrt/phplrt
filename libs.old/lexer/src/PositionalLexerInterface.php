@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer;
 
-use Phplrt\Contracts\Lexer\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 

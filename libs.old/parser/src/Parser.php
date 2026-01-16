@@ -6,8 +6,8 @@ namespace Phplrt\Parser;
 
 use Phplrt\Buffer\BufferInterface;
 use Phplrt\Contracts\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Parser\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;

@@ -1,4 +1,4 @@
-name: static-analysis
+name: Static Analysis
 
 on:
   push:
@@ -9,12 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  # ----------------------------------------------------------------------------
-  #   Static Analysis
-  # ----------------------------------------------------------------------------
-
-  linter:
+  phpstan:
     name: Linter
     runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
@@ -24,13 +19,18 @@ jobs:
         php: [ '8.4' ]
         os: [ ubuntu-latest ]
     steps:
+      - name: Set Git To Use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2
+      - name: Validate Composer
+        run: composer validate
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -46,5 +46,5 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Execute Static Analysis
+      - name: Static Analysis
         run: composer linter:check -- --error-format=github

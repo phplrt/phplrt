@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
