@@ -1,0 +1,52 @@
+{
+    "name": "phplrt/buffer",
+    "type": "library",
+    "description": "The phplrt buffer library",
+    "license": "MIT",
+    "keywords": ["token", "stream", "buffer"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/buffer"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-spl": "*",
+        "phplrt/lexer": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Buffer\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "phpstan/phpstan": "^2.1.33",
+        "phpstan/phpstan-strict-rules": "^2.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Buffer\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

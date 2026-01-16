@@ -1,0 +1,60 @@
+{
+    "name": "phplrt/exception",
+    "type": "library",
+    "description": "The phplrt exception package",
+    "license": "MIT",
+    "keywords": ["exception", "parsing", "errors", "helpers"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/exception"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-spl": "*",
+        "ext-pcre": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "phplrt/source": "^4.0",
+        "phplrt/position": "^4.0",
+        "phplrt/exception-contracts": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Exception\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5",
+        "phpstan/phpstan": "^2.1.33",
+        "phpstan/phpstan-strict-rules": "^2.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Exception\\Tests\\": "tests"
+        }
+    },
+    "provide": {
+        "phplrt/exception-contracts-implementation": "^4.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

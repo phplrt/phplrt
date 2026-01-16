@@ -20,40 +20,40 @@ jobs:
       matrix:
         package:
           # Kernel Libraries
-          - local_path: 'compiler'
+          - local_path: 'libs.old/compiler'
             split_repository: 'compiler'
-          - local_path: 'buffer'
+          - local_path: 'libs.old/buffer'
             split_repository: 'buffer'
-          - local_path: 'exception'
+          - local_path: 'libs.old/exception'
             split_repository: 'exception'
-          - local_path: 'lexer'
+          - local_path: 'libs.old/lexer'
             split_repository: 'lexer'
-          - local_path: 'parser'
+          - local_path: 'libs.old/parser'
             split_repository: 'parser'
-          - local_path: 'position'
+          - local_path: 'libs.old/position'
             split_repository: 'position'
-          - local_path: 'source'
+          - local_path: 'libs.old/source'
             split_repository: 'source'
-          - local_path: 'visitor'
+          - local_path: 'libs.old/visitor'
             split_repository: 'visitor'
           # Contracts
-          - local_path: 'contracts/ast'
+          - local_path: 'libs.old/contracts/ast'
             split_repository: 'ast-contracts'
-          - local_path: 'contracts/exception'
+          - local_path: 'libs.old/contracts/exception'
             split_repository: 'exception-contracts'
-          - local_path: 'contracts/lexer'
+          - local_path: 'libs.old/contracts/lexer'
             split_repository: 'lexer-contracts'
-          - local_path: 'contracts/parser'
+          - local_path: 'libs.old/contracts/parser'
             split_repository: 'parser-contracts'
-          - local_path: 'contracts/position'
+          - local_path: 'libs.old/contracts/position'
             split_repository: 'position-contracts'
-          - local_path: 'contracts/source'
+          - local_path: 'libs.old/contracts/source'
             split_repository: 'source-contracts'
           # Metadata
-          - local_path: 'meta/runtime'
+          - local_path: 'libs.old/meta/runtime'
             split_repository: 'runtime'
           # Documentation
-          - local_path: '../docs'
+          - local_path: 'docs'
             split_repository: 'docs'
     steps:
       - uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           branch: "master"
-          package_directory: 'libs/${{ matrix.package.local_path }}'
+          package_directory: '${{ matrix.package.local_path }}'
           repository_organization: 'phplrt'
           repository_name: '${{ matrix.package.split_repository }}'
           user_name: "SerafimArts"
@@ -81,7 +81,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
           branch: "master"
-          package_directory: 'libs/${{ matrix.package.local_path }}'
+          package_directory: '${{ matrix.package.local_path }}'
           repository_organization: 'phplrt'
           repository_name: '${{ matrix.package.split_repository }}'
           user_name: "SerafimArts"

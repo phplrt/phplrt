@@ -1,25 +1,26 @@
 includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
+  - vendor/phpstan/phpstan-strict-rules/rules.neon
+  # Legacy Components
+  - libs.old/contracts/ast/phpstan.neon
+  - libs.old/contracts/exception/phpstan.neon
+  - libs.old/contracts/lexer/phpstan.neon
+  - libs.old/contracts/parser/phpstan.neon
+  - libs.old/contracts/position/phpstan.neon
+  - libs.old/contracts/source/phpstan.neon
+  - libs.old/buffer/phpstan.neon
+  - libs.old/compiler/phpstan.neon
+  - libs.old/exception/phpstan.neon
+  - libs.old/lexer/phpstan.neon
+  - libs.old/parser/phpstan.neon
+  - libs.old/position/phpstan.neon
+  - libs.old/source/phpstan.neon
+  - libs.old/visitor/phpstan.neon
 parameters:
-  level: 2
+  level: max
   strictRules:
     allRules: true
   fileExtensions:
     - php
-  paths:
-    - libs/contracts/ast/src
-    - libs/contracts/exception/src
-    - libs/contracts/lexer/src
-    - libs/contracts/parser/src
-    - libs/contracts/position/src
-    - libs/contracts/source/src
-    - libs/buffer/src
-    - libs/compiler/src
-    - libs/exception/src
-    - libs/lexer/src
-    - libs/parser/src
-    - libs/position/src
-    - libs/source/src
-    - libs/visitor/src
   tmpDir: vendor/.cache.phpstan
   reportUnmatchedIgnoredErrors: false

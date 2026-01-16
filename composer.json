@@ -15,72 +15,63 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.4",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcre": "*",
         "ext-spl": "*",
         "symfony/deprecation-contracts": "^2.5|^3.0"
     },
-    "provide": {
-        "phplrt/exception-contracts-implementation": "^3.7",
-        "phplrt/lexer-contracts-implementation": "^3.7",
-        "phplrt/parser-contracts-implementation": "^3.7",
-        "phplrt/position-contracts-implementation": "^3.7",
-        "phplrt/source-contracts-implementation": "^3.7"
-    },
     "autoload": {
-        "files": [
-            "libs/contracts/lexer/src/polyfill.php",
-            "libs/lexer/src/polyfill.php",
-            "libs/parser/src/polyfill.php"
-        ],
         "psr-4": {
-            "Phplrt\\Buffer\\": "libs/buffer/src",
-            "Phplrt\\Compiler\\": "libs/compiler/src",
-            "Phplrt\\Contracts\\Ast\\": "libs/contracts/ast/src",
-            "Phplrt\\Contracts\\Exception\\": "libs/contracts/exception/src",
-            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
-            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
-            "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
-            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
-            "Phplrt\\Exception\\": "libs/exception/src",
-            "Phplrt\\Lexer\\": "libs/lexer/src",
-            "Phplrt\\Parser\\": "libs/parser/src",
-            "Phplrt\\Position\\": "libs/position/src",
-            "Phplrt\\Source\\": "libs/source/src",
-            "Phplrt\\Visitor\\": "libs/visitor/src"
-        }
+            "Phplrt\\Buffer\\": "libs.old/buffer/src",
+            "Phplrt\\Compiler\\": "libs.old/compiler/src",
+            "Phplrt\\Contracts\\Ast\\": "libs.old/contracts/ast/src",
+            "Phplrt\\Contracts\\Exception\\": "libs.old/contracts/exception/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs.old/contracts/lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "libs.old/contracts/parser/src",
+            "Phplrt\\Contracts\\Position\\": "libs.old/contracts/position/src",
+            "Phplrt\\Contracts\\Source\\": "libs.old/contracts/source/src",
+            "Phplrt\\Exception\\": "libs.old/exception/src",
+            "Phplrt\\Lexer\\": "libs.old/lexer/src",
+            "Phplrt\\Parser\\": "libs.old/parser/src",
+            "Phplrt\\Position\\": "libs.old/position/src",
+            "Phplrt\\Source\\": "libs.old/source/src",
+            "Phplrt\\Visitor\\": "libs.old/visitor/src"
+        },
+        "files": [
+            "libs.old/contracts/lexer/src/polyfill.php",
+            "libs.old/lexer/src/polyfill.php",
+            "libs.old/parser/src/polyfill.php"
+        ]
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.62",
+        "friendsofphp/php-cs-fixer": "^3.92.5",
         "httpsoft/http-message": "^1.1",
         "jetbrains/phpstorm-attributes": "^1.0",
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan": "^1.11",
-        "phpstan/phpstan-strict-rules": "^1.6",
-        "phpunit/phpunit": "^10.5|^11.0",
+        "phpstan/phpstan": "^2.1.33",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^12.5",
         "psr/http-message": "^1.0|^2.0",
-        "rector/rector": "^1.2",
-        "symfony/var-dumper": "^5.4|^6.0|^7.0",
-        "symplify/monorepo-builder": "^11.2"
+        "symfony/var-dumper": "^6.4|^7.0|^8.0",
+        "symplify/monorepo-builder": "^12.4"
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Buffer\\Tests\\": "libs/buffer/tests",
-            "Phplrt\\Compiler\\Tests\\": "libs/compiler/tests",
-            "Phplrt\\Contracts\\Ast\\Tests\\": "libs/contracts/ast/tests",
-            "Phplrt\\Contracts\\Exception\\Tests\\": "libs/contracts/exception/tests",
-            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
-            "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
-            "Phplrt\\Contracts\\Position\\Tests\\": "libs/contracts/position/tests",
-            "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
-            "Phplrt\\Exception\\Tests\\": "libs/exception/tests",
-            "Phplrt\\Lexer\\Tests\\": "libs/lexer/tests",
-            "Phplrt\\Parser\\Tests\\": "libs/parser/tests",
-            "Phplrt\\Position\\Tests\\": "libs/position/tests",
-            "Phplrt\\Source\\Tests\\": "libs/source/tests",
-            "Phplrt\\Visitor\\Tests\\": "libs/visitor/tests"
+            "Phplrt\\Buffer\\Tests\\": "libs.old/buffer/tests",
+            "Phplrt\\Compiler\\Tests\\": "libs.old/compiler/tests",
+            "Phplrt\\Contracts\\Ast\\Tests\\": "libs.old/contracts/ast/tests",
+            "Phplrt\\Contracts\\Exception\\Tests\\": "libs.old/contracts/exception/tests",
+            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs.old/contracts/lexer/tests",
+            "Phplrt\\Contracts\\Parser\\Tests\\": "libs.old/contracts/parser/tests",
+            "Phplrt\\Contracts\\Position\\Tests\\": "libs.old/contracts/position/tests",
+            "Phplrt\\Contracts\\Source\\Tests\\": "libs.old/contracts/source/tests",
+            "Phplrt\\Exception\\Tests\\": "libs.old/exception/tests",
+            "Phplrt\\Lexer\\Tests\\": "libs.old/lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "libs.old/parser/tests",
+            "Phplrt\\Position\\Tests\\": "libs.old/position/tests",
+            "Phplrt\\Source\\Tests\\": "libs.old/source/tests",
+            "Phplrt\\Visitor\\Tests\\": "libs.old/visitor/tests"
         }
     },
     "replace": {
@@ -103,35 +94,36 @@
         "phplrt/source-contracts": "*",
         "phplrt/visitor": "*"
     },
-    "scripts": {
-        "test": [
-            "@test:unit",
-            "@test:functional"
-        ],
-        "test:unit": "phpunit --testdox --testsuite=unit",
-        "test:functional": "phpunit --testdox --testsuite=functional",
-        "linter": "@linter:check",
-        "linter:check": "phpstan analyse --configuration phpstan.neon",
-        "linter:baseline": "phpstan analyse --configuration phpstan.neon --generate-baseline",
-        "phpcs": "@phpcs:check",
-        "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run --verbose --diff",
-        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff",
-        "rector": "@rector:check",
-        "rector:check": "rector --dry-run --config=rector.php",
-        "rector:fix": "rector --config=rector.php",
-        "dev:merge": "monorepo-builder merge"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.x-dev",
-            "dev-main": "3.x-dev"
-        }
+    "provide": {
+        "phplrt/exception-contracts-implementation": "^4.0",
+        "phplrt/lexer-contracts-implementation": "^4.0",
+        "phplrt/parser-contracts-implementation": "^4.0",
+        "phplrt/position-contracts-implementation": "^4.0",
+        "phplrt/source-contracts-implementation": "^4.0"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
             "phpstan/extension-installer": true
         }
+    },
+    "scripts-aliases": {
+        "test": ["phpunit", "unit"],
+        "linter:check": ["linter", "stan"],
+        "phpcs:fix": ["phpcs", "cs", "psr", "per"]
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:functional"
+        ],
+        "test:functional": "phpunit --testdox --testsuite=functional",
+        "test:unit": "phpunit --testdox --testsuite=unit",
+        "linter:check": "phpstan analyse --configuration phpstan.neon --memory-limit 256M",
+        "linter:baseline": "@linter:check --generate-baseline",
+        "phpcs:check": "@phpcs:fix --dry-run",
+        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff",
+        "dev:merge": "monorepo-builder merge"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -15,21 +15,14 @@ return static function (MBConfig $config): void {
     $config->packageAliasFormat('<major>.<minor>.x-dev');
 
     $config->packageDirectories([
-        __DIR__ . '/libs',
-        __DIR__ . '/libs/contracts',
-        __DIR__ . '/libs/meta'
+        __DIR__ . '/libs.old',
+        __DIR__ . '/libs.old/contracts',
+        __DIR__ . '/libs.old/meta'
     ]);
 
     $config->dataToAppend([
         'require-dev' => [
-            'friendsofphp/php-cs-fixer' => '^3.62',
-            'phpstan/extension-installer' => '^1.4',
-            'phpstan/phpstan' => '^1.11',
-            'phpstan/phpstan-strict-rules' => '^1.6',
-            'phpunit/phpunit' => '^10.5|^11.0',
-            'rector/rector' => '^1.2',
-            'symfony/var-dumper' => '^5.4|^6.0|^7.0',
-            'symplify/monorepo-builder' => '^11.2',
+
         ],
     ]);
 
