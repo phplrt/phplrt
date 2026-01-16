@@ -1,0 +1,1357 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\ArrayBuffer::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/ArrayBuffer.php
+
+		-
+			rawMessage: 'Parameter #3 of function sprintf is expected to be int by placeholder #2 ("%%d"), string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/buffer/src/ArrayBuffer.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/buffer/src/Buffer.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<0, max> and 0 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/buffer/src/Buffer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\Buffer::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/Buffer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\BufferInterface::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/BufferInterface.php
+
+		-
+			rawMessage: 'Call to function assert() with true and non-falsy-string will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/buffer/src/ExtrusiveBuffer.php
+
+		-
+			rawMessage: 'Comparison operation ">" between int<1, max> and 0 is always true.'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: libs.old/buffer/src/ExtrusiveBuffer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\ExtrusiveBuffer::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/ExtrusiveBuffer.php
+
+		-
+			rawMessage: If condition is always true.
+			identifier: if.alwaysTrue
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Method Phplrt\Buffer\LazyBuffer::key() should return int<0, max> but returns int|string.'
+			identifier: return.type
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\LazyBuffer::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Parameter #3 of function sprintf is expected to be int by placeholder #2 ("%%d"), string given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Property Phplrt\Buffer\Buffer::$current (int<0, max>) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Property Phplrt\Buffer\Buffer::$initial (int<0, max>) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Property Phplrt\Buffer\LazyBuffer::$stream (Generator<int<0, max>, Phplrt\Contracts\Lexer\TokenInterface, mixed, mixed>) does not accept Generator<mixed, Phplrt\Contracts\Lexer\TokenInterface, mixed, mixed>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/buffer/src/LazyBuffer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int<0, max>) of method Phplrt\Buffer\MutableBuffer::seek() should be contravariant with parameter $offset (int) of method SeekableIterator<int<0, max>,Phplrt\Contracts\Lexer\TokenInterface>::seek()'
+			identifier: method.childParameterType
+			count: 1
+			path: libs.old/buffer/src/MutableBuffer.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Name must not be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Def/PragmaDef.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Pragma name must…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Def/PragmaDef.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: libs.old/compiler/src/Ast/Def/PragmaDef.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Rule name must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Def/RuleDef.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Def/RuleDef.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Class name must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/ClassDelegateStmt.php
+
+		-
+			rawMessage: 'Strict comparison using !== between class-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/ClassDelegateStmt.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Pattern must not be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/PatternStmt.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/PatternStmt.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Minimal repetition…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/Quantifier.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<0, max> and 0 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/Quantifier.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Rule name must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/RuleStmt.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/RuleStmt.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Token name must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/TokenStmt.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Ast/Stmt/TokenStmt.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Compiler::parse() should return iterable<(int|string), Phplrt\Compiler\Ast\Node> but returns iterable<(int|string), object>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Compiler::run() should return iterable<Phplrt\Compiler\Ast\Node> but returns iterable<(int|string), object>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Parameter #1 $nodes of method Phplrt\Visitor\TraverserInterface::traverse() expects iterable<(int|string), object>, iterable<Phplrt\Contracts\Ast\NodeInterface> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Parameter #2 $skip of class Phplrt\Lexer\Lexer constructor expects list<(int|string)>, array<non-empty-string> given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Context\CompilerContext::map() never returns Phplrt\Parser\Grammar\RuleInterface so it can be removed from the return type.'
+			identifier: return.unusedType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $array of function array_diff_assoc expects an array of values castable to string, list<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $array of function array_unique expects an array of values castable to string, list<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $rule of class Phplrt\Parser\Grammar\Optional constructor expects (int|string), array<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string>|int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $rule of class Phplrt\Parser\Grammar\Repetition constructor expects (int|string), array<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string>|int<0, max>|Phplrt\Parser\Grammar\RuleInterface|string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $sequence of class Phplrt\Parser\Grammar\Alternation constructor expects list<(int|string)>, array<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|non-empty-string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #1 $sequence of class Phplrt\Parser\Grammar\Concatenation constructor expects list<(int|string)>, array<int<0, max>|Phplrt\Parser\Grammar\RuleInterface|non-empty-string>|int<0, max>|Phplrt\Parser\Grammar\RuleInterface|non-empty-string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Parameter #2 $arrays of function array_diff_assoc expects an array of values castable to string, array<int, int|Phplrt\Parser\Grammar\RuleInterface|string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Context\CompilerContext::$skip (array<non-empty-string>) does not accept non-empty-array<string>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Context\CompilerContext::$tokens (array<non-empty-string, array<non-empty-string, non-empty-string>>) does not accept non-empty-array<non-empty-string, array<int<0, max>|non-empty-string, non-empty-string>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Context\CompilerContext::$tokens (array<non-empty-string, array<non-empty-string, non-empty-string>>) does not accept non-empty-array<string, array<non-empty-string, non-empty-string>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Context\CompilerContext::$tokens (array<non-empty-string, array<non-empty-string, non-empty-string>>) does not accept non-empty-array<string, array<string, string>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Context\CompilerContext::$transitions (array<non-empty-string, array<non-empty-string, non-empty-string>>) does not accept non-empty-array<string, array<string, string>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Context/CompilerContext.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getGrammar() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Generator/PhpCodeGenerator.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getOrderedGrammar() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Generator/PhpCodeGenerator.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getOrderedReducers() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Generator/PhpCodeGenerator.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getReducers() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Generator/PhpCodeGenerator.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getReferences() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Generator/PhpCodeGenerator.php
+
+		-
+			rawMessage: Anonymous function should return Phplrt\Contracts\Ast\NodeInterface but returns mixed.
+			identifier: return.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Cannot call method getName() on mixed.'
+			identifier: method.nonObject
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Cannot call method getValue() on Phplrt\Contracts\Lexer\TokenInterface|null.'
+			identifier: method.nonObject
+			count: 14
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Cannot call method getValue() on mixed.'
+			identifier: method.nonObject
+			count: 9
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: Cannot use array destructuring on iterable<Phplrt\Contracts\Lexer\TokenInterface>.
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Grammar\PP2Grammar::parse() has parameter $options with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Grammar\PP2Grammar::parse() should return iterable<(int|string), Phplrt\Compiler\Ast\Node> but returns iterable<(int|string), object>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $class of class Phplrt\Compiler\Ast\Stmt\ClassDelegateStmt constructor expects class-string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $file of class Phplrt\Compiler\Ast\Expr\IncludeExpr constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $from of class Phplrt\Compiler\Ast\Stmt\Quantifier constructor expects int<0, max>, int given.'
+			identifier: argument.type
+			count: 3
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\RuleDef constructor expects non-empty-string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\TokenDef constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\RuleStmt constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\TokenStmt constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $pattern of class Phplrt\Compiler\Ast\Stmt\PatternStmt constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $statement of class Phplrt\Compiler\Ast\Stmt\RepetitionStmt constructor expects Phplrt\Compiler\Ast\Stmt\Statement, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $statements of class Phplrt\Compiler\Ast\Stmt\AlternationStmt constructor expects array<Phplrt\Compiler\Ast\Stmt\Statement>, array given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #1 $statements of class Phplrt\Compiler\Ast\Stmt\ConcatenationStmt constructor expects array<Phplrt\Compiler\Ast\Stmt\Statement>, array given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #2 $delegate of class Phplrt\Compiler\Ast\Def\RuleDef constructor expects Phplrt\Compiler\Ast\Stmt\DelegateStmt, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #2 $options of method Phplrt\Parser\Parser<object>::parse() expects array<non-empty-string, mixed>, array given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #2 $quantifier of class Phplrt\Compiler\Ast\Stmt\RepetitionStmt constructor expects Phplrt\Compiler\Ast\Stmt\Quantifier, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #2 $value of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #2 $value of class Phplrt\Compiler\Ast\Def\TokenDef constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #3 $body of class Phplrt\Compiler\Ast\Def\RuleDef constructor expects Phplrt\Compiler\Ast\Stmt\Statement, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Parameter #4 $keep of class Phplrt\Compiler\Ast\Def\RuleDef constructor expects bool, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Ast\Def\TokenDef::$next (string|null) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Ast\Def\TokenDef::$state (string|null) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Property Phplrt\Compiler\Grammar\PP2Grammar::$runtime with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\IncludesExecutor::lookup() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/IncludesExecutor.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\IncludesExecutor::lookup() should return array but returns iterable<Phplrt\Compiler\Ast\Node>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/compiler/src/IncludesExecutor.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\PhpPrinter::array() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/PhpPrinter.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\PhpPrinter::arrayIsList() has parameter $array with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/PhpPrinter.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\PhpPrinter::arrayValues() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/PhpPrinter.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\PhpPrinter::listValues() has parameter $data with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/PhpPrinter.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\Value\PhpRuleInstantiation::printEachArgument() has parameter $arguments with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/Value/PhpRuleInstantiation.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\Value\PhpRuleInstantiation::printEachArgument() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/Value/PhpRuleInstantiation.php
+
+		-
+			rawMessage: 'Method Phplrt\Compiler\Printer\Value\RuleInstantiation::getArguments() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/compiler/src/Printer/Value/RuleInstantiation.php
+
+		-
+			rawMessage: 'Generator expects value type array<Phplrt\Compiler\Runtime\PrintableNode>, array<Phplrt\Compiler\Runtime\PrintableNode|Phplrt\Contracts\Lexer\TokenInterface> given.'
+			identifier: generator.valueType
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: Instanceof between Phplrt\Contracts\Lexer\TokenInterface and Phplrt\Contracts\Lexer\TokenInterface will always evaluate to true.
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: 'Parameter #1 $array (non-empty-list<string>) of array_values is already a list, call has no effect.'
+			identifier: arrayValues.list
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: 'Parameter #2 $state of class Phplrt\Compiler\Runtime\PrintableNode constructor expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNodeBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Readable::fromPathname() expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/lexer/src/Compiler/PCRECompiler.php
+
+		-
+			rawMessage: 'Method Phplrt\Lexer\Config\PassthroughHandler::handle() never returns null so it can be removed from the return type.'
+			identifier: return.unusedType
+			count: 1
+			path: libs.old/lexer/src/Config/PassthroughHandler.php
+
+		-
+			rawMessage: 'Method Phplrt\Lexer\Driver\Markers::match() should return array<array<''MARK''|int<0, max>, array{string, int}|non-empty-string>> but returns list<array<array{string, int}>>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/lexer/src/Driver/Markers.php
+
+		-
+			rawMessage: 'Parameter #1 $tokens of method Phplrt\Lexer\Driver\Driver::getPattern() expects array<non-empty-string, non-empty-string>, non-empty-array<non-empty-string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Driver/Markers.php
+
+		-
+			rawMessage: 'Parameter #2 $payload of method Phplrt\Lexer\Driver\Markers::make() expects array<array{string, int<0, max>}>, array<''MARK''|int<0, max>, array{string, int}|non-empty-string> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Driver/Markers.php
+
+		-
+			rawMessage: 'Property Phplrt\Lexer\Lexer::$skip (list<(int|string)>) does not accept array<int<0, max>, (int|string)>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Property Phplrt\Lexer\Lexer::$skip (list<(int|string)>) does not accept array<int|string, (int|string)>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: Instanceof between Phplrt\Lexer\PositionalLexerInterface and Phplrt\Lexer\PositionalLexerInterface will always evaluate to true.
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: Result of || is always true.
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Method Phplrt\Lexer\Token\BaseToken::jsonSerialize() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 6
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Call to function is_int() with int will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 4
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: Instanceof between Phplrt\Contracts\Lexer\TokenInterface and Phplrt\Contracts\Lexer\TokenInterface will always evaluate to true.
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Method Phplrt\Lexer\Token\Composite::jsonSerialize() return type has no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Parameter #1 $offset (int) of method Phplrt\Lexer\Token\Composite::offsetSet() should be contravariant with parameter $offset (int|null) of method ArrayAccess<int,Phplrt\Contracts\Lexer\TokenInterface>::offsetSet()'
+			identifier: method.childParameterType
+			count: 2
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-array<int, Phplrt\Contracts\Lexer\TokenInterface> and array{} will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Method Phplrt\Lexer\Token\EndOfInput::getName() should return non-empty-string but returns (int|string).'
+			identifier: return.type
+			count: 1
+			path: libs.old/lexer/src/Token/EndOfInput.php
+
+		-
+			rawMessage: Constant Phplrt\Lexer\Token\Renderer::DEFAULT_REPLACEMENTS type has no value type specified in iterable type array.
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/lexer/src/Token/Renderer.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\BuilderInterface::build() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: libs.old/parser/src/BuilderInterface.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: 'Call to function is_string() with string will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: 'Parameter #1 $args of method Phplrt\Parser\Grammar\Builder::unwrap() expects non-empty-list<(int|string)>, array<int|string, (int|string)> given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: 'Parameter #1 $sequence of class Phplrt\Parser\Grammar\Alternation constructor expects list<(int|string)>, array<int|string, (int|string)> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: 'Parameter #1 $sequence of class Phplrt\Parser\Grammar\Concatenation constructor expects list<(int|string)>, array<int|string, (int|string)> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: Result of || is always true.
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: libs.old/parser/src/Grammar/Builder.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Grammar\Concatenation::reduce() return type has no value type specified in iterable type iterable.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Grammar/Concatenation.php
+
+		-
+			rawMessage: 'Parameter #2 $result of method Phplrt\Parser\Grammar\Production::mergeWith() expects array|Phplrt\Contracts\Ast\NodeInterface|Phplrt\Contracts\Lexer\TokenInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Grammar/Concatenation.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Grammar\Production::mergeWith() has parameter $result with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Grammar/Production.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Grammar\Production::mergeWith() should return list<Phplrt\Contracts\Ast\NodeInterface|Phplrt\Contracts\Lexer\TokenInterface> but returns array.'
+			identifier: return.type
+			count: 1
+			path: libs.old/parser/src/Grammar/Production.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Grammar\Repetition::reduce() return type has no value type specified in iterable type iterable.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: 'Parameter #2 $result of method Phplrt\Parser\Grammar\Production::mergeWith() expects array|Phplrt\Contracts\Ast\NodeInterface|Phplrt\Contracts\Lexer\TokenInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: Readonly property Phplrt\Parser\Grammar\Repetition::$gte is assigned outside of the constructor.
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 1
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: Readonly property Phplrt\Parser\Grammar\Repetition::$lte is assigned outside of the constructor.
+			identifier: property.readOnlyAssignNotInConstructor
+			count: 2
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: 'Strict comparison using !== between mixed and null will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: Unreachable statement - code above always terminates.
+			identifier: deadCode.unreachable
+			count: 1
+			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: 'Call to function assert() with true will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Call to function is_subclass_of() with class-string<Phplrt\Buffer\BufferInterface> and ''Phplrt\\Buffer\\BufferInterface'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::allowTrailingTokens() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::bootParserConfigsTrait() has parameter $options with no value type specified in iterable type array.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::buildUsing() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::completeAt() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::createBufferFromTokens() has parameter $stream with no value type specified in iterable type iterable.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::eachStepThrough() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::parse() should return iterable<(int|string), TNode of object> but returns iterable.'
+			identifier: return.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::parseOrFail() return type has no value type specified in iterable type iterable.'
+			identifier: missingType.iterableValue
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::possibleTokensSearching() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::startsAt() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Method Phplrt\Parser\Parser::withBuffer() return type with generic class Phplrt\Parser\Parser does not specify its types: TNode'
+			identifier: missingType.generics
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $allow of method Phplrt\Parser\Parser<object>::allowTrailingTokens() expects bool, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $class of method Phplrt\Parser\Parser<object>::withBuffer() expects class-string<Phplrt\Buffer\BufferInterface>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $context of method Phplrt\Parser\Parser<TNode of object>::runNextStep() expects Phplrt\Parser\Context, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $options of static method Phplrt\Parser\Parser<TNode of object>::bootBuilder() expects array{builder?: iterable<int|non-empty-string, Closure(Phplrt\Parser\Context, mixed): mixed>|Phplrt\Parser\BuilderInterface|null}, array<''buffer''|''builder''|''configAllowTrailing…''|''eoi''|''initial''|''possibleTokensSearc…''|''step'', mixed> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $options of static method Phplrt\Parser\Parser<TNode of object>::bootInitialRule() expects array{initial?: int|string|null}, array<''buffer''|''builder''|''configAllowTrailing…''|''eoi''|''initial''|''possibleTokensSearc…''|''step'', mixed> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $step of method Phplrt\Parser\Parser<object>::eachStepThrough() expects (callable(Phplrt\Parser\Context, Closure(): mixed): mixed)|null, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #1 $token of method Phplrt\Parser\Parser<TNode of object>::completeAt() expects non-empty-string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #2 $result of method Phplrt\Parser\BuilderInterface::build() expects iterable<Phplrt\Contracts\Ast\NodeInterface|Phplrt\Contracts\Lexer\TokenInterface>|Phplrt\Contracts\Ast\NodeInterface|Phplrt\Contracts\Lexer\TokenInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Parameter #2 of closure expects Closure(): mixed, Closure(mixed): mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Strict comparison using === between int|string|null and false will always evaluate to false.'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Column must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Line must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Offset must not be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Comparison operation ">" between int<1, max> and 0 is always true.'
+			identifier: greater.alwaysTrue
+			count: 2
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<0, max> and 0 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Position::fromOffset() has parameter $source with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Position::fromPosition() has parameter $source with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between 8 and 8 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<4, 5> and 1 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Offset ''uri'' might not exist on array{timed_out: bool, blocked: bool, eof: bool, unread_bytes: int, stream_type: string, wrapper_type: string, wrapper_data: mixed, mode: string, ...}.'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #2 $length of function fread expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #3 $column of class Phplrt\Position\Position constructor expects int<1, max>, int given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: Result of && is always true.
+			identifier: booleanAnd.alwaysTrue
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fclose expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function feof expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function flock expects resource, resource|false given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fread expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function stream_set_blocking expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: libs.old/source/src/File.php
+
+		-
+			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Readable::fromPathname() expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Readable.php
+
+		-
+			rawMessage: 'Parameter #1 $resource of static method Phplrt\Source\Readable::fromResource() expects resource, resource|null given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Readable.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Temporary stream…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Method Phplrt\Source\Source::getStream() should return resource but returns resource|false.'
+			identifier: return.type
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fwrite expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function rewind expects resource, resource|false given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Property Phplrt\Source\Source::$stream (resource|null) does not accept resource|false.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: libs.old/source/src/Source.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Temporary stream…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of static method Phplrt\Source\Exception\NotReadableException::fromOpeningFile() expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Exception\NotFoundException::fromInvalidPathname() expects non-empty-string, string given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: libs.old/source/src/SourceFactory.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 2
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
+			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Offset ''uri'' might not exist on array{timed_out: bool, blocked: bool, eof: bool, unread_bytes: int, stream_type: string, wrapper_type: string, wrapper_data: mixed, mode: string, ...}.'
+			identifier: offsetAccess.notFound
+			count: 3
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function fopen expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Parameter #2 $mode of function fopen expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Property Phplrt\Source\Stream::$algo (non-empty-string) does not accept string.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Property Phplrt\Source\Stream::$offset (int<0, max>) does not accept int.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/source/src/Stream.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/VirtualFile.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/source/src/VirtualFile.php
+
+		-
+			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/source/src/VirtualStreamingFile.php
+
+		-
+			rawMessage: 'Property Phplrt\Source\VirtualStreamingFile::$filename (non-empty-string) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/source/src/VirtualStreamingFile.php
+
+		-
+			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: libs.old/source/src/VirtualStreamingFile.php
+
+		-
+			rawMessage: 'Call to function is_array() with object will always evaluate to false.'
+			identifier: function.impossibleType
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: Cannot use array destructuring on list<array<mixed>|int|string>|null.
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Method Phplrt\Visitor\Executor::after() should return iterable<(int|string), object> but returns iterable<object>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Method Phplrt\Visitor\Executor::before() should return iterable<(int|string), object> but returns iterable<object>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Method Phplrt\Visitor\Executor::traverseArray() should return array<object> but returns array<mixed>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Only booleans are allowed in a while condition, array<int, array<mixed>|int|string> given.'
+			identifier: while.condNotBoolean
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Parameter #1 $nodes of method Phplrt\Visitor\VisitorInterface::after() expects iterable<Phplrt\Contracts\Ast\NodeInterface>, iterable<object> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Parameter #1 $nodes of method Phplrt\Visitor\VisitorInterface::before() expects iterable<Phplrt\Contracts\Ast\NodeInterface>, iterable<object> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Strict comparison using === between null and (int|string) will always evaluate to false.'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: libs.old/visitor/src/Executor.php
+
+		-
+			rawMessage: 'Parameter #1 $visitors of class Phplrt\Visitor\Traverser constructor expects list<Phplrt\Visitor\VisitorInterface>, array<int|string, Phplrt\Visitor\VisitorInterface> given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/visitor/src/Traverser.php
+
+		-
+			rawMessage: 'Property Phplrt\Visitor\Traverser::$visitors (list<Phplrt\Visitor\VisitorInterface>) does not accept array<int<0, max>, Phplrt\Visitor\VisitorInterface>.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/visitor/src/Traverser.php
+
+		-
+			rawMessage: 'Property Phplrt\Visitor\Traverser::$visitors (list<Phplrt\Visitor\VisitorInterface>) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/visitor/src/Traverser.php

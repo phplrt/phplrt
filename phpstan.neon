@@ -1,6 +1,7 @@
 includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
   - vendor/phpstan/phpstan-strict-rules/rules.neon
+  - phpstan-baseline.neon
   # Legacy Components
   - libs.old/contracts/ast/phpstan.neon
   - libs.old/contracts/exception/phpstan.neon
