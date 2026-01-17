@@ -14,6 +14,7 @@
     <testsuites>
         <testsuite name="contracts">
             <directory>libs/contracts/*/tests</directory>
+            <directory>libs/components/*/tests</directory>
         </testsuite>
 
         <!--

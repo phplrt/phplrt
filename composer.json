@@ -30,13 +30,13 @@
             "Phplrt\\Contracts\\Exception\\": "libs.old/contracts/exception/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs.old/contracts/parser/src",
-            "Phplrt\\Contracts\\Position\\": "libs.old/contracts/position/src",
+            "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Exception\\": "libs.old/exception/src",
             "Phplrt\\Lexer\\": "libs.old/lexer/src",
             "Phplrt\\Parser\\": "libs.old/parser/src",
             "Phplrt\\Position\\": "libs.old/position/src",
-            "Phplrt\\Source\\": "libs.old/source/src",
+            "Phplrt\\Source\\": "libs/components/source/src",
             "Phplrt\\Visitor\\": "libs.old/visitor/src"
         },
         "files": [
@@ -63,13 +63,13 @@
             "Phplrt\\Contracts\\Exception\\Tests\\": "libs.old/contracts/exception/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs.old/contracts/parser/tests",
-            "Phplrt\\Contracts\\Position\\Tests\\": "libs.old/contracts/position/tests",
+            "Phplrt\\Contracts\\Position\\Tests\\": "libs/contracts/position/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
             "Phplrt\\Exception\\Tests\\": "libs.old/exception/tests",
             "Phplrt\\Lexer\\Tests\\": "libs.old/lexer/tests",
             "Phplrt\\Parser\\Tests\\": "libs.old/parser/tests",
             "Phplrt\\Position\\Tests\\": "libs.old/position/tests",
-            "Phplrt\\Source\\Tests\\": "libs.old/source/tests",
+            "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
             "Phplrt\\Visitor\\Tests\\": "libs.old/visitor/tests"
         }
     },

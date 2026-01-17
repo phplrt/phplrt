@@ -22,8 +22,13 @@ jobs:
           # Contracts
           - local_path: 'libs/contracts/lexer'
             split_repository: 'lexer-contracts'
+          - local_path: 'libs/contracts/position'
+            split_repository: 'position-contracts'
           - local_path: 'libs/contracts/source'
             split_repository: 'source-contracts'
+          # Components
+          - local_path: 'libs/source'
+            split_repository: 'source'
           # Metadata
           - local_path: 'libs.old/meta/runtime'
             split_repository: 'runtime'
@@ -43,8 +48,6 @@ jobs:
             split_repository: 'parser'
           - local_path: 'libs.old/position'
             split_repository: 'position'
-          - local_path: 'libs.old/source'
-            split_repository: 'source'
           - local_path: 'libs.old/visitor'
             split_repository: 'visitor'
           # Legacy: Contracts
@@ -54,8 +57,6 @@ jobs:
             split_repository: 'exception-contracts'
           - local_path: 'libs.old/contracts/parser'
             split_repository: 'parser-contracts'
-          - local_path: 'libs.old/contracts/position'
-            split_repository: 'position-contracts'
     steps:
       - uses: actions/checkout@v4
 

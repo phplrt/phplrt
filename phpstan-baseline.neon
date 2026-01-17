@@ -13,6 +13,12 @@ parameters:
 			path: libs.old/buffer/src/ArrayBuffer.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/buffer/src/Buffer.php
+
+		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -21,6 +27,12 @@ parameters:
 		-
 			rawMessage: 'Comparison operation ">=" between int<0, max> and 0 is always true.'
 			identifier: greaterOrEqual.alwaysTrue
+			count: 1
+			path: libs.old/buffer/src/Buffer.php
+
+		-
+			rawMessage: 'Method Phplrt\Buffer\Buffer::tokenToString() should return string but returns mixed.'
+			identifier: return.type
 			count: 1
 			path: libs.old/buffer/src/Buffer.php
 
@@ -133,6 +145,18 @@ parameters:
 			path: libs.old/compiler/src/Ast/Def/RuleDef.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\FileInterface::getPathname().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Ast/Expr/IncludeExpr.php
+
+		-
+			rawMessage: 'Parameter #1 $path of function dirname expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Ast/Expr/IncludeExpr.php
+
+		-
 			rawMessage: 'Call to function assert() with true and ''Class name must not…'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -193,6 +217,24 @@ parameters:
 			path: libs.old/compiler/src/Ast/Stmt/TokenStmt.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Call to an undefined static method Phplrt\Source\File::fromPathname().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Call to an undefined static method Phplrt\Source\File::new().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: libs.old/compiler/src/Compiler.php
+
+		-
 			rawMessage: 'Method Phplrt\Compiler\Compiler::parse() should return iterable<(int|string), Phplrt\Compiler\Ast\Node> but returns iterable<(int|string), object>.'
 			identifier: return.type
 			count: 1
@@ -211,9 +253,21 @@ parameters:
 			path: libs.old/compiler/src/Compiler.php
 
 		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Compiler\Compiler::run() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/compiler/src/Compiler.php
+
+		-
 			rawMessage: 'Parameter #2 $skip of class Phplrt\Lexer\Lexer constructor expects list<(int|string)>, array<non-empty-string> given.'
 			identifier: argument.type
 			count: 2
+			path: libs.old/compiler/src/Compiler.php
+
+		-
+			rawMessage: 'Parameter #3 $offset of class Phplrt\Compiler\Exception\GrammarException constructor expects int<0, max>, mixed given.'
+			identifier: argument.type
+			count: 1
 			path: libs.old/compiler/src/Compiler.php
 
 		-
@@ -295,6 +349,30 @@ parameters:
 			path: libs.old/compiler/src/Context/CompilerContext.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getLine().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Exception/GrammarException.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\FileInterface::getPathname().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Exception/GrammarException.php
+
+		-
+			rawMessage: 'Property Exception::$file (string) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Exception/GrammarException.php
+
+		-
+			rawMessage: 'Property Exception::$line (int) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Exception/GrammarException.php
+
+		-
 			rawMessage: 'Method Phplrt\Compiler\Generator\PhpCodeGenerator::getGrammar() return type has no value type specified in iterable type array.'
 			identifier: missingType.iterableValue
 			count: 1
@@ -331,6 +409,12 @@ parameters:
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
 			rawMessage: 'Cannot call method getName() on mixed.'
 			identifier: method.nonObject
 			count: 1
@@ -346,6 +430,12 @@ parameters:
 			rawMessage: 'Cannot call method getValue() on mixed.'
 			identifier: method.nonObject
 			count: 9
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 5
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
@@ -379,7 +469,7 @@ parameters:
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #1 $file of class Phplrt\Compiler\Ast\Expr\IncludeExpr constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #1 $file of class Phplrt\Compiler\Ast\Expr\IncludeExpr constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
@@ -391,7 +481,7 @@ parameters:
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
@@ -405,23 +495,23 @@ parameters:
 		-
 			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Def\TokenDef constructor expects string, mixed given.'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\RuleStmt constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\RuleStmt constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\TokenStmt constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #1 $name of class Phplrt\Compiler\Ast\Stmt\TokenStmt constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 2
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #1 $pattern of class Phplrt\Compiler\Ast\Stmt\PatternStmt constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #1 $pattern of class Phplrt\Compiler\Ast\Stmt\PatternStmt constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
@@ -463,7 +553,7 @@ parameters:
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
-			rawMessage: 'Parameter #2 $value of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, string given.'
+			rawMessage: 'Parameter #2 $value of class Phplrt\Compiler\Ast\Def\PragmaDef constructor expects non-empty-string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
@@ -471,7 +561,7 @@ parameters:
 		-
 			rawMessage: 'Parameter #2 $value of class Phplrt\Compiler\Ast\Def\TokenDef constructor expects string, mixed given.'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
@@ -499,10 +589,64 @@ parameters:
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
 
 		-
+			rawMessage: 'Property Phplrt\Compiler\Ast\Node::$offset (int<0, max>) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
 			rawMessage: 'Property Phplrt\Compiler\Grammar\PP2Grammar::$runtime with generic class Phplrt\Parser\Parser does not specify its types: TNode'
 			identifier: missingType.generics
 			count: 1
 			path: libs.old/compiler/src/Grammar/PP2Grammar.php
+
+		-
+			rawMessage: 'Binary operation ".=" between string and mixed results in an error.'
+			identifier: assignOp.invalid
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2PHPLexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/compiler/src/Grammar/PP2PHPLexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getValue().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Grammar/PP2PHPLexer.php
+
+		-
+			rawMessage: Binary operation "." between ''|'<?php ' and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/compiler/src/Grammar/PhpLexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\ReadableInterface::getContents().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Grammar/PhpLexer.php
+
+		-
+			rawMessage: 'Call to an undefined static method Phplrt\Source\File::new().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: libs.old/compiler/src/Grammar/PhpLexer.php
+
+		-
+			rawMessage: 'Parameter #1 $readable of method Phplrt\Compiler\Grammar\PhpLexer::read() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PhpLexer.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function substr expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Grammar/PhpLexer.php
 
 		-
 			rawMessage: 'Method Phplrt\Compiler\IncludesExecutor::lookup() return type has no value type specified in iterable type array.'
@@ -559,6 +703,36 @@ parameters:
 			path: libs.old/compiler/src/Printer/Value/RuleInstantiation.php
 
 		-
+			rawMessage: Binary operation "." between literal-string&non-falsy-string and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: Binary operation "." between non-falsy-string and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 3
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getValue().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNode.php
+
+		-
 			rawMessage: 'Generator expects value type array<Phplrt\Compiler\Runtime\PrintableNode>, array<Phplrt\Compiler\Runtime\PrintableNode|Phplrt\Contracts\Lexer\TokenInterface> given.'
 			identifier: generator.valueType
 			count: 1
@@ -577,16 +751,160 @@ parameters:
 			path: libs.old/compiler/src/Runtime/PrintableNode.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNodeBuilder.php
+
+		-
+			rawMessage: 'Parameter #1 $offset of class Phplrt\Compiler\Runtime\PrintableNode constructor expects int<0, max>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/compiler/src/Runtime/PrintableNodeBuilder.php
+
+		-
 			rawMessage: 'Parameter #2 $state of class Phplrt\Compiler\Runtime\PrintableNode constructor expects non-empty-string, string given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/compiler/src/Runtime/PrintableNodeBuilder.php
 
 		-
-			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Readable::fromPathname() expects non-empty-string, string given.'
+			rawMessage: Binary operation "-" between mixed and 1 results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '.' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getBytes().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getColumn().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getLine().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Method Phplrt\Exception\ErrorInformationRenderer::length() should return int but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Parameter #1 $line of method Phplrt\Exception\LineReader::readLine() expects int<1, max>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Parameter #2 $offset of static method Phplrt\Position\Position::fromOffset() expects int<0, max>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/exception/src/ErrorInformationRenderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\ReadableInterface::getContents().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/LineReader.php
+
+		-
+			rawMessage: 'Parameter #2 $string of function explode expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/exception/src/LineReader.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getLine().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\FileInterface::getPathname().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Call to an undefined static method Phplrt\Source\File::fromPathname().'
+			identifier: staticMethod.notFound
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Method Phplrt\Exception\RuntimeException::getSource() should return Phplrt\Contracts\Source\ReadableInterface but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Parameter #2 $offset of static method Phplrt\Position\Position::fromOffset() expects int<0, max>, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Property Exception::$file (string) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: 'Property Exception::$line (int) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: libs.old/exception/src/RuntimeException.php
+
+		-
+			rawMessage: Access to undefined constant Phplrt\Contracts\Lexer\TokenInterface::END_OF_INPUT.
+			identifier: classConstant.notFound
+			count: 1
+			path: libs.old/exception/src/UndefinedToken.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/exception/src/UndefinedToken.php
+
+		-
+			rawMessage: 'Method Phplrt\Exception\UndefinedToken::getName() should return string but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: libs.old/exception/src/UndefinedToken.php
+
+		-
+			rawMessage: 'Method Phplrt\Exception\UndefinedToken::getOffset() should return int but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: libs.old/exception/src/UndefinedToken.php
 
 		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
@@ -599,6 +917,18 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: libs.old/lexer/src/Config/PassthroughHandler.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Config/PassthroughWhenTokenHandler.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\ReadableInterface::getContents().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Driver/Markers.php
 
 		-
 			rawMessage: 'Method Phplrt\Lexer\Driver\Markers::match() should return array<array<''MARK''|int<0, max>, array{string, int}|non-empty-string>> but returns list<array<array{string, int}>>.'
@@ -619,6 +949,102 @@ parameters:
 			path: libs.old/lexer/src/Driver/Markers.php
 
 		-
+			rawMessage: 'Parameter #2 $source of method Phplrt\Lexer\Driver\Markers::match() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Driver/Markers.php
+
+		-
+			rawMessage: Binary operation "+" between mixed and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: Binary operation "." between string and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getBytes().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getValue().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\SourceFactoryInterface::create().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: PHPDoc tag @var for constant Phplrt\Lexer\Lexer::DEFAULT_EOI_TOKEN_NAME with type non-empty-string is not subtype of value mixed.
+			identifier: classConstant.phpDocType
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #1 $offset of class Phplrt\Lexer\Token\EndOfInput constructor expects int<0, max>, (array|float|int) given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Lexer\Lexer::handleEoiToken() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Lexer\Lexer::handleHiddenToken() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Lexer\Lexer::handleUnknownToken() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #2 $offset of class Phplrt\Lexer\Token\UnknownToken constructor expects int<0, max>, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: 'Parameter #2 $source of method Phplrt\Lexer\Driver\DriverInterface::run() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: Possibly invalid array key type mixed.
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: libs.old/lexer/src/Lexer.php
+
+		-
 			rawMessage: 'Property Phplrt\Lexer\Lexer::$skip (list<(int|string)>) does not accept array<int<0, max>, (int|string)>.'
 			identifier: assign.propertyType
 			count: 1
@@ -629,6 +1055,36 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: libs.old/lexer/src/Lexer.php
+
+		-
+			rawMessage: Binary operation "+" between mixed and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getBytes().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\SourceFactoryInterface::create().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
 
 		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
@@ -643,16 +1099,106 @@ parameters:
 			path: libs.old/lexer/src/Multistate.php
 
 		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Lexer\Config\PassthroughWhenTokenHandler constructor expects non-empty-string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Lexer\Config\HandlerInterface::handle() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Lexer\PositionalLexerInterface::lex() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #1 $src of static method Phplrt\Lexer\Exception\UnexpectedStateException::fromEmptyStates() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #2 $offset of method Phplrt\Lexer\PositionalLexerInterface::lex() expects int<0, max>, (array|float|int) given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #2 $src of static method Phplrt\Lexer\Exception\EndlessRecursionException::fromState() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: 'Parameter #2 $src of static method Phplrt\Lexer\Exception\UnexpectedStateException::fromState() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
+			rawMessage: Possibly invalid array key type mixed.
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: libs.old/lexer/src/Multistate.php
+
+		-
 			rawMessage: Result of || is always true.
 			identifier: booleanOr.alwaysTrue
 			count: 1
 			path: libs.old/lexer/src/Multistate.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Lexer\Token\BaseToken::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Lexer\Token\BaseToken::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Lexer\Token\BaseToken::getValue().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
 			rawMessage: 'Method Phplrt\Lexer\Token\BaseToken::jsonSerialize() return type has no value type specified in iterable type array.'
 			identifier: missingType.iterableValue
 			count: 1
 			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function strlen expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Token/BaseToken.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getValue().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
 
 		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
@@ -679,9 +1225,27 @@ parameters:
 			path: libs.old/lexer/src/Token/Composite.php
 
 		-
+			rawMessage: 'Parameter #1 $name of class Phplrt\Lexer\Token\Composite constructor expects (int|string), mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
 			rawMessage: 'Parameter #1 $offset (int) of method Phplrt\Lexer\Token\Composite::offsetSet() should be contravariant with parameter $offset (int|null) of method ArrayAccess<int,Phplrt\Contracts\Lexer\TokenInterface>::offsetSet()'
 			identifier: method.childParameterType
 			count: 2
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Parameter #2 $value of class Phplrt\Lexer\Token\Composite constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Token/Composite.php
+
+		-
+			rawMessage: 'Parameter #3 $offset of class Phplrt\Lexer\Token\Composite constructor expects int<0, max>, mixed given.'
+			identifier: argument.type
+			count: 1
 			path: libs.old/lexer/src/Token/Composite.php
 
 		-
@@ -691,10 +1255,28 @@ parameters:
 			path: libs.old/lexer/src/Token/Composite.php
 
 		-
-			rawMessage: 'Method Phplrt\Lexer\Token\EndOfInput::getName() should return non-empty-string but returns (int|string).'
-			identifier: return.type
+			rawMessage: Access to undefined constant Phplrt\Contracts\Lexer\TokenInterface::END_OF_INPUT.
+			identifier: classConstant.notFound
 			count: 1
 			path: libs.old/lexer/src/Token/EndOfInput.php
+
+		-
+			rawMessage: PHPDoc tag @var for constant Phplrt\Lexer\Token\EndOfInput::DEFAULT_TOKEN_NAME with type non-empty-string is not subtype of value mixed.
+			identifier: classConstant.phpDocType
+			count: 1
+			path: libs.old/lexer/src/Token/EndOfInput.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/lexer/src/Token/Renderer.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getValue().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/lexer/src/Token/Renderer.php
 
 		-
 			rawMessage: Constant Phplrt\Lexer\Token\Renderer::DEFAULT_REPLACEMENTS type has no value type specified in iterable type array.
@@ -703,10 +1285,46 @@ parameters:
 			path: libs.old/lexer/src/Token/Renderer.php
 
 		-
+			rawMessage: 'Method Phplrt\Lexer\Token\Renderer::name() should return string but returns mixed.'
+			identifier: return.type
+			count: 1
+			path: libs.old/lexer/src/Token/Renderer.php
+
+		-
+			rawMessage: 'Parameter #1 $value of method Phplrt\Lexer\Token\Renderer::inline() expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/lexer/src/Token/Renderer.php
+
+		-
 			rawMessage: 'Method Phplrt\Parser\BuilderInterface::build() has no return type specified.'
 			identifier: missingType.return
 			count: 1
 			path: libs.old/parser/src/BuilderInterface.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface::getSource().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/parser/src/Exception/UnrecognizedTokenException.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface::getToken().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/parser/src/Exception/UnrecognizedTokenException.php
+
+		-
+			rawMessage: 'Parameter #1 $src of static method Phplrt\Parser\Exception\UnrecognizedTokenException::fromToken() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Exception/UnrecognizedTokenException.php
+
+		-
+			rawMessage: 'Parameter #2 $tok of static method Phplrt\Parser\Exception\UnrecognizedTokenException::fromToken() expects Phplrt\Contracts\Lexer\TokenInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Exception/UnrecognizedTokenException.php
 
 		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
@@ -757,6 +1375,12 @@ parameters:
 			path: libs.old/parser/src/Grammar/Concatenation.php
 
 		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/parser/src/Grammar/Lexeme.php
+
+		-
 			rawMessage: 'Method Phplrt\Parser\Grammar\Production::mergeWith() has parameter $result with no value type specified in iterable type array.'
 			identifier: missingType.iterableValue
 			count: 1
@@ -803,6 +1427,30 @@ parameters:
 			identifier: deadCode.unreachable
 			count: 1
 			path: libs.old/parser/src/Grammar/Repetition.php
+
+		-
+			rawMessage: Access to undefined constant Phplrt\Contracts\Lexer\TokenInterface::END_OF_INPUT.
+			identifier: classConstant.notFound
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getName().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Lexer\TokenInterface::getOffset().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\SourceFactoryInterface::create().'
+			identifier: method.notFound
+			count: 1
+			path: libs.old/parser/src/Parser.php
 
 		-
 			rawMessage: 'Call to function assert() with true will always evaluate to true.'
@@ -913,6 +1561,12 @@ parameters:
 			path: libs.old/parser/src/Parser.php
 
 		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Parser\Parser<TNode of object>::createBufferFromSource() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
 			rawMessage: 'Parameter #1 $step of method Phplrt\Parser\Parser<object>::eachStepThrough() expects (callable(Phplrt\Parser\Context, Closure(): mixed): mixed)|null, mixed given.'
 			identifier: argument.type
 			count: 1
@@ -931,8 +1585,20 @@ parameters:
 			path: libs.old/parser/src/Parser.php
 
 		-
+			rawMessage: 'Parameter #2 $source of class Phplrt\Parser\Context constructor expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
 			rawMessage: 'Parameter #2 of closure expects Closure(): mixed, Closure(mixed): mixed given.'
 			identifier: argument.type
+			count: 1
+			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Property Phplrt\Parser\Parser::$eoi (non-empty-string) does not accept default value of type mixed.'
+			identifier: property.defaultValue
 			count: 1
 			path: libs.old/parser/src/Parser.php
 
@@ -941,6 +1607,66 @@ parameters:
 			identifier: identical.alwaysFalse
 			count: 1
 			path: libs.old/parser/src/Parser.php
+
+		-
+			rawMessage: 'Binary operation "+" between mixed and int<0, max> results in an error.'
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: Binary operation "-" between mixed and mixed results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Position\PositionInterface::getOffset().'
+			identifier: method.notFound
+			count: 3
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Interval::fromOffset() has invalid return type Phplrt\Contracts\Position\IntervalInterface.'
+			identifier: class.notFound
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Interval::fromOffset() should return Phplrt\Contracts\Position\IntervalInterface but returns Phplrt\Position\Interval.'
+			identifier: return.type
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Interval::fromPosition() has invalid return type Phplrt\Contracts\Position\IntervalInterface.'
+			identifier: class.notFound
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Interval::fromPosition() should return Phplrt\Contracts\Position\IntervalInterface but returns Phplrt\Position\Interval.'
+			identifier: return.type
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Method Phplrt\Position\Interval::getLength() should return int but returns float|int<0, max>.'
+			identifier: return.type
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Parameter #2 $offset of static method Phplrt\Position\Position::fromOffset() expects int<0, max>, (float|int) given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/Interval.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\SourceFactoryInterface::create().'
+			identifier: method.notFound
+			count: 3
+			path: libs.old/position/src/Position.php
 
 		-
 			rawMessage: 'Call to function assert() with true and ''Column must be…'' will always evaluate to true.'
@@ -985,8 +1711,50 @@ parameters:
 			path: libs.old/position/src/Position.php
 
 		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Contracts\Position\PositionFactoryInterface::createAtEnding() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Contracts\Position\PositionFactoryInterface::createFromOffset() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Parameter #1 $source of method Phplrt\Contracts\Position\PositionFactoryInterface::createFromPosition() expects Phplrt\Contracts\Source\ReadableInterface, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/Position.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\FileInterface::getPathname().'
+			identifier: method.notFound
+			count: 2
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Call to an undefined method Phplrt\Contracts\Source\ReadableInterface::getStream().'
+			identifier: method.notFound
+			count: 3
+			path: libs.old/position/src/PositionFactory.php
+
+		-
 			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
 			identifier: function.alreadyNarrowedType
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Call to method getContents() on an unknown class Phplrt\Source\PreferContentReadingInterface.'
+			identifier: class.notFound
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: Class Phplrt\Source\PreferContentReadingInterface not found.
+			identifier: class.notFound
 			count: 1
 			path: libs.old/position/src/PositionFactory.php
 
@@ -1015,6 +1783,66 @@ parameters:
 			path: libs.old/position/src/PositionFactory.php
 
 		-
+			rawMessage: 'Parameter #1 $filename of function filesize expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function is_file expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function feof expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fgets expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fread expects resource, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function fseek expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function ftell expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function stream_get_meta_data expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $stream of function stream_set_blocking expects resource, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
+			rawMessage: 'Parameter #1 $string of function strlen expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: libs.old/position/src/PositionFactory.php
+
+		-
 			rawMessage: 'Parameter #2 $length of function fread expects int<1, max>, int given.'
 			identifier: argument.type
 			count: 1
@@ -1031,258 +1859,6 @@ parameters:
 			identifier: booleanAnd.alwaysTrue
 			count: 1
 			path: libs.old/position/src/PositionFactory.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
-			identifier: greaterOrEqual.alwaysTrue
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function fclose expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function feof expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function flock expects resource, resource|false given.'
-			identifier: argument.type
-			count: 2
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function fread expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function stream_set_blocking expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: libs.old/source/src/File.php
-
-		-
-			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Readable::fromPathname() expects non-empty-string, string given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Readable.php
-
-		-
-			rawMessage: 'Parameter #1 $resource of static method Phplrt\Source\Readable::fromResource() expects resource, resource|null given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Readable.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Temporary stream…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Method Phplrt\Source\Source::getStream() should return resource but returns resource|false.'
-			identifier: return.type
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function fwrite expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Parameter #1 $stream of function rewind expects resource, resource|false given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Property Phplrt\Source\Source::$stream (resource|null) does not accept resource|false.'
-			identifier: assign.propertyType
-			count: 1
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: libs.old/source/src/Source.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Temporary stream…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
-			identifier: greaterOrEqual.alwaysTrue
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of static method Phplrt\Source\Exception\NotReadableException::fromOpeningFile() expects non-empty-string, string given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Parameter #1 $pathname of static method Phplrt\Source\Exception\NotFoundException::fromInvalidPathname() expects non-empty-string, string given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: libs.old/source/src/SourceFactory.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Chunk size must be…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Hashing algorithm…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: Cannot cast mixed to int.
-			identifier: cast.int
-			count: 2
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: Cannot cast mixed to string.
-			identifier: cast.string
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Comparison operation ">=" between int<1, max> and 1 is always true.'
-			identifier: greaterOrEqual.alwaysTrue
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Offset ''uri'' might not exist on array{timed_out: bool, blocked: bool, eof: bool, unread_bytes: int, stream_type: string, wrapper_type: string, wrapper_data: mixed, mode: string, ...}.'
-			identifier: offsetAccess.notFound
-			count: 3
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function fopen expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Parameter #2 $mode of function fopen expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Property Phplrt\Source\Stream::$algo (non-empty-string) does not accept string.'
-			identifier: assign.propertyType
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Property Phplrt\Source\Stream::$offset (int<0, max>) does not accept int.'
-			identifier: assign.propertyType
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: libs.old/source/src/Stream.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/VirtualFile.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: libs.old/source/src/VirtualFile.php
-
-		-
-			rawMessage: 'Call to function assert() with true and ''Filename must not…'' will always evaluate to true.'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: libs.old/source/src/VirtualStreamingFile.php
-
-		-
-			rawMessage: 'Property Phplrt\Source\VirtualStreamingFile::$filename (non-empty-string) does not accept mixed.'
-			identifier: assign.propertyType
-			count: 1
-			path: libs.old/source/src/VirtualStreamingFile.php
-
-		-
-			rawMessage: 'Strict comparison using !== between non-empty-string and '''' will always evaluate to true.'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: libs.old/source/src/VirtualStreamingFile.php
 
 		-
 			rawMessage: 'Call to function is_array() with object will always evaluate to false.'

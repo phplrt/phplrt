@@ -4,19 +4,20 @@ includes:
   - phpstan-baseline.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
+  - libs/contracts/position/phpstan.neon
   - libs/contracts/source/phpstan.neon
+  # Components
+  - libs/components/source/phpstan.neon
   # Legacy Components
   - libs.old/contracts/ast/phpstan.neon
   - libs.old/contracts/exception/phpstan.neon
   - libs.old/contracts/parser/phpstan.neon
-  - libs.old/contracts/position/phpstan.neon
   - libs.old/buffer/phpstan.neon
   - libs.old/compiler/phpstan.neon
   - libs.old/exception/phpstan.neon
-  - libs.old/lexer/phpstan.neon
+  #- libs.old/lexer/phpstan.neon
   - libs.old/parser/phpstan.neon
-  - libs.old/position/phpstan.neon
-  - libs.old/source/phpstan.neon
+  #- libs.old/position/phpstan.neon
   - libs.old/visitor/phpstan.neon
 parameters:
   level: max
