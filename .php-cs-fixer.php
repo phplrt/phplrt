@@ -3,6 +3,7 @@
 const DIR_INCLUDE = [
     # Contracts
     __DIR__ . '/libs/contracts/lexer/src',
+    __DIR__ . '/libs/contracts/position/src',
     __DIR__ . '/libs/contracts/source/src',
     # Components
     __DIR__ . '/libs/components/source/src',
@@ -11,7 +12,6 @@ const DIR_INCLUDE = [
     __DIR__ . '/libs.old/contracts/ast/src',
     __DIR__ . '/libs.old/contracts/exception/src',
     __DIR__ . '/libs.old/contracts/parser/src',
-    __DIR__ . '/libs.old/contracts/position/src',
     __DIR__ . '/libs.old/buffer/src',
     __DIR__ . '/libs.old/compiler/src',
     __DIR__ . '/libs.old/exception/src',
