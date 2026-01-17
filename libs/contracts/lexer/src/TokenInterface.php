@@ -7,7 +7,7 @@ namespace Phplrt\Contracts\Lexer;
 /**
  * The lexical token that returns from {@see LexerInterface}
  */
-interface TokenInterface
+interface TokenInterface extends \Stringable
 {
     /**
      * Gets a token name
@@ -15,6 +15,13 @@ interface TokenInterface
      * @var non-empty-string
      */
     public string $name {
+        get;
+    }
+
+    /**
+     * Gets a channel of the token
+     */
+    public ?ChannelInterface $channel {
         get;
     }
 
