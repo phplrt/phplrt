@@ -18,6 +18,8 @@ final class SourceFactory implements SourceFactoryInterface
     ) {}
 
     /**
+     * @api
+     *
      * @throws NotCreatableException in case the source argument is not valid
      * @throws SourceExceptionInterface in case of source creation exception occurs
      */
@@ -31,6 +33,31 @@ final class SourceFactory implements SourceFactoryInterface
         };
     }
 
+    /**
+     * @api
+     *
+     * @param non-empty-string|null $pathname
+     *
+     * @phpstan-return ($pathname is null ? Source : VirtualFile)
+     */
+    public function createEmpty(?string $pathname = null): Source|VirtualFile
+    {
+        return $this->createFromString('', $pathname);
+    }
+
+    /**
+     * @api
+     *
+     * @throws SourceExceptionInterface
+     */
+    public function createFromSplFileInfo(\SplFileInfo $inf): File
+    {
+        return $this->createFromFile($inf->getPathname());
+    }
+
+    /**
+     * @api
+     */
     public function createFromFile(string $pathname): File
     {
         if ($pathname === '') {
@@ -41,21 +68,25 @@ final class SourceFactory implements SourceFactoryInterface
     }
 
     /**
-     * @phpstan-return ($name is null ? Source : VirtualFile)
+     * @api
+     *
+     * @phpstan-return ($pathname is null ? Source : VirtualFile)
      */
-    public function createFromString(string $content = '', ?string $name = null): Source|VirtualFile
+    public function createFromString(string $content, ?string $pathname = null): Source|VirtualFile
     {
-        if ($name === null) {
+        if ($pathname === null) {
             return new Source($content, $this->hasher);
         }
 
-        return new VirtualFile($name, $content, $this->hasher);
+        return new VirtualFile($pathname, $content, $this->hasher);
     }
 
     /**
-     * @phpstan-return ($name is null ? Stream : VirtualFileStream)
+     * @api
+     *
+     * @phpstan-return ($pathname is null ? Stream : VirtualFileStream)
      */
-    public function createFromStream(mixed $stream, ?string $name = null): Stream|VirtualFileStream
+    public function createFromStream(mixed $stream, ?string $pathname = null): Stream|VirtualFileStream
     {
         if (!\is_resource($stream)) {
             throw NotCreatableException::becauseSourceIs('non-resource');
@@ -65,10 +96,10 @@ final class SourceFactory implements SourceFactoryInterface
             throw NotCreatableException::becauseSourceIs('non-stream resource');
         }
 
-        if ($name === null) {
+        if ($pathname === null) {
             return new Stream($stream, $this->hasher);
         }
 
-        return new VirtualFileStream($name, $stream, $this->hasher);
+        return new VirtualFileStream($pathname, $stream, $this->hasher);
     }
 }

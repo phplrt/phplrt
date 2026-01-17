@@ -105,6 +105,7 @@ class Stream extends Readable
 
     /**
      * @param StreamMetaType $metadata
+     *
      * @return non-empty-string
      */
     private function getModeFromMetadata(array $metadata): string
@@ -120,6 +121,7 @@ class Stream extends Readable
 
     /**
      * @param StreamMetaType $metadata
+     *
      * @return non-empty-string|null
      */
     private function getUriFromMetadata(array $metadata): ?string

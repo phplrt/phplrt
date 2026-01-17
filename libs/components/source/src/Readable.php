@@ -6,12 +6,15 @@ namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Hash\HasherInterface;
+use Phplrt\Source\Internal\SourceFactoryProvider;
 
 /**
  * An arbitrary object that supports reading of source data
  */
 abstract class Readable implements ReadableInterface
 {
+    use SourceFactoryProvider;
+
     public function __construct(
         protected HasherInterface $hasher,
     ) {}

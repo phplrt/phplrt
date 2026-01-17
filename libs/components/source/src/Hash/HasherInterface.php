@@ -13,6 +13,7 @@ interface HasherInterface
 
     /**
      * @param non-empty-string $pathname
+     *
      * @return non-empty-string
      */
     public function file(string $pathname): string;
