@@ -15,6 +15,10 @@ abstract class Readable implements ReadableInterface
 {
     use SourceFactoryProvider;
 
+    /**
+     * @param HasherInterface $hasher The hasher instance used for
+     *        generating content hashes
+     */
     public function __construct(
         protected HasherInterface $hasher,
     ) {}

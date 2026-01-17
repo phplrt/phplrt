@@ -15,6 +15,8 @@ class VirtualFile extends Source implements FileInterface
 {
     public function __construct(
         /**
+         * The virtual file pathname
+         *
          * @var non-empty-string
          */
         public readonly string $pathname,

@@ -15,6 +15,9 @@ use Phplrt\Source\Hash\HasherInterface;
 class File extends Readable implements FileInterface
 {
     public mixed $stream {
+        /**
+         * @throws NotReadableException When the file cannot be opened for reading
+         */
         get {
             $stream = \fopen($this->pathname, 'rb');
 
@@ -27,6 +30,10 @@ class File extends Readable implements FileInterface
     }
 
     public string $content {
+        /**
+         * @throws NotFoundException When the file does not exist
+         * @throws NotReadableException When the file cannot be read
+         */
         get {
             if (!\is_file($this->pathname)) {
                 throw NotFoundException::becauseFileNotFound($this->pathname);

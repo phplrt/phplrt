@@ -9,15 +9,14 @@ use Phplrt\Source\Hash\HasherInterface;
 
 /**
  * Implementing a readable object that references a virtual (non-real)
- * file with predefined content stream
+ * file with a predefined content stream
  */
 class VirtualFileStream extends Stream implements FileInterface
 {
-    /**
-     * @param resource $stream
-     */
     public function __construct(
         /**
+         * The virtual file pathname
+         *
          * @var non-empty-string
          */
         public readonly string $pathname,

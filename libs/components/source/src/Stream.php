@@ -28,6 +28,9 @@ use Phplrt\Source\Hash\HasherInterface;
 class Stream extends Readable
 {
     public string $content {
+        /**
+         * @throws NotReadableException When the stream cannot be read
+         */
         get {
             \error_clear_last();
 
@@ -61,16 +64,20 @@ class Stream extends Readable
     public readonly ?string $uri;
 
     /**
+     * Gets the stream access mode (e.g., "rb", "rb+", "w", etc.)
+     *
      * @var non-empty-string
      */
     public readonly string $mode;
 
     /**
-     * Returns {@see true} in case of stream is local
+     * Gets {@see true} if the stream is local
      */
     public readonly bool $isLocal;
 
     /**
+     * Gets the current offset position in the stream
+     *
      * @var int<0, max>
      */
     public int $offset {
@@ -78,10 +85,10 @@ class Stream extends Readable
         get => (int) \ftell($this->stream);
     }
 
+    /**
+     * @param resource $stream The resource stream
+     */
     public function __construct(
-        /**
-         * @var resource
-         */
         public readonly mixed $stream,
         HasherInterface $hasher,
     ) {
@@ -89,13 +96,17 @@ class Stream extends Readable
 
         $metadata = \stream_get_meta_data($stream);
 
-        $this->uri = $this->getUriFromMetadata($metadata);
+        $this->uri = $this->findUriFromMetadata($metadata);
         $this->mode = $this->getModeFromMetadata($metadata);
         $this->isLocal = $this->getIsLocalInfoFromMetadata($metadata);
     }
 
     /**
-     * @param StreamMetaType $metadata
+     * Extracts "local" bool flag stream information from metadata
+     *
+     * @param StreamMetaType $metadata Stream metadata array
+     *
+     * @return bool {@see true} if the stream is local, {@see false} otherwise
      */
     private function getIsLocalInfoFromMetadata(array $metadata): bool
     {
@@ -104,9 +115,11 @@ class Stream extends Readable
     }
 
     /**
-     * @param StreamMetaType $metadata
+     * Extracts stream mode from metadata
      *
-     * @return non-empty-string
+     * @param StreamMetaType $metadata Stream metadata array
+     *
+     * @return non-empty-string The stream access mode
      */
     private function getModeFromMetadata(array $metadata): string
     {
@@ -120,11 +133,13 @@ class Stream extends Readable
     }
 
     /**
-     * @param StreamMetaType $metadata
+     * Extracts stream URI from metadata
      *
-     * @return non-empty-string|null
+     * @param StreamMetaType $metadata Stream metadata array
+     *
+     * @return non-empty-string|null The stream URI or {@see null} if not available
      */
-    private function getUriFromMetadata(array $metadata): ?string
+    private function findUriFromMetadata(array $metadata): ?string
     {
         $uri = $metadata['uri'] ?? null;
 
@@ -136,7 +151,16 @@ class Stream extends Readable
     }
 
     /**
-     * @return array<non-empty-string, mixed>
+     * Serializes the stream object
+     *
+     * @return array{
+     *     uri: ?non-empty-string,
+     *     mode: non-empty-string,
+     *     seek: int<0, max>,
+     *     hasher: HasherInterface,
+     * }
+     *
+     * @throws \LogicException When the stream does not have a URI
      */
     public function __serialize(): array
     {
@@ -153,6 +177,8 @@ class Stream extends Readable
     }
 
     /**
+     * Unserializes the stream object
+     *
      * @param array{
      *     uri: non-empty-string,
      *     mode: non-empty-string,
@@ -160,6 +186,9 @@ class Stream extends Readable
      *     hasher: HasherInterface,
      *     ...
      * } $data
+     *
+     * @throws NotReadableException When the stream cannot be opened
+     * @throws NotAccessibleException When the stream is not seekable
      */
     public function __unserialize(array $data): void
     {

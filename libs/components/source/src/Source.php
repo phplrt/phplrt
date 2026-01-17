@@ -13,6 +13,9 @@ use Phplrt\Source\Hash\HasherInterface;
 class Source extends Readable
 {
     public mixed $stream {
+        /**
+         * @throws NotAccessibleException When the stream cannot be created or accessed
+         */
         get {
             $stream = @\fopen('php://memory', 'rb+');
 

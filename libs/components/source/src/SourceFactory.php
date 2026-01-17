@@ -13,6 +13,10 @@ use Phplrt\Source\Hash\XXHash3Hasher;
 
 final class SourceFactory implements SourceFactoryInterface
 {
+    /**
+     * @param HasherInterface $hasher The hasher instance used for
+     *        generating content hashes
+     */
     public function __construct(
         public HasherInterface $hasher = new XXHash3Hasher(),
     ) {}
