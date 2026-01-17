@@ -33,7 +33,7 @@
 
     <source>
         <include>
-            <directory suffix=".php">libs/*/src</directory>
+            <directory suffix=".php">libs/**/src</directory>
             <!--
             <directory suffix=".php">libs.old/*/src</directory>
             <directory suffix=".php">libs.old/contracts/*/src</directory>
