@@ -96,8 +96,6 @@ trait SourceFactoryProvider
     /**
      * @api
      *
-     * @param non-empty-string $pathname
-     *
      * @throws SourceExceptionInterface
      */
     final public static function fromFile(string $pathname): FileInterface
@@ -111,8 +109,6 @@ trait SourceFactoryProvider
      * @api
      *
      * @deprecated please use {@see self::fromFile()} instead
-     *
-     * @param non-empty-string $pathname
      *
      * @throws SourceExceptionInterface
      */
