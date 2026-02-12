@@ -16,17 +16,6 @@
             <directory>libs/contracts/*/tests</directory>
             <directory>libs/components/*/tests</directory>
         </testsuite>
-
-        <!--
-        <testsuite name="unit.old">
-            <directory>libs.old/*/tests/Unit</directory>
-            <directory>libs.old/contracts/*/tests</directory>
-        </testsuite>
-
-        <testsuite name="functional.old">
-            <directory>libs.old/*/tests/Functional</directory>
-        </testsuite>
-        -->
     </testsuites>
 
     <coverage/>

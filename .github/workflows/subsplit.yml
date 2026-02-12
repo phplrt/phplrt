@@ -32,31 +32,11 @@ jobs:
           - local_path: 'libs/contracts/source'
             split_repository: 'source-contracts'
           # Metadata
-          - local_path: 'libs.old/meta/runtime'
+          - local_path: 'libs/meta/runtime'
             split_repository: 'runtime'
           # Documentation
           - local_path: 'docs'
             split_repository: 'docs'
-          # Legacy: Kernel Libraries
-          - local_path: 'libs.old/compiler'
-            split_repository: 'compiler'
-          - local_path: 'libs.old/buffer'
-            split_repository: 'buffer'
-          - local_path: 'libs.old/exception'
-            split_repository: 'exception'
-          - local_path: 'libs.old/parser'
-            split_repository: 'parser'
-          - local_path: 'libs.old/position'
-            split_repository: 'position'
-          - local_path: 'libs.old/visitor'
-            split_repository: 'visitor'
-          # Legacy: Contracts
-          - local_path: 'libs.old/contracts/ast'
-            split_repository: 'ast-contracts'
-          - local_path: 'libs.old/contracts/exception'
-            split_repository: 'exception-contracts'
-          - local_path: 'libs.old/contracts/parser'
-            split_repository: 'parser-contracts'
     steps:
       - uses: actions/checkout@v4
 

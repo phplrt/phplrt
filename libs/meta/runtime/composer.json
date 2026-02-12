@@ -16,10 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "phplrt/lexer": "^4.0",
-        "phplrt/parser": "^4.0",
-        "phplrt/position": "^4.0"
+        "php": "^8.4"
     },
     "extra": {
         "branch-alias": {
@@ -28,10 +25,7 @@
         }
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

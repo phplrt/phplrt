@@ -25,24 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Buffer\\": "libs.old/buffer/src",
-            "Phplrt\\Compiler\\": "libs.old/compiler/src",
             "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-compiler/src",
-            "Phplrt\\Contracts\\Ast\\": "libs.old/contracts/ast/src",
-            "Phplrt\\Contracts\\Exception\\": "libs.old/contracts/exception/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
-            "Phplrt\\Contracts\\Parser\\": "libs.old/contracts/parser/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
-            "Phplrt\\Exception\\": "libs.old/exception/src",
-            "Phplrt\\Parser\\": "libs.old/parser/src",
-            "Phplrt\\Position\\": "libs.old/position/src",
-            "Phplrt\\Source\\": "libs/components/source/src",
-            "Phplrt\\Visitor\\": "libs.old/visitor/src"
-        },
-        "files": [
-            "libs.old/parser/src/polyfill.php"
-        ]
+            "Phplrt\\Source\\": "libs/components/source/src"
+        }
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.93",
@@ -58,55 +46,27 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Buffer\\Tests\\": "libs.old/buffer/tests",
-            "Phplrt\\Compiler\\Tests\\": "libs.old/compiler/tests",
             "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-compiler/tests",
-            "Phplrt\\Contracts\\Ast\\Tests\\": "libs.old/contracts/ast/tests",
-            "Phplrt\\Contracts\\Exception\\Tests\\": "libs.old/contracts/exception/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
-            "Phplrt\\Contracts\\Parser\\Tests\\": "libs.old/contracts/parser/tests",
             "Phplrt\\Contracts\\Position\\Tests\\": "libs/contracts/position/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
-            "Phplrt\\Exception\\Tests\\": "libs.old/exception/tests",
-            "Phplrt\\Parser\\Tests\\": "libs.old/parser/tests",
-            "Phplrt\\Position\\Tests\\": "libs.old/position/tests",
-            "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
-            "Phplrt\\Visitor\\Tests\\": "libs.old/visitor/tests"
+            "Phplrt\\Source\\Tests\\": "libs/components/source/tests"
         }
     },
     "replace": {
-        "phplrt/ast-contracts": "*",
-        "phplrt/buffer": "*",
-        "phplrt/compiler": "*",
-        "phplrt/contracts": "*",
-        "phplrt/exception": "*",
-        "phplrt/exception-contracts": "*",
-        "phplrt/grammar": "*",
-        "phplrt/grammar-contracts": "*",
-        "phplrt/lexer": "*",
         "phplrt/lexer-compiler": "*",
         "phplrt/lexer-contracts": "*",
-        "phplrt/parser": "*",
-        "phplrt/parser-contracts": "*",
-        "phplrt/position": "*",
         "phplrt/position-contracts": "*",
-        "phplrt/runtime": "*",
         "phplrt/source": "*",
-        "phplrt/source-contracts": "*",
-        "phplrt/visitor": "*"
+        "phplrt/source-contracts": "*"
     },
     "provide": {
-        "phplrt/exception-contracts-implementation": "^4.0",
         "phplrt/lexer-contracts-implementation": "^4.0",
-        "phplrt/parser-contracts-implementation": "^4.0",
         "phplrt/position-contracts-implementation": "^4.0",
         "phplrt/source-contracts-implementation": "^4.0"
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
+        "sort-packages": true
     },
     "scripts-aliases": {
         "test:unit": ["test", "phpunit", "unit"],

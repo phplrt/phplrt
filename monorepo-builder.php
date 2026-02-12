@@ -18,10 +18,7 @@ return static function (MBConfig $config): void {
         __DIR__ . '/libs/compiler',
         __DIR__ . '/libs/components',
         __DIR__ . '/libs/contracts',
-        __DIR__ . '/libs/meta',
-        // Legacy
-        __DIR__ . '/libs.old',
-        __DIR__ . '/libs.old/contracts',
+        __DIR__ . '/libs/meta'
     ]);
 
     $services = $config->services();

@@ -8,21 +8,9 @@ const DIR_INCLUDE = [
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/position/src',
     __DIR__ . '/libs/contracts/source/src',
-    // Legacy Components
-    __DIR__ . '/libs.old/contracts/ast/src',
-    __DIR__ . '/libs.old/contracts/exception/src',
-    __DIR__ . '/libs.old/contracts/parser/src',
-    __DIR__ . '/libs.old/buffer/src',
-    __DIR__ . '/libs.old/compiler/src',
-    __DIR__ . '/libs.old/exception/src',
-    __DIR__ . '/libs.old/parser/src',
-    __DIR__ . '/libs.old/position/src',
-    __DIR__ . '/libs.old/visitor/src',
 ];
 
-const DIR_EXCLUDE = [
-    __DIR__ . '/libs.old/compiler/src/Grammar',
-];
+const DIR_EXCLUDE = [];
 
 const FILE_EXCLUDE = [];
 
