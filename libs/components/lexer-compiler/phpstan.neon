@@ -1,5 +1,5 @@
 parameters:
-  level: 1
+  level: max
   strictRules:
     allRules: true
   fileExtensions:
@@ -7,4 +7,3 @@ parameters:
   paths:
     - src
   tmpDir: vendor/.cache.phpstan
-  reportUnmatchedIgnoredErrors: false

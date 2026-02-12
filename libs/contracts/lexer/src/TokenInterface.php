@@ -12,9 +12,12 @@ interface TokenInterface extends \Stringable
     /**
      * Gets a token name
      *
-     * @var non-empty-string
+     * In case of the token name contains an {@see int}, this means that
+     * the token is anonymous and does not have its own special name.
+     *
+     * @var non-empty-string|int
      */
-    public string $name {
+    public string|int $name {
         get;
     }
 

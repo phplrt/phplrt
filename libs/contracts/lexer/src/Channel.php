@@ -10,33 +10,23 @@ namespace Phplrt\Contracts\Lexer;
  * If you need your own channel, you can define your own instance
  * by implementing the {@see ChannelInterface} interface.
  */
-enum Channel implements ChannelInterface
+enum Channel: string implements ChannelInterface
 {
-    /**
-     * The main channel for any non-special tokens.
-     */
-    case Main;
-
     /**
      * Hidden tokens channel name.
      *
      * All tokens in this channel should be ignored.
      */
-    case Hidden;
+    case Hidden = 'hidden';
 
     /**
      * A channel marking a token as unrecognized
      */
-    case Unknown;
+    case Unknown = 'unknown';
 
     /**
      * This token's type corresponds to a terminal token and can only be
      * singular in the entire token stream.
      */
-    case EndOfInput;
-
-    /**
-     * A default token channel
-     */
-    public const self DEFAULT = self::Main;
+    case EndOfInput = 'eoi';
 }

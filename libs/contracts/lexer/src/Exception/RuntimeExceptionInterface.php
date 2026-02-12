@@ -11,7 +11,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
  * An exception that occurs after starting the lexical analysis and indicates
  * problems in the analyzed source.
  */
-interface LexerRuntimeExceptionInterface extends LexerExceptionInterface
+interface RuntimeExceptionInterface extends LexerExceptionInterface
 {
     /**
      * Gets the source object in which the error occurred.

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer\Tests;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
@@ -29,10 +30,13 @@ class CompatibilityTest extends TestCase
     public function testTokenCompatibility(): void
     {
         new class () implements TokenInterface {
-            public string $name;
+            public string|int $name;
+            public ?ChannelInterface $channel;
             public int $offset;
             public string $value;
             public int $bytes;
+
+            public function __toString(): string {}
         };
     }
 
@@ -45,7 +49,7 @@ class CompatibilityTest extends TestCase
     #[DoesNotPerformAssertions]
     public function testLexerRuntimeExceptionCompatibility(): void
     {
-        new class extends \Exception implements LexerRuntimeExceptionInterface
+        new class extends \Exception implements RuntimeExceptionInterface
         {
             public ReadableInterface $source;
             public TokenInterface $token;

@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/lexer-contracts",
+    "name": "phplrt/compiler-lexer",
     "type": "library",
-    "description": "A set of phplrt lexer abstractions",
+    "description": "The phplrt component for assembling a lexer",
     "license": "MIT",
-    "keywords": ["abstractions", "contracts", "decoupling", "interfaces", "interoperability", "standards", "regex", "lexer", "token", "stream", "parsing", "tokenizer"],
+    "keywords": ["regex", "lexer", "token", "stream", "parsing", "scanner", "tokenizer", "compiler", "build"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/lexer-contracts"
+        "source": "https://github.com/phplrt/compiler-lexer"
     },
     "authors": [
         {
@@ -17,11 +17,12 @@
     ],
     "require": {
         "php": "^8.4",
-        "phplrt/source-contracts": "^4.0"
+        "phplrt/lexer": "^4.0",
+        "laminas/laminas-code": "^4.17"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Contracts\\Lexer\\": "src"
+            "Phplrt\\Compiler\\Lexer\\": "src"
         }
     },
     "require-dev": {
@@ -31,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Contracts\\Lexer\\Tests\\": "tests"
+            "Phplrt\\Compiler\\Lexer\\Tests\\": "tests"
         }
     },
     "extra": {
@@ -41,10 +42,7 @@
         }
     },
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

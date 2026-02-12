@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Lexer;
 
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerRuntimeExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -24,7 +24,7 @@ interface LexerInterface
      * @throws LexerExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
      *         lexer settings contain errors
-     * @throws LexerRuntimeExceptionInterface an exception that occurs after
+     * @throws RuntimeExceptionInterface an exception that occurs after
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
      */
