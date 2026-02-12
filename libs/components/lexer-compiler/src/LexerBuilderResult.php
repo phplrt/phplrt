@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Lexer;
 
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
+use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 
 /**
@@ -18,21 +20,23 @@ final class LexerBuilderResult
      *
      * @var list<TokenDefinition>
      */
-    public array $globals {
+    public array $global {
         get {
-            if (isset($this->globals)) {
-                return $this->globals;
+            if (isset($this->global)) {
+                return $this->global;
             }
 
-            $this->globals = [];
+            $this->global = [];
 
             foreach ($this->tokens as $definition) {
                 if ($definition->namespace === null) {
-                    $this->globals[] = $definition;
+                    $this->global[] = $definition;
                 }
             }
 
-            return $this->globals;
+            $this->global[] = $this->createUnknownToken();
+
+            return $this->global;
         }
     }
 
@@ -41,13 +45,13 @@ final class LexerBuilderResult
      *
      * @var array<non-empty-string, list<TokenDefinition>>
      */
-    public array $namespaces {
+    public array $namespaced {
         get {
-            if (isset($this->namespaces)) {
-                return $this->namespaces;
+            if (isset($this->namespaced)) {
+                return $this->namespaced;
             }
 
-            $this->namespaces = [];
+            $this->namespaced = [];
 
             foreach ($this->tokens as $definition) {
                 $namespace = $definition->namespace;
@@ -56,10 +60,14 @@ final class LexerBuilderResult
                     continue;
                 }
 
-                $this->namespaces[$namespace][] = $definition;
+                $this->namespaced[$namespace][] = $definition;
             }
 
-            return $this->namespaces;
+            foreach ($this->namespaced as $namespace => $definitions) {
+                $this->namespaced[$namespace][] = $this->createUnknownToken();
+            }
+
+            return $this->namespaced;
         }
     }
 
@@ -92,5 +100,11 @@ final class LexerBuilderResult
         }
 
         return $result;
+    }
+
+    private function createUnknownToken(): TokenDefinition
+    {
+        return new RegexTokenDefinition('.+?')
+            ->setChannel(Channel::Unknown);
     }
 }

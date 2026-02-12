@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
 
-use Phplrt\Compiler\Lexer\Alias\AliasGeneratorInterface;
-use Phplrt\Compiler\Lexer\Alias\AlphabetAliasGenerator;
 use Phplrt\Compiler\Lexer\Definition\AliasedDefinition;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Compiler\Lexer\Generator\Extension\Alias\AliasGeneratorInterface;
+use Phplrt\Compiler\Lexer\Generator\Extension\Alias\AlphabetAliasGenerator;
 
 /**
  * @template-covariant TResult of RegexGeneratorResult = RegexGeneratorResult

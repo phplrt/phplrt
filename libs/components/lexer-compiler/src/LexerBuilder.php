@@ -14,12 +14,10 @@ use Phplrt\Compiler\Lexer\Compiler\RemoveUnusedChannelsLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 use Phplrt\Compiler\Lexer\Generator\GeneratedResult;
-use Phplrt\Compiler\Lexer\Generator\Phplrt4OutputGenerator;
 use Phplrt\Compiler\Lexer\Generator\OutputGeneratorInterface;
+use Phplrt\Compiler\Lexer\Generator\Phplrt4OutputGenerator;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 
@@ -171,7 +169,9 @@ final class LexerBuilder extends LexerBuilderContext
 
     /**
      * @template TArgGeneratedResult of GeneratedResult
+     *
      * @param OutputGeneratorInterface<TArgGeneratedResult> $generator
+     *
      * @return TArgGeneratedResult
      * @throws LexerCompilerException
      */
@@ -188,7 +188,6 @@ final class LexerBuilder extends LexerBuilderContext
     }
 
     /**
-     * @return self
      * @throws LexerCompilerException
      */
     private function compile(): self

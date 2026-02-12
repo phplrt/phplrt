@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\AliasedDefinition;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;

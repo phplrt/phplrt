@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\AliasedDefinition;
 
 final class RegexGeneratorResult implements \Stringable
 {
     /**
+     * Gets token alias and channel name map
+     *
      * @var array<non-empty-string, non-empty-string>
      */
     public array $channels {
@@ -34,6 +36,8 @@ final class RegexGeneratorResult implements \Stringable
     }
 
     /**
+     * Gets a token alias and its original name map
+     *
      * @var array<non-empty-string, non-empty-string|int>
      */
     public array $aliases {

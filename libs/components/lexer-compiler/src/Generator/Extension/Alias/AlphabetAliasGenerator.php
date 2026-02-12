@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Alias;
+namespace Phplrt\Compiler\Lexer\Generator\Extension\Alias;
 
 final class AlphabetAliasGenerator implements AliasGeneratorInterface
 {
