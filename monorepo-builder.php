@@ -15,9 +15,13 @@ return static function (MBConfig $config): void {
     $config->packageAliasFormat('<major>.<minor>.x-dev');
 
     $config->packageDirectories([
+        __DIR__ . '/libs/compiler',
+        __DIR__ . '/libs/components',
+        __DIR__ . '/libs/contracts',
+        __DIR__ . '/libs/meta',
+        // Legacy
         __DIR__ . '/libs.old',
         __DIR__ . '/libs.old/contracts',
-        __DIR__ . '/libs.old/meta'
     ]);
 
     $services = $config->services();

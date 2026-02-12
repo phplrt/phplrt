@@ -1,21 +1,20 @@
 <?php
 
 const DIR_INCLUDE = [
-    # Contracts
+    // Components
+    __DIR__ . '/libs/components/lexer-compiler/src',
+    __DIR__ . '/libs/components/source/src',
+    // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/position/src',
     __DIR__ . '/libs/contracts/source/src',
-    # Components
-    __DIR__ . '/libs/components/source/src',
-
-    # Legacy Components
+    // Legacy Components
     __DIR__ . '/libs.old/contracts/ast/src',
     __DIR__ . '/libs.old/contracts/exception/src',
     __DIR__ . '/libs.old/contracts/parser/src',
     __DIR__ . '/libs.old/buffer/src',
     __DIR__ . '/libs.old/compiler/src',
     __DIR__ . '/libs.old/exception/src',
-    __DIR__ . '/libs.old/lexer/src',
     __DIR__ . '/libs.old/parser/src',
     __DIR__ . '/libs.old/position/src',
     __DIR__ . '/libs.old/visitor/src',
@@ -25,14 +24,12 @@ const DIR_EXCLUDE = [
     __DIR__ . '/libs.old/compiler/src/Grammar',
 ];
 
-const FILE_EXCLUDE = [
-
-];
+const FILE_EXCLUDE = [];
 
 $files = PhpCsFixer\Finder::create()
     ->in(DIR_INCLUDE)
     ->exclude(DIR_EXCLUDE)
-    ->filter(static fn (SplFileInfo $file): bool => !in_array(
+    ->filter(static fn(SplFileInfo $file): bool => !in_array(
         needle: realpath($file->getPathname()),
         haystack: array_map(realpath(...), FILE_EXCLUDE),
         strict: true
@@ -40,6 +37,7 @@ $files = PhpCsFixer\Finder::create()
 ;
 
 return new PhpCsFixer\Config()
+    ->setRiskyAllowed(true)
     ->setRules([
         '@PER-CS3x0' => true,
         '@PER-CS3x0:risky' => true,

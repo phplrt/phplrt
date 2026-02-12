@@ -19,6 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          # Components
+          - local_path: 'libs/components/lexer-compiler'
+            split_repository: 'lexer-compiler'
+          - local_path: 'libs/components/source'
+            split_repository: 'source'
           # Contracts
           - local_path: 'libs/contracts/lexer'
             split_repository: 'lexer-contracts'
@@ -26,9 +31,6 @@ jobs:
             split_repository: 'position-contracts'
           - local_path: 'libs/contracts/source'
             split_repository: 'source-contracts'
-          # Components
-          - local_path: 'libs/source'
-            split_repository: 'source'
           # Metadata
           - local_path: 'libs.old/meta/runtime'
             split_repository: 'runtime'
@@ -42,8 +44,6 @@ jobs:
             split_repository: 'buffer'
           - local_path: 'libs.old/exception'
             split_repository: 'exception'
-          - local_path: 'libs.old/lexer'
-            split_repository: 'lexer'
           - local_path: 'libs.old/parser'
             split_repository: 'parser'
           - local_path: 'libs.old/position'

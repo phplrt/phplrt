@@ -5,24 +5,36 @@ declare(strict_types=1);
 namespace Phplrt\Source\Internal;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
-use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceFactoryInterface;
-use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Readable;
 use Phplrt\Source\SourceFactory;
 
+/**
+ * @internal
+ */
 trait SourceFactoryProvider
 {
+    use StringSourceFactoryProvider;
+    use StreamSourceFactoryProvider;
+    use FileSourceFactoryProvider;
+
+    /**
+     * @var SourceFactoryInterface<mixed>|null
+     */
     private static ?SourceFactoryInterface $sourceFactory;
 
     /**
      * Returns the {@see SourceFactoryInterface} factory instance used
      * for all static constructors of the {@see Readable} class.
+     *
+     * @api
+     *
+     * @return SourceFactoryInterface<mixed>
      */
     final public static function getSourceFactory(): SourceFactoryInterface
     {
-        return self::$sourceFactory ??= new SourceFactory();
+        return self::$sourceFactory ??= SourceFactory::default();
     }
 
     /**
@@ -49,6 +61,7 @@ trait SourceFactoryProvider
      *
      * @api
      *
+     * @param SourceFactoryInterface<mixed> $factory
      * @param \Closure():void $then
      */
     final public static function withSourceFactory(SourceFactoryInterface $factory, \Closure $then): void
@@ -71,125 +84,24 @@ trait SourceFactoryProvider
     {
         $factory = self::getSourceFactory();
 
-        return match (true) {
-            $source instanceof \SplFileInfo => $factory->createFromFile($source->getPathname()),
-            \is_string($source) => $factory->createFromString($source),
-            \is_resource($source) => $factory->createFromStream($source),
-            default => throw NotCreatableException::becauseSourceIsInvalid($source),
-        };
+        return $factory->create($source);
     }
 
     /**
      * @api
-     *
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
-     * @throws SourceExceptionInterface
      */
-    final public static function empty(?string $pathname = null): ReadableInterface
-    {
-        return self::fromString('', $pathname);
-    }
-
-    /**
-     * @api
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromFile(string $pathname): FileInterface
+    final public static function tryFrom(mixed $source): ?ReadableInterface
     {
         $factory = self::getSourceFactory();
 
-        return $factory->createFromFile($pathname);
-    }
+        if ($factory->supports($source)) {
+            try {
+                return $factory->create($source);
+            } catch (\Throwable) {
+                return null;
+            }
+        }
 
-    /**
-     * @api
-     *
-     * @deprecated please use {@see self::fromFile()} instead
-     *
-     * @throws SourceExceptionInterface
-     */
-    public static function fromPathname(string $pathname): FileInterface
-    {
-        return self::fromFile($pathname);
-    }
-
-    /**
-     * @api
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromSplFileInfo(\SplFileInfo $info): FileInterface
-    {
-        return self::fromFile($info->getPathname());
-    }
-
-    /**
-     * @api
-     *
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromString(string $content, ?string $pathname = null): ReadableInterface
-    {
-        $factory = self::getSourceFactory();
-
-        return $factory->createFromString($content, $pathname);
-    }
-
-    /**
-     * @api
-     *
-     * @deprecated please use {@see self::fromString()} instead
-     *
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromSources(string $sources, ?string $pathname = null): ReadableInterface
-    {
-        return self::fromString($sources, $pathname);
-    }
-
-    /**
-     * @api
-     *
-     * @param resource $stream
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromStream(mixed $stream, ?string $pathname = null): ReadableInterface
-    {
-        $factory = self::getSourceFactory();
-
-        return $factory->createFromStream($stream, $pathname);
-    }
-
-    /**
-     * @api
-     *
-     * @deprecated please use {@see self::fromStream()} instead
-     *
-     * @param resource $resource
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
-     * @throws SourceExceptionInterface
-     */
-    final public static function fromResource(mixed $resource, ?string $pathname = null): ReadableInterface
-    {
-        return self::fromStream($resource, $pathname);
+        return null;
     }
 }

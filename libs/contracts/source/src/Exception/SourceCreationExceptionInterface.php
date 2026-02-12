@@ -1,0 +1,11 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Contracts\Source\Exception;
+
+/**
+ * The exception that can be thrown in case of unexpected problems
+ * while creating a source instance.
+ */
+interface SourceCreationExceptionInterface extends SourceExceptionInterface {}

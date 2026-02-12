@@ -24,8 +24,8 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^12.5",
-        "phpstan/phpstan": "^2.1.33",
+        "phpunit/phpunit": "^12.5|^13.0",
+        "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0"
     },
     "autoload-dev": {

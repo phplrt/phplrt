@@ -159,7 +159,6 @@ class Stream extends Readable
      *     seek: int<0, max>,
      *     hasher: HasherInterface,
      * }
-     *
      * @throws \LogicException When the stream does not have a URI
      */
     public function __serialize(): array

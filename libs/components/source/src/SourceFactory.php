@@ -4,106 +4,86 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Source\Exception\NotCreatableException;
-use Phplrt\Source\Hash\HasherInterface;
-use Phplrt\Source\Hash\XXHash3Hasher;
+use Phplrt\Source\Factory\FileSourceFactory;
+use Phplrt\Source\Factory\StreamSourceFactory;
+use Phplrt\Source\Factory\StringSourceFactory;
 
+/**
+ * @template-implements SourceFactoryInterface<mixed>
+ */
 final class SourceFactory implements SourceFactoryInterface
 {
     /**
-     * @param HasherInterface $hasher The hasher instance used for
-     *        generating content hashes
+     * Contains default factory implementation
      */
-    public function __construct(
-        public HasherInterface $hasher = new XXHash3Hasher(),
-    ) {}
+    private static self $default;
 
     /**
-     * @api
-     *
-     * @throws NotCreatableException in case the source argument is not valid
-     * @throws SourceExceptionInterface in case of source creation exception occurs
+     * @var list<SourceFactoryInterface>
      */
-    public function create(mixed $source): ReadableInterface
+    private iterable $factories {
+        get {
+            /** @phpstan-ignore-next-line : false-positive */
+            if (\is_array($this->factories) && \array_is_list($this->factories)) {
+                return $this->factories;
+            }
+
+            /** @phpstan-ignore-next-line : false-positive */
+            return $this->factories = \iterator_to_array($this->factories, false);
+        }
+    }
+
+    public static function default(): self
     {
-        return match (true) {
-            $source instanceof \SplFileInfo => $this->createFromFile($source->getPathname()),
-            \is_string($source) => $this->createFromString($source),
-            \is_resource($source) => $this->createFromStream($source),
-            default => throw NotCreatableException::becauseSourceIsInvalid($source),
-        };
+        return self::$default ??= new self([
+            new StringSourceFactory(),
+            new FileSourceFactory(),
+            new StreamSourceFactory(),
+        ]);
     }
 
     /**
-     * @api
-     *
-     * @param non-empty-string|null $pathname
-     *
-     * @phpstan-return ($pathname is null ? Source : VirtualFile)
+     * @param iterable<mixed, SourceFactoryInterface> $factories
      */
-    public function createEmpty(?string $pathname = null): Source|VirtualFile
+    public function __construct(iterable $factories = [])
     {
-        return $this->createFromString('', $pathname);
+        $this->factories = \iterator_to_array($factories, false);
     }
 
     /**
-     * @api
-     *
-     * @throws SourceExceptionInterface
+     * @return SourceFactoryInterface<mixed>|null
      */
-    public function createFromSplFileInfo(\SplFileInfo $inf): File
+    private function select(mixed $source): ?SourceFactoryInterface
     {
-        return $this->createFromFile($inf->getPathname());
+        foreach ($this->factories as $factory) {
+            if ($factory->supports($source)) {
+                return $factory;
+            }
+        }
+
+        return null;
     }
 
-    /**
-     * @api
-     */
-    public function createFromFile(string $pathname): File
+    public function supports(mixed $source): bool
     {
-        if ($pathname === '') {
-            throw NotCreatableException::becauseSourceIs('empty pathname');
-        }
-
-        return new File($pathname, $this->hasher);
+        return $this->select($source) !== null;
     }
 
-    /**
-     * @api
-     *
-     * @phpstan-return ($pathname is null ? Source : VirtualFile)
-     */
-    public function createFromString(string $content, ?string $pathname = null): Source|VirtualFile
+    public function create(mixed $source, ?string $virtualPathname = null): ReadableInterface
     {
-        if ($pathname === null) {
-            return new Source($content, $this->hasher);
+        if ($source instanceof ReadableInterface) {
+            return $source;
         }
 
-        return new VirtualFile($pathname, $content, $this->hasher);
-    }
+        $factory = $this->select($source);
 
-    /**
-     * @api
-     *
-     * @phpstan-return ($pathname is null ? Stream : VirtualFileStream)
-     */
-    public function createFromStream(mixed $stream, ?string $pathname = null): Stream|VirtualFileStream
-    {
-        if (!\is_resource($stream)) {
-            throw NotCreatableException::becauseSourceIs('non-resource');
+        if ($factory === null) {
+            throw NotCreatableException::becauseSourceIsUnsupported($source);
         }
 
-        if (\get_resource_type($stream) !== 'stream') {
-            throw NotCreatableException::becauseSourceIs('non-stream resource');
-        }
-
-        if ($pathname === null) {
-            return new Stream($stream, $this->hasher);
-        }
-
-        return new VirtualFileStream($pathname, $stream, $this->hasher);
+        return $factory->create($source, $virtualPathname);
     }
 }
