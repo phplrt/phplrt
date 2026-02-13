@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer;
 
+use Phplrt\Compiler\Lexer\Alias\AliasGeneratorInterface;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
@@ -29,7 +30,7 @@ final class LexerBuilderResult
             $this->global = [];
 
             foreach ($this->tokens as $definition) {
-                if ($definition->namespace === null) {
+                if ($definition->state === null) {
                     $this->global[] = $definition;
                 }
             }
@@ -41,33 +42,33 @@ final class LexerBuilderResult
     }
 
     /**
-     * List of token definitions grouped by namespace
+     * List of token definitions grouped by state
      *
      * @var array<non-empty-string, list<TokenDefinition>>
      */
-    public array $namespaced {
+    public array $states {
         get {
-            if (isset($this->namespaced)) {
-                return $this->namespaced;
+            if (isset($this->states)) {
+                return $this->states;
             }
 
-            $this->namespaced = [];
+            $this->states = [];
 
             foreach ($this->tokens as $definition) {
-                $namespace = $definition->namespace;
+                $state = $definition->state;
 
-                if ($namespace === null) {
+                if ($state === null) {
                     continue;
                 }
 
-                $this->namespaced[$namespace][] = $definition;
+                $this->states[$state][] = $definition;
             }
 
-            foreach ($this->namespaced as $namespace => $definitions) {
-                $this->namespaced[$namespace][] = $this->createUnknownToken();
+            foreach ($this->states as $state => $definitions) {
+                $this->states[$state][] = $this->createUnknownToken();
             }
 
-            return $this->namespaced;
+            return $this->states;
         }
     }
 
@@ -94,7 +95,7 @@ final class LexerBuilderResult
         $result = [];
 
         foreach ($this->tokens as $definition) {
-            if ($definition->namespace === null) {
+            if ($definition->state === null) {
                 $result[] = $definition;
             }
         }

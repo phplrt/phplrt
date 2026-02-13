@@ -13,11 +13,11 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 abstract class TokenDefinition implements \Stringable
 {
     /**
-     * Contains token namespace, or {@see null} in case of token is global.
+     * Contains token state, or {@see null} in case of token is global.
      *
      * @var non-empty-string|null
      */
-    public ?string $namespace = null;
+    public ?string $state = null;
 
     /**
      * Contains token name, or {@see null} in case of token is anonymous
@@ -39,8 +39,8 @@ abstract class TokenDefinition implements \Stringable
 
             $name = $this->name;
 
-            if ($this->namespace !== null) {
-                $name = $this->namespace . ':' . $name;
+            if ($this->state !== null) {
+                $name = $this->state . ':' . $name;
             }
 
             return $name;
@@ -64,6 +64,13 @@ abstract class TokenDefinition implements \Stringable
     public ?ChannelInterface $channel = null;
 
     /**
+     * Contains transition namespace
+     *
+     * @var TransitionType|non-empty-string|null
+     */
+    public TransitionType|string|null $transition = null;
+
+    /**
      * @param non-empty-string|null $name
      */
     public function __construct(
@@ -73,18 +80,41 @@ abstract class TokenDefinition implements \Stringable
     }
 
     /**
+     * @api
+     * @param non-empty-string|null $namespace
+     * @return $this
+     */
+    public function setTransition(?string $namespace): self
+    {
+        $this->transition = $namespace;
+
+        return $this;
+    }
+
+    /**
+     * @api
+     * @return $this
+     */
+    public function setGlobalTransition(): self
+    {
+        $this->transition = TransitionType::Exit;
+
+        return $this;
+    }
+
+    /**
      * Updates the token namespace of the current definition and returns
      * itself as the fluent interface.
      *
      * @api
      *
-     * @param non-empty-string|null $namespace
+     * @param non-empty-string|null $state
      *
      * @return $this
      */
-    public function setNamespace(?string $namespace): self
+    public function setState(?string $state): self
     {
-        $this->namespace = $namespace;
+        $this->state = $state;
 
         return $this;
     }
@@ -96,9 +126,9 @@ abstract class TokenDefinition implements \Stringable
      *
      * @return $this
      */
-    public function setGlobal(): self
+    public function setGlobalNamespace(): self
     {
-        $this->namespace = null;
+        $this->state = null;
 
         return $this;
     }

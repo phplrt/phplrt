@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
+namespace Phplrt\Compiler\Lexer\Regex;
 
-use Phplrt\Compiler\Lexer\Definition\AliasedDefinition;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
@@ -20,53 +19,46 @@ final readonly class MarkersRegexGenerator extends RegexGenerator
 
     public function generate(array $tokens, array $flags): RegexGeneratorResult
     {
-        $aliases = $this->getAliasedDefinitions($tokens);
-
         return new RegexGeneratorResult(
             pattern: $this->formatFullRegex(
-                regex: $this->formatRegex($aliases),
+                regex: $this->formatRegex($tokens),
                 flags: $flags,
             ),
-            tokens: $aliases,
+            tokens: $tokens,
         );
     }
 
     /**
-     * @param list<AliasedDefinition> $aliases
+     * @param list<TokenDefinition> $tokens
      *
      * @return non-empty-string
      * @throws InvalidArgumentException
      */
-    private function formatRegex(array $aliases): string
+    private function formatRegex(array $tokens): string
     {
         $chunks = [];
 
-        foreach ($aliases as $definition) {
-            $chunks[] = $this->formatToken(
-                token: $definition->definition,
-                alias: $definition->alias,
-            );
+        foreach ($tokens as $id => $definition) {
+            $chunks[] = $this->formatToken($definition, $id);
         }
 
         return \sprintf(self::PATTERN_BODY, \implode('|', $chunks));
     }
 
     /**
-     * @param non-empty-string $alias
-     *
      * @return non-empty-string
      * @throws InvalidArgumentException
      */
-    private function formatToken(TokenDefinition $token, string $alias): string
+    private function formatToken(TokenDefinition $token, int $id): string
     {
         return match (true) {
             $token instanceof RegexTokenDefinition => \vsprintf(self::PATTERN_TOKEN, [
                 $this->escapePattern($token->regex),
-                $this->escapeValue($alias),
+                $this->escapeValue((string) $id),
             ]),
             $token instanceof ValueTokenDefinition => \vsprintf(self::PATTERN_TOKEN, [
                 $this->escapeValue($token->value),
-                $this->escapeValue($alias),
+                $this->escapeValue((string) $id),
             ]),
             default => throw new InvalidArgumentException(\sprintf(
                 'Unsupported %s token definition',

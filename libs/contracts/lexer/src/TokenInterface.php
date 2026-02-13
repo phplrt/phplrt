@@ -10,14 +10,18 @@ namespace Phplrt\Contracts\Lexer;
 interface TokenInterface extends \Stringable
 {
     /**
+     * Gets unique token identifier
+     */
+    public int $id {
+        get;
+    }
+
+    /**
      * Gets a token name
      *
-     * In case of the token name contains an {@see int}, this means that
-     * the token is anonymous and does not have its own special name.
-     *
-     * @var non-empty-string|int
+     * @var non-empty-string|null
      */
-    public string|int $name {
+    public ?string $name {
         get;
     }
 
@@ -41,15 +45,6 @@ interface TokenInterface extends \Stringable
      * Gets the value of the captured subgroup
      */
     public string $value {
-        get;
-    }
-
-    /**
-     * Gets the token value size in bytes
-     *
-     * @var int<0, max>
-     */
-    public int $bytes {
         get;
     }
 }

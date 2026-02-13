@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
+namespace Phplrt\Compiler\Lexer\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;

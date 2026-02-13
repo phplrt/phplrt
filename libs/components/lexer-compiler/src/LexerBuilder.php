@@ -13,6 +13,7 @@ use Phplrt\Compiler\Lexer\Compiler\RegexValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\RemoveUnusedChannelsLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
+use Phplrt\Compiler\Lexer\Compiler\TokenTransitionValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 use Phplrt\Compiler\Lexer\Generator\GeneratedResult;
@@ -61,6 +62,7 @@ final class LexerBuilder extends LexerBuilderContext
                 new AddMissingChannelsLexerCompilerPass(),
                 new ChannelNameDuplicationLexerCompilerPass(),
                 new RemoveUnusedChannelsLexerCompilerPass(),
+                new TokenTransitionValidationLexerCompilerPass(),
             ],
         ];
     }
@@ -123,7 +125,7 @@ final class LexerBuilder extends LexerBuilderContext
         $group($context = new LexerBuilder());
 
         foreach ($context->tokens as $token) {
-            $this->addTokenDefinition($token->setNamespace($namespace));
+            $this->addTokenDefinition($token->setState($namespace));
         }
 
         return $this;
@@ -178,7 +180,7 @@ final class LexerBuilder extends LexerBuilderContext
     public function build(
         OutputGeneratorInterface $generator = new Phplrt4OutputGenerator(),
     ): GeneratedResult {
-        $context = $this->compile();
+        $context = $this->process();
 
         return $generator->generate(new LexerBuilderResult(
             tokens: \array_values($context->tokens),
@@ -186,11 +188,10 @@ final class LexerBuilder extends LexerBuilderContext
             channels: \array_values($context->channels),
         ));
     }
-
     /**
      * @throws LexerCompilerException
      */
-    private function compile(): self
+    private function process(): self
     {
         $context = clone $this;
 

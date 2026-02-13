@@ -30,6 +30,7 @@
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
+            "Phplrt\\Lexer\\": "libs/components/lexer/src",
             "Phplrt\\Source\\": "libs/components/source/src"
         }
     },
@@ -37,6 +38,7 @@
         "friendsofphp/php-cs-fixer": "^3.93",
         "httpsoft/http-message": "^1.1",
         "jetbrains/phpstorm-attributes": "^1.0",
+        "phpstan/phpdoc-parser": "^2.3",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.5|^13.0",
@@ -50,10 +52,12 @@
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Position\\Tests\\": "libs/contracts/position/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
+            "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
             "Phplrt\\Source\\Tests\\": "libs/components/source/tests"
         }
     },
     "replace": {
+        "phplrt/lexer": "*",
         "phplrt/lexer-compiler": "*",
         "phplrt/lexer-contracts": "*",
         "phplrt/position-contracts": "*",
@@ -63,7 +67,6 @@
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0",
-        "phplrt/position-contracts-implementation": "^4.0",
         "phplrt/source-contracts-implementation": "^4.0"
     },
     "config": {

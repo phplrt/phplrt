@@ -13,8 +13,8 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements LexerCompi
     {
         $names = [];
 
-        foreach ($builder->tokens as $definition) {
-            $name = $definition->fqn;
+        foreach ($builder->tokens as $token) {
+            $name = $token->fqn;
 
             // Skip anonymous tokens
             if ($name === null) {
@@ -22,7 +22,7 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements LexerCompi
             }
 
             if (isset($names[$name])) {
-                throw new CompilationFailedException(\sprintf('Token name of %s is not unique', $definition));
+                throw new CompilationFailedException(\sprintf('Token name of %s is not unique', $token));
             }
 
             $names[$name] = $name;

@@ -29,13 +29,14 @@ readonly class GeneratedResult implements \Stringable
 
     /**
      * @param non-empty-string $pathname
+     * @return $this
      */
-    public function save(string $pathname): void
+    public function save(string $pathname): self
     {
         self::prepareOutputDirectory($pathname);
 
         if (\file_put_contents($pathname, $this->result) !== false) {
-            return;
+            return $this;
         }
 
         throw new \RuntimeException(\sprintf('Could not write generated result into "%s"', $pathname));

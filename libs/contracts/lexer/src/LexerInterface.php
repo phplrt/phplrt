@@ -14,11 +14,21 @@ use Phplrt\Contracts\Source\ReadableInterface;
 interface LexerInterface
 {
     /**
+     * @var array<int, non-empty-string|null>
+     */
+    public array $transitions {
+        get;
+    }
+
+    /**
      * Returns a set of token objects from the passed source.
      *
      * @psalm-immutable This method may not be pure, but it does not change
      *                  the internal state of the lexer and can be used in
      *                  asynchronous and parallel computing.
+     *
+     * @param int<0, max> $offset the offset in bytes relative to which to
+     *        begin lexical analysis
      *
      * @return iterable<array-key, TokenInterface> list of analyzed tokens
      * @throws LexerExceptionInterface an error occurs before source processing
@@ -28,5 +38,5 @@ interface LexerInterface
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
      */
-    public function lex(ReadableInterface $source): iterable;
+    public function lex(ReadableInterface $source, int $offset = 0): iterable;
 }

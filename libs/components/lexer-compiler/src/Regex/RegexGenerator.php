@@ -2,13 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Generator\Extension\Regex;
+namespace Phplrt\Compiler\Lexer\Regex;
 
-use Phplrt\Compiler\Lexer\Definition\AliasedDefinition;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Generator\Extension\Alias\AliasGeneratorInterface;
-use Phplrt\Compiler\Lexer\Generator\Extension\Alias\AlphabetAliasGenerator;
 
 /**
  * @template-covariant TResult of RegexGeneratorResult = RegexGeneratorResult
@@ -28,11 +24,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
     final public const string DEFAULT_DELIMITER = '/';
 
     /**
-     * Default alias prefix.
-     */
-    final public const string DEFAULT_ALIAS_PREFIX = 'T';
-
-    /**
      * List of characters that should be escaped in regex patterns.
      *
      * @var non-empty-string
@@ -44,11 +35,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
          * @var non-empty-string
          */
         protected string $delimiter = self::DEFAULT_DELIMITER,
-        /**
-         * @var non-empty-string
-         */
-        protected string $prefix = self::DEFAULT_ALIAS_PREFIX,
-        protected AliasGeneratorInterface $aliases = new AlphabetAliasGenerator(),
     ) {
         $this->escapedCharacters = $this->getEscapedCharacters($delimiter);
     }
@@ -105,28 +91,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
         }
 
         return \implode('', $result);
-    }
-
-    /**
-     * @template TArgTokenDefinition of TokenDefinition
-     *
-     * @param TokenDefinition $tokens
-     *
-     * @return AliasedDefinition
-     */
-    final protected function getAliasedDefinitions(array $tokens): array
-    {
-        $result = [];
-        $index = 0;
-
-        foreach ($tokens as $definition) {
-            $result[] = new AliasedDefinition(
-                alias: $this->aliases->getAliasById($index++),
-                definition: $definition,
-            );
-        }
-
-        return $result;
     }
 
     /**

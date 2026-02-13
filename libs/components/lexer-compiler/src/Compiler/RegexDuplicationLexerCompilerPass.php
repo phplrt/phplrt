@@ -26,7 +26,7 @@ final readonly class RegexDuplicationLexerCompilerPass implements LexerCompilerP
                 continue;
             }
 
-            $identifier = \sprintf('%s(%s)', $definition->namespace, $regex);
+            $identifier = \sprintf('%s(%s)', $definition->state, $regex);
 
             if (isset($patterns[$identifier])) {
                 throw new CompilationFailedException(\sprintf('Definition %s is not unique', $definition));

@@ -2,6 +2,7 @@ includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
   - vendor/phpstan/phpstan-strict-rules/rules.neon
   # Components
+  - libs/components/lexer/phpstan.neon
   - libs/components/lexer-compiler/phpstan.neon
   - libs/components/source/phpstan.neon
   # Contracts

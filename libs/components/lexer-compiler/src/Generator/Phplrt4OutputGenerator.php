@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer\Generator;
 
-use Phplrt\Compiler\Lexer\Generator\Extension\Regex\MarkersRegexGenerator;
-use Phplrt\Compiler\Lexer\Generator\Extension\Regex\RegexGeneratorInterface;
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
+use Phplrt\Compiler\Lexer\Regex\MarkersRegexGenerator;
+use Phplrt\Compiler\Lexer\Regex\RegexGeneratorInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;

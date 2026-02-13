@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/lexer-compiler",
+    "name": "phplrt/lexer",
     "type": "library",
-    "description": "The phplrt component for assembling a lexer",
+    "description": "The phplrt lexer library that can be used for scanners implementation using PCRE",
     "license": "MIT",
-    "keywords": ["regex", "lexer", "token", "stream", "parsing", "scanner", "tokenizer", "compiler", "build"],
+    "keywords": ["regex", "lexer", "token", "stream", "parsing", "scanner", "tokenizer"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/compiler-lexer"
+        "source": "https://github.com/phplrt/lexer"
     },
     "authors": [
         {
@@ -17,13 +17,15 @@
     ],
     "require": {
         "php": "^8.4",
-        "phplrt/lexer": "^4.0",
-        "twig/twig": "^3.23",
-        "laminas/laminas-code": "^4.17"
+        "ext-spl": "*",
+        "ext-pcre": "*",
+        "ext-json": "*",
+        "phplrt/source": "^4.0",
+        "phplrt/lexer-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\Lexer\\": "src"
+            "Phplrt\\Lexer\\": "src"
         }
     },
     "require-dev": {
@@ -33,8 +35,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Compiler\\Lexer\\Tests\\": "tests"
+            "Phplrt\\Lexer\\Tests\\": "tests"
         }
+    },
+    "provide": {
+        "phplrt/lexer-contracts-implementation": "^4.0"
     },
     "extra": {
         "branch-alias": {
