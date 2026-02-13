@@ -26,10 +26,11 @@ $before = \json_decode(\file_get_contents(COMPOSER_JSON), true);
     $after = \json_decode(\file_get_contents(COMPOSER_JSON), true);
 
     foreach ($after as $key => $value) {
-        $before[$key] ??= $value;
+        $before[$key] = $value;
     }
 
-    \file_put_contents(COMPOSER_JSON, \json_encode($before, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . "\n");
+    \usleep(1000);
+    \file_put_contents(COMPOSER_JSON, \json_encode($before, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
 });
 
 
