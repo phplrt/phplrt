@@ -6,33 +6,34 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
 
+/**
+ * @readonly
+ */
 class Token implements TokenInterface
 {
     public function __construct(
+        public int $id,
         /**
-         * @readonly
-         */
-        public int $id = -1,
-        /**
-         * @readonly
          * @var non-empty-string|null
          */
-        public ?string $name = null,
+        public ?string $name,
+        public ChannelInterface $channel,
+        public ReadableInterface $source,
+        public string $value,
         /**
-         * @readonly
          * @var int<0, max>
          */
-        public int $offset = 0,
-        /**
-         * @readonly
-         */
-        public string $value = '',
-        public ?ChannelInterface $channel = null,
+        public int $offset = self::MIN_OFFSET,
     ) {}
 
     public function __toString(): string
     {
-        return $this->value;
+        /** @var PrettyTokenPrinter $printer */
+        static $printer = new PrettyTokenPrinter();
+
+        return $printer->print($this);
     }
 }

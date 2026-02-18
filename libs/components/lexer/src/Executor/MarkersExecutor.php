@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Executor;
 
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\LexerCreateInfo;
-use Phplrt\Lexer\Token\EndOfInput;
+use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
 final readonly class MarkersExecutor implements LexerInterface
 {
-    private Token $prototype;
-
     public array $transitions;
 
     public function __construct(
@@ -26,45 +25,75 @@ final readonly class MarkersExecutor implements LexerInterface
         private array $channels = [],
     ) {
         $this->transitions = $config->transitions;
-        $this->prototype = new Token();
     }
 
     public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
+        if ($offset < 0) {
+            throw new \InvalidArgumentException('Offset cannot be negative');
+        }
+
         $content = $source->content;
 
         \preg_match_all($this->config->pattern, $content, $matches, 0, $offset);
+
+        if (!isset($matches['MARK'])) {
+            return [new EndOfInputToken($source, $offset)];
+        }
 
         // PHP stack optimization:
         // Dereference found variables
         /** @var list<string> $foundValues */
         $foundValues = $matches[0];
         /** @var list<non-empty-string> $foundNames */
-        $foundNames = $matches['MARK'] ?? [];
+        $foundNames = $matches['MARK'];
 
         // PHP stack optimization:
-        // Import HOT variables from object props
+        // Import "hot" variables from object properties, which will
+        // reduce the number of hops to access the memory address.
         $names = $this->config->names;
         $channels = $this->channels;
-        $token = $this->prototype;
 
-        $result = [];
+        $prototype = new Token(
+            id: -1,
+            name: null,
+            channel: Channel::DEFAULT,
+            source: $source,
+            value: '',
+            offset: $offset,
+        );
+
+        $index = 0;
+        $result = \array_fill(0, \count($foundNames) + 1, null);
+
         foreach ($foundNames as $index => $alias) {
-            $bytes = \strlen($value = $foundValues[$index]);
+            // Clone optimization: speeds up the creation
+            // of a new object (faster than instantiation)
+            $token = clone $prototype;
 
-            $token->id = $id = (int) $alias;
-            $token->name = $names[$id] ?? null;
-            $token->offset = $offset;
+            $id = (int) $alias;
+            $name = null;
+            $value = $foundValues[$index];
+            $length = \strlen($value);
+
+            if (isset($names[$id])) {
+                $name = $names[$id];
+            }
+
+            $token->id = $id;                                   // @phpstan-ignore
+            $token->name = $name;                               // @phpstan-ignore
+            $token->offset = $offset;                           // @phpstan-ignore
             $token->value = $value;
-            $token->channel = $channels[$id] ?? null;
 
-            // object clone is faster than instantiation
-            $result[] = $token = clone $token;
+            if (isset($channels[$id])) {
+                $token->channel = $channels[$id];    // @phpstan-ignore
+            }
 
-            $offset += $bytes;
+            $result[$index] = $token;
+            $offset += $length;
         }
 
-        $result[] = new EndOfInput($offset);
+        $result[$index + 1] = new EndOfInputToken($source, $offset);
 
         /** @var iterable<array-key, TokenInterface> */
         return $result;

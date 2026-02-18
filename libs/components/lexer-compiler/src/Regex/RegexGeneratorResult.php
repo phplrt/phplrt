@@ -60,36 +60,6 @@ final class RegexGeneratorResult implements \Stringable
         }
     }
 
-    /**
-     * Gets a map of token ID and its transition state name or {@see null}
-     * in case of transition is global.
-     *
-     * @var array<int, non-empty-string|null>
-     */
-    public array $transitions {
-        get {
-            if (isset($this->transitions)) {
-                return $this->transitions;
-            }
-
-            $this->transitions = [];
-
-            foreach ($this->tokens as $id => $token) {
-                if ($token->transition === null) {
-                    continue;
-                }
-
-                $this->transitions[$id] = null;
-
-                if (\is_string($token->transition)) {
-                    $this->transitions[$id] = $token->transition;
-                }
-            }
-
-            return $this->transitions;
-        }
-    }
-
     public function __construct(
         /**
          * @var non-empty-string

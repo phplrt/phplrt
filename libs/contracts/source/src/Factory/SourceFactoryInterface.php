@@ -9,6 +9,9 @@ use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
+ * Provides an abstract factory for creating {@see ReadableInterface}
+ * instances from various sources
+ *
  * @template T of mixed = mixed
  */
 interface SourceFactoryInterface

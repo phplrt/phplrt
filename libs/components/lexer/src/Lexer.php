@@ -6,15 +6,10 @@ namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
-use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Executor\MarkersExecutor;
 use Phplrt\Lexer\Token\CustomChannel;
-use Phplrt\Lexer\Token\EndOfInput;
 use Phplrt\Source\SourceFactory;
 
 readonly class Lexer implements LexerInterface
@@ -25,13 +20,8 @@ readonly class Lexer implements LexerInterface
 
     private LexerInterface $executor;
 
-    /**
-     * @var array<non-empty-string, LexerInterface>
-     */
-    private array $states;
-
     public function __construct(
-        LexerCreateInfo $config,
+        public LexerCreateInfo $config,
         ?SourceFactoryInterface $sources = null,
     ) {
         $this->sources = $sources ?? SourceFactory::default();
@@ -40,7 +30,6 @@ readonly class Lexer implements LexerInterface
 
         $this->executor = $this->createExecutor($config, $channels);
         $this->transitions = $config->transitions;
-        $this->states = $config->states;
     }
 
     /**
@@ -93,64 +82,10 @@ readonly class Lexer implements LexerInterface
         return $result;
     }
 
-    /**
-     * @param int<0, max> $offset
-     *
-     * @return iterable<array-key, TokenInterface>
-     * @throws LexerExceptionInterface
-     * @throws RuntimeExceptionInterface
-     */
-    private function executeStateless(ReadableInterface $source, int $offset): iterable
-    {
-        return $this->executor->lex($source, $offset);
-    }
-
-    /**
-     * @param int<0, max> $offset
-     *
-     * @return iterable<array-key, TokenInterface>
-     * @throws LexerExceptionInterface
-     * @throws RuntimeExceptionInterface
-     */
-    private function executeStateful(ReadableInterface $source, int $offset): iterable
-    {
-        $states = $this->states;
-        $executor = $this->executor;
-        $transitions = $executor->transitions;
-
-        $completed = false;
-        $result = [];
-
-        do {
-            /** @var TokenInterface $token */
-            foreach ($executor->lex($source, $offset) as $token) {
-                if ($token->channel === Channel::EndOfInput) {
-                    $completed = true;
-                    break;
-                }
-
-                $result[] = $token;
-
-                if (\array_key_exists($token->id, $transitions)) {
-                    $executor = $states[$transitions[$token->id]];
-                    $transitions = $executor->transitions;
-                }
-            }
-        } while (!$completed);
-
-        $result[] = $token ?? new EndOfInput(0);
-
-        return $result;
-    }
-
     public function lex(mixed $source, int $offset = 0): iterable
     {
         $source = $this->sources->create($source);
 
-        if (\count($this->states) === 0) {
-            return $this->executeStateless($source, $offset);
-        }
-
-        return $this->executeStateful($source, $offset);
+        return $this->executor->lex($source, $offset);
     }
 }

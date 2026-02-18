@@ -19,7 +19,6 @@ interface RegexGeneratorInterface
      * @param list<TokenDefinition> $tokens
      * @param list<RegexModifier> $flags
      *
-     * @return RegexGeneratorResult
      * @throws LexerCompilerException
      */
     public function generate(array $tokens, array $flags): RegexGeneratorResult;

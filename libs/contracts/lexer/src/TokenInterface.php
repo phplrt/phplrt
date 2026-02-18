@@ -4,20 +4,58 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
+use Phplrt\Contracts\Source\ReadableInterface;
+
 /**
- * The lexical token that returns from {@see LexerInterface}
+ * Represents a single lexical token produced by {@see LexerInterface}.
+ *
+ * A token is the smallest meaningful unit produced by a lexer.
+ * It encapsulates:
+ *
+ *  - A numeric identifier ({@see $id})
+ *  - Channel (for hidden/system tokens, {@see $channel})
+ *  - A textual value ({@see $value})
+ *  - Positional information ({@see $offset})
+ *  - Optional logical name ({@see $name})
+ *
+ * Note: Implementations MUST guarantee:
+ *   - {@see $length} === strlen($value)
+ *   - {@see $end} represents the position immediately AFTER the last character
+ *   - {@see $offset} is zero-based
+ *
+ * @readonly An implementation MUST be immutable.
  */
 interface TokenInterface extends \Stringable
 {
     /**
-     * Gets unique token identifier
+     * Minimal allowed offset number.
+     *
+     * @var int<0, max>
+     */
+    public const int MIN_OFFSET = 0;
+
+    /**
+     * Unique token identifier (token type).
+     *
+     * The parser uses this value to distinguish token kinds.
+     *
+     * Recommended conventions:
+     *  - Significant tokens: `int<0, max>`
+     *  - System/internal tokens (e.g. EOF, error, virtual): `int<min, -1>`
      */
     public int $id {
         get;
     }
 
     /**
-     * Gets a token name
+     * Logical token name.
+     *
+     * Optional human-readable identifier of the token type.
+     *
+     * Is useful for:
+     *  - Debugging
+     *  - Error reporting
+     *  - AST visualization
      *
      * @var non-empty-string|null
      */
@@ -26,14 +64,35 @@ interface TokenInterface extends \Stringable
     }
 
     /**
-     * Gets a channel of the token
+     * Token channel.
+     *
+     * Channels allow separating tokens into logical streams.
+     *
+     * Typical usage:
+     *  - Default channel: significant tokens
+     *  - Hidden channel: whitespace, comments
+     *  - Custom channels: documentation, preprocessor, etc
      */
-    public ?ChannelInterface $channel {
+    public ChannelInterface $channel {
         get;
     }
 
     /**
-     * Gets token position in bytes
+     * An optional reference to the source from which this token was produced.
+     *
+     * This allows:
+     *  - Lazy substring reconstruction
+     *  - Multi-file lexing
+     *  - Rich diagnostic output
+     */
+    public ReadableInterface $source {
+        get;
+    }
+
+    /**
+     * Absolute byte offset from the beginning of the source.
+     *
+     * This is zero-based and MUST represent the START of the token.
      *
      * @var int<0, max>
      */
@@ -42,7 +101,13 @@ interface TokenInterface extends \Stringable
     }
 
     /**
-     * Gets the value of the captured subgroup
+     * The exact lexeme (captured substring) matched by the lexer.
+     *
+     * This MUST contain the original source fragment, without normalization
+     * or transformation.
+     *
+     * If semantic normalization is required (e.g. converting "42" to int 42),
+     * it SHOULD be performed at parser or AST level.
      */
     public string $value {
         get;

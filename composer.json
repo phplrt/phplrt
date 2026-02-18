@@ -28,7 +28,6 @@
         "psr-4": {
             "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-compiler/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
-            "Phplrt\\Contracts\\Position\\": "libs/contracts/position/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Lexer\\": "libs/components/lexer/src",
             "Phplrt\\Source\\": "libs/components/source/src"
@@ -38,6 +37,7 @@
         "friendsofphp/php-cs-fixer": "^3.93",
         "httpsoft/http-message": "^1.1",
         "jetbrains/phpstorm-attributes": "^1.0",
+        "phpbench/phpbench": "^1.4",
         "phpstan/phpdoc-parser": "^2.3",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0",
@@ -48,9 +48,9 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Tests\\": "tests",
             "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-compiler/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
-            "Phplrt\\Contracts\\Position\\Tests\\": "libs/contracts/position/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
             "Phplrt\\Source\\Tests\\": "libs/components/source/tests"
@@ -95,7 +95,11 @@
         "linter:baseline": "@linter:check --generate-baseline",
         "phpcs:check": "@phpcs:fix --dry-run",
         "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff",
-        "dev:merge": "monorepo-builder merge"
+        "dev:merge": "monorepo-builder merge",
+        "bench:lexer:capture": "@bench:compare --filter=benchLexicalAnalysis --tag=original",
+        "bench:lexer:diff": "@bench:compare --filter=benchLexicalAnalysis --ref=original",
+        "bench:lexer": "phpbench run --filter=benchLexicalAnalysis --report=default",
+        "bench:compare": "phpbench run --report=aggregate"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -17,7 +17,7 @@ abstract class TokenDefinition implements \Stringable
      *
      * @var non-empty-string|null
      */
-    public ?string $state = null;
+    public ?string $namespace = null;
 
     /**
      * Contains token name, or {@see null} in case of token is anonymous
@@ -39,8 +39,8 @@ abstract class TokenDefinition implements \Stringable
 
             $name = $this->name;
 
-            if ($this->state !== null) {
-                $name = $this->state . ':' . $name;
+            if ($this->namespace !== null) {
+                $name = $this->namespace . ':' . $name;
             }
 
             return $name;
@@ -64,13 +64,6 @@ abstract class TokenDefinition implements \Stringable
     public ?ChannelInterface $channel = null;
 
     /**
-     * Contains transition namespace
-     *
-     * @var TransitionType|non-empty-string|null
-     */
-    public TransitionType|string|null $transition = null;
-
-    /**
      * @param non-empty-string|null $name
      */
     public function __construct(
@@ -80,41 +73,18 @@ abstract class TokenDefinition implements \Stringable
     }
 
     /**
-     * @api
-     * @param non-empty-string|null $namespace
-     * @return $this
-     */
-    public function setTransition(?string $namespace): self
-    {
-        $this->transition = $namespace;
-
-        return $this;
-    }
-
-    /**
-     * @api
-     * @return $this
-     */
-    public function setGlobalTransition(): self
-    {
-        $this->transition = TransitionType::Exit;
-
-        return $this;
-    }
-
-    /**
      * Updates the token namespace of the current definition and returns
      * itself as the fluent interface.
      *
      * @api
      *
-     * @param non-empty-string|null $state
+     * @param non-empty-string|null $namespace
      *
      * @return $this
      */
-    public function setState(?string $state): self
+    public function setNamespace(?string $namespace): self
     {
-        $this->state = $state;
+        $this->namespace = $namespace;
 
         return $this;
     }
@@ -128,7 +98,7 @@ abstract class TokenDefinition implements \Stringable
      */
     public function setGlobalNamespace(): self
     {
-        $this->state = null;
+        $this->namespace = null;
 
         return $this;
     }

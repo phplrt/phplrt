@@ -29,6 +29,7 @@ readonly class GeneratedResult implements \Stringable
 
     /**
      * @param non-empty-string $pathname
+     *
      * @return $this
      */
     public function save(string $pathname): self

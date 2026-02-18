@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer;
 
-use Phplrt\Compiler\Lexer\Alias\AliasGeneratorInterface;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
@@ -30,7 +29,7 @@ final class LexerBuilderResult
             $this->global = [];
 
             foreach ($this->tokens as $definition) {
-                if ($definition->state === null) {
+                if ($definition->namespace === null) {
                     $this->global[] = $definition;
                 }
             }
@@ -55,7 +54,7 @@ final class LexerBuilderResult
             $this->states = [];
 
             foreach ($this->tokens as $definition) {
-                $state = $definition->state;
+                $state = $definition->namespace;
 
                 if ($state === null) {
                     continue;
@@ -95,7 +94,7 @@ final class LexerBuilderResult
         $result = [];
 
         foreach ($this->tokens as $definition) {
-            if ($definition->state === null) {
+            if ($definition->namespace === null) {
                 $result[] = $definition;
             }
         }
@@ -105,7 +104,7 @@ final class LexerBuilderResult
 
     private function createUnknownToken(): TokenDefinition
     {
-        return new RegexTokenDefinition('.+?')
+        return new RegexTokenDefinition('[^\\s]++')
             ->setChannel(Channel::Unknown);
     }
 }

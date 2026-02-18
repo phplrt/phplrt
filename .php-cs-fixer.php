@@ -2,11 +2,11 @@
 
 const DIR_INCLUDE = [
     // Components
+    __DIR__ . '/libs/components/lexer/src',
     __DIR__ . '/libs/components/lexer-compiler/src',
     __DIR__ . '/libs/components/source/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
-    __DIR__ . '/libs/contracts/position/src',
     __DIR__ . '/libs/contracts/source/src',
 ];
 

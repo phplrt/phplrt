@@ -7,7 +7,6 @@ includes:
   - libs/components/source/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
-  - libs/contracts/position/phpstan.neon
   - libs/contracts/source/phpstan.neon
 parameters:
   level: max
@@ -16,4 +15,5 @@ parameters:
   fileExtensions:
     - php
   tmpDir: vendor/.cache.phpstan
-  reportUnmatchedIgnoredErrors: false
+  reportUnmatchedIgnoredErrors: true
+  reportAlwaysTrueInLastCondition: false

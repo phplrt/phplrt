@@ -13,6 +13,11 @@ namespace Phplrt\Contracts\Lexer;
 enum Channel: string implements ChannelInterface
 {
     /**
+     * Default token channel name.
+     */
+    case Default = 'default';
+
+    /**
      * Hidden tokens channel name.
      *
      * All tokens in this channel should be ignored.
@@ -29,4 +34,6 @@ enum Channel: string implements ChannelInterface
      * singular in the entire token stream.
      */
     case EndOfInput = 'eoi';
+
+    public const self DEFAULT = self::Default;
 }
