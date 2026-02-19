@@ -29,6 +29,8 @@ jobs:
           # Contracts
           - local_path: 'libs/contracts/lexer'
             split_repository: 'lexer-contracts'
+          - local_path: 'libs/contracts/parser'
+            split_repository: 'parser-contracts'
           - local_path: 'libs/contracts/source'
             split_repository: 'source-contracts'
           # Metadata

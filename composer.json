@@ -28,6 +28,7 @@
         "psr-4": {
             "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-compiler/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Lexer\\": "libs/components/lexer/src",
             "Phplrt\\Source\\": "libs/components/source/src"
@@ -44,22 +45,24 @@
         "phpunit/phpunit": "^12.5|^13.0",
         "psr/http-message": "^1.0|^2.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "symplify/monorepo-builder": "^12.4"
+        "symplify/monorepo-builder": "^12.5.1"
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Tests\\": "tests",
             "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-compiler/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
+            "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
-            "Phplrt\\Source\\Tests\\": "libs/components/source/tests"
+            "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
+            "Phplrt\\Tests\\": "tests"
         }
     },
     "replace": {
         "phplrt/lexer": "*",
         "phplrt/lexer-compiler": "*",
         "phplrt/lexer-contracts": "*",
+        "phplrt/parser-contracts": "*",
         "phplrt/position-contracts": "*",
         "phplrt/runtime": "*",
         "phplrt/source": "*",

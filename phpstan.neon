@@ -7,6 +7,7 @@ includes:
   - libs/components/source/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
+  - libs/contracts/parser/phpstan.neon
   - libs/contracts/source/phpstan.neon
 parameters:
   level: max
