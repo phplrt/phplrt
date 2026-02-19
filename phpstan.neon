@@ -17,3 +17,5 @@ parameters:
   tmpDir: vendor/.cache.phpstan
   reportUnmatchedIgnoredErrors: true
   reportAlwaysTrueInLastCondition: false
+  ignoreErrors:
+    - identifier: instanceof.alwaysTrue

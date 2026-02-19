@@ -76,8 +76,6 @@ final class Phplrt4OutputGenerator extends OutputGenerator
             'input' => $result,
         ]);
 
-        return new Phplrt4GeneratedResult(
-            result: $generated,
-        );
+        return new Phplrt4GeneratedResult($generated);
     }
 }

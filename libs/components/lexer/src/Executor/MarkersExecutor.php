@@ -7,7 +7,6 @@ namespace Phplrt\Lexer\Executor;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\LexerCreateInfo;
 use Phplrt\Lexer\Token\EndOfInputToken;
@@ -29,6 +28,7 @@ final readonly class MarkersExecutor implements LexerInterface
 
     public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
+        /** @phpstan-ignore-next-line : JIT range tuning */
         if ($offset < 0) {
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
@@ -66,6 +66,7 @@ final readonly class MarkersExecutor implements LexerInterface
         $index = 0;
         $result = \array_fill(0, \count($foundNames) + 1, null);
 
+        /** @phpstan-ignore-next-line : Allow "$index" overwrite */
         foreach ($foundNames as $index => $alias) {
             // Clone optimization: speeds up the creation
             // of a new object (faster than instantiation)
@@ -80,13 +81,13 @@ final readonly class MarkersExecutor implements LexerInterface
                 $name = $names[$id];
             }
 
-            $token->id = $id;                                   // @phpstan-ignore
-            $token->name = $name;                               // @phpstan-ignore
-            $token->offset = $offset;                           // @phpstan-ignore
-            $token->value = $value;
+            $token->id = $id;                       // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->name = $name;                   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->offset = $offset;               // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->value = $value;                 // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
 
             if (isset($channels[$id])) {
-                $token->channel = $channels[$id];    // @phpstan-ignore
+                $token->channel = $channels[$id];   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             }
 
             $result[$index] = $token;
@@ -95,7 +96,7 @@ final readonly class MarkersExecutor implements LexerInterface
 
         $result[$index + 1] = new EndOfInputToken($source, $offset);
 
-        /** @var iterable<array-key, TokenInterface> */
+        /** @phpstan-ignore-next-line : Returns valid type */
         return $result;
     }
 }

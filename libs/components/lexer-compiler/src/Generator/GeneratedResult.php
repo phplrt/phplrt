@@ -7,9 +7,6 @@ namespace Phplrt\Compiler\Lexer\Generator;
 readonly class GeneratedResult implements \Stringable
 {
     public function __construct(
-        /**
-         * @var non-empty-string
-         */
         public string $result,
     ) {}
 
