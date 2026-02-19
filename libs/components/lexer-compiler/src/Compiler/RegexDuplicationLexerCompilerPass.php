@@ -50,7 +50,7 @@ final readonly class RegexDuplicationLexerCompilerPass implements
                 continue;
             }
 
-            throw new CompilationFailedException(\sprintf(
+            throw new CompilationFailedException($definition, \sprintf(
                 'Another token definition %s with the same regex has already been defined previously',
                 $regex,
             ));

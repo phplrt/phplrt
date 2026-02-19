@@ -10,7 +10,7 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 /**
  * @phpstan-sealed RegexTokenDefinition|ValueTokenDefinition
  */
-abstract class TokenDefinition implements \Stringable
+abstract class TokenDefinition extends Definition
 {
     private const ChannelInterface DEFAULT_TOKEN_CHANNEL = Channel::DEFAULT;
 

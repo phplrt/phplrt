@@ -37,7 +37,7 @@ final readonly class TokenNameValidationLexerCompilerPass implements
 
             /** @phpstan-ignore-next-line Additional assertion */
             if ($definition->name === '') {
-                throw new CompilationFailedException('Token name cannot be empty');
+                throw new CompilationFailedException($definition, 'Token name cannot be empty');
             }
         }
     }

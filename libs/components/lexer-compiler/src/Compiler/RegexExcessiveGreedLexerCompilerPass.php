@@ -44,7 +44,7 @@ final readonly class RegexExcessiveGreedLexerCompilerPass implements
             }
 
             if ($wideTokenDefinition !== null) {
-                throw new CompilationFailedException(\sprintf(
+                throw new CompilationFailedException($definition, \sprintf(
                     'Token definition %s does not make sense, since higher priority %s was defined earlier',
                     $definition,
                     $wideTokenDefinition,

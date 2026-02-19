@@ -41,7 +41,10 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
             }
 
             if (isset($names[$name])) {
-                throw new CompilationFailedException(\sprintf('Token name of %s is not unique', $definition));
+                throw new CompilationFailedException($definition, \sprintf(
+                    'Token name of %s is not unique',
+                    $definition,
+                ));
             }
 
             $names[$name] = $name;

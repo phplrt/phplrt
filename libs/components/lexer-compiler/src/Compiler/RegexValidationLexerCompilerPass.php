@@ -59,7 +59,10 @@ final readonly class RegexValidationLexerCompilerPass implements
         \restore_error_handler();
         \error_clear_last();
 
-        throw new CompilationFailedException($this->formatException($error['message'], (string) $definition));
+        throw new CompilationFailedException($definition, $this->formatException(
+            message: $error['message'],
+            name: (string) $definition,
+        ));
     }
 
     private static function emptyErrorHandler(int $id, string $error, string $file, int $line): bool
