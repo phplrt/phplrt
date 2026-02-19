@@ -78,18 +78,6 @@ interface TokenInterface extends \Stringable
     }
 
     /**
-     * An optional reference to the source from which this token was produced.
-     *
-     * This allows:
-     *  - Lazy substring reconstruction
-     *  - Multi-file lexing
-     *  - Rich diagnostic output
-     */
-    public ReadableInterface $source {
-        get;
-    }
-
-    /**
      * Absolute byte offset from the beginning of the source.
      *
      * This is zero-based and MUST represent the START of the token.

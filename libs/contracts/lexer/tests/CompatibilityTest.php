@@ -22,7 +22,7 @@ class CompatibilityTest extends TestCase
     public function testLexerCompatibility(): void
     {
         new class () implements LexerInterface {
-            public function lex(mixed $source): iterable {}
+            public function lex(mixed $source, int $offset = 0): iterable {}
         };
     }
 
@@ -30,8 +30,10 @@ class CompatibilityTest extends TestCase
     public function testTokenCompatibility(): void
     {
         new class () implements TokenInterface {
-            public string|int $name;
-            public ?ChannelInterface $channel;
+            public int $id;
+            public ?string $name;
+            public ChannelInterface $channel;
+            public ReadableInterface $source;
             public int $offset;
             public string $value;
             public int $bytes;
