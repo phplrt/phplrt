@@ -31,6 +31,7 @@
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Lexer\\": "libs/components/lexer/src",
+            "Phplrt\\Parser\\": "libs/components/parser/src",
             "Phplrt\\Source\\": "libs/components/source/src"
         }
     },
@@ -54,6 +55,7 @@
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
             "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
             "Phplrt\\Tests\\": "tests"
         }
@@ -66,10 +68,12 @@
         "phplrt/position-contracts": "*",
         "phplrt/runtime": "*",
         "phplrt/source": "*",
-        "phplrt/source-contracts": "*"
+        "phplrt/source-contracts": "*",
+        "phplrt/parser": "self.version"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0",
+        "phplrt/parser-contracts-implementation": "^4.0",
         "phplrt/source-contracts-implementation": "^4.0"
     },
     "config": {

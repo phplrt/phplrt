@@ -87,9 +87,9 @@ readonly class Lexer implements LexerInterface
 
     final public function lex(mixed $source, int $offset = 0): iterable
     {
-        $source = $this->sources->create($source);
+        $readable = $this->sources->create($source);
 
-        return $this->execute($source, $offset);
+        return $this->execute($readable, $offset);
     }
 
     /**
