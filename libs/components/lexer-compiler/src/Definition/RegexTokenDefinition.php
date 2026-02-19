@@ -19,14 +19,8 @@ final class RegexTokenDefinition extends TokenDefinition
         parent::__construct($name);
     }
 
-    public function __toString(): string
+    protected function printValue(): string
     {
-        $name = $this->fqn ?? '*anonymous*';
-        $pattern = \addcslashes($this->regex, '/');
-
-        return \vsprintf('/%s/ (%s)', [
-            $pattern,
-            $name,
-        ]);
+        return \sprintf('/%s/', \addcslashes($this->regex, '/'));
     }
 }

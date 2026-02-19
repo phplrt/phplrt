@@ -46,24 +46,6 @@ final readonly class LexerCreateInfo
          */
         public array $names = [],
         /**
-         * A map of token ID and its transition states.
-         *
-         * When the specified token is reached in the current state, an
-         * unconditional transition to another state with the specified
-         * name will be performed.
-         *
-         * For example,
-         * ```php
-         * [
-         *     0 => 'next-state',
-         *     42 => 'other-state',
-         * ]
-         * ```
-         *
-         * @var array<int, non-empty-string>
-         */
-        public array $transitions = [],
-        /**
          * Name of the state and its configuration DTOs.
          *
          * The state name is used as the array key; value contains configuration

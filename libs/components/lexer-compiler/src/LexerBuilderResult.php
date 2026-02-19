@@ -26,14 +26,7 @@ final class LexerBuilderResult
                 return $this->global;
             }
 
-            $this->global = [];
-
-            foreach ($this->tokens as $definition) {
-                if ($definition->namespace === null) {
-                    $this->global[] = $definition;
-                }
-            }
-
+            $this->global = $this->tokens;
             $this->global[] = $this->createUnknownToken();
 
             return $this->global;
@@ -47,27 +40,7 @@ final class LexerBuilderResult
      */
     public array $states {
         get {
-            if (isset($this->states)) {
-                return $this->states;
-            }
-
-            $this->states = [];
-
-            foreach ($this->tokens as $definition) {
-                $state = $definition->namespace;
-
-                if ($state === null) {
-                    continue;
-                }
-
-                $this->states[$state][] = $definition;
-            }
-
-            foreach ($this->states as $state => $definitions) {
-                $this->states[$state][] = $this->createUnknownToken();
-            }
-
-            return $this->states;
+            return [];
         }
     }
 
@@ -85,22 +58,6 @@ final class LexerBuilderResult
          */
         public readonly array $channels,
     ) {}
-
-    /**
-     * @return list<TokenDefinition>
-     */
-    public function getGlobalTokens(): array
-    {
-        $result = [];
-
-        foreach ($this->tokens as $definition) {
-            if ($definition->namespace === null) {
-                $result[] = $definition;
-            }
-        }
-
-        return $result;
-    }
 
     private function createUnknownToken(): TokenDefinition
     {

@@ -10,7 +10,6 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Token\CustomChannel;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Source\SourceFactory;
@@ -68,10 +67,25 @@ readonly class Lexer implements LexerInterface
             }
 
             $result[$channelName] = Channel::tryFrom($channelName)
-                ?? new CustomChannel($channelName);
+                ?? $this->createCustomChannel($channelName);
         }
 
         return $result;
+    }
+
+    /**
+     * @param non-empty-string $name
+     */
+    private function createCustomChannel(string $name): ChannelInterface
+    {
+        return new readonly class ($name) implements ChannelInterface {
+            public function __construct(
+                /**
+                 * @var non-empty-string
+                 */
+                public string $value,
+            ) {}
+        };
     }
 
     public function lex(mixed $source, int $offset = 0): iterable

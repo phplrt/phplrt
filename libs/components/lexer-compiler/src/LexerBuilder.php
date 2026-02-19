@@ -112,24 +112,6 @@ final class LexerBuilder extends LexerBuilderContext
     }
 
     /**
-     * @param non-empty-string $namespace
-     * @param callable(LexerBuilder):void $group
-     *
-     * @return $this
-     * @throws LexerCompilerException
-     */
-    public function group(string $namespace, callable $group): self
-    {
-        $group($context = new LexerBuilder());
-
-        foreach ($context->tokens as $token) {
-            $this->addTokenDefinition($token->setNamespace($namespace));
-        }
-
-        return $this;
-    }
-
-    /**
      * @param non-empty-string $name
      */
     public function channel(string $name): ChannelInterface

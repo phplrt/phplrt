@@ -65,14 +65,7 @@ final class Phplrt4OutputGenerator extends OutputGenerator
     {
         $generated = $this->twig->render($this->template, [
             'namespace' => $this->namespace,
-            'class' => $this->class ?? '__GeneratedLexer' . \bin2hex(\random_bytes(4)),
-            'token_class' => $this->namespace === null
-                ? '__Token' . \bin2hex(\random_bytes(4))
-                : 'Token',
-            'token_eoi_class' => $this->namespace === null
-                ? '__EndOfInput' . \bin2hex(\random_bytes(4))
-                : 'EndOfInput',
-            'is_anonymous_class' => $this->class === null,
+            'class' => $this->class,
             'input' => $result,
         ]);
 

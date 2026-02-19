@@ -26,13 +26,11 @@ final readonly class RegexDuplicationLexerCompilerPass implements LexerCompilerP
                 continue;
             }
 
-            $identifier = \sprintf('%s(%s)', $definition->namespace, $regex);
-
-            if (isset($patterns[$identifier])) {
-                throw new CompilationFailedException(\sprintf('Definition %s is not unique', $definition));
+            if (isset($patterns[$regex])) {
+                throw new CompilationFailedException(\sprintf('Definition %s is not unique', $regex));
             }
 
-            $patterns[$identifier] = true;
+            $patterns[$regex] = true;
         }
     }
 }

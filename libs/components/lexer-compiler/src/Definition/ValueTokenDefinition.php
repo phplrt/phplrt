@@ -19,14 +19,8 @@ final class ValueTokenDefinition extends TokenDefinition
         parent::__construct($name);
     }
 
-    public function __toString(): string
+    protected function printValue(): string
     {
-        $name = $this->fqn ?? '*anonymous*';
-        $value = \addcslashes($this->value, '"');
-
-        return \vsprintf('"%s" (%s)', [
-            $value,
-            $name,
-        ]);
+        return \sprintf('"%s"', \addcslashes($this->value, '"'));
     }
 }

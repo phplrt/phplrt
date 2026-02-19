@@ -73,37 +73,6 @@ abstract class TokenDefinition implements \Stringable
     }
 
     /**
-     * Updates the token namespace of the current definition and returns
-     * itself as the fluent interface.
-     *
-     * @api
-     *
-     * @param non-empty-string|null $namespace
-     *
-     * @return $this
-     */
-    public function setNamespace(?string $namespace): self
-    {
-        $this->namespace = $namespace;
-
-        return $this;
-    }
-
-    /**
-     * Removes token namespace
-     *
-     * @api
-     *
-     * @return $this
-     */
-    public function setGlobalNamespace(): self
-    {
-        $this->namespace = null;
-
-        return $this;
-    }
-
-    /**
      * Updates the token name of the current definition and returns
      * itself as the fluent interface.
      *
@@ -152,5 +121,21 @@ abstract class TokenDefinition implements \Stringable
         $this->channel = $channel;
 
         return $this;
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    abstract protected function printValue(): string;
+
+    /**
+     * @return non-empty-string
+     */
+    public function __toString(): string
+    {
+        return \vsprintf('%s (%s)', [
+            $this->printValue(),
+            $this->name ?? '*anonymous*',
+        ]);
     }
 }

@@ -14,7 +14,7 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements LexerCompi
         $names = [];
 
         foreach ($builder->tokens as $token) {
-            $name = $token->fqn;
+            $name = $token->name;
 
             // Skip anonymous tokens
             if ($name === null) {
