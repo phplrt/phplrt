@@ -14,13 +14,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 interface LexerInterface
 {
     /**
-     * @var array<int, non-empty-string|null>
-     */
-    public array $transitions {
-        get;
-    }
-
-    /**
      * Returns a set of token objects from the passed source.
      *
      * @psalm-immutable This method may not be pure, but it does not change
