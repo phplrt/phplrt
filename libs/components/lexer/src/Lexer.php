@@ -24,26 +24,23 @@ readonly class Lexer implements LexerInterface
     private SourceFactoryInterface $sources;
 
     public function __construct(
-        public LexerCreateInfo $config,
+        private LexerCreateInfo $config,
         ?SourceFactoryInterface $sources = null,
     ) {
         $this->sources = $sources ?? SourceFactory::default();
-
-        $channels = $this->createChannelInstances($config);
-
-        $this->channels = $this->mapTokenIdToChannel($config, $channels);
+        $this->channels = $this->mapTokenIdToChannel($config);
     }
 
     /**
      * Gets the lexer configuration and initializes the mapping of tokens to channels.
      *
-     * @param array<non-empty-string, ChannelInterface> $channels
-     *
      * @return array<int, ChannelInterface>
      */
-    private function mapTokenIdToChannel(LexerCreateInfo $config, array $channels): array
+    private function mapTokenIdToChannel(LexerCreateInfo $config): array
     {
         $result = [];
+
+        $channels = $this->createChannelInstances($config);
 
         foreach ($config->channels as $tokenId => $channelName) {
             $result[$tokenId] = $channels[$channelName];
@@ -88,7 +85,7 @@ readonly class Lexer implements LexerInterface
         };
     }
 
-    public function lex(mixed $source, int $offset = 0): iterable
+    final public function lex(mixed $source, int $offset = 0): iterable
     {
         $source = $this->sources->create($source);
 

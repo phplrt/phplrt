@@ -5,35 +5,54 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Lexer\Compiler;
 
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
+use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
 use Phplrt\Compiler\Lexer\LexerBuilder;
 
-final readonly class RegexExcessiveGreedLexerCompilerPass implements LexerCompilerPassInterface
+/**
+ * Checks that the lexer does not contain "unmatchable" regular expressions
+ */
+final readonly class RegexExcessiveGreedLexerCompilerPass implements
+    LexerCompilerPassInterface
 {
     /**
      * @var list<non-empty-string>
      */
-    private const array GREEDY_PATTERNS = ['.+', '.*'];
+    private const array WIDE_PATTERNS = ['.+', '.*'];
 
     public function process(LexerBuilder $builder): void
     {
-        $greedyDefinition = null;
+        $this->validateOrFail($builder->tokens);
 
-        foreach ($builder->tokens as $definition) {
+        foreach ($builder->states as $state) {
+            $this->validateOrFail($state->tokens);
+        }
+    }
+
+    /**
+     * @param array<array-key, TokenDefinition> $definitions
+     *
+     * @throws CompilationFailedException
+     */
+    private function validateOrFail(array $definitions): void
+    {
+        $wideTokenDefinition = null;
+
+        foreach ($definitions as $definition) {
             if (!$definition instanceof RegexTokenDefinition) {
                 continue;
             }
 
-            if ($greedyDefinition !== null) {
+            if ($wideTokenDefinition !== null) {
                 throw new CompilationFailedException(\sprintf(
-                    'The %s token definition does not make sense, since a more greedy %s was defined earlier',
+                    'Token definition %s does not make sense, since higher priority %s was defined earlier',
                     $definition,
-                    $greedyDefinition,
+                    $wideTokenDefinition,
                 ));
             }
 
-            if (\in_array($definition->regex, self::GREEDY_PATTERNS, true)) {
-                $greedyDefinition = $definition;
+            if (\in_array($definition->regex, self::WIDE_PATTERNS, true)) {
+                $wideTokenDefinition = $definition;
             }
         }
     }

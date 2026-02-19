@@ -4,50 +4,34 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer;
 
-use Phplrt\Compiler\Lexer\Compiler\AddMissingChannelsLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\ChannelNameDuplicationLexerCompilerPass;
+use Phplrt\Compiler\Lexer\Builder\HasRegexFlags;
+use Phplrt\Compiler\Lexer\Builder\HasTokenDefinitions;
+use Phplrt\Compiler\Lexer\Builder\TokenDefinitionGroup;
 use Phplrt\Compiler\Lexer\Compiler\LexerCompilerPassInterface;
 use Phplrt\Compiler\Lexer\Compiler\RegexDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\RegexExcessiveGreedLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\RegexValidationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\RemoveUnusedChannelsLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 use Phplrt\Compiler\Lexer\Generator\GeneratedResult;
 use Phplrt\Compiler\Lexer\Generator\OutputGeneratorInterface;
 use Phplrt\Compiler\Lexer\Generator\Phplrt4OutputGenerator;
-use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 
-final class LexerBuilder extends LexerBuilderContext
+final class LexerBuilder
 {
-    /**
-     * @var array<array-key, ChannelInterface>
-     */
-    public private(set) array $channels = [];
+    use HasTokenDefinitions;
+    use HasRegexFlags;
 
     /**
-     * @var array<non-empty-string, RegexModifier>
+     * @var array<non-empty-string, TokenDefinitionGroup>
      */
-    public private(set) array $flags = [
-        RegexModifier::Compiled->value => RegexModifier::Compiled,
-        RegexModifier::DotAll->value => RegexModifier::DotAll,
-        RegexModifier::Utf8->value => RegexModifier::Utf8,
-        RegexModifier::Multiline->value => RegexModifier::Multiline,
-    ];
+    public private(set) array $states = [];
 
     /**
      * @var array<array-key, list<LexerCompilerPassInterface>>
      */
     public private(set) array $passes = [];
-
-    /**
-     * If a specific channel is defined, an "unknown" token (a token that
-     * contains unknown data) will be added with the specified channel.
-     */
-    public private(set) ChannelInterface $unknown = Channel::Unknown;
 
     public function __construct()
     {
@@ -58,9 +42,6 @@ final class LexerBuilder extends LexerBuilderContext
                 new RegexDuplicationLexerCompilerPass(),
                 new RegexValidationLexerCompilerPass(),
                 new RegexExcessiveGreedLexerCompilerPass(),
-                new AddMissingChannelsLexerCompilerPass(),
-                new ChannelNameDuplicationLexerCompilerPass(),
-                new RemoveUnusedChannelsLexerCompilerPass(),
             ],
         ];
     }
@@ -71,80 +52,6 @@ final class LexerBuilder extends LexerBuilderContext
     public function addCompilerPass(LexerCompilerPassInterface $pass, int $priority = 0): self
     {
         $this->passes[$priority][] = $pass;
-
-        return $this;
-    }
-
-    public function enable(RegexModifier $flag): RegexModifier
-    {
-        return $this->flags[$flag->value] = $flag;
-    }
-
-    public function disable(RegexModifier $flag): RegexModifier
-    {
-        unset($this->flags[$flag->value]);
-
-        return $flag;
-    }
-
-    /**
-     * @api
-     */
-    public function setUnknownChannel(ChannelInterface $channel): self
-    {
-        $this->unknown = $channel;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function removePcreFlagDefinition(RegexModifier $definition): self
-    {
-        foreach ($this->flags as $index => $flag) {
-            if ($flag === $definition) {
-                unset($this->flags[$index]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param non-empty-string $name
-     */
-    public function channel(string $name): ChannelInterface
-    {
-        foreach ($this->channels as $channel) {
-            if ($channel->value === $name) {
-                return $channel;
-            }
-        }
-
-        return $this->channels[] = Channel::tryFrom($name)
-            ?? new readonly class ($name) implements ChannelInterface {
-                public function __construct(
-                    /**
-                     * @var non-empty-string
-                     */
-                    public string $value,
-                ) {}
-            };
-    }
-
-    /**
-     * @return $this
-     */
-    public function removeChannelDefinition(ChannelInterface $channel): self
-    {
-        foreach ($this->channels as $index => $actual) {
-            if ($actual === $channel) {
-                unset($this->channels[$index]);
-
-                break;
-            }
-        }
 
         return $this;
     }
@@ -162,10 +69,16 @@ final class LexerBuilder extends LexerBuilderContext
     ): GeneratedResult {
         $context = $this->process();
 
+        $states = [];
+
+        foreach ($this->states as $name => $state) {
+            $states[$name] = \array_values($state->tokens);
+        }
+
         return $generator->generate(new LexerBuilderResult(
             tokens: \array_values($context->tokens),
+            states: $states,
             flags: \array_values($context->flags),
-            channels: \array_values($context->channels),
         ));
     }
 

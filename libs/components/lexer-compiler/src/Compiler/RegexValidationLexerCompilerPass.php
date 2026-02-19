@@ -9,23 +9,35 @@ use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
 use Phplrt\Compiler\Lexer\LexerBuilder;
 
-final readonly class RegexValidationLexerCompilerPass implements LexerCompilerPassInterface
+/**
+ * Checks that the regular expression is specified correctly.
+ */
+final readonly class RegexValidationLexerCompilerPass implements
+    LexerCompilerPassInterface
 {
     public function process(LexerBuilder $builder): void
     {
-        foreach ($builder->tokens as $definition) {
+        $this->validateOrFail($builder->tokens);
+
+        foreach ($builder->states as $state) {
+            $this->validateOrFail($state->tokens);
+        }
+    }
+
+    /**
+     * @param array<array-key, TokenDefinition> $definitions
+     *
+     * @throws CompilationFailedException
+     */
+    private function validateOrFail(array $definitions): void
+    {
+        foreach ($definitions as $definition) {
             if (!$definition instanceof RegexTokenDefinition) {
                 continue;
             }
 
-            $this->validateOrFail($definition->regex, $definition);
+            $this->validateRegexOrFail($definition->regex, $definition);
         }
-    }
-
-    private static function emptyErrorHandler(int $id, string $error, string $file, int $line): bool
-    {
-        // NO-OP
-        return false;
     }
 
     /**
@@ -33,7 +45,7 @@ final readonly class RegexValidationLexerCompilerPass implements LexerCompilerPa
      *
      * @throws CompilationFailedException in case of token compilation failure
      */
-    private function validateOrFail(string $regex, TokenDefinition $definition): void
+    private function validateRegexOrFail(string $regex, TokenDefinition $definition): void
     {
         \error_clear_last();
         \set_error_handler(self::emptyErrorHandler(...));
@@ -48,6 +60,12 @@ final readonly class RegexValidationLexerCompilerPass implements LexerCompilerPa
         \error_clear_last();
 
         throw new CompilationFailedException($this->formatException($error['message'], (string) $definition));
+    }
+
+    private static function emptyErrorHandler(int $id, string $error, string $file, int $line): bool
+    {
+        // NO-OP
+        return false;
     }
 
     /**

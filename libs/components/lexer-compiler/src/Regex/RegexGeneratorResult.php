@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Lexer\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Contracts\Lexer\Channel;
 
 final class RegexGeneratorResult implements \Stringable
 {
@@ -24,7 +25,7 @@ final class RegexGeneratorResult implements \Stringable
             foreach ($this->tokens as $id => $token) {
                 $channel = $token->channel;
 
-                if ($channel === null) {
+                if ($channel === Channel::DEFAULT) {
                     continue;
                 }
 

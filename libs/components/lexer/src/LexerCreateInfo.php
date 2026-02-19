@@ -46,16 +46,15 @@ final readonly class LexerCreateInfo
          */
         public array $names = [],
         /**
-         * Name of the state and its configuration DTOs.
+         * Name of the state and its implementation.
          *
-         * The state name is used as the array key; value contains configuration
-         * DTO of the state.
+         * An array contains lexer states.
          *
          * For example,
          * ```php
          * [
-         *      'injected_language' => new LexerStateCreateInfo(...),
-         *      'other_language' => new LexerStateCreateInfo(...),
+         *      'injected_language' => new Lexer(...),
+         *      'other_language' => new Lexer(...),
          * ]
          * ```
          *

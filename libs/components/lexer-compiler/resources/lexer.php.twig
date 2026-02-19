@@ -1,4 +1,4 @@
-{%- set global_compiled_result = regex(input.global, input.flags) -%}
+{%- set global_compiled_result = regex(input.tokens, input.flags) -%}
 {%- set global_channels_count = (global_compiled_result.channels | length) %}
 {%- set global_names_count = (global_compiled_result.names | length) %}
 <?php

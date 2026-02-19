@@ -8,7 +8,6 @@ use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 
 /**
  * Represents the result of building a lexer.
@@ -16,48 +15,56 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 final class LexerBuilderResult
 {
     /**
-     * List of global (non-namespaced) token definitions
+     * List of token definitions grouped by state
      *
-     * @var list<TokenDefinition>
+     * @var array<non-empty-string, non-empty-list<TokenDefinition>>
      */
-    public array $global {
-        get {
-            if (isset($this->global)) {
-                return $this->global;
+    public private(set) array $states {
+        /**
+         * @param array<non-empty-string, list<TokenDefinition>> $states
+         */
+        set(array $states) {
+            foreach ($states as $name => $tokens) {
+                $tokens[] = $this->createUnknownToken();
+
+                $states[$name] = $tokens;
             }
 
-            $this->global = $this->tokens;
-            $this->global[] = $this->createUnknownToken();
-
-            return $this->global;
+            $this->states = $states;
         }
     }
 
     /**
-     * List of token definitions grouped by state
+     * List of global (non-namespaced) token definitions
      *
-     * @var array<non-empty-string, list<TokenDefinition>>
+     * @var non-empty-list<TokenDefinition>
      */
-    public array $states {
-        get {
-            return [];
+    public private(set) array $tokens {
+        /**
+         * @param list<TokenDefinition> $tokens
+         */
+        set(array $tokens) {
+            $tokens[] = $this->createUnknownToken();
+
+            $this->tokens = $tokens;
         }
     }
 
+    /**
+     * @param list<TokenDefinition> $tokens
+     * @param array<non-empty-string, list<TokenDefinition>> $states
+     */
     public function __construct(
-        /**
-         * @var list<TokenDefinition>
-         */
-        public readonly array $tokens,
+        array $tokens,
+        array $states,
         /**
          * @var list<RegexModifier>
          */
         public readonly array $flags,
-        /**
-         * @var list<ChannelInterface>
-         */
-        public readonly array $channels,
-    ) {}
+    ) {
+        $this->tokens = $tokens;
+        $this->states = $states;
+    }
 
     private function createUnknownToken(): TokenDefinition
     {

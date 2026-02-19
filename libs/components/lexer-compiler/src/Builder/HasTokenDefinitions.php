@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer;
+namespace Phplrt\Compiler\Lexer\Builder;
 
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 
-/**
- * Contains a list of token definitions allows to add and remove them.
- */
-class LexerBuilderContext
+trait HasTokenDefinitions
 {
     /**
      * @var array<array-key, TokenDefinition>
@@ -41,6 +38,8 @@ class LexerBuilderContext
      */
     public function addTokenDefinition(TokenDefinition $definition): self
     {
+        $this->removeTokenDefinition($definition);
+
         $this->tokens[] = $definition;
 
         return $this;

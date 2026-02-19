@@ -4,19 +4,33 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer\Compiler;
 
+use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
 use Phplrt\Compiler\Lexer\LexerBuilder;
 
-final readonly class TokenNameValidationLexerCompilerPass implements LexerCompilerPassInterface
+/**
+ * Checks that the token name is valid
+ */
+final readonly class TokenNameValidationLexerCompilerPass implements
+    LexerCompilerPassInterface
 {
-    /**
-     * @var list<non-empty-string>
-     */
-    private const array ALLOWED_NAME_CHARS = ['_'];
-
     public function process(LexerBuilder $builder): void
     {
-        foreach ($builder->tokens as $definition) {
+        $this->validateOrFail($builder->tokens);
+
+        foreach ($builder->states as $state) {
+            $this->validateOrFail($state->tokens);
+        }
+    }
+
+    /**
+     * @param array<array-key, TokenDefinition> $definitions
+     *
+     * @throws CompilationFailedException
+     */
+    private function validateOrFail(array $definitions): void
+    {
+        foreach ($definitions as $definition) {
             if ($definition->name === null) {
                 continue;
             }
@@ -24,23 +38,6 @@ final readonly class TokenNameValidationLexerCompilerPass implements LexerCompil
             /** @phpstan-ignore-next-line Additional assertion */
             if ($definition->name === '') {
                 throw new CompilationFailedException('Token name cannot be empty');
-            }
-
-            if (!\ctype_alpha($definition->name[0])) {
-                throw new CompilationFailedException(\sprintf(
-                    'Token %s name must start with an ASCII letter',
-                    $definition,
-                ));
-            }
-
-            $nameWithoutAllowed = \str_replace(self::ALLOWED_NAME_CHARS, '', $definition->name);
-
-            if (!\ctype_alnum($nameWithoutAllowed)) {
-                throw new CompilationFailedException(\sprintf(
-                    'Token %s must contain only ASCII letters, digits and %s chars',
-                    $definition,
-                    \implode(', ', self::ALLOWED_NAME_CHARS),
-                ));
             }
         }
     }

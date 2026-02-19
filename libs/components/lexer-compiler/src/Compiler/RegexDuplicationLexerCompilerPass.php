@@ -5,17 +5,36 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Lexer\Compiler;
 
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
+use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
 use Phplrt\Compiler\Lexer\LexerBuilder;
 
-final readonly class RegexDuplicationLexerCompilerPass implements LexerCompilerPassInterface
+/**
+ * Checks that there are no duplicate patterns for token definitions
+ */
+final readonly class RegexDuplicationLexerCompilerPass implements
+    LexerCompilerPassInterface
 {
     public function process(LexerBuilder $builder): void
     {
+        $this->validateOrFail($builder->tokens);
+
+        foreach ($builder->states as $state => $group) {
+            $this->validateOrFail($group->tokens);
+        }
+    }
+
+    /**
+     * @param array<array-key, TokenDefinition> $definitions
+     *
+     * @throws CompilationFailedException
+     */
+    private function validateOrFail(array $definitions): void
+    {
         $patterns = [];
 
-        foreach ($builder->tokens as $definition) {
+        foreach ($definitions as $definition) {
             $regex = match (true) {
                 $definition instanceof RegexTokenDefinition => \addcslashes($definition->regex, '/'),
                 $definition instanceof ValueTokenDefinition => \preg_quote($definition->value, '/'),
@@ -26,11 +45,15 @@ final readonly class RegexDuplicationLexerCompilerPass implements LexerCompilerP
                 continue;
             }
 
-            if (isset($patterns[$regex])) {
-                throw new CompilationFailedException(\sprintf('Definition %s is not unique', $regex));
+            if (!isset($patterns[$regex])) {
+                $patterns[$regex] = true;
+                continue;
             }
 
-            $patterns[$regex] = true;
+            throw new CompilationFailedException(\sprintf(
+                'Another token definition %s with the same regex has already been defined previously',
+                $regex,
+            ));
         }
     }
 }

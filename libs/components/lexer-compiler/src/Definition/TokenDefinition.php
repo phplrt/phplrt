@@ -12,12 +12,7 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
  */
 abstract class TokenDefinition implements \Stringable
 {
-    /**
-     * Contains token state, or {@see null} in case of token is global.
-     *
-     * @var non-empty-string|null
-     */
-    public ?string $namespace = null;
+    private const ChannelInterface DEFAULT_TOKEN_CHANNEL = Channel::DEFAULT;
 
     /**
      * Contains token name, or {@see null} in case of token is anonymous
@@ -27,41 +22,20 @@ abstract class TokenDefinition implements \Stringable
     public ?string $name;
 
     /**
-     * Gets the fully qualified token name
-     *
-     * @var non-empty-string|null
-     */
-    public ?string $fqn {
-        get {
-            if ($this->name === null) {
-                return null;
-            }
-
-            $name = $this->name;
-
-            if ($this->namespace !== null) {
-                $name = $this->namespace . ':' . $name;
-            }
-
-            return $name;
-        }
-    }
-
-    /**
      * Contains {@see true} in case of token should be
      * hidden, or {@see false} instead
      */
     public bool $isHidden {
         get => $this->channel === Channel::Hidden;
         set(bool $isHidden) {
-            $this->channel = $isHidden ? Channel::Hidden : null;
+            $this->channel = $isHidden ? Channel::Hidden : self::DEFAULT_TOKEN_CHANNEL;
         }
     }
 
     /**
      * Contains optional channel reference
      */
-    public ?ChannelInterface $channel = null;
+    public ChannelInterface $channel = self::DEFAULT_TOKEN_CHANNEL;
 
     /**
      * @param non-empty-string|null $name
@@ -112,12 +86,36 @@ abstract class TokenDefinition implements \Stringable
     }
 
     /**
+     * @param non-empty-string $name
+     */
+    private function createCustomChannel(string $name): ChannelInterface
+    {
+        return new class ($name) implements ChannelInterface {
+            public function __construct(
+                /**
+                 * @var non-empty-string
+                 */
+                public string $value,
+            ) {}
+        };
+    }
+
+    /**
      * @api
+     *
+     * @param ChannelInterface|non-empty-string|null $channel
      *
      * @return $this
      */
-    public function setChannel(?ChannelInterface $channel): self
+    public function setChannel(ChannelInterface|string|null $channel = null): self
     {
+        $channel ??= self::DEFAULT_TOKEN_CHANNEL;
+
+        if (\is_string($channel)) {
+            $channel = Channel::tryFrom($channel)
+                ?? $this->createCustomChannel($channel);
+        }
+
         $this->channel = $channel;
 
         return $this;
@@ -133,9 +131,10 @@ abstract class TokenDefinition implements \Stringable
      */
     public function __toString(): string
     {
-        return \vsprintf('%s (%s)', [
-            $this->printValue(),
-            $this->name ?? '*anonymous*',
-        ]);
+        if ($this->name === null) {
+            return $this->printValue();
+        }
+
+        return \sprintf('%s (%s)', $this->printValue(), $this->name);
     }
 }
