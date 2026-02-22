@@ -6,6 +6,10 @@ namespace Phplrt\Compiler\Lexer\Builder;
 
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 
+/**
+ * @internal this is an internal library trait, please do not use it in your code
+ * @psalm-internal Phplrt\Compiler\Lexer
+ */
 trait HasRegexFlags
 {
     /**
@@ -28,19 +32,5 @@ trait HasRegexFlags
         unset($this->flags[$flag->value]);
 
         return $flag;
-    }
-
-    /**
-     * @return $this
-     */
-    public function removePcreFlagDefinition(RegexModifier $definition): self
-    {
-        foreach ($this->flags as $index => $flag) {
-            if ($flag === $definition) {
-                unset($this->flags[$index]);
-            }
-        }
-
-        return $this;
     }
 }

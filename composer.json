@@ -27,6 +27,7 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-compiler/src",
+            "Phplrt\\Compiler\\Parser\\": "libs/components/parser-compiler/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
@@ -36,9 +37,9 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.93",
+        "friendsofphp/php-cs-fixer": "^3.94",
         "httpsoft/http-message": "^1.1",
-        "jetbrains/phpstorm-attributes": "^1.0",
+        "jetbrains/phpstorm-attributes": "^1.2",
         "phpbench/phpbench": "^1.4",
         "phpstan/phpdoc-parser": "^2.3",
         "phpstan/phpstan": "^2.1.38",
@@ -51,6 +52,7 @@
     "autoload-dev": {
         "psr-4": {
             "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-compiler/tests",
+            "Phplrt\\Compiler\\Parser\\Tests\\": "libs/components/parser-compiler/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
@@ -64,12 +66,13 @@
         "phplrt/lexer": "*",
         "phplrt/lexer-compiler": "*",
         "phplrt/lexer-contracts": "*",
+        "phplrt/parser": "*",
         "phplrt/parser-contracts": "*",
         "phplrt/position-contracts": "*",
         "phplrt/runtime": "*",
         "phplrt/source": "*",
         "phplrt/source-contracts": "*",
-        "phplrt/parser": "self.version"
+        "phplrt/parser-compiler": "*"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0",

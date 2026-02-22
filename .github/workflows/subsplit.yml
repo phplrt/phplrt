@@ -26,6 +26,8 @@ jobs:
             split_repository: 'lexer-compiler'
           - local_path: 'libs/components/parser'
             split_repository: 'parser'
+          - local_path: 'libs/components/parser-compiler'
+            split_repository: 'parser-compiler'
           - local_path: 'libs/components/source'
             split_repository: 'source'
           # Contracts

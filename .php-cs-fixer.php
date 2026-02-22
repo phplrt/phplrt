@@ -5,6 +5,7 @@ const DIR_INCLUDE = [
     __DIR__ . '/libs/components/lexer/src',
     __DIR__ . '/libs/components/lexer-compiler/src',
     __DIR__ . '/libs/components/parser/src',
+    __DIR__ . '/libs/components/parser-compiler/src',
     __DIR__ . '/libs/components/source/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',

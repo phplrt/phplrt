@@ -8,6 +8,10 @@ use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 
+/**
+ * @internal this is an internal library trait, please do not use it in your code
+ * @psalm-internal Phplrt\Compiler\Lexer
+ */
 trait HasTokenDefinitions
 {
     /**
@@ -21,7 +25,11 @@ trait HasTokenDefinitions
      */
     public function match(string $pattern, ?string $name = null): RegexTokenDefinition
     {
-        return $this->tokens[] = new RegexTokenDefinition($pattern, $name);
+        $definition = new RegexTokenDefinition($pattern, $name);
+
+        $this->addToken($definition);
+
+        return $definition;
     }
 
     /**
@@ -30,15 +38,19 @@ trait HasTokenDefinitions
      */
     public function value(string $value, ?string $name = null): ValueTokenDefinition
     {
-        return $this->tokens[] = new ValueTokenDefinition($value, $name);
+        $definition = new ValueTokenDefinition($value, $name);
+
+        $this->addToken($definition);
+
+        return $definition;
     }
 
     /**
      * @return $this
      */
-    public function addTokenDefinition(TokenDefinition $definition): self
+    public function addToken(TokenDefinition $definition): self
     {
-        $this->removeTokenDefinition($definition);
+        $this->removeToken($definition);
 
         $this->tokens[] = $definition;
 
@@ -48,7 +60,7 @@ trait HasTokenDefinitions
     /**
      * @return $this
      */
-    public function removeTokenDefinition(TokenDefinition $definition): self
+    public function removeToken(TokenDefinition $definition): self
     {
         foreach ($this->tokens as $index => $token) {
             if ($token === $definition) {

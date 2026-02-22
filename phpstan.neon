@@ -5,6 +5,7 @@ includes:
   - libs/components/lexer/phpstan.neon
   - libs/components/lexer-compiler/phpstan.neon
   - libs/components/parser/phpstan.neon
+  - libs/components/parser-compiler/phpstan.neon
   - libs/components/source/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
