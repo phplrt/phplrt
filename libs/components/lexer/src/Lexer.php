@@ -7,7 +7,6 @@ namespace Phplrt\Lexer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
@@ -16,12 +15,63 @@ readonly class Lexer implements LexerInterface
     /**
      * @var array<int, ChannelInterface>
      */
-    private array $channels;
+    private array $mappedChannels;
 
     public function __construct(
-        private LexerCreateInfo $config,
+        /**
+         * Generated a PCRE2-compatible regex pattern
+         *
+         * For example,
+         * ```php
+         * pattern: '/\\G(?|(?:(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)")(*MARK:0))|(?:(?:.+?)(*MARK:1)))/Ssum',
+         * ```
+         *
+         * @var non-empty-string
+         */
+        private string $pattern,
+        /**
+         * A map of token ID and its channels.
+         *
+         * The list contains the token ID in the array's key and the
+         * channel name in the array's value. All reserved channels will be
+         * converted to built-in ({@see Channel}), all others to the
+         * {@see CustomChannel} instance
+         *
+         * For example,
+         * ```php
+         * [
+         *     0 => 'hidden',
+         *     1 => 'unknown',
+         * ]
+         * ```
+         *
+         * @var array<int, non-empty-string>
+         */
+        private array $channels = [],
+        /**
+         * A map of token ID and its original names.
+         *
+         * @var array<int, non-empty-string>
+         */
+        private array $names = [],
+        /**
+         * Name of the state and its implementation.
+         *
+         * An array contains lexer states.
+         *
+         * For example,
+         * ```php
+         * [
+         *      'injected_language' => new Lexer(...),
+         *      'other_language' => new Lexer(...),
+         * ]
+         * ```
+         *
+         * @var array<non-empty-string, LexerInterface>
+         */
+        private array $states = [],
     ) {
-        $this->channels = $this->mapTokenIdToChannel($config);
+        $this->mappedChannels = $this->mapTokenIdToChannel($this->channels);
     }
 
     /**
@@ -29,14 +79,13 @@ readonly class Lexer implements LexerInterface
      *
      * @return array<int, ChannelInterface>
      */
-    private function mapTokenIdToChannel(LexerCreateInfo $config): array
+    private function mapTokenIdToChannel(array $channels): array
     {
         $result = [];
+        $instances = $this->createChannelInstances($channels);
 
-        $channels = $this->createChannelInstances($config);
-
-        foreach ($config->channels as $tokenId => $channelName) {
-            $result[$tokenId] = $channels[$channelName];
+        foreach ($channels as $tokenId => $channelName) {
+            $result[$tokenId] = $instances[$channelName];
         }
 
         return $result;
@@ -45,13 +94,14 @@ readonly class Lexer implements LexerInterface
     /**
      * Gets the lexer configuration and initializes channel instances.
      *
+     * @param array<int, non-empty-string> $channels
      * @return array<non-empty-string, ChannelInterface>
      */
-    private function createChannelInstances(LexerCreateInfo $config): array
+    private function createChannelInstances(array $channels): array
     {
         $result = [];
 
-        foreach ($config->channels as $channelName) {
+        foreach ($channels as $channelName) {
             if (isset($result[$channelName])) {
                 continue;
             }
@@ -84,7 +134,7 @@ readonly class Lexer implements LexerInterface
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
 
-        \preg_match_all($this->config->pattern, $source, $matches, 0, $offset);
+        \preg_match_all($this->pattern, $source, $matches, 0, $offset);
 
         if (!isset($matches['MARK'])) {
             return [new EndOfInputToken($offset)];
@@ -105,8 +155,8 @@ readonly class Lexer implements LexerInterface
          * Import "hot" variables from object properties, which will
          * reduce the number of hops to access the memory address.
          */
-        $names = $this->config->names;
-        $channels = $this->channels;
+        $names = $this->names;
+        $channels = $this->mappedChannels;
 
         $prototype = new Token(
             id: -1,

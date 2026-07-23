@@ -10,11 +10,9 @@ namespace {{ namespace | raw }};
 
 {% endif %}
 use Phplrt\Lexer\Lexer;
-use Phplrt\Lexer\LexerCreateInfo;
 
 // Help opcache.preload discover always-needed symbols
 \class_exists(Lexer::class);
-\class_exists(LexerCreateInfo::class);
 
 {% if class is null %}
 /**
@@ -41,29 +39,27 @@ final readonly class {{ class | raw }} extends Lexer
     public function __construct()
     {
         parent::__construct(
-            config: new LexerCreateInfo(
-                pattern: {{ value(global_compiled_result.pattern) | raw }},
-                channels: {{ value(global_compiled_result.channels, global_channels_count > 2, 4) | raw }},
+            pattern: {{ value(global_compiled_result.pattern) | raw }},
+            channels: {{ value(global_compiled_result.channels, global_channels_count > 2, 3) | raw }},
 {% if global_names_count > 0 %}
-                names: {{ value(global_compiled_result.names, global_names_count > 2, 4) | raw }},
+            names: {{ value(global_compiled_result.names, global_names_count > 2, 3) | raw }},
 {% endif %}
 {% if input.states | length > 0 %}
-                states: [
+            states: [
 {#  #}{%- for state, tokens in input.states %}
 {#      #}{%- set compiled_result = regex(tokens, input.flags) %}
 {#      #}{%- set channels_count = (compiled_result.channels | length) %}
 {#      #}{%- set names_count = (compiled_result.names | length) %}
-                    {{ value(state) | raw }} => new Lexer(new LexerCreateInfo(
-                        pattern: {{ value(compiled_result.pattern) | raw }},
-                        channels: {{ value(compiled_result.channels, channels_count > 2, 6) | raw }},
+                {{ value(state) | raw }} => new Lexer(new LexerCreateInfo(
+                    pattern: {{ value(compiled_result.pattern) | raw }},
+                    channels: {{ value(compiled_result.channels, channels_count > 2, 5) | raw }},
 {#      #}{% if names_count > 0 %}
-                        names: {{ value(compiled_result.names, names_count > 2, 6) | raw }},
+                    names: {{ value(compiled_result.names, names_count > 2, 5) | raw }},
 {#      #}{% endif %}
-                    )),
+                )),
 {#      #}{% endfor %}
-                ],
+            ],
 {% endif %}
-            ),
         );
     }
 }
