@@ -20,7 +20,6 @@
         "ext-spl": "*",
         "ext-pcre": "*",
         "ext-json": "*",
-        "phplrt/source": "^4.0",
         "phplrt/lexer": "^4.0",
         "phplrt/parser-contracts": "^4.0"
     },

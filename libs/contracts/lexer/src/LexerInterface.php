@@ -6,7 +6,6 @@ namespace Phplrt\Contracts\Lexer;
 
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * An interface that is an abstract implementation of a lexer.
@@ -31,5 +30,5 @@ interface LexerInterface
      *         starting the lexical analysis and indicates problems in the
      *         analyzed source
      */
-    public function lex(ReadableInterface $source, int $offset = 0): iterable;
+    public function lex(string $source, int $offset = 0): iterable;
 }

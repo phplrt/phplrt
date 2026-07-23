@@ -8,11 +8,8 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
-use Phplrt\Source\SourceFactory;
 
 readonly class Lexer implements LexerInterface
 {
@@ -21,13 +18,9 @@ readonly class Lexer implements LexerInterface
      */
     private array $channels;
 
-    private SourceFactoryInterface $sources;
-
     public function __construct(
         private LexerCreateInfo $config,
-        ?SourceFactoryInterface $sources = null,
     ) {
-        $this->sources = $sources ?? SourceFactory::default();
         $this->channels = $this->mapTokenIdToChannel($config);
     }
 
@@ -85,28 +78,16 @@ readonly class Lexer implements LexerInterface
         };
     }
 
-    final public function lex(mixed $source, int $offset = 0): iterable
-    {
-        $readable = $this->sources->create($source);
-
-        return $this->execute($readable, $offset);
-    }
-
-    /**
-     * @return iterable<array-key, TokenInterface>
-     */
-    private function execute(ReadableInterface $source, int $offset): iterable
+    final public function lex(string $source, int $offset = 0): iterable
     {
         if ($offset < 0) {
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
 
-        $content = $source->content;
-
-        \preg_match_all($this->config->pattern, $content, $matches, 0, $offset);
+        \preg_match_all($this->config->pattern, $source, $matches, 0, $offset);
 
         if (!isset($matches['MARK'])) {
-            return [new EndOfInputToken($source, $offset)];
+            return [new EndOfInputToken($offset)];
         }
 
         /**
@@ -131,7 +112,6 @@ readonly class Lexer implements LexerInterface
             id: -1,
             name: null,
             channel: Channel::DEFAULT,
-            source: $source,
             value: '',
             offset: $offset,
         );
@@ -176,7 +156,7 @@ readonly class Lexer implements LexerInterface
             $offset += $length;
         }
 
-        $result[] = new EndOfInputToken($source, $offset);
+        $result[] = new EndOfInputToken($offset);
 
         return $result;
     }

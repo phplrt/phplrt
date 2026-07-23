@@ -16,8 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "phplrt/source-contracts": "^4.0"
+        "php": "^8.4"
     },
     "autoload": {
         "psr-4": {

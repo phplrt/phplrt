@@ -6,7 +6,6 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
 
 /**
@@ -21,7 +20,6 @@ class Token implements TokenInterface
          */
         public ?string $name,
         public ChannelInterface $channel,
-        public ReadableInterface $source,
         public string $value,
         /**
          * @var int<0, max>

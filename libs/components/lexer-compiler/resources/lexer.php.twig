@@ -9,12 +9,10 @@ declare(strict_types=1);
 namespace {{ namespace | raw }};
 
 {% endif %}
-use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\LexerCreateInfo;
 
 // Help opcache.preload discover always-needed symbols
-\class_exists(SourceFactoryInterface::class);
 \class_exists(Lexer::class);
 \class_exists(LexerCreateInfo::class);
 
@@ -40,7 +38,7 @@ final readonly class {{ class | raw }} extends Lexer
 {#  #}{% endif %}
 {% endfor %}
 
-    public function __construct(?SourceFactoryInterface $sources = null)
+    public function __construct()
     {
         parent::__construct(
             config: new LexerCreateInfo(
@@ -61,12 +59,11 @@ final readonly class {{ class | raw }} extends Lexer
 {#      #}{% if names_count > 0 %}
                         names: {{ value(compiled_result.names, names_count > 2, 6) | raw }},
 {#      #}{% endif %}
-                    ), $sources),
+                    )),
 {#      #}{% endfor %}
                 ],
 {% endif %}
             ),
-            sources: $sources,
         );
     }
 }
