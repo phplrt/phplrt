@@ -11,13 +11,13 @@ final readonly class Repetition implements ProductionInterface
         /**
          * @var int<0, max>
          */
-        public int $gte = 0,
+        public int $min = 0,
         /**
          * @var int<0, max>|float
          */
-        public int|float $lte = \INF,
+        public int|float $max = \INF,
     ) {
-        \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
-        \assert(\is_float($lte) && !\is_infinite($lte), 'Min repetitions may contain only integer or INF (float) values');
+        \assert($max >= $min, 'Max repetitions count must be greater or equal than min repetitions');
+        \assert(\is_int($max) || \is_infinite($max), 'Max repetitions may contain only integer or INF (float) values');
     }
 }
