@@ -38,6 +38,12 @@ abstract class TokenDefinition extends Definition
     public ChannelInterface $channel = self::DEFAULT_TOKEN_CHANNEL;
 
     /**
+     * Contains the lexer state change triggered by this token, or {@see null}
+     * in case of the token does not affect the lexer state
+     */
+    public private(set) ?Transition $transition = null;
+
+    /**
      * @param non-empty-string|null $name
      */
     public function __construct(
@@ -117,6 +123,50 @@ abstract class TokenDefinition extends Definition
         }
 
         $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * Makes the token push the given state onto the lexer's state stack.
+     *
+     * @api
+     *
+     * @param non-empty-string $state
+     *
+     * @return $this
+     */
+    public function enter(string $state): self
+    {
+        $this->transition = Transition::enter($state);
+
+        return $this;
+    }
+
+    /**
+     * Makes the token pop the topmost state from the lexer's state stack.
+     *
+     * @api
+     *
+     * @return $this
+     */
+    public function exit(): self
+    {
+        $this->transition = Transition::exit();
+
+        return $this;
+    }
+
+    /**
+     * Makes the token keep the lexer in its current state.
+     *
+     * @api
+     *
+     * @return $this
+     */
+    public function stay(): self
+    {
+        $this->transition = null;
 
         return $this;
     }

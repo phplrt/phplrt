@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Lexer\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Compiler\Lexer\Definition\TransitionType;
 use Phplrt\Contracts\Lexer\Channel;
 
 final class RegexGeneratorResult implements \Stringable
@@ -61,13 +62,45 @@ final class RegexGeneratorResult implements \Stringable
         }
     }
 
+    /**
+     * Gets a map of token ID and the state transition it triggers.
+     *
+     * A {@see string} value enters the named state, while a {@see null} one
+     * leaves the current state.
+     *
+     * @var array<int, non-empty-string|null>
+     */
+    public array $transitions {
+        get {
+            if (isset($this->transitions)) {
+                return $this->transitions;
+            }
+
+            $this->transitions = [];
+
+            foreach ($this->tokens as $id => $token) {
+                $transition = $token->transition;
+
+                if ($transition === null) {
+                    continue;
+                }
+
+                $this->transitions[$id] = $transition->type === TransitionType::Enter
+                    ? $transition->state
+                    : null;
+            }
+
+            return $this->transitions;
+        }
+    }
+
     public function __construct(
         /**
          * @var non-empty-string
          */
         public readonly string $pattern,
         /**
-         * @var list<TokenDefinition>
+         * @var array<int, TokenDefinition>
          */
         public readonly array $tokens,
     ) {}

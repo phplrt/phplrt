@@ -9,29 +9,44 @@ use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
 use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
- * Checks that token names are unique within a single context.
+ * Checks that token names are unique across ALL lexer states.
+ *
+ * Token identifiers form a single global space and each named token is
+ * exposed as a class constant of the generated lexer, so two states cannot
+ * reuse the same name.
  */
 final readonly class TokenNameDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuilder $builder): void
     {
-        $this->validateOrFail($builder->tokens);
+        /** @var array<non-empty-string, true> $names */
+        $names = [];
+
+        /**
+         * A definition shared between several states is a single token, so it
+         * must not be reported as a duplicate of itself.
+         *
+         * @var \SplObjectStorage<TokenDefinition, true> $visited
+         */
+        $visited = new \SplObjectStorage();
+
+        $this->validateOrFail($builder->tokens, $names, $visited);
 
         foreach ($builder->states as $state) {
-            $this->validateOrFail($state->tokens);
+            $this->validateOrFail($state->tokens, $names, $visited);
         }
     }
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
+     * @param array<non-empty-string, true> $names
+     * @param \SplObjectStorage<TokenDefinition, true> $visited
      *
      * @throws CompilationFailedException
      */
-    private function validateOrFail(array $definitions): void
+    private function validateOrFail(array $definitions, array &$names, \SplObjectStorage $visited): void
     {
-        $names = [];
-
         foreach ($definitions as $definition) {
             $name = $definition->name;
 
@@ -40,6 +55,12 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
                 continue;
             }
 
+            if (isset($visited[$definition])) {
+                continue;
+            }
+
+            $visited[$definition] = true;
+
             if (isset($names[$name])) {
                 throw new CompilationFailedException($definition, \sprintf(
                     'Token name of %s is not unique',
@@ -47,7 +68,7 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
                 ));
             }
 
-            $names[$name] = $name;
+            $names[$name] = true;
         }
     }
 }

@@ -13,6 +13,9 @@ use Phplrt\Compiler\Lexer\Compiler\RegexExcessiveGreedLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\RegexValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
+use Phplrt\Compiler\Lexer\Compiler\TransitionValidationLexerCompilerPass;
+use Phplrt\Compiler\Lexer\Compiler\UnreachableStateLexerCompilerPass;
+use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 use Phplrt\Compiler\Lexer\Generator\GeneratedResult;
 use Phplrt\Compiler\Lexer\Generator\OutputGeneratorInterface;
@@ -37,13 +40,57 @@ final class LexerBuilder
     {
         $this->passes = [
             0 => [
+                /**
+                 * Dead states are dropped first, so that the code that could
+                 * never be reached does not produce compilation errors.
+                 */
+                new UnreachableStateLexerCompilerPass(),
                 new TokenNameDuplicationLexerCompilerPass(),
                 new TokenNameValidationLexerCompilerPass(),
                 new RegexDuplicationLexerCompilerPass(),
                 new RegexValidationLexerCompilerPass(),
                 new RegexExcessiveGreedLexerCompilerPass(),
+                new TransitionValidationLexerCompilerPass(),
             ],
         ];
+    }
+
+    /**
+     * Gets (and registers, in case it does not exist yet) the group of token
+     * definitions of the given lexer state.
+     *
+     * A state can only be reached using a {@see TokenDefinition::enter()}
+     * transition and left using a {@see TokenDefinition::exit()} one.
+     *
+     * For example,
+     * ```php
+     * $builder->match('"')->enter('string');
+     * $builder->state('string')->match('"')->exit();
+     * ```
+     *
+     * @api
+     *
+     * @param non-empty-string $name
+     */
+    public function state(string $name): TokenDefinitionGroup
+    {
+        return $this->states[$name] ??= new TokenDefinitionGroup();
+    }
+
+    /**
+     * Removes the given lexer state along with all of its token definitions.
+     *
+     * @api
+     *
+     * @param non-empty-string $name
+     *
+     * @return $this
+     */
+    public function removeState(string $name): self
+    {
+        unset($this->states[$name]);
+
+        return $this;
     }
 
     /**
@@ -71,7 +118,7 @@ final class LexerBuilder
 
         $states = [];
 
-        foreach ($this->states as $name => $state) {
+        foreach ($context->states as $name => $state) {
             $states[$name] = \array_values($state->tokens);
         }
 

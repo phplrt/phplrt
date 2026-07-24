@@ -1,6 +1,7 @@
 {%- set global_compiled_result = regex(input.tokens, input.flags) -%}
 {%- set global_channels_count = (global_compiled_result.channels | length) %}
 {%- set global_names_count = (global_compiled_result.names | length) %}
+{%- set global_transitions_count = (global_compiled_result.transitions | length) %}
 <?php
 
 declare(strict_types=1);
@@ -30,10 +31,8 @@ final readonly class {{ class | raw }} extends Lexer
 {
 {% endif %}
 
-{%- for id, token in global_compiled_result.tokens %}
-{#  #}{% if token.name != null %}
-    public const int {{ token.name }} = {{ value(id) | raw }};
-{#  #}{% endif %}
+{%- for name, id in input.constants %}
+    public const int {{ name }} = {{ value(id) | raw }};
 {% endfor %}
 
     public function __construct()
@@ -44,19 +43,26 @@ final readonly class {{ class | raw }} extends Lexer
 {% if global_names_count > 0 %}
             names: {{ value(global_compiled_result.names, global_names_count > 2, 3) | raw }},
 {% endif %}
+{% if global_transitions_count > 0 %}
+            transitions: {{ value(global_compiled_result.transitions, global_transitions_count > 2, 3) | raw }},
+{% endif %}
 {% if input.states | length > 0 %}
             states: [
 {#  #}{%- for state, tokens in input.states %}
 {#      #}{%- set compiled_result = regex(tokens, input.flags) %}
 {#      #}{%- set channels_count = (compiled_result.channels | length) %}
 {#      #}{%- set names_count = (compiled_result.names | length) %}
-                {{ value(state) | raw }} => new Lexer(new LexerCreateInfo(
+{#      #}{%- set transitions_count = (compiled_result.transitions | length) %}
+                {{ value(state) | raw }} => new Lexer(
                     pattern: {{ value(compiled_result.pattern) | raw }},
                     channels: {{ value(compiled_result.channels, channels_count > 2, 5) | raw }},
 {#      #}{% if names_count > 0 %}
                     names: {{ value(compiled_result.names, names_count > 2, 5) | raw }},
 {#      #}{% endif %}
-                )),
+{#      #}{% if transitions_count > 0 %}
+                    transitions: {{ value(compiled_result.transitions, transitions_count > 2, 5) | raw }},
+{#      #}{% endif %}
+                ),
 {#      #}{% endfor %}
             ],
 {% endif %}

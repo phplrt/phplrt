@@ -16,7 +16,8 @@ use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 interface RegexGeneratorInterface
 {
     /**
-     * @param list<TokenDefinition> $tokens
+     * @param array<int, TokenDefinition> $tokens a map of globally unique
+     *        token ID and its definition
      * @param list<RegexModifier> $flags
      *
      * @throws LexerCompilerException

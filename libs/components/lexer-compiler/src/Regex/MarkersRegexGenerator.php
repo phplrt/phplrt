@@ -29,7 +29,7 @@ final readonly class MarkersRegexGenerator extends RegexGenerator
     }
 
     /**
-     * @param list<TokenDefinition> $tokens
+     * @param array<int, TokenDefinition> $tokens
      *
      * @return non-empty-string
      * @throws InvalidArgumentException

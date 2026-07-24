@@ -5,18 +5,54 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Exception\UndefinedStateException;
+use Phplrt\Lexer\Exception\UnrecognizedTokenException;
+use Phplrt\Lexer\Internal\ChannelLoader;
+use Phplrt\Lexer\Internal\Executor\DelegatingExecutor;
+use Phplrt\Lexer\Internal\Executor\Executor;
+use Phplrt\Lexer\Internal\State;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
 readonly class Lexer implements LexerInterface
 {
     /**
-     * @var array<int, ChannelInterface>
+     * An identifier of the pseudo-token describing a source fragment
+     * that could not be read.
      */
-    private array $mappedChannels;
+    private const int UNKNOWN_TOKEN_ID = -1;
 
+    /**
+     * Max length (in bytes) of the source fragment mentioned in error messages.
+     *
+     * @var int<1, max>
+     */
+    private const int ERROR_FRAGMENT_LENGTH = 64;
+
+    /**
+     * The state described by this lexer.
+     */
+    private State $initial;
+
+    /**
+     * The states reachable from {@see Lexer::$initial}.
+     *
+     * @var array<non-empty-string, State>
+     */
+    private array $states;
+
+    /**
+     * The pattern, channels and names are fully consumed by the executor, so
+     * the lexer itself only keeps what it needs to coordinate the states.
+     *
+     * @param non-empty-string $pattern
+     * @param array<int, non-empty-string> $channels
+     * @param array<int, non-empty-string> $names
+     * @param array<int, non-empty-string|null> $transitions
+     * @param array<non-empty-string, LexerInterface> $states
+     */
     public function __construct(
         /**
          * Generated a PCRE2-compatible regex pattern
@@ -25,10 +61,8 @@ readonly class Lexer implements LexerInterface
          * ```php
          * pattern: '/\\G(?|(?:(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)")(*MARK:0))|(?:(?:.+?)(*MARK:1)))/Ssum',
          * ```
-         *
-         * @var non-empty-string
          */
-        private string $pattern,
+        string $pattern,
         /**
          * A map of token ID and its channels.
          *
@@ -44,170 +78,164 @@ readonly class Lexer implements LexerInterface
          *     1 => 'unknown',
          * ]
          * ```
-         *
-         * @var array<int, non-empty-string>
          */
-        private array $channels = [],
+        array $channels = [],
         /**
          * A map of token ID and its original names.
-         *
-         * @var array<int, non-empty-string>
          */
-        private array $names = [],
+        array $names = [],
         /**
-         * Name of the state and its implementation.
+         * A map of token ID and the state transition it triggers.
          *
-         * An array contains lexer states.
+         * The transition is applied AFTER the token itself has been emitted,
+         * so the token always belongs to the state it was matched in.
+         *
+         * - A {@see string} value switches the lexer to the named state
+         *   ({@see Lexer::$states} MUST contain such a state).
+         * - A {@see null} value returns the lexer to the state it came from.
          *
          * For example,
          * ```php
          * [
-         *      'injected_language' => new Lexer(...),
-         *      'other_language' => new Lexer(...),
+         *     0 => 'string', // token #0 enters the "string" state
+         *     1 => null,     // token #1 leaves the current state
          * ]
          * ```
-         *
-         * @var array<non-empty-string, LexerInterface>
          */
-        private array $states = [],
+        array $transitions = [],
+        /**
+         * Name of the state and the lexer reading it.
+         *
+         * The lexer itself always describes the initial state, while this
+         * list contains all the additional ones reachable using
+         * {@see Lexer::$transitions}.
+         *
+         * Any {@see LexerInterface} implementation is allowed here, which makes
+         * it possible to embed a foreign lexer into the grammar. Such a lexer
+         * reads a fragment on its own and returns the control back as soon as
+         * it stops, so its terminal token is not included into the result.
+         *
+         * Note: The state namespace is flat, so the nested {@see Lexer::$states}
+         *       of these lexers are ignored.
+         *
+         * For example,
+         * ```php
+         * [
+         *      'string' => new Lexer(pattern: '...', transitions: [42 => null]),
+         *      'php' => new PhpTokenLexer(), // reads up to "?>" on its own
+         * ]
+         * ```
+         */
+        array $states = [],
     ) {
-        $this->mappedChannels = $this->mapTokenIdToChannel($this->channels);
+        $this->initial = new State(
+            executor: new Executor(
+                pattern: $pattern,
+                channels: ChannelLoader::load($channels),
+                names: $names,
+                breaks: \array_fill_keys(\array_keys($transitions), true),
+            ),
+            transitions: $transitions,
+        );
+
+        $this->states = $this->bootLexerStates($states);
     }
 
     /**
-     * Gets the lexer configuration and initializes the mapping of tokens to channels.
+     * Gets the lexer configuration and initializes its states.
      *
-     * @return array<int, ChannelInterface>
-     */
-    private function mapTokenIdToChannel(array $channels): array
-    {
-        $result = [];
-        $instances = $this->createChannelInstances($channels);
-
-        foreach ($channels as $tokenId => $channelName) {
-            $result[$tokenId] = $instances[$channelName];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Gets the lexer configuration and initializes channel instances.
+     * A native lexer already carries a precompiled state, while any other
+     * implementation is wrapped into an executor-compatible decorator.
      *
-     * @param array<int, non-empty-string> $channels
-     * @return array<non-empty-string, ChannelInterface>
+     * @param array<non-empty-string, LexerInterface> $states
+     *
+     * @return array<non-empty-string, State>
      */
-    private function createChannelInstances(array $channels): array
+    private function bootLexerStates(array $states): array
     {
         $result = [];
 
-        foreach ($channels as $channelName) {
-            if (isset($result[$channelName])) {
-                continue;
-            }
-
-            $result[$channelName] = Channel::tryFrom($channelName)
-                ?? $this->createCustomChannel($channelName);
+        foreach ($states as $name => $lexer) {
+            $result[$name] = $lexer instanceof self
+                ? $lexer->initial
+                : new State(new DelegatingExecutor($lexer));
         }
 
         return $result;
-    }
-
-    /**
-     * @param non-empty-string $name
-     */
-    private function createCustomChannel(string $name): ChannelInterface
-    {
-        return new readonly class ($name) implements ChannelInterface {
-            public function __construct(
-                /**
-                 * @var non-empty-string
-                 */
-                public string $value,
-            ) {}
-        };
     }
 
     final public function lex(string $source, int $offset = 0): iterable
     {
-        if ($offset < 0) {
+         // Invariant against the callers not covered by static analysis.
+        if ($offset < 0) { // @phpstan-ignore smaller.alwaysFalse
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
 
-        \preg_match_all($this->pattern, $source, $matches, 0, $offset);
-
-        if (!isset($matches['MARK'])) {
-            return [new EndOfInputToken($offset)];
-        }
+        $length = \strlen($source);
 
         /**
-         * PHP stack optimization:
-         *
-         * Dereference found variables speeds up access to the
-         * "hot" variables memory addresses.
+         * The current state. Each executor stops on its own as soon as it has
+         * read everything it must, so the only thing left to do here is to
+         * switch between the states.
          */
-        $foundValues = $matches[0];
-        $foundNames = $matches['MARK'];
+        $current = $this->initial;
 
-        /**
-         * PHP stack optimization:
-         *
-         * Import "hot" variables from object properties, which will
-         * reduce the number of hops to access the memory address.
-         */
-        $names = $this->names;
-        $channels = $this->mappedChannels;
+        /** @var list<State> $stack */
+        $stack = [];
 
-        $prototype = new Token(
-            id: -1,
-            name: null,
-            channel: Channel::DEFAULT,
-            value: '',
-            offset: $offset,
-        );
-
-        /**
-         * PHP memory deoptimization:
-         * - Like `$result = \array_fill(0, \count($foundNames) + 1, null);`
-         * - Or `$result = new \SplFixedArray(\count($foundNames) + 1);`
-         *
-         * Allocating memory in advance to the required size
-         * DOES NOT significantly affect performance,
-         * but it complicates code maintenance.
-         */
+        /** @var list<TokenInterface> $result */
         $result = [];
 
-        foreach ($foundNames as $index => $alias) {
-            /**
-             * Clone optimization: speeds up the creation of a new object:
-             * faster than instantiation.
-             */
-            $token = clone $prototype;
+        while ($offset < $length) {
+            $previous = $offset;
+            $offset = $current->executor->run($source, $offset, $result);
 
-            $id = (int) $alias;
-            $name = null;
-            $value = $foundValues[$index];
-            $length = \strlen($value);
-
-            if (isset($names[$id])) {
-                $name = $names[$id];
+            // Nothing could be read at this offset
+            if ($offset === $previous) {
+                break;
             }
 
-            $token->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $token->name = $name;       // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $token->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $token->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $index = \array_key_last($result);
 
-            if (isset($channels[$id])) {
-                $token->channel = $channels[$id];   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            // The executor has advanced, so at least one token has been read
+            \assert($index !== null);
+
+            $next = $current->transitions[$result[$index]->id] ?? null;
+
+            if ($next === null) {
+                $current = \array_pop($stack) ?? $this->initial;
+
+                continue;
             }
 
-            $result[] = $token;
-            $offset += $length;
+            $stack[] = $current;
+            $current = $this->states[$next]
+                ?? throw UndefinedStateException::becauseStateIsNotDefined(
+                    state: $next,
+                    available: \array_keys($this->states),
+                );
+        }
+
+        if ($offset < $length) {
+            throw $this->createReadingException($source, $offset);
         }
 
         $result[] = new EndOfInputToken($offset);
 
         return $result;
+    }
+
+    /**
+     * @param int<0, max> $offset
+     */
+    private function createReadingException(string $source, int $offset): UnrecognizedTokenException
+    {
+        return UnrecognizedTokenException::becauseInputIsUnrecognized(new Token(
+            id: self::UNKNOWN_TOKEN_ID,
+            name: null,
+            channel: Channel::Unknown,
+            value: \substr($source, $offset, self::ERROR_FRAGMENT_LENGTH),
+            offset: $offset,
+        ));
     }
 }
