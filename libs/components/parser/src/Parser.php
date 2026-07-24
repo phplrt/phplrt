@@ -14,7 +14,7 @@ use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Filter\ChannelFilter;
 use Phplrt\Parser\Internal\Filter\FilterInterface;
-use Phplrt\Parser\Internal\Recognizer;
+use Phplrt\Parser\Internal\RecursiveDescentTracer;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
@@ -23,11 +23,13 @@ final readonly class Parser implements ParserInterface
     public function __construct(
         private LexerInterface $lexer,
         /**
-         * @var array<int, RuleInterface>
+         * @var list<RuleInterface>
          */
         private array $grammar,
         /**
          * The identifier of the rule the analysis starts at.
+         *
+         * @var int<0, max>
          */
         private int $initial,
         /**
@@ -43,7 +45,7 @@ final readonly class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        $result = new Recognizer($this->grammar, $buffer)->recognize($this->initial);
+        $result = RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer);
 
         return $result instanceof Success
             && $this->isEndOfInput($buffer->current);
@@ -59,12 +61,10 @@ final readonly class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        $result = new Recognizer($this->grammar, $buffer)->recognize($this->initial);
+        $result = RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer);
 
         if ($result instanceof Failure) {
-            throw UnexpectedTokenException::fromToken(
-                $result->token ?? $buffer->current,
-            );
+            throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current);
         }
 
         if (!$this->isEndOfInput($buffer->current)) {

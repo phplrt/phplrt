@@ -22,15 +22,15 @@ use Phplrt\Parser\Internal\Tracing\Trace;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  */
-final readonly class Recognizer
+final readonly class RecursiveDescentTracer
 {
     private Trace $trace;
 
     private ErrorReport $error;
 
-    public function __construct(
+    private function __construct(
         /**
-         * @var array<int, RuleInterface>
+         * @var list<RuleInterface>
          */
         private array $grammar,
         private BufferInterface $buffer,
@@ -41,12 +41,24 @@ final readonly class Recognizer
 
     /**
      * Recognizes the given rule against the input.
+     *
+     * @param list<RuleInterface> $grammar
+     * @param int<0, max> $initial
      */
-    public function recognize(int $rule): Success|Failure
+    public static function trace(array $grammar, int $initial, BufferInterface $buffer): Success|Failure
     {
-        return $this->match($rule)
-            ? $this->trace->finish()
-            : $this->error->finish();
+        if ($grammar === []) {
+            // Fast-finish on empty grammar
+            return new Failure($buffer->current);
+        }
+
+        $self = new self($grammar, $buffer);
+
+        if ($self->match($initial)) {
+            return $self->trace->finish();
+        }
+
+        return $self->error->finish();
     }
 
     private function match(int $rule): bool
