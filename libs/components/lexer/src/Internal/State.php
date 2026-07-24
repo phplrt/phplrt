@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Internal;
 
-use Phplrt\Lexer\Internal\Executor\ExecutorInterface;
+use Phplrt\Lexer\Internal\Tokenizer\TokenizerInterface;
 
 /**
  * A single lexer state: something able to read the source and the table
@@ -16,7 +16,7 @@ use Phplrt\Lexer\Internal\Executor\ExecutorInterface;
 final readonly class State
 {
     public function __construct(
-        public ExecutorInterface $executor,
+        public TokenizerInterface $tokenizer,
         /**
          * A map of token ID and the state it switches to.
          *

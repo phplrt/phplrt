@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Internal\Executor;
+namespace Phplrt\Lexer\Internal\Tokenizer;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
@@ -21,7 +21,7 @@ use Phplrt\Lexer\Token\Token;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
-final readonly class Executor implements ExecutorInterface
+final readonly class Tokenizer implements TokenizerInterface
 {
     /**
      * An identifier of the pseudo-token describing a source fragment
@@ -71,7 +71,7 @@ final readonly class Executor implements ExecutorInterface
      *
      * @return int<0, max> the offset the analysis has stopped at
      */
-    public function run(string $source, int $offset, array &$tokens): int
+    public function tokenize(string $source, int $offset, array &$tokens): int
     {
         \preg_match_all($this->pattern, $source, $matches, 0, $offset);
 

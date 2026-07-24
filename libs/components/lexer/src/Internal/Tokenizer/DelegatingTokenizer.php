@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Internal\Executor;
+namespace Phplrt\Lexer\Internal\Tokenizer;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -17,13 +17,13 @@ use Phplrt\Contracts\Lexer\LexerInterface;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
-final readonly class DelegatingExecutor implements ExecutorInterface
+final readonly class DelegatingTokenizer implements TokenizerInterface
 {
     public function __construct(
         private LexerInterface $lexer,
     ) {}
 
-    public function run(string $source, int $offset, array &$tokens): int
+    public function tokenize(string $source, int $offset, array &$tokens): int
     {
         foreach ($this->lexer->lex($source, $offset) as $token) {
             /**

@@ -10,8 +10,8 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\UndefinedStateException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Internal\ChannelLoader;
-use Phplrt\Lexer\Internal\Executor\DelegatingExecutor;
-use Phplrt\Lexer\Internal\Executor\Executor;
+use Phplrt\Lexer\Internal\Tokenizer\DelegatingTokenizer;
+use Phplrt\Lexer\Internal\Tokenizer\Tokenizer;
 use Phplrt\Lexer\Internal\State;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
@@ -129,7 +129,7 @@ readonly class Lexer implements LexerInterface
         array $states = [],
     ) {
         $this->initial = new State(
-            executor: new Executor(
+            tokenizer: new Tokenizer(
                 pattern: $pattern,
                 channels: ChannelLoader::load($channels),
                 names: $names,
@@ -157,7 +157,7 @@ readonly class Lexer implements LexerInterface
         foreach ($states as $name => $lexer) {
             $result[$name] = $lexer instanceof self
                 ? $lexer->initial
-                : new State(new DelegatingExecutor($lexer));
+                : new State(new DelegatingTokenizer($lexer));
         }
 
         return $result;
@@ -187,7 +187,7 @@ readonly class Lexer implements LexerInterface
 
         while ($offset < $length) {
             $previous = $offset;
-            $offset = $current->executor->run($source, $offset, $result);
+            $offset = $current->tokenizer->tokenize($source, $offset, $result);
 
             // Nothing could be read at this offset
             if ($offset === $previous) {

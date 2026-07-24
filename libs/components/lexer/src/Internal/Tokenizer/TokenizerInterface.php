@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Internal\Executor;
+namespace Phplrt\Lexer\Internal\Tokenizer;
 
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
@@ -17,7 +17,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  * @internal this is an internal library interface, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
-interface ExecutorInterface
+interface TokenizerInterface
 {
     /**
      * Appends every token it reads to the given list.
@@ -34,5 +34,5 @@ interface ExecutorInterface
      * @throws LexerExceptionInterface
      * @throws RuntimeExceptionInterface
      */
-    public function run(string $source, int $offset, array &$tokens): int;
+    public function tokenize(string $source, int $offset, array &$tokens): int;
 }
