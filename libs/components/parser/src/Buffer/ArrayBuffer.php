@@ -7,10 +7,19 @@ namespace Phplrt\Parser\Buffer;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Exception\OutOfRangeException;
 
+/**
+ * A plain token cursor over a list of tokens.
+ *
+ * This implementation forcibly loads all tokens into memory (as array list).
+ *
+ * @template-covariant TToken of TokenInterface = TokenInterface
+ *
+ * @template-implements BufferInterface<TToken>
+ */
 final class ArrayBuffer implements BufferInterface
 {
     /**
-     * @var list<TokenInterface>
+     * @var non-empty-list<TToken>
      */
     private readonly array $tokens;
 
@@ -20,63 +29,92 @@ final class ArrayBuffer implements BufferInterface
     private readonly int $size;
 
     /**
-     * @var int<0, max>
+     * Whether the cursor still points at a "not-yet-consumed token". It goes
+     * {@see false} as soon as an attempt is made to step past the last one.
      */
-    private int $offset = 0;
+    private bool $isValid = true;
 
     /**
-     * @param iterable<mixed, TokenInterface> $tokens
+     * @var TToken
+     */
+    public private(set) TokenInterface $current;
+
+    /**
+     * @var int<0, max>
+     */
+    public private(set) int $key = 0;
+
+    /**
+     * @param iterable<mixed, TToken> $tokens
+     *
+     * @throws \OutOfRangeException in case of token stream is empty
      */
     public function __construct(iterable $tokens)
     {
         $this->tokens = \iterator_to_array($tokens, false);
         $this->size = \count($this->tokens);
+
+        if ($this->size === 0) {
+            throw new \OutOfRangeException('Buffer must contain at least one token');
+        }
+
+        $this->current = $this->tokens[0];
     }
 
     public function seek(int $offset): void
     {
-        \assert($offset >= 0, OutOfRangeException::becausePositionOutOfRange($offset, $this->size));
-
-        if ($offset > $this->size) {
+        if ($offset < 0 || $offset > $this->size) {
             throw OutOfRangeException::becausePositionOutOfRange($offset, $this->size);
         }
 
-        $this->offset = $offset;
+        if ($offset < $this->size) {
+            $this->key = $offset;
+            $this->current = $this->tokens[$offset];
+            $this->isValid = true;
+
+            return;
+        }
+
+        // Seeking exactly onto the past-the-end position keeps the cursor on the
+        // terminal token and only marks the buffer as exhausted.
+        $this->key = $this->size - 1;
+        $this->current = $this->tokens[$this->size - 1];
+        $this->isValid = false;
     }
 
     public function current(): TokenInterface
     {
-        return $this->tokens[$this->offset]
-            ?? $this->tokens[$this->size - 1];
+        return $this->current;
     }
 
     public function key(): int
     {
-        $offset = $this->offset;
-
-        if ($offset >= $this->size) {
-            return $this->size - 1;
-        }
-
-        return $offset;
+        return $this->key;
     }
 
     public function valid(): bool
     {
-        return $this->offset < $this->size;
+        return $this->isValid;
     }
 
     public function rewind(): void
     {
-        $this->offset = 0;
+        $this->key = 0;
+        $this->current = $this->tokens[0];
+        $this->isValid = $this->size > 0;
     }
 
     public function next(): void
     {
-        if ($this->offset >= $this->size) {
+        $next = $this->key + 1;
+
+        if ($next < $this->size) {
+            $this->key = $next;
+            $this->current = $this->tokens[$next];
+
             return;
         }
 
-        ++$this->offset;
+        $this->isValid = false;
     }
 }

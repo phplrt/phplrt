@@ -100,7 +100,7 @@ final class Recognizer
 
     private function matchLexeme(Lexeme $rule): bool
     {
-        if ($this->buffer->current()->id === $rule->tokenId) {
+        if ($this->buffer->current->id === $rule->tokenId) {
             $this->buffer->next();
 
             return true;
@@ -113,7 +113,7 @@ final class Recognizer
 
     private function matchConcatenation(Concatenation $rule): bool
     {
-        $rollback = $this->buffer->key();
+        $rollback = $this->buffer->key;
 
         foreach ($rule->rules as $inner) {
             if (!$this->match($inner)) {
@@ -128,7 +128,7 @@ final class Recognizer
 
     private function matchAlternation(Alternation $rule): bool
     {
-        $rollback = $this->buffer->key();
+        $rollback = $this->buffer->key;
 
         foreach ($rule->ruleIds as $inner) {
             if ($this->match($inner)) {
@@ -143,7 +143,7 @@ final class Recognizer
 
     private function matchOptional(Optional $rule): bool
     {
-        $rollback = $this->buffer->key();
+        $rollback = $this->buffer->key;
 
         if (!$this->match($rule->ruleId)) {
             $this->buffer->seek($rollback);
@@ -154,11 +154,11 @@ final class Recognizer
 
     private function matchRepetition(Repetition $rule): bool
     {
-        $rollback = $this->buffer->key();
+        $rollback = $this->buffer->key;
         $matched = 0;
 
         while ($matched < $rule->max) {
-            $before = $this->buffer->key();
+            $before = $this->buffer->key;
 
             if (!$this->match($rule->ruleId)) {
                 break;
@@ -166,7 +166,7 @@ final class Recognizer
 
             // A nullable inner rule would match forever without consuming a
             // single token, so the repetition stops as soon as it stalls.
-            if ($this->buffer->key() === $before) {
+            if ($this->buffer->key === $before) {
                 break;
             }
 
@@ -184,11 +184,11 @@ final class Recognizer
 
     private function recordFailure(int $tokenId): void
     {
-        $position = $this->buffer->key();
+        $position = $this->buffer->key;
 
         if ($position > $this->furthest) {
             $this->furthest = $position;
-            $this->furthestToken = $this->buffer->current();
+            $this->furthestToken = $this->buffer->current;
             $this->expected = [$tokenId => $tokenId];
 
             return;

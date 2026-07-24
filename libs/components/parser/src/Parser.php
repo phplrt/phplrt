@@ -54,7 +54,7 @@ final readonly class Parser implements ParserInterface
             return false;
         }
 
-        return $this->isEndOfInput($buffer->current());
+        return $this->isEndOfInput($buffer->current);
     }
 
     /**
@@ -74,10 +74,10 @@ final readonly class Parser implements ParserInterface
         $recognizer = new Recognizer($this->grammar, $buffer);
 
         if (!$recognizer->recognize($this->initial)
-            || !$this->isEndOfInput($buffer->current())
+            || !$this->isEndOfInput($buffer->current)
         ) {
             throw UnexpectedTokenException::fromToken(
-                $recognizer->getFurthestToken() ?? $buffer->current(),
+                $recognizer->getFurthestToken() ?? $buffer->current,
             );
         }
 
