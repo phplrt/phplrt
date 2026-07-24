@@ -12,8 +12,14 @@ namespace {{ namespace | raw }};
 {% endif %}
 use Phplrt\Lexer\Lexer;
 
-// Help opcache.preload discover always-needed symbols
-\class_exists(Lexer::class);
+// Help opcache.preload discover always-needed non-private symbols
+\interface_exists(\Phplrt\Contracts\Lexer\ChannelInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\TokenInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\LexerInterface::class);
+\class_exists(\Phplrt\Contracts\Lexer\Channel::class);
+\class_exists(\Phplrt\Lexer\Token\Token::class);
+\class_exists(\Phplrt\Lexer\Token\EndOfInputToken::class);
+\class_exists(\Phplrt\Lexer\Lexer::class);
 
 {% if class is null %}
 /**
