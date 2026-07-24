@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Tests;
+namespace Phplrt\Parser\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
