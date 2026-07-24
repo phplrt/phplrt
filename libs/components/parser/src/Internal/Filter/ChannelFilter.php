@@ -6,6 +6,7 @@ namespace Phplrt\Parser\Internal\Filter;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 
 final readonly class ChannelFilter implements FilterInterface
 {
@@ -32,12 +33,18 @@ final readonly class ChannelFilter implements FilterInterface
         $this->excludedChannels = \iterator_to_array($excludedChannels, false);
     }
 
+    /**
+     * @template TArgValue of TokenInterface
+     * @param iterable<mixed, TArgValue> $tokens
+     * @return list<TArgValue>
+     */
     public function apply(iterable $tokens): array
     {
+        $excluded = $this->excludedChannels;
         $result = [];
 
         foreach ($tokens as $token) {
-            if (\in_array($token->channel, $this->excludedChannels, true)) {
+            if (\in_array($token->channel, $excluded, true)) {
                 continue;
             }
 

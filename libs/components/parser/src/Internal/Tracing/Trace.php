@@ -18,12 +18,12 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
 final class Trace implements CompletableInterface
 {
     /**
-     * @var list<int>
+     * @var array<int<0, max>, int>
      */
     private array $type = [];
 
     /**
-     * @var list<int|TokenInterface>
+     * @var array<int<0, max>, int|TokenInterface>
      */
     private array $node = [];
 
@@ -34,30 +34,39 @@ final class Trace implements CompletableInterface
 
     public function enter(int $rule): void
     {
-        $this->type[$this->length] = Success::ENTER;
-        $this->node[$this->length] = $rule;
+        $length = $this->length;
+        $this->type[$length] = Success::TYPE_ENTER;
+        $this->node[$length] = $rule;
         ++$this->length;
     }
 
     public function leave(int $rule): void
     {
-        $this->type[$this->length] = Success::LEAVE;
-        $this->node[$this->length] = $rule;
+        $length = $this->length;
+        $this->type[$length] = Success::TYPE_LEAVE;
+        $this->node[$length] = $rule;
         ++$this->length;
     }
 
     public function token(TokenInterface $token): void
     {
-        $this->type[$this->length] = Success::TOKEN;
-        $this->node[$this->length] = $token;
+        $length = $this->length;
+        $this->type[$length] = Success::TYPE_TOKEN;
+        $this->node[$length] = $token;
         ++$this->length;
     }
 
+    /**
+     * @return int<0, max>
+     */
     public function mark(): int
     {
         return $this->length;
     }
 
+    /**
+     * @param int<0, max> $mark
+     */
     public function rewind(int $mark): void
     {
         $this->length = $mark;
@@ -66,8 +75,9 @@ final class Trace implements CompletableInterface
     public function finish(): Success
     {
         return new Success(
-            type: \array_slice($this->type, 0, $this->length),
-            node: \array_slice($this->node, 0, $this->length),
+            types: $this->type,
+            references: $this->node,
+            length: $this->length,
         );
     }
 }

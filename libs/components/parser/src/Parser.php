@@ -50,12 +50,12 @@ final readonly class Parser implements ParserInterface
     }
 
     /**
-     * Parses the source into a list of AST nodes.
+     * Parses the source into an AST.
      *
-     * @return iterable<array-key, object>
+     * @return object
      * @throws UnexpectedTokenException on a syntax error
      */
-    public function parse(string $source): iterable
+    public function parse(string $source): mixed
     {
         $buffer = $this->lex($source);
 
@@ -71,8 +71,7 @@ final readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($buffer->current);
         }
 
-        // The reduction of the parse tree into AST nodes is not implemented yet.
-        return [];
+        return $result;
     }
 
     private function lex(string $source): BufferInterface

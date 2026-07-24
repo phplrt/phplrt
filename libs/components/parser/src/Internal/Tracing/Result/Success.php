@@ -9,23 +9,31 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 /**
  * A successful recognition result: the parse tree.
  *
+ * Contains 2 linear packed arrays
+ *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal\Tracing
  */
-final readonly class Success extends Result
+final class Success extends Result
 {
-    public const int ENTER = 0;
-    public const int LEAVE = 1;
-    public const int TOKEN = 2;
+    public const int TYPE_ENTER = 0;
+    public const int TYPE_LEAVE = 1;
+    public const int TYPE_TOKEN = 2;
 
     public function __construct(
         /**
-         * @var list<int>
+         * @var array<int<0, max>, int>
          */
-        public array $type,
+        public array $types,
         /**
-         * @var list<int|TokenInterface>
+         * @var array<int<0, max>, int|TokenInterface>
          */
-        public array $node,
+        public array $references,
+        /**
+         * The number of meaningful entries; anything beyond it must be ignored.
+         *
+         * @var int<0, max>
+         */
+        public int $length,
     ) {}
 }

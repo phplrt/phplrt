@@ -57,8 +57,9 @@ final readonly class Recognizer
             return $this->matchLexeme($definition);
         }
 
-        $mark = $this->trace->mark();
-        $this->trace->enter($rule);
+        $trace = $this->trace;
+        $mark = $trace->mark();
+        $trace->enter($rule);
 
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
@@ -72,9 +73,9 @@ final readonly class Recognizer
         };
 
         if ($matched) {
-            $this->trace->leave($rule);
+            $trace->leave($rule);
         } else {
-            $this->trace->rewind($mark);
+            $trace->rewind($mark);
         }
 
         return $matched;
@@ -82,30 +83,33 @@ final readonly class Recognizer
 
     private function matchLexeme(Lexeme $rule): bool
     {
-        $token = $this->buffer->current;
+        $buffer = $this->buffer;
+        $token = $buffer->current;
+        $id = $rule->tokenId;
 
-        if ($token->id === $rule->tokenId) {
+        if ($token->id === $id) {
             if ($rule->keep) {
                 $this->trace->token($token);
             }
 
-            $this->buffer->next();
+            $buffer->next();
 
             return true;
         }
 
-        $this->error->record($rule->tokenId);
+        $this->error->record($id);
 
         return false;
     }
 
     private function matchConcatenation(Concatenation $rule): bool
     {
-        $rollback = $this->buffer->key;
+        $buffer = $this->buffer;
+        $rollback = $buffer->key;
 
         foreach ($rule->rules as $inner) {
             if (!$this->match($inner)) {
-                $this->buffer->seek($rollback);
+                $buffer->seek($rollback);
 
                 return false;
             }
@@ -116,14 +120,15 @@ final readonly class Recognizer
 
     private function matchAlternation(Alternation $rule): bool
     {
-        $rollback = $this->buffer->key;
+        $buffer = $this->buffer;
+        $rollback = $buffer->key;
 
         foreach ($rule->ruleIds as $inner) {
             if ($this->match($inner)) {
                 return true;
             }
 
-            $this->buffer->seek($rollback);
+            $buffer->seek($rollback);
         }
 
         return false;
@@ -131,10 +136,11 @@ final readonly class Recognizer
 
     private function matchOptional(Optional $rule): bool
     {
-        $rollback = $this->buffer->key;
+        $buffer = $this->buffer;
+        $rollback = $buffer->key;
 
         if (!$this->match($rule->ruleId)) {
-            $this->buffer->seek($rollback);
+            $buffer->seek($rollback);
         }
 
         return true;
@@ -142,19 +148,23 @@ final readonly class Recognizer
 
     private function matchRepetition(Repetition $rule): bool
     {
-        $rollback = $this->buffer->key;
+        $buffer = $this->buffer;
+        $ruleId = $rule->ruleId;
+        $max = $rule->max;
+
+        $rollback = $buffer->key;
         $matched = 0;
 
-        while ($matched < $rule->max) {
-            $before = $this->buffer->key;
+        while ($matched < $max) {
+            $before = $buffer->key;
 
-            if (!$this->match($rule->ruleId)) {
+            if (!$this->match($ruleId)) {
                 break;
             }
 
             // A nullable inner rule would match forever without consuming a
             // single token, so the repetition stops as soon as it stalls.
-            if ($this->buffer->key === $before) {
+            if ($buffer->key === $before) {
                 break;
             }
 
@@ -162,7 +172,7 @@ final readonly class Recognizer
         }
 
         if ($matched < $rule->min) {
-            $this->buffer->seek($rollback);
+            $buffer->seek($rollback);
 
             return false;
         }

@@ -10,14 +10,14 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 /**
  * An interface that implements methods for parsing source code.
  *
- * @template TNode of object
+ * @template TResult of object = object
  */
 interface ParserInterface
 {
     /**
      * Parses sources into an abstract source tree (AST) or list of AST nodes.
      *
-     * @return iterable<array-key, TNode>
+     * @return TResult
      * @throws ParserExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
      *         parser settings contain errors
@@ -25,5 +25,5 @@ interface ParserInterface
      *         starting the parsing and indicates problems in the analyzed
      *         source
      */
-    public function parse(string $source): iterable;
+    public function parse(string $source): mixed;
 }

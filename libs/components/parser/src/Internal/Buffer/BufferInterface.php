@@ -35,8 +35,6 @@ interface BufferInterface extends \SeekableIterator
      * @link https://php.net/manual/en/seekableiterator.seek.php
      *
      * @see \SeekableIterator::seek()
-     *
-     * @param int<0, max> $offset
      */
     public function seek(int $offset): void;
 

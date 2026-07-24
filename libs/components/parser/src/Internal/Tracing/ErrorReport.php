@@ -36,17 +36,19 @@ final class ErrorReport implements CompletableInterface
 
     public function record(int $expectedTokenId): void
     {
-        $position = $this->buffer->key;
+        $buffer = $this->buffer;
+        $position = $buffer->key;
+        $furthest = $this->furthest;
 
-        if ($position > $this->furthest) {
+        if ($position > $furthest) {
             $this->furthest = $position;
-            $this->token = $this->buffer->current;
+            $this->token = $buffer->current;
             $this->expected = [$expectedTokenId => $expectedTokenId];
 
             return;
         }
 
-        if ($position === $this->furthest) {
+        if ($position === $furthest) {
             $this->expected[$expectedTokenId] = $expectedTokenId;
         }
     }

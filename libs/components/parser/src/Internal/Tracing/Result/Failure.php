@@ -12,7 +12,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal\Tracing
  */
-final readonly class Failure extends Result
+final class Failure extends Result
 {
     public function __construct(
         /**

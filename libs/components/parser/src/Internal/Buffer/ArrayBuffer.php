@@ -47,23 +47,26 @@ final class ArrayBuffer implements BufferInterface
      */
     public function __construct(iterable $tokens)
     {
-        $this->tokens = \iterator_to_array($tokens, false);
-        $this->size = \count($this->tokens);
+        $tokens = \iterator_to_array($tokens, false);
 
-        if ($this->size === 0) {
+        if ($tokens === []) {
             throw new \OutOfRangeException('Buffer must contain at least one token');
         }
 
-        $this->current = $this->tokens[0];
+        $this->tokens = $tokens;
+        $this->size = \count($tokens);
+        $this->current = $tokens[0];
     }
 
     public function seek(int $offset): void
     {
-        if ($offset < 0 || $offset > $this->size) {
-            throw OutOfRangeException::becausePositionOutOfRange($offset, $this->size);
+        $size = $this->size;
+
+        if ($offset < 0 || $offset > $size) {
+            throw OutOfRangeException::becausePositionOutOfRange($offset, $size);
         }
 
-        if ($offset < $this->size) {
+        if ($offset < $size) {
             $this->key = $offset;
             $this->current = $this->tokens[$offset];
             $this->isValid = true;
@@ -71,8 +74,8 @@ final class ArrayBuffer implements BufferInterface
             return;
         }
 
-        $this->key = $this->size - 1;
-        $this->current = $this->tokens[$this->size - 1];
+        $this->key = $size - 1;
+        $this->current = $this->tokens[$size - 1];
         $this->isValid = false;
     }
 
@@ -95,7 +98,7 @@ final class ArrayBuffer implements BufferInterface
     {
         $this->key = 0;
         $this->current = $this->tokens[0];
-        $this->isValid = $this->size > 0;
+        $this->isValid = true;
     }
 
     public function next(): void
