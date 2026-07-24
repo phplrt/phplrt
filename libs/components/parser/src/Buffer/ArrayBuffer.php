@@ -73,7 +73,7 @@ final class ArrayBuffer implements BufferInterface
 
     public function next(): void
     {
-        if ($this->offset > $this->size) {
+        if ($this->offset >= $this->size) {
             return;
         }
 
