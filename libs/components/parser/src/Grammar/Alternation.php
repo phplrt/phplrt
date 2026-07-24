@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Alternation implements RuleInterface
+final readonly class Alternation implements ProductionInterface
 {
     public function __construct(
         /**

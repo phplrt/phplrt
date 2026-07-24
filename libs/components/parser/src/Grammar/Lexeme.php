@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Lexeme implements RuleInterface
+final readonly class Lexeme implements TerminalInterface
 {
     public function __construct(
         public int $tokenId,

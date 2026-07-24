@@ -4,16 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Repetition implements RuleInterface
+final readonly class Repetition implements ProductionInterface
 {
-    /**
-     * @param int<0, max> $gte
-     * @param int<0, max>|float $lte
-     */
     public function __construct(
-        /**
-         * @var int
-         */
         public int $ruleId,
         /**
          * @var int<0, max>
@@ -25,5 +18,6 @@ final readonly class Repetition implements RuleInterface
         public int|float $lte = \INF,
     ) {
         \assert($lte >= $gte, 'Min repetitions count must be greater or equal than max repetitions');
+        \assert(\is_float($lte) && !\is_infinite($lte), 'Min repetitions may contain only integer or INF (float) values');
     }
 }

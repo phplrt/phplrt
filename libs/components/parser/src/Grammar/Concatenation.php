@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Concatenation implements RuleInterface
+final readonly class Concatenation implements ProductionInterface
 {
     public function __construct(
         /**
          * @var non-empty-list<int>
          */
-        public array $ruleIds,
+        public array $rules,
     ) {}
 }
