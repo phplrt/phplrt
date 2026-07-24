@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Buffer;
+namespace Phplrt\Parser\Internal\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Exception\OutOfRangeException;

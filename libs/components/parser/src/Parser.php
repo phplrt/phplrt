@@ -8,12 +8,12 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Parser\Buffer\ArrayBuffer;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Parser\Filter\ChannelFilter;
-use Phplrt\Parser\Filter\FilterInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
+use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
+use Phplrt\Parser\Internal\Buffer\BufferInterface;
+use Phplrt\Parser\Internal\Filter\ChannelFilter;
+use Phplrt\Parser\Internal\Filter\FilterInterface;
 use Phplrt\Parser\Internal\Recognizer;
 
 final readonly class Parser implements ParserInterface

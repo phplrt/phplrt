@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Buffer;
+namespace Phplrt\Parser\Internal\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
@@ -52,7 +52,7 @@ interface BufferInterface extends \SeekableIterator
      *
      * @see \Iterator::current()
      *
-     * @return TToken
+     * @return TokenInterface
      */
     public function current(): TokenInterface;
 

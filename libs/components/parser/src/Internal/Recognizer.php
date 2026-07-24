@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Internal;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
+use Phplrt\Parser\Internal\Buffer\BufferInterface;
 
 /**
  * A PEG recognizer.

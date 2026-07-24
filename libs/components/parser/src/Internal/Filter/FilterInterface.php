@@ -2,13 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Filter;
+namespace Phplrt\Parser\Internal\Filter;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * @template-extends \Traversable<mixed, TokenInterface>
- */
 interface FilterInterface
 {
     /**
