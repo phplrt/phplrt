@@ -45,17 +45,19 @@ final readonly class RegexValidationLexerCompilerPass implements
      */
     private function validateRegexOrFail(string $regex, TokenDefinition $definition): void
     {
-        \error_clear_last();
-        \set_error_handler(self::emptyErrorHandler(...));
+        try {
+            \error_clear_last();
+            \set_error_handler(self::emptyErrorHandler(...));
 
-        @\preg_match($this->compile($regex), '');
+            @\preg_match($this->compile($regex), '');
 
-        if (($error = \error_get_last()) === null) {
-            return;
+            if (($error = \error_get_last()) === null) {
+                return;
+            }
+        } finally {
+            \restore_error_handler();
+            \error_clear_last();
         }
-
-        \restore_error_handler();
-        \error_clear_last();
 
         throw new CompilationFailedException($definition, $this->formatException(
             message: $error['message'],
