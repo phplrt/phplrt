@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Parser;
+namespace Phplrt\Contracts\Parser\Exception;
 
 /**
  * This exception interface describing any parser

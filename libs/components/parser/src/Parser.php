@@ -6,31 +6,29 @@ namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Source\Factory\SourceFactoryInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Buffer\ArrayBuffer;
+use Phplrt\Parser\Buffer\BufferInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
-use Phplrt\Source\SourceFactory;
 
 final readonly class Parser implements ParserInterface
 {
-    private SourceFactoryInterface $sources;
-
     public function __construct(
         private LexerInterface $lexer,
         /** @var array<int, RuleInterface> */
         private array $grammar,
         private int $initial,
-        ?SourceFactoryInterface $sources = null,
-    ) {
-        $this->sources = $sources ?? SourceFactory::default();
+    ) {}
+
+    private function createBuffer(string $source): BufferInterface
+    {
+        $stream = $this->lexer->lex($source);
+
+        return new ArrayBuffer($stream);
     }
 
-    public function parse(ReadableInterface $source): iterable
+    public function parse(string $source): iterable
     {
-        $readable = $this->sources->create($source);
-
-        $buffer = new ArrayBuffer($this->filter($this->lexer->lex($readable)));
+        $buffer = $this->createBuffer($source);
 
         return [];
     }

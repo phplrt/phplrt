@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Parser;
 
+use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
+use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+
 /**
  * An interface that implements methods for parsing source code.
  *
@@ -18,7 +21,7 @@ interface ParserInterface
      * @throws ParserExceptionInterface an error occurs before source processing
      *         starts, when the given source cannot be recognized or if the
      *         parser settings contain errors
-     * @throws ParserRuntimeExceptionInterface an exception that occurs after
+     * @throws RuntimeExceptionInterface an exception that occurs after
      *         starting the parsing and indicates problems in the analyzed
      *         source
      */
