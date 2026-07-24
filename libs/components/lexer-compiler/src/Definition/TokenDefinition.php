@@ -52,6 +52,34 @@ abstract class TokenDefinition extends Definition
         $this->name = $name;
     }
 
+    public function hide(): self
+    {
+        return $this->setHidden();
+    }
+
+    public function show(): self
+    {
+        return $this->setHidden(false);
+    }
+
+    /**
+     * @param non-empty-string $state
+     */
+    public function enter(string $state): self
+    {
+        return $this->setTransition(Transition::enter($state));
+    }
+
+    public function exit(): self
+    {
+        return $this->setTransition(Transition::exit());
+    }
+
+    public function stay(): self
+    {
+        return $this->setTransition(null);
+    }
+
     /**
      * Updates the token name of the current definition and returns
      * itself as the fluent interface.
@@ -125,45 +153,9 @@ abstract class TokenDefinition extends Definition
         return $this;
     }
 
-    /**
-     * Makes the token push the given state onto the lexer's state stack.
-     *
-     * @api
-     *
-     * @param non-empty-string $state
-     * @return $this
-     */
-    public function enter(string $state): self
+    public function setTransition(?Transition $transition): self
     {
-        $this->transition = Transition::enter($state);
-
-        return $this;
-    }
-
-    /**
-     * Makes the token pop the topmost state from the lexer's state stack.
-     *
-     * @api
-     *
-     * @return $this
-     */
-    public function exit(): self
-    {
-        $this->transition = Transition::exit();
-
-        return $this;
-    }
-
-    /**
-     * Makes the token keep the lexer in its current state.
-     *
-     * @api
-     *
-     * @return $this
-     */
-    public function stay(): self
-    {
-        $this->transition = null;
+        $this->transition = $transition;
 
         return $this;
     }
