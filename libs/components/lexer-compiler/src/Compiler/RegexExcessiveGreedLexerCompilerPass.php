@@ -31,7 +31,6 @@ final readonly class RegexExcessiveGreedLexerCompilerPass implements
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
-     *
      * @throws CompilationFailedException
      */
     private function validateOrFail(array $definitions): void

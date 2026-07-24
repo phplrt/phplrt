@@ -42,7 +42,6 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
      * @param array<array-key, TokenDefinition> $definitions
      * @param array<non-empty-string, true> $names
      * @param \SplObjectStorage<TokenDefinition, true> $visited
-     *
      * @throws CompilationFailedException
      */
     private function validateOrFail(array $definitions, array &$names, \SplObjectStorage $visited): void

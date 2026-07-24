@@ -6,7 +6,6 @@ namespace Phplrt\Lexer\Token;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 
 class EndOfInputToken extends Token
 {

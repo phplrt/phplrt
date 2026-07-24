@@ -41,7 +41,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
 
     /**
      * @param non-empty-string $delimiter
-     *
      * @return non-empty-string
      */
     private function getEscapedCharacters(string $delimiter): string
@@ -59,7 +58,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
 
     /**
      * @param non-empty-string $name
-     *
      * @return non-empty-string
      */
     final protected function escapeValue(string $name): string
@@ -70,7 +68,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
 
     /**
      * @param non-empty-string $pattern
-     *
      * @return non-empty-string
      */
     final protected function escapePattern(string $pattern): string
@@ -95,7 +92,6 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
 
     /**
      * @param list<RegexModifier> $flags
-     *
      * @return non-empty-string
      */
     final protected function formatFullRegex(string $regex, array $flags): string

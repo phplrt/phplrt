@@ -148,7 +148,6 @@ readonly class Lexer implements LexerInterface
      * implementation is wrapped into an executor-compatible decorator.
      *
      * @param array<non-empty-string, LexerInterface> $states
-     *
      * @return array<non-empty-string, State>
      */
     private function bootLexerStates(array $states): array
@@ -166,7 +165,7 @@ readonly class Lexer implements LexerInterface
 
     final public function lex(string $source, int $offset = 0): iterable
     {
-         // Invariant against the callers not covered by static analysis.
+        // Invariant against the callers not covered by static analysis.
         if ($offset < 0) { // @phpstan-ignore smaller.alwaysFalse
             throw new \InvalidArgumentException('Offset cannot be negative');
         }

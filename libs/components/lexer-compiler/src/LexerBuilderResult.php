@@ -80,7 +80,6 @@ final class LexerBuilderResult
      *
      * @param non-empty-list<TokenDefinition> $definitions
      * @param \SplObjectStorage<TokenDefinition, int> $identifiers
-     *
      * @return non-empty-array<int, TokenDefinition>
      */
     private function index(array $definitions, \SplObjectStorage $identifiers): array

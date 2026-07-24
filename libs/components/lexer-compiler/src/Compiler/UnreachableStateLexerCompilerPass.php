@@ -72,7 +72,6 @@ final readonly class UnreachableStateLexerCompilerPass implements
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
-     *
      * @return list<non-empty-string>
      */
     private function getEnteredStates(array $definitions): array

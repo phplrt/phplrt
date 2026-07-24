@@ -26,7 +26,6 @@ final readonly class RegexValidationLexerCompilerPass implements
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
-     *
      * @throws CompilationFailedException
      */
     private function validateOrFail(array $definitions): void
@@ -42,7 +41,6 @@ final readonly class RegexValidationLexerCompilerPass implements
 
     /**
      * @param non-empty-string $regex
-     *
      * @throws CompilationFailedException in case of token compilation failure
      */
     private function validateRegexOrFail(string $regex, TokenDefinition $definition): void
@@ -73,7 +71,6 @@ final readonly class RegexValidationLexerCompilerPass implements
 
     /**
      * @param non-empty-string $regex
-     *
      * @return non-empty-string
      */
     private function compile(string $regex): string

@@ -83,7 +83,6 @@ final class LexerBuilder
      * @api
      *
      * @param non-empty-string $name
-     *
      * @return $this
      */
     public function removeState(string $name): self
@@ -105,9 +104,7 @@ final class LexerBuilder
 
     /**
      * @template TArgGeneratedResult of GeneratedResult
-     *
      * @param OutputGeneratorInterface<TArgGeneratedResult> $generator
-     *
      * @return TArgGeneratedResult
      * @throws LexerCompilerException
      */

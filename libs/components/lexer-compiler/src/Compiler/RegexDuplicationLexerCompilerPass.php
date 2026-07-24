@@ -27,7 +27,6 @@ final readonly class RegexDuplicationLexerCompilerPass implements
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
-     *
      * @throws CompilationFailedException
      */
     private function validateOrFail(array $definitions): void

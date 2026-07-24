@@ -19,7 +19,6 @@ interface RegexGeneratorInterface
      * @param array<int, TokenDefinition> $tokens a map of globally unique
      *        token ID and its definition
      * @param list<RegexModifier> $flags
-     *
      * @throws LexerCompilerException
      */
     public function generate(array $tokens, array $flags): RegexGeneratorResult;

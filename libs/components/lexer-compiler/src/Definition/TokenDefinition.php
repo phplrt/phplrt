@@ -59,7 +59,6 @@ abstract class TokenDefinition extends Definition
      * @api
      *
      * @param non-empty-string|null $name
-     *
      * @return $this
      */
     public function setName(?string $name): self
@@ -110,7 +109,6 @@ abstract class TokenDefinition extends Definition
      * @api
      *
      * @param ChannelInterface|non-empty-string|null $channel
-     *
      * @return $this
      */
     public function setChannel(ChannelInterface|string|null $channel = null): self
@@ -133,7 +131,6 @@ abstract class TokenDefinition extends Definition
      * @api
      *
      * @param non-empty-string $state
-     *
      * @return $this
      */
     public function enter(string $state): self

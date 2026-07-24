@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer;
 
-use Phplrt\Contracts\Source\ReadableInterface;
-
 /**
  * Represents a single lexical token produced by {@see LexerInterface}.
  *

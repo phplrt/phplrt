@@ -27,6 +27,7 @@ interface ExecutorInterface
      *
      * @param int<0, max> $offset
      * @param list<TokenInterface> $tokens
+     *
      * @param-out list<TokenInterface> $tokens
      *
      * @return int<0, max> the offset the analysis has stopped at

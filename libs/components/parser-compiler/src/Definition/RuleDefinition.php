@@ -27,7 +27,6 @@ abstract class RuleDefinition extends Definition
      * @api
      *
      * @param non-empty-string|null $name
-     *
      * @return $this
      */
     public function setName(?string $name): self

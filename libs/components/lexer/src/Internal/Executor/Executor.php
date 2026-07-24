@@ -66,6 +66,7 @@ final readonly class Executor implements ExecutorInterface
      *
      * @param int<0, max> $offset
      * @param list<TokenInterface> $tokens
+     *
      * @param-out list<TokenInterface> $tokens
      *
      * @return int<0, max> the offset the analysis has stopped at
@@ -161,7 +162,6 @@ final readonly class Executor implements ExecutorInterface
      * source is unreadable for this state.
      *
      * @param int<0, max> $offset
-     *
      * @return int<0, max>
      * @throws UnrecognizedTokenException
      */

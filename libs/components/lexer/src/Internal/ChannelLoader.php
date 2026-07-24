@@ -18,7 +18,6 @@ final readonly class ChannelLoader
      * Gets the lexer configuration and initializes the mapping of tokens to channels.
      *
      * @param array<int, non-empty-string> $channels
-     *
      * @return array<int, ChannelInterface>
      */
     public static function load(array $channels): array
@@ -37,7 +36,6 @@ final readonly class ChannelLoader
      * Gets the lexer configuration and initializes channel instances.
      *
      * @param array<int, non-empty-string> $channels
-     *
      * @return array<non-empty-string, ChannelInterface>
      */
     private static function createChannelInstances(array $channels): array

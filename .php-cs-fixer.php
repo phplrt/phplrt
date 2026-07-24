@@ -1,23 +1,25 @@
 <?php
 
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
 const DIR_INCLUDE = [
     // Components
     __DIR__ . '/libs/components/lexer/src',
     __DIR__ . '/libs/components/lexer-compiler/src',
     __DIR__ . '/libs/components/parser/src',
     __DIR__ . '/libs/components/parser-compiler/src',
-    __DIR__ . '/libs/components/source/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/parser/src',
-    __DIR__ . '/libs/contracts/source/src',
 ];
 
 const DIR_EXCLUDE = [];
 
 const FILE_EXCLUDE = [];
 
-$files = PhpCsFixer\Finder::create()
+$files = Finder::create()
     ->in(DIR_INCLUDE)
     ->exclude(DIR_EXCLUDE)
     ->filter(static fn(SplFileInfo $file): bool => !in_array(
@@ -27,8 +29,9 @@ $files = PhpCsFixer\Finder::create()
     ))
 ;
 
-return new PhpCsFixer\Config()
-    ->setRiskyAllowed(true)
+return new Config()
+    ->setUnsupportedPhpVersionAllowed(true)
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
         '@PER-CS3x0' => true,
         '@PER-CS3x0:risky' => true,
@@ -57,7 +60,9 @@ return new PhpCsFixer\Config()
         'clean_namespace' => true,
         'declare_parentheses' => true,
         'echo_tag_syntax' => true,
-        'empty_loop_body' => ['style' => 'braces'],
+        'empty_loop_body' => [
+            'style' => 'semicolon',
+        ],
         'empty_loop_condition' => true,
         'fully_qualified_strict_types' => true,
         'general_phpdoc_tag_rename' => [
@@ -165,6 +170,8 @@ return new PhpCsFixer\Config()
         'phpdoc_order' => [
             'order' => [
                 'api',
+                'internal',
+                'psalm-internal',
                 'template-extends',
                 'extends',
                 'template-implements',
@@ -183,8 +190,6 @@ return new PhpCsFixer\Config()
                 'param',
                 'return',
                 'throws',
-                'internal',
-                'psalm-internal',
                 'psalm-suppress',
             ],
         ],
@@ -192,16 +197,30 @@ return new PhpCsFixer\Config()
         'phpdoc_scalar' => true,
         'phpdoc_separation' => [
             'groups' => [
+                ['api'],
                 [
                     'property',
                     'property-read',
                     'property-write',
                 ],
-                ['internal', 'psalm-internal', 'phpstan-internal'],
+                [
+                    'internal',
+                    'psalm-internal',
+                    'phpstan-internal',
+                ],
                 [
                     'template',
                     'template-covariant',
                     'template-contravariant',
+                    // function annotations
+                    'psalm-taint-sink',
+                    'param',
+                    'phpstan-param',
+                    'psalm-param',
+                    'phpstan-return',
+                    'psalm-return',
+                    'return',
+                    'throws'
                 ],
                 [
                     'template-extends',
@@ -212,15 +231,12 @@ return new PhpCsFixer\Config()
                 [
                     'psalm-require-implements',
                     'phpstan-require-implements',
+                    'require-implements',
                     'psalm-require-extends',
                     'phpstan-require-extends',
-                    'mixin',
-                    'seal-properties',
-                    'seal-methods',
+                    'require-extends',
                 ],
-                ['psalm-taint-sink', 'param'],
-                ['return', 'throws'],
-                ['psalm-suppress', 'noinspection', 'phpstan-ignore'],
+                ['psalm-suppress'],
             ],
         ],
         'phpdoc_single_line_var_spacing' => true,
@@ -255,6 +271,9 @@ return new PhpCsFixer\Config()
         ],
         'standardize_increment' => true,
         'standardize_not_equals' => true,
+        'statement_indentation' => [
+            'stick_comment_to_next_continuous_control_statement' => true,
+        ],
         'switch_continue_to_break' => true,
         'trailing_comma_in_multiline' => true,
         'trim_array_spaces' => true,
@@ -263,6 +282,7 @@ return new PhpCsFixer\Config()
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
         'yoda_style' => false,
+        'new_expression_parentheses' => true,
     ])
     ->setCacheFile(__DIR__ . '/vendor/.cache.php-cs-fixer')
     ->setFinder($files);

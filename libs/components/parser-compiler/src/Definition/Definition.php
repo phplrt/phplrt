@@ -12,7 +12,6 @@ abstract class Definition implements \Stringable
 
     /**
      * @param int<0, max> $offset
-     *
      * @return $this
      */
     public function setSource(ReadableInterface $source, int $offset): self

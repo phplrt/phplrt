@@ -30,7 +30,6 @@ final readonly class MarkersRegexGenerator extends RegexGenerator
 
     /**
      * @param array<int, TokenDefinition> $tokens
-     *
      * @return non-empty-string
      * @throws InvalidArgumentException
      */
@@ -62,7 +61,6 @@ final readonly class MarkersRegexGenerator extends RegexGenerator
             ]),
             default => throw new InvalidArgumentException(\sprintf(
                 'Unsupported %s token definition',
-                /** @phpstan-ignore-next-line : PHPStan false-positive */
                 $token::class,
             )),
         };
