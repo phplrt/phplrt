@@ -4,6 +4,113 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
+use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class TestCase extends BaseTestCase {}
+abstract class TestCase extends BaseTestCase
+{
+    /**
+     * @param callable(LexerBuilder):void $definition
+     */
+    protected static function lexer(callable $definition): LexerInterface
+    {
+        $builder = new LexerBuilder();
+
+        $definition($builder);
+
+        $pathname = __DIR__ . \sprintf('/temp/phplrt-lexer-%s.php', \bin2hex(\random_bytes(8)));
+
+        \file_put_contents($pathname, (string) $builder->build());
+
+        try {
+            /** @var LexerInterface */
+            return require $pathname;
+        } finally {
+            @\unlink($pathname);
+        }
+    }
+
+    /**
+     * @param iterable<mixed, TokenInterface> $tokens
+     * @return list<string>
+     */
+    protected static function describe(iterable $tokens): array
+    {
+        $result = [];
+
+        foreach ($tokens as $token) {
+            $result[] = \sprintf(
+                '%s(%s)@%d',
+                $token->name ?? '#' . $token->id,
+                $token->value,
+                $token->offset,
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param iterable<mixed, TokenInterface> $tokens
+     */
+    protected static function assertTokensMatchSource(string $source, iterable $tokens): void
+    {
+        foreach ($tokens as $token) {
+            self::assertSame(
+                \substr($source, $token->offset, \strlen($token->value)),
+                $token->value,
+                \sprintf(
+                    'Token #%d is expected to be located at offset %d of the source',
+                    $token->id,
+                    $token->offset,
+                ),
+            );
+        }
+    }
+
+    /**
+     * @param iterable<mixed, TokenInterface> $tokens
+     */
+    protected static function assertTokensCoverSource(string $source, iterable $tokens): void
+    {
+        $expected = 0;
+
+        foreach ($tokens as $token) {
+            self::assertSame($expected, $token->offset, \sprintf(
+                'Token #%d is expected to continue the previous one at offset %d',
+                $token->id,
+                $expected,
+            ));
+
+            $expected += \strlen($token->value);
+        }
+
+        self::assertSame(\strlen($source), $expected, 'The source is expected to be read in full');
+    }
+
+    /**
+     * @param iterable<mixed, TokenInterface> $tokens
+     */
+    protected static function assertTerminatedStream(string $source, iterable $tokens): void
+    {
+        $tokens = \iterator_to_array($tokens, false);
+
+        self::assertNotSame([], $tokens, 'A token stream is expected to never be empty');
+
+        $terminal = [];
+
+        foreach ($tokens as $index => $token) {
+            if ($token->channel === Channel::EndOfInput) {
+                $terminal[] = $index;
+            }
+        }
+
+        self::assertCount(1, $terminal, 'The "end of input" token is expected to be singular');
+        self::assertSame(\count($tokens) - 1, $terminal[0], 'The "end of input" token is expected to be the last one');
+        self::assertSame(\strlen($source), $tokens[$terminal[0]]->offset, 'The "end of input" token is expected to be located at the end of the source');
+        self::assertSame('', $tokens[$terminal[0]]->value, 'The "end of input" token is expected to be empty');
+    }
+}
