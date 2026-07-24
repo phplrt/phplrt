@@ -15,14 +15,14 @@ use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Filter\ChannelFilter;
 use Phplrt\Parser\Internal\Filter\FilterInterface;
 use Phplrt\Parser\Internal\Recognizer;
+use Phplrt\Parser\Internal\Tracing\Result\Failure;
+use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 final readonly class Parser implements ParserInterface
 {
     public function __construct(
         private LexerInterface $lexer,
         /**
-         * A map of rule identifier and its inert definition.
-         *
          * @var array<int, RuleInterface>
          */
         private array $grammar,
@@ -31,56 +31,47 @@ final readonly class Parser implements ParserInterface
          */
         private int $initial,
         /**
-         * Selects which tokens of the lexed stream reach the buffer.
+         * Selects which tokens are passed to the grammar.
          */
         private FilterInterface $filter = new ChannelFilter(),
     ) {}
 
     /**
-     * Checks that the given source fully matches the grammar.
-     *
-     * This is a recognition-only pass: nothing is materialized, so it is the
-     * cheapest way to answer whether the source is syntactically valid.
+     * Checks whether the source is syntactically valid against the grammar.
      */
     public function check(string $source): bool
     {
         $buffer = $this->lex($source);
 
-        $recognizer = new Recognizer($this->grammar, $buffer);
+        $result = new Recognizer($this->grammar, $buffer)->recognize($this->initial);
 
-        $result = $recognizer->recognize($this->initial);
-
-        if ($result === false) {
-            return false;
-        }
-
-        return $this->isEndOfInput($buffer->current);
+        return $result instanceof Success
+            && $this->isEndOfInput($buffer->current);
     }
 
     /**
-     * Runs the recognition pass and reports the first place the source stops
-     * matching the grammar.
-     *
-     * The reduction pass that turns the recognized rules into an AST is built
-     * on top of this one and is not part of this runtime slice yet, so a
-     * successful analysis currently yields no nodes.
+     * Parses the source into a list of AST nodes.
      *
      * @return iterable<array-key, object>
+     * @throws UnexpectedTokenException on a syntax error
      */
     public function parse(string $source): iterable
     {
         $buffer = $this->lex($source);
 
-        $recognizer = new Recognizer($this->grammar, $buffer);
+        $result = new Recognizer($this->grammar, $buffer)->recognize($this->initial);
 
-        if (!$recognizer->recognize($this->initial)
-            || !$this->isEndOfInput($buffer->current)
-        ) {
+        if ($result instanceof Failure) {
             throw UnexpectedTokenException::fromToken(
-                $recognizer->getFurthestToken() ?? $buffer->current,
+                $result->token ?? $buffer->current,
             );
         }
 
+        if (!$this->isEndOfInput($buffer->current)) {
+            throw UnexpectedTokenException::fromToken($buffer->current);
+        }
+
+        // The reduction of the parse tree into AST nodes is not implemented yet.
         return [];
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Internal;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -12,81 +11,56 @@ use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
+use Phplrt\Parser\Internal\Tracing\ErrorReport;
+use Phplrt\Parser\Internal\Tracing\Result\Failure;
+use Phplrt\Parser\Internal\Tracing\Result\Success;
+use Phplrt\Parser\Internal\Tracing\Trace;
 
 /**
- * A PEG recognizer.
- *
- * Walks the grammar (a map of inert rule definitions) over the token buffer and
- * reports whether the input matches, WITHOUT materializing anything. Every rule
- * either advances the buffer on success or leaves it exactly where it started on
- * failure, so an ordered choice may freely backtrack.
- *
- * This is the first (recognition) pass. Recording an enter/exit trace on top of
- * it — the input of the future reduction pass — does not change the control flow
- * below: a trace is appended on success and truncated back on backtracking, in
- * lockstep with the buffer rollback.
+ * Recognizes an input against a PEG grammar.
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  */
-final class Recognizer
+final readonly class Recognizer
 {
-    /**
-     * The furthest buffer position a terminal match has failed at. It is the
-     * single most useful hint for an error message, since a plain PEG failure
-     * carries no location on its own.
-     */
-    private int $furthest = -1;
+    private Trace $trace;
 
-    private ?TokenInterface $furthestToken = null;
-
-    /**
-     * The token identifiers expected at the {@see self::$furthest} position.
-     *
-     * @var array<int, int>
-     */
-    private array $expected = [];
+    private ErrorReport $error;
 
     public function __construct(
         /**
          * @var array<int, RuleInterface>
          */
-        private readonly array $grammar,
-        private readonly BufferInterface $buffer,
-    ) {}
-
-    /**
-     * Returns {@see true} in case the given rule matches at the current buffer
-     * position, leaving the buffer right after the consumed tokens.
-     */
-    public function recognize(int $rule): bool
-    {
-        return $this->match($rule);
+        private array $grammar,
+        private BufferInterface $buffer,
+    ) {
+        $this->trace = new Trace();
+        $this->error = new ErrorReport($buffer);
     }
 
     /**
-     * The token the analysis got stuck on, or {@see null} in case no terminal
-     * has ever failed.
+     * Recognizes the given rule against the input.
      */
-    public function getFurthestToken(): ?TokenInterface
+    public function recognize(int $rule): Success|Failure
     {
-        return $this->furthestToken;
-    }
-
-    /**
-     * @return list<int>
-     */
-    public function getExpectedTokens(): array
-    {
-        return \array_values($this->expected);
+        return $this->match($rule)
+            ? $this->trace->finish()
+            : $this->error->finish();
     }
 
     private function match(int $rule): bool
     {
         $definition = $this->grammar[$rule];
 
-        return match (true) {
-            $definition instanceof Lexeme => $this->matchLexeme($definition),
+        if ($definition instanceof Lexeme) {
+            return $this->matchLexeme($definition);
+        }
+
+        $mark = $this->trace->mark();
+        $this->trace->enter($rule);
+
+        $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
             $definition instanceof Alternation => $this->matchAlternation($definition),
             $definition instanceof Optional => $this->matchOptional($definition),
@@ -96,17 +70,31 @@ final class Recognizer
                 $definition::class,
             )),
         };
+
+        if ($matched) {
+            $this->trace->leave($rule);
+        } else {
+            $this->trace->rewind($mark);
+        }
+
+        return $matched;
     }
 
     private function matchLexeme(Lexeme $rule): bool
     {
-        if ($this->buffer->current->id === $rule->tokenId) {
+        $token = $this->buffer->current;
+
+        if ($token->id === $rule->tokenId) {
+            if ($rule->keep) {
+                $this->trace->token($token);
+            }
+
             $this->buffer->next();
 
             return true;
         }
 
-        $this->recordFailure($rule->tokenId);
+        $this->error->record($rule->tokenId);
 
         return false;
     }
@@ -180,22 +168,5 @@ final class Recognizer
         }
 
         return true;
-    }
-
-    private function recordFailure(int $tokenId): void
-    {
-        $position = $this->buffer->key;
-
-        if ($position > $this->furthest) {
-            $this->furthest = $position;
-            $this->furthestToken = $this->buffer->current;
-            $this->expected = [$tokenId => $tokenId];
-
-            return;
-        }
-
-        if ($position === $this->furthest) {
-            $this->expected[$tokenId] = $tokenId;
-        }
     }
 }

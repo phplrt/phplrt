@@ -14,19 +14,14 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 interface BufferInterface extends \SeekableIterator
 {
     /**
-     * The token at the current position, kept in sync on every mutation so that
-     * hot-path readers may access it as a property instead of a method call.
-     *
-     * An alias of {@see self::current()}, but it guarantees faster access.
+     * The token at the current position.
      */
     public TokenInterface $current {
         get;
     }
 
     /**
-     * The ordinal id of the current token, kept in sync on every mutation.
-     *
-     * An alias of {@see self::key()}, but it guarantees faster access.
+     * The position of the current token.
      *
      * @var int<0, max>
      */

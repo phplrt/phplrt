@@ -28,10 +28,6 @@ final class ArrayBuffer implements BufferInterface
      */
     private readonly int $size;
 
-    /**
-     * Whether the cursor still points at a "not-yet-consumed token". It goes
-     * {@see false} as soon as an attempt is made to step past the last one.
-     */
     private bool $isValid = true;
 
     /**
@@ -75,8 +71,6 @@ final class ArrayBuffer implements BufferInterface
             return;
         }
 
-        // Seeking exactly onto the past-the-end position keeps the cursor on the
-        // terminal token and only marks the buffer as exhausted.
         $this->key = $this->size - 1;
         $this->current = $this->tokens[$this->size - 1];
         $this->isValid = false;
