@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/parser",
+    "name": "phplrt/exception",
     "type": "library",
-    "description": "The phplrt parser library",
+    "description": "The phplrt library to display parsing errors",
     "license": "MIT",
-    "keywords": ["parser", "llk", "ll1", "lr", "slr", "language", "php"],
+    "keywords": ["parsing", "printer", "error", "exception", "formatter"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/parser"
+        "source": "https://github.com/phplrt/exception"
     },
     "authors": [
         {
@@ -17,18 +17,11 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-spl": "*",
-        "ext-pcre": "*",
-        "ext-json": "*",
-        "phplrt/lexer": "^4.0",
-        "phplrt/parser-contracts": "^4.0"
-    },
-    "suggest": {
-        "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in"
+        "ext-intl": "*"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Parser\\": "src"
+            "Phplrt\\Exception\\": "src"
         }
     },
     "require-dev": {
@@ -38,11 +31,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Parser\\Tests\\": "tests"
+            "Phplrt\\Exception\\Tests\\": "tests"
         }
-    },
-    "provide": {
-        "phplrt/parser-contracts-implementation": "^4.0"
     },
     "extra": {
         "branch-alias": {

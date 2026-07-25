@@ -10,9 +10,9 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\UndefinedStateException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Internal\ChannelLoader;
+use Phplrt\Lexer\Internal\State;
 use Phplrt\Lexer\Internal\Tokenizer\DelegatingTokenizer;
 use Phplrt\Lexer\Internal\Tokenizer\Tokenizer;
-use Phplrt\Lexer\Internal\State;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 

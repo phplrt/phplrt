@@ -9,7 +9,7 @@
 /libs.old
 
 # Testing
-/test.php
+/bench.php
 
 # Common
 .DS_Store

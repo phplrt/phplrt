@@ -44,8 +44,6 @@ interface BufferInterface extends \SeekableIterator
      * @link https://php.net/manual/en/iterator.current.php
      *
      * @see \Iterator::current()
-     *
-     * @return TokenInterface
      */
     public function current(): TokenInterface;
 

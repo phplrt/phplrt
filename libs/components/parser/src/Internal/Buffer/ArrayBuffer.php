@@ -42,7 +42,6 @@ final class ArrayBuffer implements BufferInterface
 
     /**
      * @param iterable<mixed, TToken> $tokens
-     *
      * @throws \OutOfRangeException in case of token stream is empty
      */
     public function __construct(iterable $tokens)

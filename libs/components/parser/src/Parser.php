@@ -64,11 +64,11 @@ final readonly class Parser implements ParserInterface
         $result = RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer);
 
         if ($result instanceof Failure) {
-            throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current);
+            throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
         if (!$this->isEndOfInput($buffer->current)) {
-            throw UnexpectedTokenException::fromToken($buffer->current);
+            throw UnexpectedTokenException::fromToken($buffer->current, $source);
         }
 
         return $result;

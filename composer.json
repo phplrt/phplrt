@@ -22,10 +22,11 @@
         "ext-spl": "*",
         "laminas/laminas-code": "^4.17",
         "symfony/deprecation-contracts": "^2.5|^3.0",
-        "twig/twig": "^3.23"
+        "twig/twig": "^3.28"
     },
     "autoload": {
         "psr-4": {
+            "Phplrt\\Exception\\": "libs/components/exception/src",
             "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-compiler/src",
             "Phplrt\\Compiler\\Parser\\": "libs/components/parser-compiler/src",
             "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
@@ -49,6 +50,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Phplrt\\Exception\\Tests\\": "libs/components/exception/tests",
             "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-compiler/tests",
             "Phplrt\\Compiler\\Parser\\Tests\\": "libs/components/parser-compiler/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
@@ -59,14 +61,14 @@
         }
     },
     "replace": {
+        "phplrt/exception": "*",
         "phplrt/lexer": "*",
         "phplrt/lexer-compiler": "*",
         "phplrt/lexer-contracts": "*",
         "phplrt/parser": "*",
         "phplrt/parser-contracts": "*",
-        "phplrt/position-contracts": "*",
-        "phplrt/runtime": "*",
-        "phplrt/parser-compiler": "*"
+        "phplrt/parser-compiler": "*",
+        "phplrt/runtime": "*"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0",
