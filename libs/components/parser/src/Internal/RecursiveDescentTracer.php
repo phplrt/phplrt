@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Internal;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -15,28 +16,44 @@ use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Tracing\ErrorReport;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
-use Phplrt\Parser\Internal\Tracing\Trace;
 
 /**
  * Recognizes an input against a PEG grammar.
  *
+ * The recognized rules are written into the packed arrays making up the parse
+ * tree. They are stored in the recognizer itself, because an access to the
+ * properties is several times faster than a method call, and every rule of the
+ * grammar writes into them.
+ *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  */
-final readonly class RecursiveDescentTracer
+final class RecursiveDescentTracer
 {
-    private Trace $trace;
+    /**
+     * @var array<int<0, max>, int>
+     */
+    private array $types = [];
 
-    private ErrorReport $error;
+    /**
+     * @var array<int<0, max>, int|TokenInterface>
+     */
+    private array $references = [];
+
+    /**
+     * @var int<0, max>
+     */
+    private int $length = 0;
+
+    private readonly ErrorReport $error;
 
     private function __construct(
         /**
          * @var list<RuleInterface>
          */
-        private array $grammar,
-        private BufferInterface $buffer,
+        private readonly array $grammar,
+        private readonly BufferInterface $buffer,
     ) {
-        $this->trace = new Trace();
         $this->error = new ErrorReport($buffer);
     }
 
@@ -56,7 +73,11 @@ final readonly class RecursiveDescentTracer
         $self = new self($grammar, $buffer);
 
         if ($self->match($initial) && $self->isEndOfInput()) {
-            return $self->trace->finish();
+            return new Success(
+                types: $self->types,
+                references: $self->references,
+                length: $self->length,
+            );
         }
 
         return $self->error->finish();
@@ -78,9 +99,11 @@ final readonly class RecursiveDescentTracer
             return $this->matchLexeme($rule, $definition);
         }
 
-        $trace = $this->trace;
-        $mark = $trace->mark();
-        $trace->enter($rule);
+        $mark = $this->length;
+
+        $this->types[$mark] = Success::TYPE_ENTER;
+        $this->references[$mark] = $rule;
+        $this->length = $mark + 1;
 
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
@@ -94,9 +117,13 @@ final readonly class RecursiveDescentTracer
         };
 
         if ($matched) {
-            $trace->leave($rule);
+            $length = $this->length;
+
+            $this->types[$length] = Success::TYPE_LEAVE;
+            $this->references[$length] = $rule;
+            $this->length = $length + 1;
         } else {
-            $trace->rewind($mark);
+            $this->length = $mark;
         }
 
         return $matched;
@@ -112,10 +139,16 @@ final readonly class RecursiveDescentTracer
             if ($definition->keep) {
                 // The terminal is recorded as an ordinary rule containing a
                 // single token, so it can be reduced in the same way
-                $trace = $this->trace;
-                $trace->enter($rule);
-                $trace->token($token);
-                $trace->leave($rule);
+                $length = $this->length;
+
+                $this->types[$length] = Success::TYPE_ENTER;
+                $this->references[$length] = $rule;
+                $this->types[$length + 1] = Success::TYPE_TOKEN;
+                $this->references[$length + 1] = $token;
+                $this->types[$length + 2] = Success::TYPE_LEAVE;
+                $this->references[$length + 2] = $rule;
+
+                $this->length = $length + 3;
             }
 
             $buffer->next();

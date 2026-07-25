@@ -13,10 +13,8 @@ use Phplrt\Parser\Internal\Tracing\Result\Failure;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal
- *
- * @template-implements CompletableInterface<Failure>
  */
-final class ErrorReport implements CompletableInterface
+final class ErrorReport
 {
     /**
      * @var int<-1, max>
