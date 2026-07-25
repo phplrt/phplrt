@@ -55,6 +55,14 @@ final class ErrorReport implements CompletableInterface
 
     public function finish(): Failure
     {
+        $buffer = $this->buffer;
+
+        // The input the analysis stopped at is reported in case no deeper
+        // failure has been recorded
+        if ($this->token === null || $this->furthest < $buffer->key) {
+            return new Failure($buffer->current);
+        }
+
         return new Failure(
             token: $this->token,
             expected: \array_values($this->expected),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Internal;
 
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -54,11 +55,19 @@ final readonly class RecursiveDescentTracer
 
         $self = new self($grammar, $buffer);
 
-        if ($self->match($initial)) {
+        if ($self->match($initial) && $self->isEndOfInput()) {
             return $self->trace->finish();
         }
 
         return $self->error->finish();
+    }
+
+    /**
+     * The whole input is recognized only in case it is completely consumed.
+     */
+    private function isEndOfInput(): bool
+    {
+        return $this->buffer->current->channel === Channel::EndOfInput;
     }
 
     private function match(int $rule): bool

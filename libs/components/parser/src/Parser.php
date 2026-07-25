@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -45,10 +43,8 @@ final readonly class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        $result = RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer);
-
-        return $result instanceof Success
-            && $this->isEndOfInput($buffer->current);
+        return RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer)
+            instanceof Success;
     }
 
     /**
@@ -67,10 +63,6 @@ final readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
-        if (!$this->isEndOfInput($buffer->current)) {
-            throw UnexpectedTokenException::fromToken($buffer->current, $source);
-        }
-
         return $result;
     }
 
@@ -81,10 +73,5 @@ final readonly class Parser implements ParserInterface
         $filtered = $this->filter->apply($stream);
 
         return new ArrayBuffer($filtered);
-    }
-
-    private function isEndOfInput(TokenInterface $token): bool
-    {
-        return $token->channel === Channel::EndOfInput;
     }
 }
