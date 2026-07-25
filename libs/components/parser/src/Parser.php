@@ -13,11 +13,17 @@ use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Filter\ChannelFilter;
 use Phplrt\Parser\Internal\Filter\FilterInterface;
 use Phplrt\Parser\Internal\RecursiveDescentTracer;
+use Phplrt\Parser\Internal\TraceReducer;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
+/**
+ * @phpstan-import-type ReducerType from TraceReducer
+ */
 final readonly class Parser implements ParserInterface
 {
+    private TraceReducer $reducer;
+
     public function __construct(
         private LexerInterface $lexer,
         /**
@@ -31,10 +37,16 @@ final readonly class Parser implements ParserInterface
          */
         private int $initial,
         /**
+         * @var array<int<0, max>, ReducerType>
+         */
+        private array $reducers = [],
+        /**
          * Selects which tokens are passed to the grammar.
          */
         private FilterInterface $filter = new ChannelFilter(),
-    ) {}
+    ) {
+        $this->reducer = new TraceReducer($this->grammar, $this->reducers);
+    }
 
     /**
      * Checks whether the source is syntactically valid against the grammar.
@@ -50,7 +62,6 @@ final readonly class Parser implements ParserInterface
     /**
      * Parses the source into an AST.
      *
-     * @return object
      * @throws UnexpectedTokenException on a syntax error
      */
     public function parse(string $source): mixed
@@ -63,7 +74,7 @@ final readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
-        return $result;
+        return $this->reducer->reduce($result, $source);
     }
 
     private function lex(string $source): BufferInterface

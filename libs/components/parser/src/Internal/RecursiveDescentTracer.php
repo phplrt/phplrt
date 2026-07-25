@@ -75,7 +75,7 @@ final readonly class RecursiveDescentTracer
         $definition = $this->grammar[$rule];
 
         if ($definition instanceof Lexeme) {
-            return $this->matchLexeme($definition);
+            return $this->matchLexeme($rule, $definition);
         }
 
         $trace = $this->trace;
@@ -102,15 +102,20 @@ final readonly class RecursiveDescentTracer
         return $matched;
     }
 
-    private function matchLexeme(Lexeme $rule): bool
+    private function matchLexeme(int $rule, Lexeme $definition): bool
     {
         $buffer = $this->buffer;
         $token = $buffer->current;
-        $id = $rule->tokenId;
+        $id = $definition->tokenId;
 
         if ($token->id === $id) {
-            if ($rule->keep) {
-                $this->trace->token($token);
+            if ($definition->keep) {
+                // The terminal is recorded as an ordinary rule containing a
+                // single token, so it can be reduced in the same way
+                $trace = $this->trace;
+                $trace->enter($rule);
+                $trace->token($token);
+                $trace->leave($rule);
             }
 
             $buffer->next();
