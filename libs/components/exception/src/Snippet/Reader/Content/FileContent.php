@@ -7,7 +7,7 @@ namespace Phplrt\Exception\Snippet\Reader\Content;
 use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
 
 /**
- * The source code available as a file, loaded by chunks on demand.
+ * The source code available as a file.
  */
 final class FileContent implements ContentInterface
 {

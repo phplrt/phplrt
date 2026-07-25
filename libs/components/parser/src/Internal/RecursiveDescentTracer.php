@@ -20,11 +20,6 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
 /**
  * Recognizes an input against a PEG grammar.
  *
- * The recognized rules are written into the packed arrays making up the parse
- * tree. They are stored in the recognizer itself, because an access to the
- * properties is several times faster than a method call, and every rule of the
- * grammar writes into them.
- *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  */
