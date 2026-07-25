@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Tests\Bench\Lexer;
 
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\File;
-
 abstract readonly class LexerBench
 {
-    protected ReadableInterface $source;
+    protected string $source;
 
     public function prepare(): void
     {
-        $this->source = File::fromString(<<<'PHP'
+        $this->source = <<<'PHP'
             array{
                 initial: array-key,
                 tokens: array{
@@ -26,6 +23,6 @@ abstract readonly class LexerBench
                 reducers: array<array-key, callable(\Phplrt\Parser\Context, mixed):mixed>,
                 transitions?: array<array-key, mixed>
             }
-            PHP);
+            PHP;
     }
 }

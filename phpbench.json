@@ -6,6 +6,7 @@
     "runner.file_pattern": "*Bench.php",
     "runner.php_config": {
         "opcache.enable": 1,
+        "zend.assertions": -1,
         "opcache.enable_cli": 1,
         "opcache.jit_buffer_size": "128M",
         "xdebug.mode": "off"
