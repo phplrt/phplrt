@@ -9,6 +9,7 @@ use Phplrt\Compiler\Lexer\LexerBuilderResult;
 use Phplrt\Compiler\Parser\Definition\TerminalRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
+use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
 use Phplrt\Compiler\Parser\ParserBuilder;
 
@@ -52,7 +53,20 @@ final readonly class TokenReferenceValidationParserCompilerPass implements
         return match (true) {
             $rule instanceof TokenIdRuleDefinition => $this->findTokenById($lexer, $rule->tokenId),
             $rule instanceof TokenNameRuleDefinition => $this->findTokenByName($lexer, $rule->tokenName),
+            $rule instanceof TokenRuleDefinition => $this->findTokenByDefinition($lexer, $rule->token),
         };
+    }
+
+    /**
+     * A definition belonging to another lexer is not recognized by this one.
+     */
+    private function findTokenByDefinition(LexerBuilderResult $lexer, TokenDefinition $token): ?TokenDefinition
+    {
+        if ($lexer->findTokenId($token) === null) {
+            return null;
+        }
+
+        return $token;
     }
 
     private function findTokenById(LexerBuilderResult $lexer, int $id): ?TokenDefinition

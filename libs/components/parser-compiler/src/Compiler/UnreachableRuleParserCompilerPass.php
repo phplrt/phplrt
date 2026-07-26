@@ -9,7 +9,7 @@ use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
- * Removes the rules that cannot be reached from the initial one.
+ * Removes the declarations that cannot be reached from the initial rule.
  *
  * Such rules are dead code: none of them could ever be recognized, so they are
  * dropped instead of being compiled into the parser.
@@ -31,7 +31,7 @@ final readonly class UnreachableRuleParserCompilerPass implements
         $reachable = $this->collectReachable($initial);
         $unreachable = [];
 
-        foreach ($builder->rules as $rule) {
+        foreach ($builder->declarations as $rule) {
             if ($reachable->offsetExists($rule)) {
                 continue;
             }

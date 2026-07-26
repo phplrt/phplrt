@@ -40,12 +40,14 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
 
     public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
     {
-        $nullable = $this->calculateNullable($builder);
+        $rules = $builder->rules;
+
+        $nullable = $this->calculateNullable($rules);
 
         /** @var \SplObjectStorage<RuleDefinition, int> $statuses */
         $statuses = new \SplObjectStorage();
 
-        foreach ($builder->rules as $rule) {
+        foreach ($rules as $rule) {
             $this->validateOrFail($rule, $nullable, $statuses, []);
         }
     }
@@ -122,14 +124,15 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
     /**
      * Returns the rules that may be recognized without consuming a token.
      *
+     * @param list<RuleDefinition> $rules
      * @return \SplObjectStorage<RuleDefinition, bool>
      */
-    private function calculateNullable(ParserBuilder $builder): \SplObjectStorage
+    private function calculateNullable(array $rules): \SplObjectStorage
     {
         /** @var \SplObjectStorage<RuleDefinition, bool> $result */
         $result = new \SplObjectStorage();
 
-        foreach ($builder->rules as $rule) {
+        foreach ($rules as $rule) {
             $result[$rule] = false;
         }
 
@@ -137,7 +140,7 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
         do {
             $changed = false;
 
-            foreach ($builder->rules as $rule) {
+            foreach ($rules as $rule) {
                 $nullable = $this->isNullable($rule, $result);
 
                 if ($nullable === $result[$rule]) {

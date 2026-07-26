@@ -41,7 +41,7 @@ final readonly class KeptConstructionParserAnalysisPass implements
                 continue;
             }
 
-            $observers = $this->findObservers($rule, $parents, $result, []);
+            $observers = $this->findObservers($rule, $analysis->initial, $parents, $result, []);
 
             if ($observers === []) {
                 continue;
@@ -96,7 +96,7 @@ final readonly class KeptConstructionParserAnalysisPass implements
      * @param array<int, true> $visited
      * @return list<int>
      */
-    private function findObservers(int $rule, array $parents, array $kept, array $visited): array
+    private function findObservers(int $rule, int $initial, array $parents, array $kept, array $visited): array
     {
         if (isset($visited[$rule])) {
             return [];
@@ -106,14 +106,18 @@ final readonly class KeptConstructionParserAnalysisPass implements
         $result = [];
 
         foreach ($parents[$rule] ?? [] as $parent) {
-            if ($kept[$parent]) {
+            /**
+             * The value of the initial rule is the result of the analysis, so
+             * there is nothing above it to join the value with.
+             */
+            if ($kept[$parent] || $parent === $initial) {
                 $result[] = $parent;
 
                 continue;
             }
 
             // A rule missing from the tree passes the value to its own observers
-            foreach ($this->findObservers($parent, $parents, $kept, $visited) as $observer) {
+            foreach ($this->findObservers($parent, $initial, $parents, $kept, $visited) as $observer) {
                 $result[] = $observer;
             }
         }

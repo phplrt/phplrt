@@ -22,35 +22,56 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
 {
     public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
     {
-        $named = $this->collectNamedRules($builder);
-        $references = [];
-
-        foreach ($builder->rules as $rule) {
-            if ($rule instanceof RuleReference) {
-                $references[] = $rule;
-
-                continue;
-            }
-
-            $this->resolveChildren($rule, $named);
-        }
-
         $initial = $builder->initial;
 
         if ($initial instanceof RuleReference) {
-            $builder->setInitialRule($this->resolveRule($initial, $initial, $named));
+            $builder->setInitialRule($this->resolveRule($initial, $initial, $this->collectNamedRules($builder)));
         }
 
-        foreach ($references as $reference) {
-            $builder->removeRule($reference);
+        /**
+         * A resolved reference may attach a rule referring to another one by
+         * name, so the grammar is walked again until nothing changes.
+         */
+        do {
+            $named = $this->collectNamedRules($builder);
+            $resolved = false;
+
+            foreach ($builder->rules as $rule) {
+                $resolved = $this->resolveChildren($rule, $named) || $resolved;
+            }
+        } while ($resolved);
+    }
+
+    /**
+     * Returns {@see true} in case of at least one reference has been replaced.
+     *
+     * @param array<non-empty-string, RuleDefinition> $named
+     * @throws CompilationFailedException
+     */
+    private function resolveChildren(RuleDefinition $rule, array $named): bool
+    {
+        $children = $rule->children;
+
+        if ($children === []) {
+            return false;
         }
+
+        foreach ($children as $child) {
+            if ($child instanceof RuleReference) {
+                $this->replaceChildren($rule, $named);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * @param array<non-empty-string, RuleDefinition> $named
      * @throws CompilationFailedException
      */
-    private function resolveChildren(RuleDefinition $rule, array $named): void
+    private function replaceChildren(RuleDefinition $rule, array $named): void
     {
         match (true) {
             $rule instanceof ConcatenationRuleDefinition,
@@ -88,14 +109,50 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
      */
     private function resolveRule(RuleDefinition $rule, RuleDefinition $child, array $named): RuleDefinition
     {
-        if (!$child instanceof RuleReference) {
-            return $child;
+        /** @var \SplObjectStorage<RuleReference, null> $visited */
+        $visited = new \SplObjectStorage();
+
+        // A reference may point at another one, so the chain is followed to
+        // the rule it ends at
+        while ($child instanceof RuleReference) {
+            if ($visited->offsetExists($child)) {
+                throw new CompilationFailedException($rule, \sprintf(
+                    'Rule %s refers to itself through a chain of references',
+                    $rule,
+                ));
+            }
+
+            $visited->offsetSet($child);
+
+            $child = $this->resolveTarget($rule, $child, $named);
         }
 
-        return $named[$child->target] ?? throw new CompilationFailedException($rule, \sprintf(
+        return $child;
+    }
+
+    /**
+     * @param array<non-empty-string, RuleDefinition> $named
+     * @throws CompilationFailedException
+     */
+    private function resolveTarget(RuleDefinition $rule, RuleReference $reference, array $named): RuleDefinition
+    {
+        $target = $reference->target;
+
+        if ($target === null) {
+            throw new CompilationFailedException($rule, \sprintf(
+                'Rule %s refers to the rule, which has not been defined',
+                $rule,
+            ));
+        }
+
+        if (!\is_string($target)) {
+            return $target;
+        }
+
+        return $named[$target] ?? throw new CompilationFailedException($rule, \sprintf(
             'Rule %s refers to the rule named "%s", which has not been defined',
             $rule,
-            $child->target,
+            $target,
         ));
     }
 
