@@ -23,7 +23,7 @@ abstract class TestCase extends BaseTestCase
 
         $pathname = __DIR__ . \sprintf('/temp/phplrt-lexer-%s.php', \bin2hex(\random_bytes(8)));
 
-        \file_put_contents($pathname, (string) $builder->build());
+        \file_put_contents($pathname, (string) $builder->generate());
 
         try {
             /** @var LexerInterface */
