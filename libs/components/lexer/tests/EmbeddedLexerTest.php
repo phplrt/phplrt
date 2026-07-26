@@ -58,9 +58,11 @@ final class EmbeddedLexerTest extends TestCase
     {
         $context = new LexerResultContext(
             tokens: [
-                new RegexTokenDefinition('\[', 'T_OPEN')->enter('embedded'),
+                new RegexTokenDefinition('\[', 'T_OPEN')
+                    ->enter('embedded'),
                 new RegexTokenDefinition('\]', 'T_CLOSE'),
-                new RegexTokenDefinition('\s++', 'T_WHITESPACE')->setHidden(),
+                new RegexTokenDefinition('\s++', 'T_WHITESPACE')
+                    ->hide(),
                 new RegexTokenDefinition('[a-z]++', 'T_NAME'),
             ],
             states: [],

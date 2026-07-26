@@ -118,6 +118,16 @@ readonly class Lexer implements LexerInterface
          * Note: The state namespace is flat, so the nested {@see Lexer::$states}
          *       of these lexers are ignored.
          *
+         * Note: Token identifiers are not namespaced either. Every state writes
+         *       into the same stream, so two embedded lexers may well use the
+         *       same identifier for different tokens. Nothing can prevent it
+         *       here, because a foreign lexer never says which identifiers it
+         *       is going to emit.
+         *
+         *       What tells such tokens apart is the grammar rather than the
+         *       identifier: a rule reading an embedded fragment is only
+         *       reachable through the token that entered its state.
+         *
          * For example,
          * ```php
          * [
