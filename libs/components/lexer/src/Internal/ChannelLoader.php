@@ -6,7 +6,7 @@ namespace Phplrt\Lexer\Internal;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
-use Phplrt\Lexer\Token\UserDefinedChannel;
+use Phplrt\Contracts\Lexer\UserDefinedChannel;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
@@ -42,13 +42,14 @@ final readonly class ChannelLoader
     {
         $result = [];
 
+        $builtin = Channel::names();
+
         foreach ($channels as $channelName) {
             if (isset($result[$channelName])) {
                 continue;
             }
 
-            $result[$channelName] = Channel::tryFrom($channelName)
-                ?? new UserDefinedChannel($channelName);
+            $result[$channelName] = $builtin[$channelName] ?? new UserDefinedChannel($channelName);
         }
 
         return $result;

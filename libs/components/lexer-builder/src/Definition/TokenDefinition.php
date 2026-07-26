@@ -6,6 +6,7 @@ namespace Phplrt\Lexer\Builder\Definition;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
+use Phplrt\Contracts\Lexer\UserDefinedChannel;
 
 /**
  * @phpstan-sealed RegexTokenDefinition|ValueTokenDefinition
@@ -119,21 +120,6 @@ abstract class TokenDefinition extends Definition
     }
 
     /**
-     * @param non-empty-string $name
-     */
-    private function createCustomChannel(string $name): ChannelInterface
-    {
-        return new class ($name) implements ChannelInterface {
-            public function __construct(
-                /**
-                 * @var non-empty-string
-                 */
-                public string $value,
-            ) {}
-        };
-    }
-
-    /**
      * @api
      *
      * @param ChannelInterface|non-empty-string|null $channel
@@ -141,11 +127,11 @@ abstract class TokenDefinition extends Definition
      */
     public function setChannel(ChannelInterface|string|null $channel = null): self
     {
+        $builtin = Channel::names();
         $channel ??= self::DEFAULT_TOKEN_CHANNEL;
 
         if (\is_string($channel)) {
-            $channel = Channel::tryFrom($channel)
-                ?? $this->createCustomChannel($channel);
+            $channel = $builtin[$channel] ?? new UserDefinedChannel($channel);
         }
 
         $this->channel = $channel;

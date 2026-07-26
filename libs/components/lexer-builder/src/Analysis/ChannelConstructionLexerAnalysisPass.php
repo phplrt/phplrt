@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder\Analysis;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
 /**
  * Describes the channel each token is emitted to.
@@ -20,6 +21,7 @@ final readonly class ChannelConstructionLexerAnalysisPass implements
         $result = [];
 
         foreach ([$context->tokens, ...\array_values($context->states)] as $definitions) {
+            /** @var TokenDefinition $definition */
             foreach ($definitions as $id => $definition) {
                 $channel = $definition->channel;
 
@@ -27,7 +29,7 @@ final readonly class ChannelConstructionLexerAnalysisPass implements
                     continue;
                 }
 
-                $result[$id] = $channel->value;
+                $result[$id] = $channel->name;
             }
         }
 

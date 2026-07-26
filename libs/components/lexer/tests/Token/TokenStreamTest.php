@@ -43,7 +43,7 @@ final class TokenStreamTest extends TestCase
             'T_PLUS(+)@6',
             'T_WHITESPACE( )@7',
             'T_NUMBER(20)@8',
-            'eoi()@10',
+            'EndOfInput()@10',
         ], $actual);
     }
 
@@ -114,7 +114,7 @@ final class TokenStreamTest extends TestCase
             'T_WORD(привет)@0',
             'T_WHITESPACE( )@12',
             'T_WORD(мир)@13',
-            'eoi()@19',
+            'EndOfInput()@19',
         ], $actual);
     }
 

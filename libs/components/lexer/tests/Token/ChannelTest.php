@@ -72,7 +72,7 @@ final class ChannelTest extends TestCase
         $channels = self::channels($lexer->lex($source));
 
         self::assertArrayHasKey('T_DOC', $channels);
-        self::assertSame('documentation', $channels['T_DOC']->value);
+        self::assertSame('documentation', $channels['T_DOC']->name);
         self::assertNotInstanceOf(Channel::class, $channels['T_DOC']);
     }
 
@@ -84,7 +84,7 @@ final class ChannelTest extends TestCase
         $first = self::channels($lexer->lex('## one'));
         $second = self::channels($lexer->lex('## two'));
 
-        self::assertSame($first['T_DOC']->value, $second['T_DOC']->value);
+        self::assertSame($first['T_DOC']->name, $second['T_DOC']->name);
     }
 
     #[TestDox('An unreadable fragment is reported on the unknown channel')]

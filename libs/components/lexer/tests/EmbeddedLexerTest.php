@@ -108,7 +108,7 @@ final class EmbeddedLexerTest extends TestCase
             'T_CLOSE(])@6',
             'T_WHITESPACE( )@7',
             'T_NAME(b)@8',
-            'eoi()@9',
+            'EndOfInput()@9',
         ], $actual);
     }
 

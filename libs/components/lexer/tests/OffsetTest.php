@@ -32,7 +32,7 @@ final class OffsetTest extends TestCase
 
         self::assertSame([
             'T_NAME(three)@8',
-            'eoi()@13',
+            'EndOfInput()@13',
         ], $actual);
     }
 

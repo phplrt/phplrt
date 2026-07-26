@@ -16,12 +16,12 @@ interface ChannelInterface
      * {@see Channel::Hidden} channel, implying that this set of tokens
      * should be excluded from the lexer's output.
      *
-     * Note: The `$value` name of the property is due to
+     * Note: The `$name` name of the property is due to
      *       problems in PHP in supporting enumerations.
      *
      * @var non-empty-string
      */
-    public string $value {
+    public string $name {
         get;
     }
 }

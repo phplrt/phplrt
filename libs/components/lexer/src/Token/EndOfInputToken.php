@@ -30,7 +30,7 @@ class EndOfInputToken extends Token
     ) {
         parent::__construct(
             id: self::TOKEN_ID,
-            name: self::TOKEN_CHANNEL->value,
+            name: self::TOKEN_CHANNEL->name,
             channel: self::TOKEN_CHANNEL,
             value: '',
             offset: $offset,

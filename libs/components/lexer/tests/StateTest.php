@@ -62,7 +62,7 @@ final class StateTest extends TestCase
             'T_INTERPOLATION_END(})@18',
             'T_STRING_CHARS( !)@19',
             'T_STRING_END(")@21',
-            'eoi()@22',
+            'EndOfInput()@22',
         ], $actual);
     }
 
@@ -94,7 +94,7 @@ final class StateTest extends TestCase
             $names[] = $token->name;
         }
 
-        self::assertSame(['T_STRING_BEGIN', 'T_STRING_CHARS', 'T_STRING_END', 'eoi'], $names);
+        self::assertSame(['T_STRING_BEGIN', 'T_STRING_CHARS', 'T_STRING_END', 'EndOfInput'], $names);
     }
 
     #[TestDox('A state is able to enter itself recursively')]
@@ -117,7 +117,7 @@ final class StateTest extends TestCase
             'T_COMMENT_END(*/)@17',
             'T_WHITESPACE( )@19',
             'T_NAME(b)@20',
-            'eoi()@21',
+            'EndOfInput()@21',
         ], $actual);
     }
 

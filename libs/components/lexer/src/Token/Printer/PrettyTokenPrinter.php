@@ -61,10 +61,10 @@ final readonly class PrettyTokenPrinter implements TokenPrinterInterface
         }
 
         if ($name === null) {
-            return \sprintf('%s (of %s)', $this->printValue($token), $channel->value);
+            return \sprintf('%s (of %s)', $this->printValue($token), $channel->name);
         }
 
-        return \sprintf('%s (%s of %s)', $this->printValue($token), $name, $channel->value);
+        return \sprintf('%s (%s of %s)', $this->printValue($token), $name, $channel->name);
     }
 
     public function printValue(TokenInterface $token): string
