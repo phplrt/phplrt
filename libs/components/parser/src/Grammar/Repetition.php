@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Repetition implements ProductionInterface
+final readonly class Repetition implements SequenceInterface
 {
     public function __construct(
         public int $ruleId,

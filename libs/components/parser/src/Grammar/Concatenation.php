@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Grammar;
 
-final readonly class Concatenation implements ProductionInterface
+final readonly class Concatenation implements SequenceInterface
 {
     public function __construct(
         /**
