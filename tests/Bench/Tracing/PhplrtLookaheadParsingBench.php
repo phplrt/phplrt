@@ -9,16 +9,16 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
-use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
+use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
+use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
 use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Parser;
 
 #[Warmup(1)]
 #[Revs(2)]
-#[Iterations(2)]
-#[RetryThreshold(0.3)]
+#[Iterations(3)]
+#[RetryThreshold(0.2)]
 #[BeforeMethods('prepare')]
 final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
 {
@@ -31,27 +31,27 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
         $initial = $this->getParserInitialRule();
         $reducers = $this->getParserReducers();
 
-        $analysis = new ParserAnalysis($grammar, $initial, \array_map(
-            static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
+        $context = new ParserResultContext($grammar, $initial, \array_map(
+            CallableReducer::createFromCallable(...),
             $reducers,
         ));
 
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
-            new KeptConstructionParserAnalysisPass(),
+            new TreePresenceConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {
-            $pass->process($analysis);
+            $pass->process($context);
         }
 
         $this->parser = new Parser(
             lexer: $lexer,
-            grammar: $analysis->grammar,
-            initial: $analysis->initial,
-            first: $analysis->first,
-            nullable: $analysis->nullable,
-            kept: $analysis->kept,
+            grammar: $context->grammar,
+            initial: $context->initial,
+            startTokens: $context->startTokens,
+            matchesEmptyInput: $context->matchesEmptyInput,
+            presentInTree: $context->presentInTree,
             reducers: $reducers,
         );
     }
