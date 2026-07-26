@@ -103,14 +103,10 @@ final class LexerBuilder
     }
 
     /**
-     * @template TArgGeneratedResult of GeneratedResult
-     * @param OutputGeneratorInterface<TArgGeneratedResult> $generator
-     * @return TArgGeneratedResult
      * @throws LexerCompilerException
      */
-    public function build(
-        OutputGeneratorInterface $generator = new Phplrt4OutputGenerator(),
-    ): GeneratedResult {
+    public function build(): LexerBuilderResult
+    {
         $context = $this->process();
 
         $states = [];
@@ -119,11 +115,23 @@ final class LexerBuilder
             $states[$name] = \array_values($state->tokens);
         }
 
-        return $generator->generate(new LexerBuilderResult(
+        return new LexerBuilderResult(
             tokens: \array_values($context->tokens),
             states: $states,
             flags: \array_values($context->flags),
-        ));
+        );
+    }
+
+    /**
+     * @template TArgGeneratedResult of GeneratedResult
+     * @param OutputGeneratorInterface<TArgGeneratedResult> $generator
+     * @return TArgGeneratedResult
+     * @throws LexerCompilerException
+     */
+    public function generate(
+        OutputGeneratorInterface $generator = new Phplrt4OutputGenerator(),
+    ): GeneratedResult {
+        return $generator->generate($this->build());
     }
 
     /**
