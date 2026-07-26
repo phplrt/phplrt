@@ -7,6 +7,7 @@ namespace Phplrt\Parser\Tests;
 use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\RuleInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -22,7 +23,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected static function analyze(array $grammar, int $initial, array $reducers = []): ParserAnalysis
     {
-        $analysis = new ParserAnalysis($grammar, $initial, $reducers);
+        $analysis = new ParserAnalysis($grammar, $initial, \array_map(
+            static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
+            $reducers,
+        ));
 
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),

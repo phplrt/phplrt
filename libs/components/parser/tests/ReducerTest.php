@@ -242,7 +242,7 @@ final class ReducerTest extends TestCase
             first: $analysis->first,
             nullable: $analysis->nullable,
             kept: $analysis->kept,
-            reducers: $analysis->reducers,
+            reducers: $reducers,
         );
     }
 
