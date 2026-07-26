@@ -170,7 +170,6 @@ final class ReducerTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $grammar,
             initial: self::RULE_EXPRESSION,
-            merged: self::analyze($grammar, self::RULE_EXPRESSION, $reducers)->merged,
             reducers: $reducers,
         );
 
@@ -194,7 +193,6 @@ final class ReducerTest extends TestCase
             first: $analysis->first,
             nullable: $analysis->nullable,
             kept: $analysis->kept,
-            merged: $analysis->merged,
         );
 
         self::assertSame([], $parser->parse('1'));
@@ -244,7 +242,6 @@ final class ReducerTest extends TestCase
             first: $analysis->first,
             nullable: $analysis->nullable,
             kept: $analysis->kept,
-            merged: $analysis->merged,
             reducers: $analysis->reducers,
         );
     }

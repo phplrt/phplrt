@@ -6,7 +6,6 @@ namespace Phplrt\Parser\Tests;
 
 use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\MergedConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -28,7 +27,6 @@ abstract class TestCase extends BaseTestCase
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
             new KeptConstructionParserAnalysisPass(),
-            new MergedConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {
