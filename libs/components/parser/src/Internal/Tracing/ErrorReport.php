@@ -17,9 +17,11 @@ use Phplrt\Parser\Internal\Tracing\Result\Failure;
 final class ErrorReport
 {
     /**
+     * The position of the failure the report describes.
+     *
      * @var int<-1, max>
      */
-    private int $furthest = -1;
+    public private(set) int $furthest = -1;
 
     private ?TokenInterface $token = null;
 
