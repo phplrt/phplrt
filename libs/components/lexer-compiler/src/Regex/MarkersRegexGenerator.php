@@ -9,22 +9,16 @@ use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\InvalidArgumentException;
 
-/**
- * @template-extends RegexGenerator<RegexGeneratorResult>
- */
 final readonly class MarkersRegexGenerator extends RegexGenerator
 {
     private const string PATTERN_TOKEN = '(?:(?:%s)(*MARK:%s))';
     private const string PATTERN_BODY = '\\G(?|%s)';
 
-    public function generate(array $tokens, array $flags): RegexGeneratorResult
+    public function generate(array $tokens, array $flags): string
     {
-        return new RegexGeneratorResult(
-            pattern: $this->formatFullRegex(
-                regex: $this->formatRegex($tokens),
-                flags: $flags,
-            ),
-            tokens: $tokens,
+        return $this->formatFullRegex(
+            regex: $this->formatRegex($tokens),
+            flags: $flags,
         );
     }
 

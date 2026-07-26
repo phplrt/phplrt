@@ -10,16 +10,15 @@ use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
 
 /**
  * Responsible for generating the complete PHP PCRE pattern
- *
- * @template-covariant TResult of RegexGeneratorResult = RegexGeneratorResult
  */
 interface RegexGeneratorInterface
 {
     /**
-     * @param array<int, TokenDefinition> $tokens a map of globally unique
-     *        token ID and its definition
+     * @param non-empty-array<int, TokenDefinition> $tokens a map of globally
+     *        unique token ID and its definition
      * @param list<RegexModifier> $flags
+     * @return non-empty-string
      * @throws LexerCompilerException
      */
-    public function generate(array $tokens, array $flags): RegexGeneratorResult;
+    public function generate(array $tokens, array $flags): string;
 }

@@ -11,7 +11,8 @@ use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
  * Describes the lexer the analysis passes complement with the metadata.
  *
  * Token identifiers are already assigned here, so the token definitions may no
- * longer be rewritten.
+ * longer be rewritten. An identifier is unique across ALL states, which is why
+ * everything indexed by it describes the lexer as a whole.
  */
 final class LexerResultContext
 {
@@ -34,10 +35,35 @@ final class LexerResultContext
          */
         public readonly array $flags,
         /**
-         * A map of token name and its ID, gathered from all states.
-         *
-         * @var array<non-empty-string, int>
+         * The pattern recognizing the tokens of the initial state.
          */
-        public array $constants = [],
+        public string $pattern = '',
+        /**
+         * A map of state name and the pattern recognizing its tokens.
+         *
+         * @var array<non-empty-string, non-empty-string>
+         */
+        public array $statePatterns = [],
+        /**
+         * A map of token ID and the channel it is emitted to.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $channels = [],
+        /**
+         * A map of token ID and its name.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $names = [],
+        /**
+         * A map of token ID and the state transition it triggers.
+         *
+         * A {@see string} value enters the named state, while a {@see null} one
+         * leaves the current state.
+         *
+         * @var array<int, non-empty-string|null>
+         */
+        public array $transitions = [],
     ) {}
 }

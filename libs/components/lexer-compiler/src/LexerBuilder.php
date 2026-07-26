@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer;
 
-use Phplrt\Compiler\Lexer\Analysis\ConstantsConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\ChannelConstructionLexerAnalysisPass;
 use Phplrt\Compiler\Lexer\Analysis\LexerAnalysisPassInterface;
 use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
+use Phplrt\Compiler\Lexer\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\TokenNameConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\TransitionConstructionLexerAnalysisPass;
 use Phplrt\Compiler\Lexer\Builder\HasRegexFlags;
 use Phplrt\Compiler\Lexer\Builder\HasTokenDefinitions;
 use Phplrt\Compiler\Lexer\Builder\TokenDefinitionGroup;
@@ -19,13 +22,11 @@ use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\TransitionValidationLexerCompilerPass;
 use Phplrt\Compiler\Lexer\Compiler\UnreachableStateLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
-use Phplrt\Compiler\Lexer\Generator\GeneratedResult;
-use Phplrt\Compiler\Lexer\Generator\OutputGeneratorInterface;
-use Phplrt\Compiler\Lexer\Generator\Phplrt4OutputGenerator;
-use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Compiler\Lexer\Transformer\LexerBuilderResultTransformer;
+use Phplrt\Compiler\Lexer\Transformer\LexerBuildingContextTransformer;
+use Phplrt\Compiler\Lexer\Transformer\LexerResultContextTransformer;
 
 final class LexerBuilder
 {
@@ -96,7 +97,10 @@ final class LexerBuilder
         ];
 
         $this->analysisPasses = [
-            new ConstantsConstructionLexerAnalysisPass(),
+            new TokenNameConstructionLexerAnalysisPass(),
+            new ChannelConstructionLexerAnalysisPass(),
+            new TransitionConstructionLexerAnalysisPass(),
+            new RegexConstructionLexerAnalysisPass(),
         ];
     }
 
@@ -109,8 +113,11 @@ final class LexerBuilder
      *
      * For example,
      * ```php
-     * $builder->addPattern('"')->enter('string');
-     * $builder->addState('string')->addPattern('"')->exit();
+     * $builder->addPattern('"')
+     *      ->enter('string');
+     * $builder->addState('string')
+     *      ->addPattern('"')
+     *      ->exit();
      * ```
      *
      * @api
@@ -179,35 +186,25 @@ final class LexerBuilder
      */
     public function build(): LexerBuilderResult
     {
-        $result = $this->analyze($this->createResultContext($this->process()));
+        $building = new LexerBuildingContextTransformer()
+            ->transform($this);
 
-        return new LexerBuilderResult(
-            tokens: $result->tokens,
-            states: $result->states,
-            flags: $result->flags,
-            constants: $result->constants,
-        );
-    }
+        $this->process($building);
 
-    /**
-     * @template TArgGeneratedResult of GeneratedResult
-     * @param OutputGeneratorInterface<TArgGeneratedResult> $generator
-     * @return TArgGeneratedResult
-     * @throws LexerCompilerException
-     */
-    public function generate(
-        OutputGeneratorInterface $generator = new Phplrt4OutputGenerator(),
-    ): GeneratedResult {
-        return $generator->generate($this->build());
+        $result = new LexerResultContextTransformer()
+            ->transform($building);
+
+        $this->analyze($result);
+
+        return new LexerBuilderResultTransformer()
+            ->transform($result);
     }
 
     /**
      * @throws LexerCompilerException
      */
-    private function process(): LexerBuildingContext
+    private function process(LexerBuildingContext $context): void
     {
-        $context = $this->createBuildingContext();
-
         try {
             foreach ($this->compilerPasses as $passes) {
                 foreach ($passes as $pass) {
@@ -219,14 +216,12 @@ final class LexerBuilder
         } catch (\Throwable $e) {
             throw LexerCompilerException::becauseInternalErrorOccurs($e);
         }
-
-        return $context;
     }
 
     /**
      * @throws LexerCompilerException
      */
-    private function analyze(LexerResultContext $context): LexerResultContext
+    private function analyze(LexerResultContext $context): void
     {
         try {
             foreach ($this->analysisPasses as $pass) {
@@ -237,79 +232,5 @@ final class LexerBuilder
         } catch (\Throwable $e) {
             throw LexerCompilerException::becauseInternalErrorOccurs($e);
         }
-
-        return $context;
-    }
-
-    private function createBuildingContext(): LexerBuildingContext
-    {
-        $states = [];
-
-        foreach ($this->states as $name => $state) {
-            $states[$name] = \array_values($state->tokens);
-        }
-
-        return new LexerBuildingContext(
-            tokens: \array_values($this->tokens),
-            states: $states,
-            flags: $this->flags,
-        );
-    }
-
-    private function createResultContext(LexerBuildingContext $context): LexerResultContext
-    {
-        /**
-         * The very same "unknown" definition is shared between all states, so
-         * that an unrecognized fragment is always reported using the same
-         * token ID, no matter which state the lexer was in.
-         */
-        $unknown = $this->createUnknownToken();
-
-        /** @var \SplObjectStorage<TokenDefinition, int> $identifiers */
-        $identifiers = new \SplObjectStorage();
-
-        $tokens = $this->index($identifiers, [...$context->tokens, $unknown]);
-
-        $states = [];
-
-        foreach ($context->states as $name => $state) {
-            $states[$name] = $this->index($identifiers, [...$state, $unknown]);
-        }
-
-        return new LexerResultContext(
-            tokens: $tokens,
-            states: $states,
-            flags: \array_values($context->flags),
-        );
-    }
-
-    /**
-     * Assigns a globally unique identifier to each definition.
-     *
-     * A definition shared between several states keeps a single identifier.
-     *
-     * @param \SplObjectStorage<TokenDefinition, int> $identifiers
-     * @param non-empty-list<TokenDefinition> $definitions
-     * @return non-empty-array<int, TokenDefinition>
-     */
-    private function index(\SplObjectStorage $identifiers, array $definitions): array
-    {
-        $result = [];
-
-        foreach ($definitions as $definition) {
-            if (!isset($identifiers[$definition])) {
-                $identifiers[$definition] = $identifiers->count();
-            }
-
-            $result[$identifiers[$definition]] = $definition;
-        }
-
-        return $result;
-    }
-
-    private function createUnknownToken(): TokenDefinition
-    {
-        return new RegexTokenDefinition('[^\\s]++')
-            ->setChannel(Channel::Unknown);
     }
 }

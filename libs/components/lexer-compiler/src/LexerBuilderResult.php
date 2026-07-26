@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
+use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**
  * Represents the result of building a lexer.
@@ -30,16 +31,45 @@ final readonly class LexerBuilderResult
          */
         public array $states,
         /**
-         * @var list<RegexModifier>
-         */
-        public array $flags,
-        /**
-         * A map of token name and its ID, gathered from all states.
+         * The pattern recognizing the tokens of the initial state.
          *
-         * @var array<non-empty-string, int>
+         * @var non-empty-string
          */
-        public array $constants,
+        public string $pattern,
+        /**
+         * A map of state name and the pattern recognizing its tokens.
+         *
+         * @var array<non-empty-string, non-empty-string>
+         */
+        public array $statePatterns,
+        /**
+         * A map of token ID and the channel it is emitted to.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $channels,
+        /**
+         * A map of token ID and its name.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $names,
+        /**
+         * A map of token ID and the state transition it triggers.
+         *
+         * A {@see string} value enters the named state, while a {@see null} one
+         * leaves the current state.
+         *
+         * @var array<int, non-empty-string|null>
+         */
+        public array $transitions,
     ) {}
+
+    public function toLexer(): LexerInterface
+    {
+        return new RuntimeLexerTransformer()
+            ->transform($this);
+    }
 
     /**
      * Returns the identifier of the given token definition, or {@see null} in

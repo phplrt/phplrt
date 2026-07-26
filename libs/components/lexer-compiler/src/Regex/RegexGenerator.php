@@ -6,11 +6,6 @@ namespace Phplrt\Compiler\Lexer\Regex;
 
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 
-/**
- * @template-covariant TResult of RegexGeneratorResult = RegexGeneratorResult
- *
- * @template-implements RegexGeneratorInterface<TResult>
- */
 abstract readonly class RegexGenerator implements RegexGeneratorInterface
 {
     /**
