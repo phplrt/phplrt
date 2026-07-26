@@ -38,7 +38,11 @@ final readonly class TraceReducer
         private int $rule,
         private string $source,
     ) {
-        $this->context = new Context($this->rule, $this->source, null);
+        $this->context = new Context(
+            rule: $this->rule,
+            source: $this->source,
+            token: null,
+        );
     }
 
     public function reduce(Success $trace): mixed

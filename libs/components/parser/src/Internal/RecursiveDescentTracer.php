@@ -13,7 +13,6 @@ use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\ParseTree\Lookahead;
 use Phplrt\Parser\Internal\Tracing\ErrorReport;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
@@ -38,45 +37,48 @@ final class RecursiveDescentTracer
 
     private readonly ErrorReport $error;
 
-    /**
-     * @var array<int, array<int, true>>
-     */
-    private readonly array $first;
-
-    /**
-     * @var array<int, bool>
-     */
-    private readonly array $nullable;
-
     private function __construct(
         /**
          * @var list<RuleInterface>
          */
         private readonly array $grammar,
         private readonly BufferInterface $buffer,
-        Lookahead $lookahead,
+        /**
+         * Empty in case the lookahead is unknown, which admits every rule.
+         *
+         * @var array<int, array<int, true>>
+         */
+        private readonly array $first,
+        /**
+         * @var array<int, bool>
+         */
+        private readonly array $nullable,
         /**
          * @var array<int, bool>
          */
         private readonly array $kept,
     ) {
         $this->error = new ErrorReport($buffer);
-        $this->first = $lookahead->first;
-        $this->nullable = $lookahead->nullable;
     }
 
     /**
      * Recognizes the given rule against the input.
      *
+     * The "nullable" and "kept" tables cover every rule of the grammar, an
+     * unknown one is passed as a table admitting all of them.
+     *
      * @param list<RuleInterface> $grammar
      * @param int<0, max> $initial
+     * @param array<int, array<int, true>> $first
+     * @param array<int, bool> $nullable
      * @param array<int, bool> $kept
      */
     public static function trace(
         array $grammar,
         int $initial,
         BufferInterface $buffer,
-        Lookahead $lookahead,
+        array $first,
+        array $nullable,
         array $kept,
     ): Success|Failure {
         if ($grammar === []) {
@@ -84,7 +86,7 @@ final class RecursiveDescentTracer
             return new Failure($buffer->current);
         }
 
-        $self = new self($grammar, $buffer, $lookahead, $kept);
+        $self = new self($grammar, $buffer, $first, $nullable, $kept);
 
         if ($self->match($initial) && $self->isEndOfInput()) {
             return new Success(
