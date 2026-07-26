@@ -60,7 +60,7 @@ final readonly class Parser implements ParserInterface
         private FilterInterface $filter = new ChannelFilter(),
     ) {
         $this->lookahead = LookaheadConstruction::compute($this->grammar);
-        $this->kept = KeptConstruction::compute($this->grammar, $this->reducers);
+        $this->kept = KeptConstruction::compute($this->grammar, $this->reducers, $this->initial);
         $this->merged = MergedConstruction::compute($this->grammar);
     }
 
