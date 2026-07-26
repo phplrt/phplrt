@@ -9,6 +9,8 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
+use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
+use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\MergedConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
 use Phplrt\Parser\Parser;
@@ -18,7 +20,7 @@ use Phplrt\Parser\Parser;
 #[Iterations(2)]
 #[RetryThreshold(0.3)]
 #[BeforeMethods('prepare')]
-final readonly class PhplrtParsingBench extends PhplrtBench
+final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
 {
     private Parser $parser;
 
@@ -32,6 +34,8 @@ final readonly class PhplrtParsingBench extends PhplrtBench
         $analysis = new ParserAnalysis($grammar, $initial, $reducers);
 
         $passes = [
+            new LookaheadConstructionParserAnalysisPass(),
+            new KeptConstructionParserAnalysisPass(),
             new MergedConstructionParserAnalysisPass(),
         ];
 
@@ -44,6 +48,9 @@ final readonly class PhplrtParsingBench extends PhplrtBench
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             merged: $analysis->merged,
+            first: $analysis->first,
+            nullable: $analysis->nullable,
+            kept: $analysis->kept,
             reducers: $analysis->reducers,
         );
     }
