@@ -51,10 +51,13 @@ final readonly class Parser implements ParserInterface
      */
     private array $kept;
 
+    private TraceReducer $reducer;
+
     /**
      * @param array<int, array<int, true>> $first
      * @param array<int, bool> $nullable
      * @param array<int, bool> $kept
+     * @param array<int<0, max>, ReducerType> $reducers
      */
     public function __construct(
         private LexerInterface $lexer,
@@ -68,20 +71,10 @@ final readonly class Parser implements ParserInterface
          * @var int<0, max>
          */
         private int $initial,
-        /**
-         * The rules reduced to the list of their children instead of a single
-         * value, indexed by the rule identifiers.
-         *
-         * @var array<int, bool>
-         */
-        private array $merged,
         array $first = [],
         array $nullable = [],
         array $kept = [],
-        /**
-         * @var array<int<0, max>, ReducerType>
-         */
-        private array $reducers = [],
+        array $reducers = [],
         /**
          * Selects which tokens are passed to the grammar.
          */
@@ -92,6 +85,12 @@ final readonly class Parser implements ParserInterface
         $this->first = $containsLookaheadTable ? $first : [];
         $this->nullable = $containsLookaheadTable ? $nullable : self::admitEveryRule($grammar);
         $this->kept = $kept === [] ? self::admitEveryRule($grammar) : $kept;
+
+        $this->reducer = new TraceReducer(
+            grammar: $grammar,
+            reducers: $reducers,
+            rule: $initial,
+        );
     }
 
     /**
@@ -143,12 +142,7 @@ final readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
-        $reducer = new TraceReducer(
-            reducers: $this->reducers,
-            merged: $this->merged,
-            rule: $this->initial,
-            source: $source,
-        );
+        $reducer = $this->reducer->createContextualReducer($source);
 
         return $reducer->reduce($result);
     }

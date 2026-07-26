@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Internal;
 
 use Phplrt\Parser\Context;
-use Phplrt\Parser\Internal\Tracing\Result\Success;
+use Phplrt\Parser\Grammar\RuleInterface;
+use Phplrt\Parser\Grammar\SequenceInterface;
 
 /**
  * Reduces the recognized rules into the abstract syntax tree.
@@ -17,9 +18,19 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  */
 final readonly class TraceReducer
 {
-    private Context $context;
+    /**
+     * The rules reduced to the list of their children, indexed by the rule
+     * identifiers.
+     *
+     * @var array<int, bool>
+     */
+    private array $merged;
 
+    /**
+     * @param list<RuleInterface> $grammar
+     */
     public function __construct(
+        array $grammar,
         /**
          * The callbacks converting the rules into the nodes, indexed by the
          * rule identifiers. The rules without a callback are reduced to their
@@ -29,118 +40,40 @@ final readonly class TraceReducer
          */
         private array $reducers,
         /**
-         * The rules reduced to the list of their children, indexed by the rule
-         * identifiers
+         * The identifier of the rule the analysis starts at.
          *
-         * @var array<int, bool>
+         * @var int<0, max>
          */
-        private array $merged,
         private int $rule,
-        private string $source,
     ) {
-        $this->context = new Context(
-            rule: $this->rule,
-            source: $this->source,
-            token: null,
-        );
-    }
-
-    public function reduce(Success $trace): mixed
-    {
-        $entries = $trace->entries;
-
-        $reducers = $this->reducers;
-        $merged = $this->merged;
-        $prototype = $this->context;
-
-        $children = [];
-        $stack = [];
-        $token = null;
-
-        for ($i = 0, $length = $trace->length; $i < $length; ++$i) {
-            $entry = $entries[$i];
-
-            if (!\is_int($entry)) {
-                $children[] = $token = $entry;
-
-                continue;
-            }
-
-            if ($entry >= 0) {
-                $stack[] = $children;
-                $children = [];
-
-                continue;
-            }
-
-            $rule = -$entry - 1;
-
-            if ($merged[$rule]) {
-                $result = $children;
-
-                if (isset($children[1])) {
-                    foreach ($children as $child) {
-                        if (\is_array($child)) {
-                            $result = $this->merge($children);
-
-                            break;
-                        }
-                    }
-                } elseif (isset($children[0]) && \is_array($children[0])) {
-                    $result = $children[0];
-                }
-            } else {
-                // Any other rule contains a single value, which is passed
-                // through as is
-                $result = $children[0] ?? [];
-            }
-
-            $children = \array_pop($stack) ?? [];
-            $reducer = $reducers[$rule] ?? null;
-
-            if ($reducer === null) {
-                $children[] = $result;
-
-                continue;
-            }
-
-            /**
-             * Clone optimization: speeds up the creation of a new object:
-             * faster than instantiation.
-             */
-            $context = clone $prototype;
-
-            $context->rule = $rule;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $context->token = $token;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-
-            $children[] = $reducer($context, $result) ?? $result;
-        }
-
-        return $children[0] ?? [];
+        $this->merged = self::calculateMerged($grammar);
     }
 
     /**
-     * Unwraps the children of the nested rules into a single list.
-     *
-     * @param list<mixed> $children
-     * @return list<mixed>
+     * @param list<RuleInterface> $grammar
+     * @return array<int, bool>
      */
-    private function merge(array $children): array
+    private static function calculateMerged(array $grammar): array
     {
         $result = [];
 
-        foreach ($children as $child) {
-            if (!\is_array($child)) {
-                $result[] = $child;
-
-                continue;
-            }
-
-            foreach ($child as $value) {
-                $result[] = $value;
-            }
+        foreach ($grammar as $rule => $definition) {
+            $result[$rule] = $definition instanceof SequenceInterface;
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the reducer of the traces of the given source.
+     */
+    public function createContextualReducer(string $source): ContextualTraceReducer
+    {
+        return new ContextualTraceReducer(
+            reducers: $this->reducers,
+            merged: $this->merged,
+            rule: $this->rule,
+            source: $source,
+        );
     }
 }
