@@ -110,6 +110,17 @@ final class RecursiveDescentTracer
     {
         $definition = $this->grammar[$rule];
 
+        // A `Lexeme` is the most common matching rule in the parser. We could
+        // move everything inside this `if` statement into a separate method,
+        // but that would result in a performance loss of about ~5%.
+        //
+        // Therefore, it's better to sacrifice a little readability for a
+        // small boost.
+        //
+        // TODO In the future, this code should be rewritten from a recursive
+        //      algorithm to a full-fledged state machine and all the rules
+        //      should be inlined. This should, in theory, further speed up
+        //      the code (do this and then benchmark it).
         if ($definition instanceof Lexeme) {
             $buffer = $this->buffer;
             $token = $buffer->current;
@@ -136,10 +147,10 @@ final class RecursiveDescentTracer
                     $this->entries[$length + 1] = $token;
                     $this->entries[$length + 2] = -$rule - 1;
 
-                    $this->length = $length + 3;
+                    $this->length += 3;
                 } else {
                     $this->entries[$length] = $token;
-                    $this->length = $length + 1;
+                    ++$this->length;
                 }
             }
 

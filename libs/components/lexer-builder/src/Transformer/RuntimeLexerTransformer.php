@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Transformer;
 
-use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Lexer\Lexer;
 
 /**

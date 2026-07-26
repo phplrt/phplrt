@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder;
 
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
-use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**
  * Represents the result of building a lexer.

@@ -157,9 +157,8 @@ readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
-        $reducer = $this->reducer->createContextualReducer($source);
-
-        return $reducer->reduce($result);
+        return $this->reducer->createContext($source)
+            ->reduce($result);
     }
 
     private function lex(string $source): BufferInterface

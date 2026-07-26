@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Transformer;
 
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
-use Phplrt\Contracts\Lexer\Channel;
 
 /**
  * Assembles the lexer out of the token definitions the compiler passes have

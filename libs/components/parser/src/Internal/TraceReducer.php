@@ -67,7 +67,7 @@ final readonly class TraceReducer
     /**
      * Returns the reducer of the traces of the given source.
      */
-    public function createContextualReducer(string $source): ContextualTraceReducer
+    public function createContext(string $source): ContextualTraceReducer
     {
         return new ContextualTraceReducer(
             reducers: $this->reducers,
