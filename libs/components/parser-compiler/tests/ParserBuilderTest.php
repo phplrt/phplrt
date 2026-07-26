@@ -176,14 +176,14 @@ final class ParserBuilderTest extends TestCase
         $plus = $parser->tokenName('T_PLUS')->skip();
         $minus = $parser->tokenName('T_MINUS')->skip();
 
-        $parser->alternation([$plus, $minus], 'Operator');
+        $parser->choice([$plus, $minus], 'Operator');
 
-        $tail = $parser->repetition(
-            rule: $parser->concatenation([$parser->ref('Operator'), $number]),
+        $tail = $parser->repeat(
+            rule: $parser->concat([$parser->ref('Operator'), $number]),
             name: 'Tail',
         );
 
-        $parser->setInitialRule($parser->concatenation([$number, $tail], 'Expression'));
+        $parser->setInitialRule($parser->concat([$number, $tail], 'Expression'));
 
         return $parser;
     }

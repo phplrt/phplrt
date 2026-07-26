@@ -41,7 +41,7 @@ final class CompilerPassTest extends TestCase
     public function testUnresolvableReference(): void
     {
         $parser = new ParserBuilder();
-        $parser->concatenation([$parser->ref('Missing')], 'Root');
+        $parser->concat([$parser->ref('Missing')], 'Root');
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('refers to the rule named "Missing", which has not been defined');
@@ -67,7 +67,7 @@ final class CompilerPassTest extends TestCase
     public function testUndefinedRuleReference(): void
     {
         $parser = new ParserBuilder();
-        $parser->concatenation([new TokenIdRuleDefinition(1)], 'Root');
+        $parser->concat([new TokenIdRuleDefinition(1)], 'Root');
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('Rule Root = <id is 1> refers to <id is 1>, which has not been defined');
@@ -115,7 +115,7 @@ final class CompilerPassTest extends TestCase
     public function testEmptyProduction(): void
     {
         $parser = new ParserBuilder();
-        $parser->concatenation([], 'Root');
+        $parser->concat([], 'Root');
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('Rule Root = () must refer to at least one rule');
@@ -127,7 +127,7 @@ final class CompilerPassTest extends TestCase
     public function testInvalidRepetition(): void
     {
         $parser = new ParserBuilder();
-        $parser->setInitialRule($parser->repetition($parser->tokenName('T_NUMBER'), 5, 2, 'Root'));
+        $parser->setInitialRule($parser->repeat($parser->tokenName('T_NUMBER'), 5, 2, 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('cannot be repeated from 5 to 2 times');
@@ -139,7 +139,7 @@ final class CompilerPassTest extends TestCase
     public function testDirectLeftRecursion(): void
     {
         $parser = new ParserBuilder();
-        $expression = $parser->concatenation(name: 'Expression');
+        $expression = $parser->concat(name: 'Expression');
         $expression->setRules([$expression, $parser->tokenName('T_NUMBER')]);
         $parser->setInitialRule($expression);
 
@@ -154,8 +154,8 @@ final class CompilerPassTest extends TestCase
     {
         $parser = new ParserBuilder();
         $number = $parser->tokenName('T_NUMBER');
-        $first = $parser->concatenation(name: 'First');
-        $second = $parser->concatenation(name: 'Second');
+        $first = $parser->concat(name: 'First');
+        $second = $parser->concat(name: 'Second');
 
         $first->setRules([$second, $number]);
         $second->setRules([$first, $number]);
@@ -173,7 +173,7 @@ final class CompilerPassTest extends TestCase
     {
         $parser = new ParserBuilder();
         $sign = $parser->optional($parser->tokenName('T_PLUS'), 'Sign');
-        $expression = $parser->concatenation(name: 'Expression');
+        $expression = $parser->concat(name: 'Expression');
 
         $expression->setRules([$sign, $expression]);
 
@@ -189,7 +189,7 @@ final class CompilerPassTest extends TestCase
     public function testRecursionBehindToken(): void
     {
         $parser = new ParserBuilder();
-        $group = $parser->concatenation(name: 'Group');
+        $group = $parser->concat(name: 'Group');
 
         $group->setRules([
             $parser->tokenName('T_PLUS')->skip(),
