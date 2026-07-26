@@ -15,10 +15,10 @@ use PhpBench\Attributes\Warmup;
 #[Iterations(3)]
 #[RetryThreshold(0.3)]
 #[BeforeMethods('prepare')]
-final readonly class PhplrtTracingBench extends PhplrtBench
+final readonly class PhplrtParsingBench extends PhplrtBench
 {
     public function benchParsing(): void
     {
-        $this->phplrt->check(self::SAMPLE);
+        $this->phplrt->parse(self::SAMPLE);
     }
 }
