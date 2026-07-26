@@ -13,6 +13,7 @@ use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
+use Phplrt\Parser\Internal\ParseTree\Lookahead;
 use Phplrt\Parser\Internal\Tracing\ErrorReport;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
@@ -42,14 +43,31 @@ final class RecursiveDescentTracer
 
     private readonly ErrorReport $error;
 
+    /**
+     * @var array<int, array<int, true>>
+     */
+    private readonly array $first;
+
+    /**
+     * @var array<int, bool>
+     */
+    private readonly array $nullable;
+
     private function __construct(
         /**
          * @var list<RuleInterface>
          */
         private readonly array $grammar,
         private readonly BufferInterface $buffer,
+        Lookahead $lookahead,
+        /**
+         * @var array<int, bool>
+         */
+        private readonly array $kept,
     ) {
         $this->error = new ErrorReport($buffer);
+        $this->first = $lookahead->first;
+        $this->nullable = $lookahead->nullable;
     }
 
     /**
@@ -57,15 +75,21 @@ final class RecursiveDescentTracer
      *
      * @param list<RuleInterface> $grammar
      * @param int<0, max> $initial
+     * @param array<int, bool> $kept
      */
-    public static function trace(array $grammar, int $initial, BufferInterface $buffer): Success|Failure
-    {
+    public static function trace(
+        array $grammar,
+        int $initial,
+        BufferInterface $buffer,
+        Lookahead $lookahead,
+        array $kept,
+    ): Success|Failure {
         if ($grammar === []) {
             // Fast-finish on empty grammar
             return new Failure($buffer->current);
         }
 
-        $self = new self($grammar, $buffer);
+        $self = new self($grammar, $buffer, $lookahead, $kept);
 
         if ($self->match($initial) && $self->isEndOfInput()) {
             return new Success(
@@ -94,11 +118,20 @@ final class RecursiveDescentTracer
             return $this->matchLexeme($rule, $definition);
         }
 
-        $mark = $this->length;
+        // The rule requires a token it cannot start with, so there is nothing
+        // to recognize
+        if (!isset($this->first[$rule][$this->buffer->current->id]) && !$this->nullable[$rule]) {
+            return false;
+        }
 
-        $this->types[$mark] = Success::TYPE_ENTER;
-        $this->references[$mark] = $rule;
-        $this->length = $mark + 1;
+        $mark = $this->length;
+        $kept = $this->kept[$rule];
+
+        if ($kept) {
+            $this->types[$mark] = Success::TYPE_ENTER;
+            $this->references[$mark] = $rule;
+            $this->length = $mark + 1;
+        }
 
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
@@ -111,17 +144,21 @@ final class RecursiveDescentTracer
             )),
         };
 
-        if ($matched) {
+        if (!$matched) {
+            $this->length = $mark;
+
+            return false;
+        }
+
+        if ($kept) {
             $length = $this->length;
 
             $this->types[$length] = Success::TYPE_LEAVE;
             $this->references[$length] = $rule;
             $this->length = $length + 1;
-        } else {
-            $this->length = $mark;
         }
 
-        return $matched;
+        return true;
     }
 
     private function matchLexeme(int $rule, Lexeme $definition): bool

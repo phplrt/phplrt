@@ -12,7 +12,10 @@ use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Filter\ChannelFilter;
 use Phplrt\Parser\Internal\Filter\FilterInterface;
+use Phplrt\Parser\Internal\ParseTree\Lookahead;
 use Phplrt\Parser\Internal\RecursiveDescentTracer;
+use Phplrt\Parser\Internal\ParseTree\KeptConstruction;
+use Phplrt\Parser\Internal\ParseTree\LookaheadConstruction;
 use Phplrt\Parser\Internal\TraceReducer;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
@@ -23,6 +26,13 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
 final readonly class Parser implements ParserInterface
 {
     private TraceReducer $reducer;
+
+    private Lookahead $lookahead;
+
+    /**
+     * @var array<int, bool>
+     */
+    private array $kept;
 
     public function __construct(
         private LexerInterface $lexer,
@@ -46,6 +56,20 @@ final readonly class Parser implements ParserInterface
         private FilterInterface $filter = new ChannelFilter(),
     ) {
         $this->reducer = new TraceReducer($this->grammar, $this->reducers);
+
+        $this->lookahead = LookaheadConstruction::compute($this->grammar);
+        $this->kept = KeptConstruction::compute($this->grammar, $this->reducers);
+    }
+
+    private function trace(BufferInterface $buffer): Success|Failure
+    {
+        return RecursiveDescentTracer::trace(
+            grammar: $this->grammar,
+            initial: $this->initial,
+            buffer: $buffer,
+            lookahead: $this->lookahead,
+            kept: $this->kept,
+        );
     }
 
     /**
@@ -55,8 +79,7 @@ final readonly class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        return RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer)
-            instanceof Success;
+        return $this->trace($buffer) instanceof Success;
     }
 
     /**
@@ -68,7 +91,7 @@ final readonly class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        $result = RecursiveDescentTracer::trace($this->grammar, $this->initial, $buffer);
+        $result = $this->trace($buffer);
 
         if ($result instanceof Failure) {
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
