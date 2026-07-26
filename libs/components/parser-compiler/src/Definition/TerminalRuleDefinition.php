@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Definition;
 
 /**
- * @phpstan-sealed TokenIdRuleDefinition|TokenNameRuleDefinition
+ * @phpstan-sealed TokenIdRuleDefinition|TokenNameRuleDefinition|TokenRuleDefinition
  */
 abstract class TerminalRuleDefinition extends RuleDefinition
 {

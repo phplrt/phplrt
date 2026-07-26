@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser\Tests;
 
-use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
+use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
 use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
 use Phplrt\Compiler\Parser\ParserBuilder;
@@ -28,8 +28,10 @@ final class CompilerPassTest extends TestCase
     public function testRuleNameDuplication(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenName('T_NUMBER', 'Number');
-        $parser->tokenName('T_PLUS', 'Number');
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER', 'Number'),
+            $parser->addTokenReference('T_PLUS', 'Number'),
+        ]));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('Rule name of Number = <name is "T_PLUS"> is not unique');
@@ -41,7 +43,7 @@ final class CompilerPassTest extends TestCase
     public function testUnresolvableReference(): void
     {
         $parser = new ParserBuilder();
-        $parser->concat([$parser->ref('Missing')], 'Root');
+        $parser->setInitialRule($parser->addConcatenation([$parser->addRuleReference('Missing')], 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('refers to the rule named "Missing", which has not been defined');
@@ -53,9 +55,9 @@ final class CompilerPassTest extends TestCase
     public function testReferenceAsInitialRule(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenName('T_PLUS');
-        $parser->tokenName('T_NUMBER', 'Number');
-        $parser->setInitialRule($parser->ref('Number'));
+        $parser->addTokenReference('T_PLUS');
+        $parser->addTokenReference('T_NUMBER', 'Number');
+        $parser->setInitialRule($parser->addRuleReference('Number'));
 
         $result = self::compile($parser);
 
@@ -63,23 +65,53 @@ final class CompilerPassTest extends TestCase
         self::assertSame(0, $result->initial);
     }
 
-    #[TestDox('A rule referring to an undefined one is reported')]
-    public function testUndefinedRuleReference(): void
+    #[TestDox('A reference does not reach the grammar as a rule of its own')]
+    public function testReferenceIsNotCompiled(): void
     {
         $parser = new ParserBuilder();
-        $parser->concat([new TokenIdRuleDefinition(1)], 'Root');
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRuleReference('Number'),
+            $parser->addTokenReference('T_PLUS')->skip(),
+            $parser->addRuleReference('Number'),
+        ], 'Root'));
+        $parser->addTokenReference('T_NUMBER', 'Number');
 
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('Rule Root = <id is 1> refers to <id is 1>, which has not been defined');
+        $result = self::compile($parser);
 
-        self::compile($parser);
+        self::assertSame([
+            '0: Concatenation(1, 2, 1)',
+            '1: Lexeme(1, keep)',
+            '2: Lexeme(2, skip)',
+        ], self::describe($result));
+        self::assertSame(['Root' => 0, 'Number' => 1], $result->constants);
+    }
+
+    #[TestDox('A reference may point at the rule definition instead of its name')]
+    public function testReferenceByDefinition(): void
+    {
+        $parser = new ParserBuilder();
+        $number = $parser->addTokenReference('T_NUMBER', 'Number');
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRuleReference($number),
+            $parser->addTokenReference('T_PLUS')->skip(),
+            $parser->addRuleReference($number),
+        ], 'Root'));
+
+        $result = self::compile($parser);
+
+        self::assertSame([
+            '0: Concatenation(1, 2, 1)',
+            '1: Lexeme(1, keep)',
+            '2: Lexeme(2, skip)',
+        ], self::describe($result));
     }
 
     #[TestDox('A rule referring to a token the lexer does not recognize is reported')]
     public function testUnknownTokenName(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenName('T_UNKNOWN', 'Root');
+        $parser->setInitialRule($parser->addTokenReference('T_UNKNOWN', 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
@@ -91,7 +123,19 @@ final class CompilerPassTest extends TestCase
     public function testUnknownTokenId(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenId(42, 'Root');
+        $parser->setInitialRule($parser->addTokenReference(42, 'Root'));
+
+        $this->expectException(CompilationFailedException::class);
+        $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
+
+        self::compile($parser);
+    }
+
+    #[TestDox('A rule referring to a token of another lexer is reported')]
+    public function testForeignTokenDefinitionReference(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addTokenReference(new ValueTokenDefinition('+'), 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
@@ -103,7 +147,7 @@ final class CompilerPassTest extends TestCase
     public function testHiddenTokenReference(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenName('T_WHITESPACE', 'Root');
+        $parser->setInitialRule($parser->addTokenReference('T_WHITESPACE', 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('refers to the hidden token');
@@ -115,7 +159,7 @@ final class CompilerPassTest extends TestCase
     public function testEmptyProduction(): void
     {
         $parser = new ParserBuilder();
-        $parser->concat([], 'Root');
+        $parser->setInitialRule($parser->addConcatenation([], 'Root'));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('Rule Root = () must refer to at least one rule');
@@ -127,7 +171,12 @@ final class CompilerPassTest extends TestCase
     public function testInvalidRepetition(): void
     {
         $parser = new ParserBuilder();
-        $parser->setInitialRule($parser->repeat($parser->tokenName('T_NUMBER'), 5, 2, 'Root'));
+        $parser->setInitialRule($parser->addRepetition(
+            rule: $parser->addTokenReference('T_NUMBER'),
+            max: 2,
+            min: 5,
+            name: 'Root',
+        ));
 
         $this->expectException(CompilationFailedException::class);
         $this->expectExceptionMessage('cannot be repeated from 5 to 2 times');
@@ -139,8 +188,8 @@ final class CompilerPassTest extends TestCase
     public function testDirectLeftRecursion(): void
     {
         $parser = new ParserBuilder();
-        $expression = $parser->concat(name: 'Expression');
-        $expression->setRules([$expression, $parser->tokenName('T_NUMBER')]);
+        $expression = $parser->addConcatenation(name: 'Expression');
+        $expression->setRules([$expression, $parser->addTokenReference('T_NUMBER')]);
         $parser->setInitialRule($expression);
 
         $this->expectException(CompilationFailedException::class);
@@ -153,9 +202,9 @@ final class CompilerPassTest extends TestCase
     public function testIndirectLeftRecursion(): void
     {
         $parser = new ParserBuilder();
-        $number = $parser->tokenName('T_NUMBER');
-        $first = $parser->concat(name: 'First');
-        $second = $parser->concat(name: 'Second');
+        $number = $parser->addTokenReference('T_NUMBER');
+        $first = $parser->addConcatenation(name: 'First');
+        $second = $parser->addConcatenation(name: 'Second');
 
         $first->setRules([$second, $number]);
         $second->setRules([$first, $number]);
@@ -172,8 +221,8 @@ final class CompilerPassTest extends TestCase
     public function testLeftRecursionBehindNullableRule(): void
     {
         $parser = new ParserBuilder();
-        $sign = $parser->optional($parser->tokenName('T_PLUS'), 'Sign');
-        $expression = $parser->concat(name: 'Expression');
+        $sign = $parser->addOptional($parser->addTokenReference('T_PLUS'), 'Sign');
+        $expression = $parser->addConcatenation(name: 'Expression');
 
         $expression->setRules([$sign, $expression]);
 
@@ -189,12 +238,12 @@ final class CompilerPassTest extends TestCase
     public function testRecursionBehindToken(): void
     {
         $parser = new ParserBuilder();
-        $group = $parser->concat(name: 'Group');
+        $group = $parser->addConcatenation(name: 'Group');
 
         $group->setRules([
-            $parser->tokenName('T_PLUS')->skip(),
+            $parser->addTokenReference('T_PLUS')->skip(),
             $group,
-            $parser->tokenName('T_MINUS')->skip(),
+            $parser->addTokenReference('T_MINUS')->skip(),
         ]);
 
         $parser->setInitialRule($group);

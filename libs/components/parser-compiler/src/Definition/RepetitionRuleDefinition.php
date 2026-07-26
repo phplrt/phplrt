@@ -7,7 +7,8 @@ namespace Phplrt\Compiler\Parser\Definition;
 /**
  * Recognizes the given rule as many times as the input matches it.
  */
-final class RepetitionRuleDefinition extends ProductionRuleDefinition
+final class RepetitionRuleDefinition extends ProductionRuleDefinition implements
+    SequenceRuleDefinitionInterface
 {
     public private(set) RuleDefinition $rule;
 

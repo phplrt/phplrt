@@ -26,7 +26,7 @@ final readonly class NestedProductionParserCompilerPass implements
         do {
             $rules = $builder->rules;
             $parents = $this->calculateParents($rules);
-            $expanded = false;
+            $joined = [];
 
             foreach ($rules as $rule) {
                 if (!$rule instanceof ConcatenationRuleDefinition
@@ -35,17 +35,23 @@ final readonly class NestedProductionParserCompilerPass implements
                     continue;
                 }
 
-                $children = $this->expandChildren($rule, $parents, $builder);
+                $children = $this->expandChildren($rule, $parents, $builder, $joined);
 
                 if ($children === null) {
                     continue;
                 }
 
                 $rule->setRules($children);
-
-                $expanded = true;
             }
-        } while ($expanded);
+
+            /**
+             * A joined rule is no longer referred to by the rule above, so it
+             * must not be added to the grammar on its own.
+             */
+            foreach ($joined as $rule) {
+                $builder->removeRule($rule);
+            }
+        } while ($joined !== []);
     }
 
     /**
@@ -54,12 +60,14 @@ final readonly class NestedProductionParserCompilerPass implements
      *
      * @param AlternationRuleDefinition|ConcatenationRuleDefinition $rule
      * @param \SplObjectStorage<RuleDefinition, list<RuleDefinition>> $parents
+     * @param list<RuleDefinition> $joined
      * @return list<RuleDefinition>|null
      */
     private function expandChildren(
         RuleDefinition $rule,
         \SplObjectStorage $parents,
         ParserBuilder $builder,
+        array &$joined,
     ): ?array {
         $result = [];
         $expanded = false;
@@ -75,6 +83,7 @@ final readonly class NestedProductionParserCompilerPass implements
                 $result[] = $inner;
             }
 
+            $joined[] = $child;
             $expanded = true;
         }
 
@@ -95,7 +104,7 @@ final readonly class NestedProductionParserCompilerPass implements
          * a reducer builds a node of its own and the initial rule is always
          * present in the result, so none of them may be joined.
          */
-        if ($child->name !== null || $child->reducer !== null || $child === $builder->findInitialRule()) {
+        if ($child->name !== null || $child->reducer !== null || $child === $builder->initial) {
             return false;
         }
 

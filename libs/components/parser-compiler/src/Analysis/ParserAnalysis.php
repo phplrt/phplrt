@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser\Analysis;
 
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
  * Describes the grammar the parser is built from.
- *
- * @phpstan-import-type ReducerType from RuleDefinition
  */
 final class ParserAnalysis
 {
@@ -50,10 +48,10 @@ final class ParserAnalysis
          */
         public readonly int $initial,
         /**
-         * The callbacks converting the rules into the nodes, indexed by the
+         * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
          *
-         * @var array<int<0, max>, ReducerType>
+         * @var array<int<0, max>, ReducerInterface>
          */
         public readonly array $reducers = [],
     ) {}

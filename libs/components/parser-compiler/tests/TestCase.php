@@ -8,6 +8,13 @@ use Phplrt\Compiler\Lexer\LexerBuilder;
 use Phplrt\Compiler\Parser\ParserBuilder;
 use Phplrt\Compiler\Parser\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Grammar\Alternation;
+use Phplrt\Parser\Grammar\Concatenation;
+use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Repetition;
+use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -19,10 +26,10 @@ abstract class TestCase extends BaseTestCase
     protected static function createLexerBuilder(): LexerBuilder
     {
         $lexer = new LexerBuilder();
-        $lexer->match('\s++', 'T_WHITESPACE')->hide();
-        $lexer->match('\d++', 'T_NUMBER');
-        $lexer->value('+', 'T_PLUS');
-        $lexer->value('-', 'T_MINUS');
+        $lexer->addPattern('\s++', 'T_WHITESPACE')->hide();
+        $lexer->addPattern('\d++', 'T_NUMBER');
+        $lexer->addValue('+', 'T_PLUS');
+        $lexer->addValue('-', 'T_MINUS');
 
         return $lexer;
     }
@@ -50,8 +57,61 @@ abstract class TestCase extends BaseTestCase
             first: $result->first,
             nullable: $result->nullable,
             kept: $result->kept,
-            reducers: $result->reducers,
+            reducers: $result->createReducerCallbacks(),
         );
+    }
+
+    /**
+     * Returns the values of every token of the result, no matter how deep it
+     * is nested.
+     *
+     * @return list<string>
+     */
+    protected static function collectValues(mixed $value): array
+    {
+        if ($value instanceof TokenInterface) {
+            return [$value->value];
+        }
+
+        if (!\is_iterable($value)) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($value as $child) {
+            foreach (self::collectValues($child) as $inner) {
+                $result[] = $inner;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected static function describe(ParserBuilderResult $result): array
+    {
+        $output = [];
+
+        foreach ($result->grammar as $id => $rule) {
+            $output[] = \sprintf('%d: %s', $id, self::describeRule($rule));
+        }
+
+        return $output;
+    }
+
+    protected static function describeRule(RuleInterface $rule): string
+    {
+        return match (true) {
+            $rule instanceof Lexeme => \sprintf('Lexeme(%d, %s)', $rule->tokenId, $rule->keep ? 'keep' : 'skip'),
+            $rule instanceof Concatenation => 'Concatenation(' . \implode(', ', $rule->rules) . ')',
+            $rule instanceof Alternation => 'Alternation(' . \implode(', ', $rule->ruleIds) . ')',
+            $rule instanceof Optional => \sprintf('Optional(%d)', $rule->ruleId),
+            $rule instanceof Repetition => \sprintf('Repetition(%d, %d, %s)', $rule->ruleId, $rule->min, $rule->max),
+            default => $rule::class,
+        };
     }
 
     /**

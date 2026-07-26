@@ -79,7 +79,7 @@ final readonly class RedundantProductionParserCompilerPass implements
          * the result the same only while its value is joined with the values of
          * the rule that refers to it.
          */
-        if ($rule === $builder->findInitialRule()) {
+        if ($rule === $builder->initial) {
             return null;
         }
 

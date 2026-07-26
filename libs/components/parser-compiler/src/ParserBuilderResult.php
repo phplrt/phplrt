@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser;
 
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
+use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
@@ -50,10 +53,10 @@ final readonly class ParserBuilderResult
          */
         public array $kept,
         /**
-         * The callbacks converting the rules into the nodes, indexed by the
+         * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
          *
-         * @var array<int<0, max>, ReducerType>
+         * @var array<int<0, max>, ReducerInterface>
          */
         public array $reducers = [],
         /**
@@ -63,4 +66,32 @@ final readonly class ParserBuilderResult
          */
         public array $constants = [],
     ) {}
+
+    /**
+     * Returns the callbacks the parser is created with.
+     *
+     * @api
+     *
+     * @return array<int<0, max>, ReducerType&\Closure>
+     * @throws ParserCompilerException in case of a reducer cannot be executed
+     *         until the parser is generated
+     */
+    public function createReducerCallbacks(): array
+    {
+        $result = [];
+
+        foreach ($this->reducers as $rule => $reducer) {
+            if (!$reducer instanceof CallableReducer) {
+                throw new ParserCompilerException(\sprintf(
+                    'Reducer of the rule #%d is defined as PHP code, so the parser '
+                        . 'must be generated before it is used',
+                    $rule,
+                ));
+            }
+
+            $result[$rule] = $reducer->callback;
+        }
+
+        return $result;
+    }
 }

@@ -12,6 +12,7 @@ use PhpBench\Attributes\Warmup;
 use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Parser;
 
 #[Warmup(1)]
@@ -30,7 +31,10 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
         $initial = $this->getParserInitialRule();
         $reducers = $this->getParserReducers();
 
-        $analysis = new ParserAnalysis($grammar, $initial, $reducers);
+        $analysis = new ParserAnalysis($grammar, $initial, \array_map(
+            static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
+            $reducers,
+        ));
 
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
@@ -48,7 +52,7 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
             first: $analysis->first,
             nullable: $analysis->nullable,
             kept: $analysis->kept,
-            reducers: $analysis->reducers,
+            reducers: $reducers,
         );
     }
 

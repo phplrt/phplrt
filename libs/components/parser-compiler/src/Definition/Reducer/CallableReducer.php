@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Compiler\Parser\Definition\Reducer;
+
+use Phplrt\Parser\Context;
+
+/**
+ * Converts the rule into the node of the syntax tree using the given callback.
+ *
+ * @phpstan-type CallbackType callable(Context, mixed): mixed
+ */
+final readonly class CallableReducer implements ReducerInterface
+{
+    /**
+     * @var CallbackType&\Closure
+     */
+    public \Closure $callback;
+
+    /**
+     * @param CallbackType $callback
+     */
+    public function __construct(callable $callback)
+    {
+        $this->callback = $callback(...);
+    }
+
+    public function __toString(): string
+    {
+        return 'callback';
+    }
+}

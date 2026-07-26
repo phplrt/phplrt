@@ -22,7 +22,7 @@ final readonly class UnreachableRuleParserCompilerPass implements
 {
     public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
     {
-        $initial = $builder->findInitialRule();
+        $initial = $builder->initial;
 
         if ($initial === null) {
             return;

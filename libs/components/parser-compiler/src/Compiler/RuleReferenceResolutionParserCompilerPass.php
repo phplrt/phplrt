@@ -40,6 +40,16 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
                 $resolved = $this->resolveChildren($rule, $named) || $resolved;
             }
         } while ($resolved);
+
+        /**
+         * A reference stands for the rule it points at, so it must not reach
+         * the grammar as a rule of its own.
+         */
+        foreach ([...$builder->declarations] as $declaration) {
+            if ($declaration instanceof RuleReference) {
+                $builder->removeRule($declaration);
+            }
+        }
     }
 
     /**
@@ -124,36 +134,18 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
 
             $visited->offsetSet($child);
 
-            $child = $this->resolveTarget($rule, $child, $named);
+            $target = $child->target;
+
+            $child = \is_string($target)
+                ? $named[$target] ?? throw new CompilationFailedException($rule, \sprintf(
+                    'Rule %s refers to the rule named "%s", which has not been defined',
+                    $rule,
+                    $target,
+                ))
+                : $target;
         }
 
         return $child;
-    }
-
-    /**
-     * @param array<non-empty-string, RuleDefinition> $named
-     * @throws CompilationFailedException
-     */
-    private function resolveTarget(RuleDefinition $rule, RuleReference $reference, array $named): RuleDefinition
-    {
-        $target = $reference->target;
-
-        if ($target === null) {
-            throw new CompilationFailedException($rule, \sprintf(
-                'Rule %s refers to the rule, which has not been defined',
-                $rule,
-            ));
-        }
-
-        if (!\is_string($target)) {
-            return $target;
-        }
-
-        return $named[$target] ?? throw new CompilationFailedException($rule, \sprintf(
-            'Rule %s refers to the rule named "%s", which has not been defined',
-            $rule,
-            $target,
-        ));
     }
 
     /**

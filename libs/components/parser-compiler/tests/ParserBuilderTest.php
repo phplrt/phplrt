@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser\Tests;
 
+use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Compiler\Parser\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
+use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
+use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
 use Phplrt\Compiler\Parser\ParserBuilder;
 use Phplrt\Compiler\Parser\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Parser\Grammar\Alternation;
-use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
-use Phplrt\Parser\Grammar\Optional;
-use Phplrt\Parser\Grammar\Repetition;
-use Phplrt\Parser\Grammar\RuleInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
 #[Group('phplrt/parser-compiler')]
 final class ParserBuilderTest extends TestCase
 {
-    #[TestDox('The rules are compiled in the order they have been defined')]
+    #[TestDox('The rules are compiled in the order the initial rule reaches them')]
     public function testGrammarOrder(): void
     {
         self::assertSame([
-            '0: Lexeme(1, keep)',
-            '1: Lexeme(2, skip)',
-            '2: Lexeme(3, skip)',
-            '3: Alternation(1, 2)',
-            '4: Concatenation(3, 0)',
-            '5: Repetition(4, 0, INF)',
-            '6: Concatenation(0, 5)',
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Repetition(3, 0, INF)',
+            '3: Concatenation(4, 1)',
+            '4: Alternation(5, 6)',
+            '5: Lexeme(2, skip)',
+            '6: Lexeme(3, skip)',
         ], self::describe(self::compile()));
     }
 
@@ -38,29 +38,43 @@ final class ParserBuilderTest extends TestCase
     public function testConstants(): void
     {
         self::assertSame([
-            'Number' => 0,
-            'Operator' => 3,
-            'Tail' => 5,
-            'Expression' => 6,
+            'Expression' => 0,
+            'Number' => 1,
+            'Tail' => 2,
+            'Operator' => 4,
         ], self::compile()->constants);
     }
 
     #[TestDox('The rule marked as the initial one is where the analysis starts')]
     public function testInitialRule(): void
     {
-        self::assertSame(6, self::compile()->initial);
+        self::assertSame(0, self::compile()->initial);
     }
 
-    #[TestDox('The analysis starts at the first rule unless another one is marked')]
+    #[TestDox('The analysis starts at the first added rule unless another one is marked')]
     public function testDefaultInitialRule(): void
     {
         $parser = new ParserBuilder();
-        $parser->tokenName('T_NUMBER');
-        $parser->tokenName('T_PLUS');
+        $expression = $parser->addConcatenation(name: 'Expression');
+        $expression->setRules([$parser->addTokenReference('T_NUMBER')]);
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
         self::assertSame(0, $result->initial);
+        self::assertSame(['Expression' => 0], $result->constants);
+    }
+
+    #[TestDox('A rule created on its own is a part of the grammar as soon as another one refers to it')]
+    public function testRuleCreatedOutsideOfBuilder(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            new TokenNameRuleDefinition('T_NUMBER'),
+        ], 'Root'));
+
+        $result = $parser->build(self::createLexerBuilder()->build());
+
+        self::assertCount(2, $result->grammar);
     }
 
     #[TestDox('A reference is replaced by the rule it points at')]
@@ -70,14 +84,14 @@ final class ParserBuilderTest extends TestCase
 
         // The "Operator" rule is referred to by its name from the "Tail" rule
         self::assertCount(7, $result->grammar);
-        self::assertSame('4: Concatenation(3, 0)', self::describe($result)[4]);
+        self::assertSame('3: Concatenation(4, 1)', self::describe($result)[3]);
     }
 
     #[TestDox('The rules that cannot be reached from the initial one are removed')]
     public function testUnreachableRuleRemoval(): void
     {
         $parser = self::createParserBuilder();
-        $parser->tokenName('T_MINUS', 'Unused');
+        $parser->addTokenReference('T_MINUS', 'Unused');
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
@@ -92,7 +106,7 @@ final class ParserBuilderTest extends TestCase
 
         $result = self::createParserBuilder()->build($lexer);
 
-        $number = $result->grammar[0];
+        $number = $result->grammar[1];
 
         self::assertInstanceOf(Lexeme::class, $number);
         self::assertSame($lexer->constants['T_NUMBER'], $number->tokenId);
@@ -108,7 +122,39 @@ final class ParserBuilderTest extends TestCase
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame([6], \array_keys($result->reducers));
+        self::assertSame([0], \array_keys($result->reducers));
+    }
+
+    #[TestDox('A reducer may be defined as PHP code instead of a callback')]
+    public function testReducerAsPhpCode(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+        ], 'Root')->setReducer(new PhpCodeReducer('return $children;')));
+
+        $result = $parser->build(self::createLexerBuilder()->build());
+
+        self::assertSame(['return $children;'], \array_map(
+            static fn(ReducerInterface $reducer): string => (string) $reducer,
+            $result->reducers,
+        ));
+    }
+
+    #[TestDox('A parser cannot be created out of the reducers defined as PHP code')]
+    public function testReducerAsPhpCodeIsNotExecutable(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+        ], 'Root')->setReducer(new PhpCodeReducer('return $children;')));
+
+        $result = $parser->build(self::createLexerBuilder()->build());
+
+        $this->expectException(ParserCompilerException::class);
+        $this->expectExceptionMessage('must be generated before it is used');
+
+        $result->createReducerCallbacks();
     }
 
     #[TestDox('The tokens a rule may begin with are computed')]
@@ -117,9 +163,9 @@ final class ParserBuilderTest extends TestCase
         $result = self::compile();
 
         // The expression begins with a number
-        self::assertSame([1 => true], $result->first[6]);
+        self::assertSame([1 => true], $result->first[0]);
         // Any of the operators begins the tail of the expression
-        self::assertSame([2 => true, 3 => true], $result->first[5]);
+        self::assertSame([2 => true, 3 => true], $result->first[2]);
     }
 
     #[TestDox('The rules that may be recognized without consuming a token are computed')]
@@ -127,8 +173,8 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        self::assertTrue($result->nullable[5], 'The tail of the expression is optional');
-        self::assertFalse($result->nullable[6], 'The expression requires a number');
+        self::assertTrue($result->nullable[2], 'The tail of the expression is optional');
+        self::assertFalse($result->nullable[0], 'The expression requires a number');
     }
 
     #[TestDox('The rules that are present in the resulting tree are computed')]
@@ -136,8 +182,111 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        self::assertTrue($result->kept[6], 'The initial rule is always kept');
-        self::assertFalse($result->kept[3], 'An alternation without a reducer passes its value through');
+        self::assertTrue($result->kept[0], 'The initial rule is always kept');
+        self::assertFalse($result->kept[4], 'An alternation without a reducer passes its value through');
+    }
+
+    #[TestDox('A rule may refer to the token definition instead of its name')]
+    public function testTokenDefinitionReference(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addPattern('\s++')->hide();
+        $number = $lexer->addPattern('\d++');
+        $plus = $lexer->addValue('+');
+
+        $parser = new ParserBuilder();
+        $digit = $parser->addTokenReference($number);
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $digit,
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addTokenReference($plus)->skip(),
+                $digit,
+            ])),
+        ]));
+
+        $result = $parser->build($lexer->build());
+
+        self::assertSame([], $result->constants, 'None of the tokens has to be named');
+        self::assertSame([
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Repetition(3, 0, INF)',
+            '3: Concatenation(4, 1)',
+            '4: Lexeme(2, skip)',
+        ], self::describe($result));
+    }
+
+    #[TestDox('The parser compiled out of the token definitions recognizes the source')]
+    public function testTokenDefinitionParsing(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addPattern('\s++')->hide();
+        $number = $lexer->addPattern('\d++');
+        $plus = $lexer->addValue('+');
+
+        $parser = new ParserBuilder();
+        $digit = $parser->addTokenReference($number);
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $digit,
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addTokenReference($plus)->skip(),
+                $digit,
+            ])),
+        ]));
+
+        $compiled = self::createParser(
+            lexer: self::createLexer($lexer),
+            result: $parser->build($lexer->build()),
+        );
+
+        $actual = $compiled->parse('1 + 2 + 3');
+
+        self::assertIsList($actual);
+
+        $values = [];
+
+        foreach ($actual as $token) {
+            self::assertInstanceOf(TokenInterface::class, $token);
+
+            $values[] = $token->value;
+        }
+
+        self::assertSame(['1', '2', '3'], $values);
+    }
+
+    #[TestDox('A rule whose value is the result of the analysis is kept')]
+    public function testValueSeenByInitialRule(): void
+    {
+        $lexer = self::createLexerBuilder();
+
+        // Value := Sum | T_NUMBER
+        // Sum   := T_NUMBER "+" Value
+        $parser = new ParserBuilder();
+
+        $value = $parser->addAlternation(name: 'Value');
+
+        $sum = $parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+            $parser->addTokenReference('T_PLUS')->skip(),
+            $value,
+        ], 'Sum');
+
+        $value->setRules([$sum, $parser->addTokenReference('T_NUMBER')]);
+
+        $parser->setInitialRule($value);
+
+        $compiled = self::createParser(
+            lexer: self::createLexer($lexer),
+            result: $parser->build($lexer->build()),
+        );
+
+        /**
+         * The value of the sum is joined with the values above it everywhere
+         * but the initial rule, which has nothing to join it with.
+         */
+        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse('1 + 2 + 3')));
     }
 
     #[TestDox('The compiled parser recognizes the source')]
@@ -172,18 +321,18 @@ final class ParserBuilderTest extends TestCase
     {
         $parser = new ParserBuilder();
 
-        $number = $parser->tokenName('T_NUMBER', 'Number');
-        $plus = $parser->tokenName('T_PLUS')->skip();
-        $minus = $parser->tokenName('T_MINUS')->skip();
+        $number = $parser->addTokenReference('T_NUMBER', 'Number');
+        $plus = $parser->addTokenReference('T_PLUS')->skip();
+        $minus = $parser->addTokenReference('T_MINUS')->skip();
 
-        $parser->choice([$plus, $minus], 'Operator');
+        $parser->addAlternation([$plus, $minus], 'Operator');
 
-        $tail = $parser->repeat(
-            rule: $parser->concat([$parser->ref('Operator'), $number]),
+        $tail = $parser->addRepetition(
+            rule: $parser->addConcatenation([$parser->addRuleReference('Operator'), $number]),
             name: 'Tail',
         );
 
-        $parser->setInitialRule($parser->concat([$number, $tail], 'Expression'));
+        $parser->setInitialRule($parser->addConcatenation([$number, $tail], 'Expression'));
 
         return $parser;
     }
@@ -194,29 +343,4 @@ final class ParserBuilderTest extends TestCase
             ->build(self::createLexerBuilder()->build());
     }
 
-    /**
-     * @return list<string>
-     */
-    private static function describe(ParserBuilderResult $result): array
-    {
-        $output = [];
-
-        foreach ($result->grammar as $id => $rule) {
-            $output[] = \sprintf('%d: %s', $id, self::describeRule($rule));
-        }
-
-        return $output;
-    }
-
-    private static function describeRule(RuleInterface $rule): string
-    {
-        return match (true) {
-            $rule instanceof Lexeme => \sprintf('Lexeme(%d, %s)', $rule->tokenId, $rule->keep ? 'keep' : 'skip'),
-            $rule instanceof Concatenation => 'Concatenation(' . \implode(', ', $rule->rules) . ')',
-            $rule instanceof Alternation => 'Alternation(' . \implode(', ', $rule->ruleIds) . ')',
-            $rule instanceof Optional => \sprintf('Optional(%d)', $rule->ruleId),
-            $rule instanceof Repetition => \sprintf('Repetition(%d, %d, %s)', $rule->ruleId, $rule->min, $rule->max),
-            default => $rule::class,
-        };
-    }
 }

@@ -7,7 +7,8 @@ namespace Phplrt\Compiler\Parser\Definition;
 /**
  * Recognizes all the given rules, one after another.
  */
-final class ConcatenationRuleDefinition extends ProductionRuleDefinition
+final class ConcatenationRuleDefinition extends ProductionRuleDefinition implements
+    SequenceRuleDefinitionInterface
 {
     use HasChildRuleDefinitions;
 

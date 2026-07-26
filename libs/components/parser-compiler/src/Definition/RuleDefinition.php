@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser\Definition;
 
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
+use Phplrt\Compiler\Parser\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Context;
 
 /**
@@ -17,12 +20,10 @@ abstract class RuleDefinition extends Definition
     public private(set) ?string $name = null;
 
     /**
-     * Contains the callback converting the rule into the node of the syntax
+     * Contains the reducer converting the rule into the node of the syntax
      * tree, or {@see null} in case of the rule is reduced to its children
-     *
-     * @var (ReducerType&\Closure)|null
      */
-    public private(set) ?\Closure $reducer = null;
+    public private(set) ?ReducerInterface $reducer = null;
 
     /**
      * Contains the rules the current one refers to
@@ -70,14 +71,22 @@ abstract class RuleDefinition extends Definition
      * Updates the reducer of the current definition and returns itself as the
      * fluent interface.
      *
+     * A callback is executable, but cannot be dumped into the generated
+     * parser, so a grammar meant to be generated defines its reducers using
+     * {@see PhpCodeReducer} instead.
+     *
      * @api
      *
-     * @param ReducerType|null $reducer
+     * @param ReducerInterface|ReducerType|null $reducer
      * @return $this
      */
-    public function setReducer(?callable $reducer): self
+    public function setReducer(ReducerInterface|callable|null $reducer): self
     {
-        $this->reducer = $reducer === null ? null : $reducer(...);
+        $this->reducer = match (true) {
+            $reducer === null,
+            $reducer instanceof ReducerInterface => $reducer,
+            default => new CallableReducer($reducer),
+        };
 
         return $this;
     }

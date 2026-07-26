@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Definition;
 
 /**
- * Refers to the rule with the given name.
+ * Refers to another rule of the grammar, addressed either by its definition or
+ * by its name.
  *
  * A reference is replaced by the rule it points at while the parser is being
  * compiled, so the grammar itself never contains one.
@@ -13,29 +14,29 @@ namespace Phplrt\Compiler\Parser\Definition;
 final class RuleReference extends RuleDefinition
 {
     /**
-     * @param non-empty-string $target
+     * @param RuleDefinition|non-empty-string $target
      */
     public function __construct(
         /**
-         * Contains the name of the rule the reference points at
+         * Contains the rule the reference points at, or the name of that rule
          *
-         * @var non-empty-string
+         * @var RuleDefinition|non-empty-string
          */
-        public private(set) string $target,
+        public private(set) RuleDefinition|string $target,
     ) {
         parent::__construct();
     }
 
     /**
-     * Updates the name of the rule the reference points at and returns itself
-     * as the fluent interface.
+     * Updates the rule the reference points at and returns itself as the
+     * fluent interface.
      *
      * @api
      *
-     * @param non-empty-string $target
+     * @param RuleDefinition|non-empty-string $target
      * @return $this
      */
-    public function setTarget(string $target): self
+    public function setTarget(RuleDefinition|string $target): self
     {
         $this->target = $target;
 
@@ -44,6 +45,10 @@ final class RuleReference extends RuleDefinition
 
     protected function printValue(): string
     {
-        return $this->target;
+        if (\is_string($this->target)) {
+            return $this->target;
+        }
+
+        return $this->target->printReference();
     }
 }
