@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Compiler;
+namespace Phplrt\Lexer\Builder\Compiler;
 
 /**
  * Interface that must be implemented by compilation passes.

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Tests;
+namespace Phplrt\Lexer\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\Compiler\LexerBuildingContext;
-use Phplrt\Compiler\Lexer\Compiler\LexerCompilerPassInterface;
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
-use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
+use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
+use Phplrt\Lexer\Builder\LexerBuilder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 

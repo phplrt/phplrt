@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
 
 /**
  * Marks the rule the analysis starts at, in case of none has been marked.

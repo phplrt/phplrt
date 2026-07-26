@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RuleReference;
-use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleReference;
+use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 
 /**
  * Replaces every reference by the rule it points at.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Exception;
+namespace Phplrt\Parser\Builder\Exception;
 
 class ParserCompilerException extends \Exception
 {

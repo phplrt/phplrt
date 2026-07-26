@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition;
+namespace Phplrt\Parser\Builder\Definition;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
 /**
  * Recognizes the given token of the lexer.

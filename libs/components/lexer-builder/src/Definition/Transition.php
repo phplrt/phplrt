@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Definition;
+namespace Phplrt\Lexer\Builder\Definition;
 
 /**
  * Describes a lexer state change triggered by a token.

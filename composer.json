@@ -27,32 +27,34 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Exception\\": "libs/components/exception/src",
-            "Phplrt\\Compiler\\Lexer\\": "libs/components/lexer-builder/src",
-            "Phplrt\\Compiler\\Parser\\": "libs/components/parser-builder/src",
-            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
+            "Phplrt\\Parser\\": "libs/components/parser/src",
+            "Phplrt\\Parser\\Builder\\": "libs/components/parser-builder/src",
             "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
             "Phplrt\\Lexer\\": "libs/components/lexer/src",
-            "Phplrt\\Parser\\": "libs/components/parser/src"
+            "Phplrt\\Lexer\\Builder\\": "libs/components/lexer-builder/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src"
         }
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpbench/phpbench": "^1.7",
+        "phpstan/phpdoc-parser": "^2.3",
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "symplify/monorepo-builder": "^12.7.1"
+        "symplify/monorepo-builder": "^12.7.1",
+        "type-lang/types": "^2.0@beta"
     },
     "autoload-dev": {
         "psr-4": {
             "Phplrt\\Exception\\Tests\\": "libs/components/exception/tests",
-            "Phplrt\\Compiler\\Lexer\\Tests\\": "libs/components/lexer-builder/tests",
-            "Phplrt\\Compiler\\Parser\\Tests\\": "libs/components/parser-builder/tests",
-            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
+            "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
+            "Phplrt\\Parser\\Builder\\Tests\\": "libs/components/parser-builder/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
             "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
-            "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
+            "Phplrt\\Lexer\\Builder\\Tests\\": "libs/components/lexer-builder/tests",
+            "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Tests\\": "tests"
         }
     },
@@ -96,11 +98,7 @@
         "linter:baseline": "@linter:check --generate-baseline",
         "phpcs:check": "@phpcs:fix --dry-run",
         "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --verbose --diff",
-        "dev:merge": "monorepo-builder merge",
-        "bench:lexer:capture": "@bench:compare --filter=benchLexicalAnalysis --tag=original",
-        "bench:lexer:diff": "@bench:compare --filter=benchLexicalAnalysis --ref=original",
-        "bench:lexer": "phpbench run --filter=benchLexicalAnalysis --report=default",
-        "bench:compare": "phpbench run --report=aggregate"
+        "dev:merge": "monorepo-builder merge"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

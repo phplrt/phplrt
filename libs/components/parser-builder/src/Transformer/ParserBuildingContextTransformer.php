@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Transformer;
+namespace Phplrt\Parser\Builder\Transformer;
 
-use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
-use Phplrt\Compiler\Parser\ParserBuilder;
+use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\ParserBuilder;
 
 /**
  * Copies the grammar of the builder into the context the compiler passes work

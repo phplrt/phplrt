@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer;
+namespace Phplrt\Lexer\Builder;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Transformer;
+namespace Phplrt\Lexer\Builder\Transformer;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;
 

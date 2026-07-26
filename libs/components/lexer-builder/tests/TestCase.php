@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Tests;
+namespace Phplrt\Lexer\Builder\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 

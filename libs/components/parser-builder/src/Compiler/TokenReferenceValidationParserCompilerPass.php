@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Definition\TerminalRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
-use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenIdRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenNameRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenRuleDefinition;
+use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that every token referred to by the grammar is recognized by the lexer

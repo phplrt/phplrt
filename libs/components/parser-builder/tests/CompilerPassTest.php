@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Tests;
+namespace Phplrt\Parser\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
-use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
-use Phplrt\Compiler\Parser\ParserBuilder;
-use Phplrt\Compiler\Parser\ParserBuilderResult;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
+use Phplrt\Parser\Builder\Exception\CompilationFailedException;
+use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Builder\ParserBuilderResult;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 

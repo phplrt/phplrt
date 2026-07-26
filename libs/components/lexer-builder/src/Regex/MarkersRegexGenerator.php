@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Lexer\Builder\Regex;
 
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
-use Phplrt\Compiler\Lexer\Exception\InvalidArgumentException;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
+use Phplrt\Lexer\Builder\Exception\InvalidArgumentException;
 
 final readonly class MarkersRegexGenerator extends RegexGenerator
 {

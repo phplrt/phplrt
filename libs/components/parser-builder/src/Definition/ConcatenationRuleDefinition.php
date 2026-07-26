@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition;
+namespace Phplrt\Parser\Builder\Definition;
 
 /**
  * Recognizes all the given rules, one after another.

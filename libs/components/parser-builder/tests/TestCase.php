@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Tests;
+namespace Phplrt\Parser\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\LexerBuilder;
-use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
-use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
-use Phplrt\Compiler\Parser\ParserBuilder;
-use Phplrt\Compiler\Parser\ParserBuilderResult;
+use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
+use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
+use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Context;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Tells which rules of the grammar refer to a given one.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that rule names are unique.

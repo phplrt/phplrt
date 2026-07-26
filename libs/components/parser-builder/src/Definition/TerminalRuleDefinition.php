@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition;
+namespace Phplrt\Parser\Builder\Definition;
 
 /**
  * @phpstan-sealed TokenIdRuleDefinition|TokenNameRuleDefinition|TokenRuleDefinition

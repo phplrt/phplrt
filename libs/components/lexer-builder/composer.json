@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\Lexer\\": "src"
+            "Phplrt\\Lexer\\Builder\\": "src"
         }
     },
     "require-dev": {
@@ -31,7 +31,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Compiler\\Lexer\\Tests\\": "tests"
+            "Phplrt\\Lexer\\Builder\\Tests\\": "tests"
         }
     },
     "extra": {

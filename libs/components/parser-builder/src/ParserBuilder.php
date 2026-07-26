@@ -2,40 +2,40 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser;
+namespace Phplrt\Parser\Builder;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysisPassInterface;
-use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
-use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Compiler\DuplicateRuleParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\InitialRuleParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\LeftRecursionValidationParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\NestedProductionParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
-use Phplrt\Compiler\Parser\Compiler\ParserCompilerPassInterface;
-use Phplrt\Compiler\Parser\Compiler\ProductionValidationParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\RedundantProductionParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\RuleNameDuplicationParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\RuleReferenceResolutionParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\TokenReferenceValidationParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\UnreachableRuleParserCompilerPass;
-use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\OptionalRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RepetitionRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RuleReference;
-use Phplrt\Compiler\Parser\Definition\TerminalRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
-use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
-use Phplrt\Compiler\Parser\Transformer\ParserBuilderResultTransformer;
-use Phplrt\Compiler\Parser\Transformer\ParserBuildingContextTransformer;
-use Phplrt\Compiler\Parser\Transformer\ParserResultContextTransformer;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
+use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Compiler\DuplicateRuleParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\LeftRecursionValidationParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\NestedProductionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
+use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
+use Phplrt\Parser\Builder\Compiler\ProductionValidationParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\RedundantProductionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\RuleNameDuplicationParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\RuleReferenceResolutionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\TokenReferenceValidationParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\UnreachableRuleParserCompilerPass;
+use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleReference;
+use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenIdRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenNameRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenRuleDefinition;
+use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Builder\Transformer\ParserBuilderResultTransformer;
+use Phplrt\Parser\Builder\Transformer\ParserBuildingContextTransformer;
+use Phplrt\Parser\Builder\Transformer\ParserResultContextTransformer;
 
 final class ParserBuilder
 {

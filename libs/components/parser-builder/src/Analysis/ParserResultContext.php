@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Analysis;
+namespace Phplrt\Parser\Builder\Analysis;
 
-use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
+use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**

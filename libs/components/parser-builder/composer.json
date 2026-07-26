@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Compiler\\Parser\\": "src"
+            "Phplrt\\Parser\\Builder\\": "src"
         }
     },
     "require-dev": {
@@ -33,7 +33,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Compiler\\Parser\\Tests\\": "tests"
+            "Phplrt\\Parser\\Builder\\Tests\\": "tests"
         }
     },
     "extra": {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Compiler\Lexer\Analysis\ChannelConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
-use Phplrt\Compiler\Lexer\Analysis\RegexConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TokenNameConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TransitionConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
+use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;

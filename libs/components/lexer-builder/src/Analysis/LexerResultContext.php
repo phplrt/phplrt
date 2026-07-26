@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
 /**
  * Describes the lexer the analysis passes complement with the metadata.

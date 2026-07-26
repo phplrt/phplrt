@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Exception;
+namespace Phplrt\Lexer\Builder\Exception;
 
-use Phplrt\Compiler\Lexer\Definition\Definition;
+use Phplrt\Lexer\Builder\Definition\Definition;
 
 class CompilationFailedException extends LexerCompilerException
 {

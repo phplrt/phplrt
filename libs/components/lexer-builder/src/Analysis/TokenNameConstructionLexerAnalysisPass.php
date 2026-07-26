@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
 /**
  * Describes the name each token is reported under.

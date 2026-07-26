@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Compiler;
+namespace Phplrt\Lexer\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
 /**
  * Contains the token definitions the compiler passes rewrite and check.

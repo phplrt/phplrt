@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition;
+namespace Phplrt\Parser\Builder\Definition;
 
 /**
  * @internal this is an internal library trait, please do not use it in your code
- * @psalm-internal Phplrt\Compiler\Parser
+ * @psalm-internal Phplrt\Parser\Builder
  */
 trait HasChildRuleDefinitions
 {

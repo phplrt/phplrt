@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer;
+namespace Phplrt\Lexer\Builder;
 
-use Phplrt\Compiler\Lexer\Analysis\ChannelConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\LexerAnalysisPassInterface;
-use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
-use Phplrt\Compiler\Lexer\Analysis\RegexConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TokenNameConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TransitionConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Builder\HasRegexFlags;
-use Phplrt\Compiler\Lexer\Builder\HasTokenDefinitions;
-use Phplrt\Compiler\Lexer\Builder\TokenDefinitionGroup;
-use Phplrt\Compiler\Lexer\Compiler\LexerBuildingContext;
-use Phplrt\Compiler\Lexer\Compiler\LexerCompilerPassInterface;
-use Phplrt\Compiler\Lexer\Compiler\RegexDuplicationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\RegexExcessiveGreedLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\RegexValidationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\TokenNameDuplicationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\TokenNameValidationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\TransitionValidationLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Compiler\UnreachableStateLexerCompilerPass;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
-use Phplrt\Compiler\Lexer\Transformer\LexerBuilderResultTransformer;
-use Phplrt\Compiler\Lexer\Transformer\LexerBuildingContextTransformer;
-use Phplrt\Compiler\Lexer\Transformer\LexerResultContextTransformer;
+use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
+use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Builder\HasRegexFlags;
+use Phplrt\Lexer\Builder\Builder\HasTokenDefinitions;
+use Phplrt\Lexer\Builder\Builder\TokenDefinitionGroup;
+use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
+use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
+use Phplrt\Lexer\Builder\Compiler\RegexDuplicationLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\RegexExcessiveGreedLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\RegexValidationLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\TokenNameDuplicationLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\TokenNameValidationLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\TransitionValidationLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\UnreachableStateLexerCompilerPass;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
+use Phplrt\Lexer\Builder\Transformer\LexerBuilderResultTransformer;
+use Phplrt\Lexer\Builder\Transformer\LexerBuildingContextTransformer;
+use Phplrt\Lexer\Builder\Transformer\LexerResultContextTransformer;
 
 final class LexerBuilder
 {

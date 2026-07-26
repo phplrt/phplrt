@@ -8,9 +8,9 @@ const DIR_INCLUDE = [
     // Components
     __DIR__ . '/libs/components/exception/src',
     __DIR__ . '/libs/components/lexer/src',
-    __DIR__ . '/libs/components/lexer-compiler/src',
+    __DIR__ . '/libs/components/lexer-builder/src',
     __DIR__ . '/libs/components/parser/src',
-    __DIR__ . '/libs/components/parser-compiler/src',
+    __DIR__ . '/libs/components/parser-builder/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/parser/src',

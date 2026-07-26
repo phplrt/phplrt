@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
-use Phplrt\Compiler\Lexer\LexerBuilder;
-use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
+use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;

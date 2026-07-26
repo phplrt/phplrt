@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Transformer;
+namespace Phplrt\Lexer\Builder\Transformer;
 
-use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
-use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
+use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
 
 /**
  * Closes the compilation, turning the context the analysis passes were free to

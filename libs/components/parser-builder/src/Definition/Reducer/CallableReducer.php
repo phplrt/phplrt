@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition\Reducer;
+namespace Phplrt\Parser\Builder\Definition\Reducer;
 
 use Phplrt\Parser\Context;
 

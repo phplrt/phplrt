@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition\Reducer;
+namespace Phplrt\Parser\Builder\Definition\Reducer;
 
 /**
  * Converts the rule into the node of the syntax tree using the given PHP code.

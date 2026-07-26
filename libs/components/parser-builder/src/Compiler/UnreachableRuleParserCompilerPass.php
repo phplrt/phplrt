@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
 
 /**
  * Removes the rules that cannot be reached from the initial one.

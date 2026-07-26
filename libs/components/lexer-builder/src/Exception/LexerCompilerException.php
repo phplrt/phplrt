@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Exception;
+namespace Phplrt\Lexer\Builder\Exception;
 
 class LexerCompilerException extends \Exception
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
 use Phplrt\Contracts\Lexer\Channel;
 

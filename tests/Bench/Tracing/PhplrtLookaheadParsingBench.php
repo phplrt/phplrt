@@ -9,10 +9,10 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
-use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
-use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
+use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Parser;
 
 #[Warmup(1)]

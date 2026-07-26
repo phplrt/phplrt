@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Transformer;
+namespace Phplrt\Lexer\Builder\Transformer;
 
-use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
-use Phplrt\Compiler\Lexer\Compiler\LexerBuildingContext;
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
+use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Contracts\Lexer\Channel;
 
 /**

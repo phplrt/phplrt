@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Builder;
+namespace Phplrt\Lexer\Builder\Builder;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
 
 /**
  * @internal this is an internal library trait, please do not use it in your code
- * @psalm-internal Phplrt\Compiler\Lexer
+ * @psalm-internal Phplrt\Lexer\Builder
  */
 trait HasRegexFlags
 {

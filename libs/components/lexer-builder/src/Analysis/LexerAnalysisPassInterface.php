@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
 /**
  * Interface that must be implemented by analysis passes.

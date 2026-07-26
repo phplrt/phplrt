@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser;
+namespace Phplrt\Parser\Builder;
 
-use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**

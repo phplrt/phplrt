@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Tests;
+namespace Phplrt\Lexer\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\Analysis\ChannelConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\LexerAnalysisPassInterface;
-use Phplrt\Compiler\Lexer\Analysis\RegexConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TokenNameConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\TransitionConstructionLexerAnalysisPass;
-use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
-use Phplrt\Compiler\Lexer\Compiler\LexerBuildingContext;
-use Phplrt\Compiler\Lexer\Compiler\LexerCompilerPassInterface;
-use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
+use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
+use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
+use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
+use Phplrt\Lexer\Builder\LexerBuilder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 

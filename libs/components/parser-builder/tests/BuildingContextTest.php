@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Tests;
+namespace Phplrt\Parser\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
-use Phplrt\Compiler\Parser\Compiler\ParserCompilerPassInterface;
-use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
-use Phplrt\Compiler\Parser\ParserBuilder;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
+use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
+use Phplrt\Parser\Builder\ParserBuilder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 

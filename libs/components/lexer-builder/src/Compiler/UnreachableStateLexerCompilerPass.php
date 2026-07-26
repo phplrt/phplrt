@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Compiler;
+namespace Phplrt\Lexer\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TransitionType;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TransitionType;
 
 /**
  * Removes the states that cannot be entered from the initial one.

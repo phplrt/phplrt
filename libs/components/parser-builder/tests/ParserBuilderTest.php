@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Tests;
+namespace Phplrt\Parser\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\LexerBuilder;
-use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
-use Phplrt\Compiler\Parser\Definition\Reducer\PhpCodeReducer;
-use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
-use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
-use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
-use Phplrt\Compiler\Parser\ParserBuilder;
-use Phplrt\Compiler\Parser\ParserBuilderResult;
+use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
+use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
+use Phplrt\Parser\Builder\Definition\TokenNameRuleDefinition;
+use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\Lexeme;

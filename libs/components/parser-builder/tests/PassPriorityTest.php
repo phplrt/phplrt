@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Tests;
+namespace Phplrt\Parser\Builder\Tests;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysisPassInterface;
-use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
-use Phplrt\Compiler\Parser\Compiler\InitialRuleParserCompilerPass;
-use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
-use Phplrt\Compiler\Parser\Compiler\ParserCompilerPassInterface;
-use Phplrt\Compiler\Parser\ParserBuilder;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
+use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
+use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
+use Phplrt\Parser\Builder\ParserBuilder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 

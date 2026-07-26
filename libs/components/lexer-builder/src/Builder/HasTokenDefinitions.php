@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Builder;
+namespace Phplrt\Lexer\Builder\Builder;
 
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
 
 /**
  * @internal this is an internal library trait, please do not use it in your code
- * @psalm-internal Phplrt\Compiler\Lexer
+ * @psalm-internal Phplrt\Lexer\Builder
  */
 trait HasTokenDefinitions
 {

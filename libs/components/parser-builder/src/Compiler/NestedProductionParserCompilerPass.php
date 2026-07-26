@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Joins a production with the productions of the same kind nested into it.

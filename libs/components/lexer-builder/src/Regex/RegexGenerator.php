@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Lexer\Builder\Regex;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
 
 abstract readonly class RegexGenerator implements RegexGeneratorInterface
 {

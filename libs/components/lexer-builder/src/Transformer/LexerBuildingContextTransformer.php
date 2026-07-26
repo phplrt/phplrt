@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Transformer;
+namespace Phplrt\Lexer\Builder\Transformer;
 
-use Phplrt\Compiler\Lexer\Compiler\LexerBuildingContext;
-use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
+use Phplrt\Lexer\Builder\LexerBuilder;
 
 /**
  * Copies the data of the builder into the context the compiler passes work on.

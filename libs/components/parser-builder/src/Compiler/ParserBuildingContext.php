@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Contains the grammar the compiler passes rewrite and check.

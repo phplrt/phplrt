@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Regex;
+namespace Phplrt\Lexer\Builder\Regex;
 
-use Phplrt\Compiler\Lexer\Definition\RegexModifier;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Exception\LexerCompilerException;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 
 /**
  * Responsible for generating the complete PHP PCRE pattern

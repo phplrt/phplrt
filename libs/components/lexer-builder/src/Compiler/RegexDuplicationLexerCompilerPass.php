@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Compiler;
+namespace Phplrt\Lexer\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
-use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
+use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that there are no duplicate patterns for token definitions

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Transformer;
+namespace Phplrt\Parser\Builder\Transformer;
 
-use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
-use Phplrt\Compiler\Parser\ParserBuilderResult;
+use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\ParserBuilderResult;
 
 /**
  * Closes the compilation, turning the context the analysis passes were free to

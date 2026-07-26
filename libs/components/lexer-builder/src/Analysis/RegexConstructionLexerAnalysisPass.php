@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
-use Phplrt\Compiler\Lexer\Regex\MarkersRegexGenerator;
-use Phplrt\Compiler\Lexer\Regex\RegexGeneratorInterface;
+use Phplrt\Lexer\Builder\Regex\MarkersRegexGenerator;
+use Phplrt\Lexer\Builder\Regex\RegexGeneratorInterface;
 
 /**
  * Describes the pattern each lexer state recognizes its tokens with.

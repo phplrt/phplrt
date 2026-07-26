@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Definition;
+namespace Phplrt\Parser\Builder\Definition;
 
-use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
-use Phplrt\Compiler\Parser\Definition\Reducer\PhpCodeReducer;
-use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
+use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
+use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Context;
 
 /**

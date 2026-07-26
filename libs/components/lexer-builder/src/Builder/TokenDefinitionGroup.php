@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Builder;
+namespace Phplrt\Lexer\Builder\Builder;
 
 final class TokenDefinitionGroup
 {

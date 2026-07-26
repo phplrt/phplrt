@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Collects the rules that are equivalent to another one and swaps them in the

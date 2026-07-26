@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Analysis;
+namespace Phplrt\Lexer\Builder\Analysis;
 
-use Phplrt\Compiler\Lexer\Definition\TransitionType;
+use Phplrt\Lexer\Builder\Definition\TransitionType;
 
 /**
  * Describes the state transition each token triggers.

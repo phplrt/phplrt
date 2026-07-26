@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Lexer\Compiler;
+namespace Phplrt\Lexer\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
-use Phplrt\Compiler\Lexer\Definition\TransitionType;
-use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\TransitionType;
+use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the lexer's state transitions are consistent.

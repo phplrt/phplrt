@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Compiler;
+namespace Phplrt\Parser\Builder\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\OptionalRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RepetitionRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
+use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenIdRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenNameRuleDefinition;
+use Phplrt\Parser\Builder\Definition\TokenRuleDefinition;
 
 /**
  * Merges the rules recognizing exactly the same input into a single one.

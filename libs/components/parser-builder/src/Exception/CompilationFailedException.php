@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Parser\Exception;
+namespace Phplrt\Parser\Builder\Exception;
 
-use Phplrt\Compiler\Parser\Definition\Definition;
-use Phplrt\Compiler\Parser\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Definition\Definition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 class CompilationFailedException extends ParserCompilerException
 {
