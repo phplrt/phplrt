@@ -27,14 +27,9 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
 final class RecursiveDescentTracer
 {
     /**
-     * @var array<int<0, max>, int>
-     */
-    private array $types = [];
-
-    /**
      * @var array<int<0, max>, int|TokenInterface>
      */
-    private array $references = [];
+    private array $entries = [];
 
     /**
      * @var int<0, max>
@@ -93,8 +88,7 @@ final class RecursiveDescentTracer
 
         if ($self->match($initial) && $self->isEndOfInput()) {
             return new Success(
-                types: $self->types,
-                references: $self->references,
+                entries: $self->entries,
                 length: $self->length,
             );
         }
@@ -128,8 +122,7 @@ final class RecursiveDescentTracer
         $kept = $this->kept[$rule];
 
         if ($kept) {
-            $this->types[$mark] = Success::TYPE_ENTER;
-            $this->references[$mark] = $rule;
+            $this->entries[$mark] = $rule;
             $this->length = $mark + 1;
         }
 
@@ -153,8 +146,7 @@ final class RecursiveDescentTracer
         if ($kept) {
             $length = $this->length;
 
-            $this->types[$length] = Success::TYPE_LEAVE;
-            $this->references[$length] = $rule;
+            $this->entries[$length] = -$rule - 1;
             $this->length = $length + 1;
         }
 
@@ -169,18 +161,20 @@ final class RecursiveDescentTracer
 
         if ($token->id === $id) {
             if ($definition->keep) {
-                // The terminal is recorded as an ordinary rule containing a
-                // single token, so it can be reduced in the same way
                 $length = $this->length;
 
-                $this->types[$length] = Success::TYPE_ENTER;
-                $this->references[$length] = $rule;
-                $this->types[$length + 1] = Success::TYPE_TOKEN;
-                $this->references[$length + 1] = $token;
-                $this->types[$length + 2] = Success::TYPE_LEAVE;
-                $this->references[$length + 2] = $rule;
+                if ($this->kept[$rule]) {
+                    // The terminal is recorded as an ordinary rule containing a
+                    // single token, so it can be reduced in the same way
+                    $this->entries[$length] = $rule;
+                    $this->entries[$length + 1] = $token;
+                    $this->entries[$length + 2] = -$rule - 1;
 
-                $this->length = $length + 3;
+                    $this->length = $length + 3;
+                } else {
+                    $this->entries[$length] = $token;
+                    $this->length = $length + 1;
+                }
             }
 
             $buffer->next();

@@ -12,10 +12,11 @@ use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Filter\ChannelFilter;
 use Phplrt\Parser\Internal\Filter\FilterInterface;
-use Phplrt\Parser\Internal\ParseTree\Lookahead;
-use Phplrt\Parser\Internal\RecursiveDescentTracer;
 use Phplrt\Parser\Internal\ParseTree\KeptConstruction;
+use Phplrt\Parser\Internal\ParseTree\Lookahead;
 use Phplrt\Parser\Internal\ParseTree\LookaheadConstruction;
+use Phplrt\Parser\Internal\ParseTree\MergedConstruction;
+use Phplrt\Parser\Internal\RecursiveDescentTracer;
 use Phplrt\Parser\Internal\TraceReducer;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
@@ -31,6 +32,11 @@ final readonly class Parser implements ParserInterface
      * @var array<int, bool>
      */
     private array $kept;
+
+    /**
+     * @var array<int, bool>
+     */
+    private array $merged;
 
     public function __construct(
         private LexerInterface $lexer,
@@ -55,6 +61,7 @@ final readonly class Parser implements ParserInterface
     ) {
         $this->lookahead = LookaheadConstruction::compute($this->grammar);
         $this->kept = KeptConstruction::compute($this->grammar, $this->reducers);
+        $this->merged = MergedConstruction::compute($this->grammar);
     }
 
     private function trace(BufferInterface $buffer): Success|Failure
@@ -94,8 +101,8 @@ final readonly class Parser implements ParserInterface
         }
 
         $reducer = new TraceReducer(
-            grammar: $this->grammar,
             reducers: $this->reducers,
+            merged: $this->merged,
             rule: $this->initial,
             source: $source,
         );

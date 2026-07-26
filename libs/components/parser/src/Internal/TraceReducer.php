@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Internal;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Parser\Grammar\Concatenation;
-use Phplrt\Parser\Grammar\Repetition;
-use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 /**
@@ -25,10 +21,6 @@ final readonly class TraceReducer
 
     public function __construct(
         /**
-         * @var list<RuleInterface>
-         */
-        private array $grammar,
-        /**
          * The callbacks converting the rules into the nodes, indexed by the
          * rule identifiers. The rules without a callback are reduced to their
          * children
@@ -36,6 +28,13 @@ final readonly class TraceReducer
          * @var array<int<0, max>, ReducerType>
          */
         private array $reducers,
+        /**
+         * The rules reduced to the list of their children, indexed by the rule
+         * identifiers
+         *
+         * @var array<int, bool>
+         */
+        private array $merged,
         private int $rule,
         private string $source,
     ) {
@@ -44,62 +43,81 @@ final readonly class TraceReducer
 
     public function reduce(Success $trace): mixed
     {
-        $types = $trace->types;
-        $references = $trace->references;
+        $entries = $trace->entries;
+
+        $reducers = $this->reducers;
+        $merged = $this->merged;
+        $prototype = $this->context;
 
         $children = [];
         $stack = [];
         $token = null;
 
-        for ($i = 0; $i < $trace->length; ++$i) {
-            $reference = $references[$i];
+        for ($i = 0, $length = $trace->length; $i < $length; ++$i) {
+            $entry = $entries[$i];
 
-            switch ($types[$i]) {
-                case Success::TYPE_ENTER:
-                    $stack[] = $children;
-                    $children = [];
-                    break;
+            if (!\is_int($entry)) {
+                $children[] = $token = $entry;
 
-                case Success::TYPE_TOKEN:
-                    if ($reference instanceof TokenInterface) {
-                        $children[] = $token = $reference;
-                    }
-                    break;
-
-                case Success::TYPE_LEAVE:
-                    if (!\is_int($reference)) {
-                        break;
-                    }
-
-                    $result = $this->fold($reference, $children);
-
-                    $children = \array_pop($stack) ?? [];
-                    $children[] = $this->build($reference, $token, $result);
-                    break;
+                continue;
             }
+
+            if ($entry >= 0) {
+                $stack[] = $children;
+                $children = [];
+
+                continue;
+            }
+
+            $rule = -$entry - 1;
+
+            if ($merged[$rule]) {
+                $result = $children;
+
+                if (isset($children[1])) {
+                    foreach ($children as $child) {
+                        if (\is_array($child)) {
+                            $result = $this->merge($children);
+
+                            break;
+                        }
+                    }
+                } elseif (isset($children[0]) && \is_array($children[0])) {
+                    $result = $children[0];
+                }
+            } else {
+                // Any other rule contains a single value, which is passed
+                // through as is
+                $result = $children[0] ?? [];
+            }
+
+            $children = \array_pop($stack) ?? [];
+            $reducer = $reducers[$rule] ?? null;
+
+            if ($reducer === null) {
+                $children[] = $result;
+
+                continue;
+            }
+
+            /**
+             * Clone optimization: speeds up the creation of a new object:
+             * faster than instantiation.
+             */
+            $context = clone $prototype;
+
+            $context->rule = $rule;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $context->token = $token;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+            $children[] = $reducer($context, $result) ?? $result;
         }
 
         return $children[0] ?? [];
     }
 
     /**
-     * Joins the values of the nested rules in the way the rule requires.
+     * Unwraps the children of the nested rules into a single list.
      *
-     * @param list<mixed> $children
-     */
-    private function fold(int $rule, array $children): mixed
-    {
-        $definition = $this->grammar[$rule] ?? null;
-
-        if ($definition instanceof Concatenation || $definition instanceof Repetition) {
-            return $this->merge($children);
-        }
-
-        // Any other rule contains a single value, which is passed through as is
-        return $children[0] ?? [];
-    }
-
-    /**
      * @param list<mixed> $children
      * @return list<mixed>
      */
@@ -120,25 +138,5 @@ final readonly class TraceReducer
         }
 
         return $result;
-    }
-
-    private function build(int $rule, ?TokenInterface $token, mixed $children): mixed
-    {
-        $reducer = $this->reducers[$rule] ?? null;
-
-        if ($reducer === null) {
-            return $children;
-        }
-
-        /**
-         * Clone optimization: speeds up the creation of a new object:
-         * faster than instantiation.
-         */
-        $context = clone $this->context;
-
-        $context->rule = $rule;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-        $context->token = $token;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-
-        return $reducer($context, $children) ?? $children;
     }
 }
