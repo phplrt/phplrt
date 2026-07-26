@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Definition;
 
 /**
- * Recognizes all of the given rules, one after another.
+ * Recognizes all the given rules, one after another.
  */
 final class ConcatenationRuleDefinition extends ProductionRuleDefinition
 {

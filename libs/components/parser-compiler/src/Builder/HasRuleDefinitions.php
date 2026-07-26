@@ -74,14 +74,14 @@ trait HasRuleDefinitions
     }
 
     /**
-     * Recognizes all of the given rules, one after another.
+     * Recognizes all the given rules, one after another.
      *
      * @api
      *
      * @param list<RuleDefinition> $rules
      * @param non-empty-string|null $name
      */
-    public function concatenation(array $rules = [], ?string $name = null): ConcatenationRuleDefinition
+    public function concat(array $rules = [], ?string $name = null): ConcatenationRuleDefinition
     {
         $rule = new ConcatenationRuleDefinition($rules, $name);
 
@@ -98,7 +98,7 @@ trait HasRuleDefinitions
      * @param list<RuleDefinition> $rules
      * @param non-empty-string|null $name
      */
-    public function alternation(array $rules = [], ?string $name = null): AlternationRuleDefinition
+    public function choice(array $rules = [], ?string $name = null): AlternationRuleDefinition
     {
         $rule = new AlternationRuleDefinition($rules, $name);
 
@@ -132,10 +132,10 @@ trait HasRuleDefinitions
      * @param int<0, max>|float $max
      * @param non-empty-string|null $name
      */
-    public function repetition(
+    public function repeat(
         RuleDefinition $rule,
-        int $min = 0,
         int|float $max = \INF,
+        int $min = 0,
         ?string $name = null,
     ): RepetitionRuleDefinition {
         $definition = new RepetitionRuleDefinition($rule, $min, $max, $name);
