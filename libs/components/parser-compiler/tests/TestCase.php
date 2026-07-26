@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Tests;
 
 use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Compiler\Parser\ParserBuilder;
 use Phplrt\Compiler\Parser\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -36,16 +39,8 @@ abstract class TestCase extends BaseTestCase
 
     protected static function createLexer(LexerBuilder $builder): LexerInterface
     {
-        $pathname = __DIR__ . \sprintf('/temp/phplrt-lexer-%s.php', \bin2hex(\random_bytes(8)));
-
-        \file_put_contents($pathname, (string) $builder->generate());
-
-        try {
-            /** @var LexerInterface */
-            return require $pathname;
-        } finally {
-            @\unlink($pathname);
-        }
+        return new RuntimeLexerTransformer()
+            ->transform($builder->build());
     }
 
     protected static function createParser(LexerInterface $lexer, ParserBuilderResult $result): Parser
@@ -54,11 +49,30 @@ abstract class TestCase extends BaseTestCase
             lexer: $lexer,
             grammar: $result->grammar,
             initial: $result->initial,
-            first: $result->first,
-            nullable: $result->nullable,
-            kept: $result->kept,
-            reducers: $result->createReducerCallbacks(),
+            startTokens: $result->startTokens,
+            matchesEmptyInput: $result->matchesEmptyInput,
+            presentInTree: $result->presentInTree,
+            reducers: self::createReducers($result),
         );
+    }
+
+    /**
+     * A reducer defined as PHP code has to be dumped into a generated parser,
+     * so only the executable ones reach the parser being run in place.
+     *
+     * @return array<int<0, max>, callable(Context, mixed): mixed>
+     */
+    private static function createReducers(ParserBuilderResult $result): array
+    {
+        $reducers = [];
+
+        foreach ($result->reducers as $rule => $reducer) {
+            if ($reducer instanceof CallableReducer) {
+                $reducers[$rule] = $reducer->callback;
+            }
+        }
+
+        return $reducers;
     }
 
     /**

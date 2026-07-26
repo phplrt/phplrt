@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Tests;
 
 use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Compiler\Parser\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Compiler\Parser\Definition\Reducer\ReducerInterface;
 use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
@@ -109,7 +110,7 @@ final class ParserBuilderTest extends TestCase
         $number = $result->grammar[1];
 
         self::assertInstanceOf(Lexeme::class, $number);
-        self::assertSame($lexer->constants['T_NUMBER'], $number->tokenId);
+        self::assertSame('T_NUMBER', $lexer->names[$number->tokenId]);
     }
 
     #[TestDox('The reducers are indexed by the identifiers of the rules they belong to')]
@@ -141,7 +142,7 @@ final class ParserBuilderTest extends TestCase
         ));
     }
 
-    #[TestDox('A parser cannot be created out of the reducers defined as PHP code')]
+    #[TestDox('A reducer defined as PHP code carries no callback to execute')]
     public function testReducerAsPhpCodeIsNotExecutable(): void
     {
         $parser = new ParserBuilder();
@@ -151,10 +152,8 @@ final class ParserBuilderTest extends TestCase
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
-        $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessage('must be generated before it is used');
-
-        $result->createReducerCallbacks();
+        self::assertContainsOnlyInstancesOf(PhpCodeReducer::class, $result->reducers);
+        self::assertNotInstanceOf(CallableReducer::class, $result->reducers[0]);
     }
 
     #[TestDox('The tokens a rule may begin with are computed')]
@@ -163,9 +162,9 @@ final class ParserBuilderTest extends TestCase
         $result = self::compile();
 
         // The expression begins with a number
-        self::assertSame([1 => true], $result->first[0]);
+        self::assertSame([1 => true], $result->startTokens[0]);
         // Any of the operators begins the tail of the expression
-        self::assertSame([2 => true, 3 => true], $result->first[2]);
+        self::assertSame([2 => true, 3 => true], $result->startTokens[2]);
     }
 
     #[TestDox('The rules that may be recognized without consuming a token are computed')]
@@ -173,8 +172,8 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        self::assertTrue($result->nullable[2], 'The tail of the expression is optional');
-        self::assertFalse($result->nullable[0], 'The expression requires a number');
+        self::assertTrue($result->matchesEmptyInput[2], 'The tail of the expression is optional');
+        self::assertFalse($result->matchesEmptyInput[0], 'The expression requires a number');
     }
 
     #[TestDox('The rules that are present in the resulting tree are computed')]
@@ -182,8 +181,8 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        self::assertTrue($result->kept[0], 'The initial rule is always kept');
-        self::assertFalse($result->kept[4], 'An alternation without a reducer passes its value through');
+        self::assertTrue($result->presentInTree[0], 'The initial rule is always kept');
+        self::assertFalse($result->presentInTree[4], 'An alternation without a reducer passes its value through');
     }
 
     #[TestDox('A rule may refer to the token definition instead of its name')]

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Tests;
 
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
+use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
+use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysisPassInterface;
+use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
 use Phplrt\Compiler\Parser\Compiler\InitialRuleParserCompilerPass;
+use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
 use Phplrt\Compiler\Parser\Compiler\ParserCompilerPassInterface;
 use Phplrt\Compiler\Parser\ParserBuilder;
 use PHPUnit\Framework\Attributes\Group;
@@ -16,7 +19,7 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/parser-compiler')]
 final class PassPriorityTest extends TestCase
 {
-    #[TestDox('The passes are processed in the order of their priority')]
+    #[TestDox('The compiler passes are processed in the order of their priority')]
     public function testPriorityOrder(): void
     {
         $order = [];
@@ -32,7 +35,6 @@ final class PassPriorityTest extends TestCase
             self::createCompilerPass($order, 'normalize'),
             ParserBuilder::PASS_PRIORITY_NORMALIZE,
         );
-        $parser->addAnalysisPass(self::createAnalysisPass($order, 'analyze'));
         $parser->addCompilerPass(
             self::createCompilerPass($order, 'check-after-optimize'),
             ParserBuilder::PASS_PRIORITY_CHECK_AFTER_OPTIMIZE,
@@ -56,11 +58,10 @@ final class PassPriorityTest extends TestCase
             'check',
             'optimize',
             'check-after-optimize',
-            'analyze',
         ], $order);
     }
 
-    #[TestDox('The passes of the same priority are processed in the order they have been registered')]
+    #[TestDox('The compiler passes of the same priority are processed in the order they have been registered')]
     public function testRegistrationOrder(): void
     {
         $order = [];
@@ -76,7 +77,27 @@ final class PassPriorityTest extends TestCase
         self::assertSame(['first', 'second'], $order);
     }
 
-    #[TestDox('The default passes are registered under their own priorities')]
+    #[TestDox('The analysis passes are processed after every compiler pass, whatever its priority is')]
+    public function testAnalysisOrder(): void
+    {
+        $order = [];
+
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addTokenReference('T_NUMBER'));
+
+        $parser->addAnalysisPass(self::createAnalysisPass($order, 'first'));
+        $parser->addAnalysisPass(self::createAnalysisPass($order, 'second'));
+        $parser->addCompilerPass(
+            self::createCompilerPass($order, 'compile'),
+            \PHP_INT_MAX,
+        );
+
+        $parser->build(self::createLexerBuilder()->build());
+
+        self::assertSame(['compile', 'first', 'second'], $order);
+    }
+
+    #[TestDox('The default compiler passes are registered under their own priorities')]
     public function testDefaultPriorities(): void
     {
         $parser = new ParserBuilder();
@@ -92,11 +113,20 @@ final class PassPriorityTest extends TestCase
             $parser->compilerPasses[ParserBuilder::PASS_PRIORITY_NORMALIZE][0],
             'The initial rule is computed before everything that needs it',
         );
+    }
 
-        self::assertSame(
-            [ParserBuilder::PASS_PRIORITY_ANALYZE],
-            \array_keys($parser->analysisPasses),
-        );
+    #[TestDox('The default analysis passes are registered in the order they depend on each other')]
+    public function testDefaultAnalysisPasses(): void
+    {
+        $parser = new ParserBuilder();
+
+        self::assertSame([
+            LookaheadConstructionParserAnalysisPass::class,
+            TreePresenceConstructionParserAnalysisPass::class,
+        ], \array_map(
+            static fn(ParserAnalysisPassInterface $pass): string => $pass::class,
+            $parser->analysisPasses,
+        ));
     }
 
     /**
@@ -115,7 +145,7 @@ final class PassPriorityTest extends TestCase
                 private readonly string $name,
             ) {}
 
-            public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+            public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
             {
                 $this->order[] = $this->name;
             }
@@ -138,7 +168,7 @@ final class PassPriorityTest extends TestCase
                 private readonly string $name,
             ) {}
 
-            public function process(ParserAnalysis $analysis): void
+            public function process(ParserResultContext $context): void
             {
                 $this->order[] = $this->name;
             }
