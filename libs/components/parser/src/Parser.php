@@ -25,8 +25,6 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  */
 final readonly class Parser implements ParserInterface
 {
-    private TraceReducer $reducer;
-
     private Lookahead $lookahead;
 
     /**
@@ -55,8 +53,6 @@ final readonly class Parser implements ParserInterface
          */
         private FilterInterface $filter = new ChannelFilter(),
     ) {
-        $this->reducer = new TraceReducer($this->grammar, $this->reducers);
-
         $this->lookahead = LookaheadConstruction::compute($this->grammar);
         $this->kept = KeptConstruction::compute($this->grammar, $this->reducers);
     }
@@ -97,7 +93,14 @@ final readonly class Parser implements ParserInterface
             throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
         }
 
-        return $this->reducer->reduce($result, $source);
+        $reducer = new TraceReducer(
+            grammar: $this->grammar,
+            reducers: $this->reducers,
+            rule: $this->initial,
+            source: $source,
+        );
+
+        return $reducer->reduce($result);
     }
 
     private function lex(string $source): BufferInterface

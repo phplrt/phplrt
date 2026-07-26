@@ -21,11 +21,13 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  */
 final readonly class TraceReducer
 {
+    private Context $context;
+
     public function __construct(
         /**
          * @var list<RuleInterface>
          */
-        private array $grammar = [],
+        private array $grammar,
         /**
          * The callbacks converting the rules into the nodes, indexed by the
          * rule identifiers. The rules without a callback are reduced to their
@@ -33,10 +35,14 @@ final readonly class TraceReducer
          *
          * @var array<int<0, max>, ReducerType>
          */
-        private array $reducers = [],
-    ) {}
+        private array $reducers,
+        private int $rule,
+        private string $source,
+    ) {
+        $this->context = new Context($this->rule, $this->source, null);
+    }
 
-    public function reduce(Success $trace, string $source): mixed
+    public function reduce(Success $trace): mixed
     {
         $types = $trace->types;
         $references = $trace->references;
@@ -68,7 +74,7 @@ final readonly class TraceReducer
                     $result = $this->fold($reference, $children);
 
                     $children = \array_pop($stack) ?? [];
-                    $children[] = $this->build($reference, $source, $token, $result);
+                    $children[] = $this->build($reference, $token, $result);
                     break;
             }
         }
@@ -116,7 +122,7 @@ final readonly class TraceReducer
         return $result;
     }
 
-    private function build(int $rule, string $source, ?TokenInterface $token, mixed $children): mixed
+    private function build(int $rule, ?TokenInterface $token, mixed $children): mixed
     {
         $reducer = $this->reducers[$rule] ?? null;
 
@@ -124,7 +130,14 @@ final readonly class TraceReducer
             return $children;
         }
 
-        $context = new Context(\max(0, $rule), $source, $token);
+        /**
+         * Clone optimization: speeds up the creation of a new object:
+         * faster than instantiation.
+         */
+        $context = clone $this->context;
+
+        $context->rule = $rule;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+        $context->token = $token;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
 
         return $reducer($context, $children) ?? $children;
     }
