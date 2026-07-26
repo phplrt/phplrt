@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Internal\ParseTree;
 
 use Phplrt\Parser\Grammar\Alternation;
+use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\TraceReducer;
@@ -34,7 +35,9 @@ final readonly class KeptConstruction
             // A rule containing a single value passes it through as is, so
             // without a reducer it adds nothing to the tree
             $result[$rule] = isset($reducers[$rule])
-                || !($definition instanceof Alternation || $definition instanceof Optional);
+                || !($definition instanceof Alternation
+                    || $definition instanceof Optional
+                    || $definition instanceof Lexeme);
         }
 
         return $result;
