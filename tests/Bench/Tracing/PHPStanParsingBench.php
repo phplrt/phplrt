@@ -17,7 +17,7 @@ use PHPStan\PhpDocParser\ParserConfig;
 
 #[Warmup(1)]
 #[Revs(2)]
-#[Iterations(3)]
+#[Iterations(2)]
 #[RetryThreshold(0.3)]
 #[BeforeMethods('prepare')]
 final readonly class PHPStanParsingBench extends ParsingBench
