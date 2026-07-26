@@ -9,8 +9,6 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
-use Phplrt\Compiler\Parser\Analysis\MergedConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
 use Phplrt\Parser\Parser;
 
 #[Warmup(1)]
@@ -25,26 +23,12 @@ final readonly class PhplrtParsingBench extends PhplrtBench
     public function prepare(): void
     {
         $lexer = $this->getLexer();
-        $grammar = $this->getParserGrammar($lexer);
-        $initial = $this->getParserInitialRule();
-        $reducers = $this->getParserReducers();
-
-        $analysis = new ParserAnalysis($grammar, $initial, $reducers);
-
-        $passes = [
-            new MergedConstructionParserAnalysisPass(),
-        ];
-
-        foreach ($passes as $pass) {
-            $pass->process($analysis);
-        }
 
         $this->parser = new Parser(
             lexer: $lexer,
-            grammar: $analysis->grammar,
-            initial: $analysis->initial,
-            merged: $analysis->merged,
-            reducers: $analysis->reducers,
+            grammar: $this->getParserGrammar($lexer),
+            initial: $this->getParserInitialRule(),
+            reducers: $this->getParserReducers(),
         );
     }
 

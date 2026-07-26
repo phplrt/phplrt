@@ -11,7 +11,6 @@ use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
 use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\MergedConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
 use Phplrt\Parser\Parser;
 
@@ -36,7 +35,6 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
             new KeptConstructionParserAnalysisPass(),
-            new MergedConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {
@@ -47,7 +45,6 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
             lexer: $lexer,
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            merged: $analysis->merged,
             first: $analysis->first,
             nullable: $analysis->nullable,
             kept: $analysis->kept,
