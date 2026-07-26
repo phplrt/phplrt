@@ -109,7 +109,41 @@ final class RecursiveDescentTracer
         $definition = $this->grammar[$rule];
 
         if ($definition instanceof Lexeme) {
-            return $this->matchLexeme($rule, $definition);
+            $buffer = $this->buffer;
+            $token = $buffer->current;
+            $id = $definition->tokenId;
+
+            if ($token->id !== $id) {
+                $error = $this->error;
+
+                // A failure behind the reported one changes nothing
+                if ($buffer->key >= $error->furthest) {
+                    $error->record($id);
+                }
+
+                return false;
+            }
+
+            if ($definition->keep) {
+                $length = $this->length;
+
+                if ($this->kept[$rule]) {
+                    // The terminal is recorded as an ordinary rule containing a
+                    // single token, so it can be reduced in the same way
+                    $this->entries[$length] = $rule;
+                    $this->entries[$length + 1] = $token;
+                    $this->entries[$length + 2] = -$rule - 1;
+
+                    $this->length = $length + 3;
+                } else {
+                    $this->entries[$length] = $token;
+                    $this->length = $length + 1;
+                }
+            }
+
+            $buffer->next();
+
+            return true;
         }
 
         // The rule requires a token it cannot start with, so there is nothing
@@ -151,40 +185,6 @@ final class RecursiveDescentTracer
         }
 
         return true;
-    }
-
-    private function matchLexeme(int $rule, Lexeme $definition): bool
-    {
-        $buffer = $this->buffer;
-        $token = $buffer->current;
-        $id = $definition->tokenId;
-
-        if ($token->id === $id) {
-            if ($definition->keep) {
-                $length = $this->length;
-
-                if ($this->kept[$rule]) {
-                    // The terminal is recorded as an ordinary rule containing a
-                    // single token, so it can be reduced in the same way
-                    $this->entries[$length] = $rule;
-                    $this->entries[$length + 1] = $token;
-                    $this->entries[$length + 2] = -$rule - 1;
-
-                    $this->length = $length + 3;
-                } else {
-                    $this->entries[$length] = $token;
-                    $this->length = $length + 1;
-                }
-            }
-
-            $buffer->next();
-
-            return true;
-        }
-
-        $this->error->record($id);
-
-        return false;
     }
 
     private function matchConcatenation(Concatenation $rule): bool
