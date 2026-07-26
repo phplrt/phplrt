@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Tests;
 
+use Phplrt\Compiler\Lexer\Analysis\ChannelConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\LexerResultContext;
+use Phplrt\Compiler\Lexer\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\TokenNameConstructionLexerAnalysisPass;
+use Phplrt\Compiler\Lexer\Analysis\TransitionConstructionLexerAnalysisPass;
 use Phplrt\Compiler\Lexer\Definition\RegexModifier;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
-use Phplrt\Compiler\Lexer\Regex\MarkersRegexGenerator;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Lexer;
@@ -45,15 +49,21 @@ final class EmbeddedLexerTest extends TestCase
         };
     }
 
+    /**
+     * The embedded state is a lexer of its own rather than a group of token
+     * definitions, so the host is described the way the compiler does it, but
+     * without the builder that would demand the state to be defined.
+     */
     private static function createHostLexer(): LexerInterface
     {
-        $result = new MarkersRegexGenerator()->generate(
+        $context = new LexerResultContext(
             tokens: [
                 new RegexTokenDefinition('\[', 'T_OPEN')->enter('embedded'),
                 new RegexTokenDefinition('\]', 'T_CLOSE'),
                 new RegexTokenDefinition('\s++', 'T_WHITESPACE')->setHidden(),
                 new RegexTokenDefinition('[a-z]++', 'T_NAME'),
             ],
+            states: [],
             flags: [
                 RegexModifier::Compiled,
                 RegexModifier::DotAll,
@@ -62,11 +72,22 @@ final class EmbeddedLexerTest extends TestCase
             ],
         );
 
+        $passes = [
+            new TokenNameConstructionLexerAnalysisPass(),
+            new ChannelConstructionLexerAnalysisPass(),
+            new TransitionConstructionLexerAnalysisPass(),
+            new RegexConstructionLexerAnalysisPass(),
+        ];
+
+        foreach ($passes as $pass) {
+            $pass->process($context);
+        }
+
         return new Lexer(
-            pattern: $result->pattern,
-            channels: $result->channels,
-            names: $result->names,
-            transitions: $result->transitions,
+            pattern: $context->pattern,
+            channels: $context->channels,
+            names: $context->names,
+            transitions: $context->transitions,
             states: ['embedded' => self::createForeignLexer()],
         );
     }

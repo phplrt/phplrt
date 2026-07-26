@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Compiler\Lexer\LexerBuilder;
+use Phplrt\Compiler\Lexer\Transformer\RuntimeLexerTransformer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
@@ -21,16 +22,8 @@ abstract class TestCase extends BaseTestCase
 
         $definition($builder);
 
-        $pathname = __DIR__ . \sprintf('/temp/phplrt-lexer-%s.php', \bin2hex(\random_bytes(8)));
-
-        \file_put_contents($pathname, (string) $builder->generate());
-
-        try {
-            /** @var LexerInterface */
-            return require $pathname;
-        } finally {
-            @\unlink($pathname);
-        }
+        return new RuntimeLexerTransformer()
+            ->transform($builder->build());
     }
 
     /**
