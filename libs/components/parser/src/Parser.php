@@ -18,45 +18,45 @@ use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 /**
- * The lookahead and the kept rules are optimizations: Omitting them turns the
- * parsing into a plain PEG recognition, which is slower and reports the syntax
- * errors at a later position, but yields the same result.
- *
  * @phpstan-import-type ReducerType from TraceReducer
  */
-final readonly class Parser implements ParserInterface
+readonly class Parser implements ParserInterface
 {
     /**
      * The identifiers of the tokens a rule may begin with, indexed by the rule
-     * identifiers. Empty in case the lookahead is unknown.
+     * identifiers.
      *
      * @var array<int, array<int, true>>
      */
-    private array $first;
+    private array $startTokens;
 
     /**
      * The rules that may be recognized without consuming a token, indexed by
-     * the rule identifiers. Every rule is nullable in case the lookahead is
-     * unknown, so no rule is cut off.
+     * the rule identifiers.
      *
      * @var array<int, bool>
      */
-    private array $nullable;
+    private array $matchesEmptyInput;
 
     /**
-     * The rules that are present in the resulting tree, indexed by the rule
-     * identifiers. Every rule is present in case they are unknown.
+     * The rules that become a node of the result, indexed by the rule
+     * identifiers.
+     *
+     * A rule that is present builds its own value from the values of its
+     * children and passes it to its reducer. A rule that is absent gives the
+     * values of its children to the rule above, so it leaves nothing in the
+     * result.
      *
      * @var array<int, bool>
      */
-    private array $kept;
+    private array $presentInTree;
 
     private TraceReducer $reducer;
 
     /**
-     * @param array<int, array<int, true>> $first
-     * @param array<int, bool> $nullable
-     * @param array<int, bool> $kept
+     * @param array<int, array<int, true>> $startTokens
+     * @param array<int, bool> $matchesEmptyInput
+     * @param array<int, bool> $presentInTree
      * @param array<int<0, max>, ReducerType> $reducers
      */
     public function __construct(
@@ -71,20 +71,35 @@ final readonly class Parser implements ParserInterface
          * @var int<0, max>
          */
         private int $initial,
-        array $first = [],
-        array $nullable = [],
-        array $kept = [],
         array $reducers = [],
+        array $startTokens = [],
+        array $matchesEmptyInput = [],
+        array $presentInTree = [],
         /**
          * Selects which tokens are passed to the grammar.
          */
         private FilterInterface $filter = new ChannelFilter(),
     ) {
-        $containsLookaheadTable = $first !== [] && $nullable !== [];
+        // Both tables are needed to skip a rule, so one without the other is
+        // useless
+        $containsLookaheadTable = $startTokens !== [] && $matchesEmptyInput !== [];
 
-        $this->first = $containsLookaheadTable ? $first : [];
-        $this->nullable = $containsLookaheadTable ? $nullable : self::admitEveryRule($grammar);
-        $this->kept = $kept === [] ? self::admitEveryRule($grammar) : $kept;
+        // If this fields is empty, the parser will turn into a regular PEG,
+        // which will slow down the parsing.
+        //
+        // Furthermore, errors will be reported at later stages (in more nested
+        // rules), since the dataset from these two tables doesn't allow for
+        // reproducing them at earlier stages.
+        $this->startTokens = $containsLookaheadTable ? $startTokens : [];
+        $this->matchesEmptyInput = $containsLookaheadTable ? $matchesEmptyInput : self::admitEveryRule($grammar);
+
+        // If a rule doesn't change anything, it can be skipped. This reduces
+        // the amount of tracing and speeds up subsequent processing, although
+        // the computational result will remain the same.
+        //
+        // If the set of rules isn't explicitly passed, then we simply fill them
+        // all in, assuming every rule is important.
+        $this->presentInTree = $presentInTree === [] ? self::admitEveryRule($grammar) : $presentInTree;
 
         $this->reducer = new TraceReducer(
             grammar: $grammar,
@@ -111,9 +126,9 @@ final readonly class Parser implements ParserInterface
             grammar: $this->grammar,
             initial: $this->initial,
             buffer: $buffer,
-            first: $this->first,
-            nullable: $this->nullable,
-            kept: $this->kept,
+            startTokens: $this->startTokens,
+            matchesEmptyInput: $this->matchesEmptyInput,
+            presentInTree: $this->presentInTree,
         );
     }
 

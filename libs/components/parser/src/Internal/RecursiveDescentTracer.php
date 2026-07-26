@@ -48,15 +48,15 @@ final class RecursiveDescentTracer
          *
          * @var array<int, array<int, true>>
          */
-        private readonly array $first,
+        private readonly array $startTokens,
         /**
          * @var array<int, bool>
          */
-        private readonly array $nullable,
+        private readonly array $matchesEmptyInput,
         /**
          * @var array<int, bool>
          */
-        private readonly array $kept,
+        private readonly array $presentInTree,
     ) {
         $this->error = new ErrorReport($buffer);
     }
@@ -64,29 +64,29 @@ final class RecursiveDescentTracer
     /**
      * Recognizes the given rule against the input.
      *
-     * The "nullable" and "kept" tables cover every rule of the grammar, an
-     * unknown one is passed as a table admitting all of them.
+     * The "matchesEmptyInput" and "presentInTree" tables cover every rule of
+     * the grammar, an unknown one is passed as a table admitting all of them.
      *
      * @param list<RuleInterface> $grammar
      * @param int<0, max> $initial
-     * @param array<int, array<int, true>> $first
-     * @param array<int, bool> $nullable
-     * @param array<int, bool> $kept
+     * @param array<int, array<int, true>> $startTokens
+     * @param array<int, bool> $matchesEmptyInput
+     * @param array<int, bool> $presentInTree
      */
     public static function trace(
         array $grammar,
         int $initial,
         BufferInterface $buffer,
-        array $first,
-        array $nullable,
-        array $kept,
+        array $startTokens,
+        array $matchesEmptyInput,
+        array $presentInTree,
     ): Success|Failure {
         if ($grammar === []) {
             // Fast-finish on empty grammar
             return new Failure($buffer->current);
         }
 
-        $self = new self($grammar, $buffer, $first, $nullable, $kept);
+        $self = new self($grammar, $buffer, $startTokens, $matchesEmptyInput, $presentInTree);
 
         if ($self->match($initial) && $self->isEndOfInput()) {
             return new Success(
@@ -129,7 +129,7 @@ final class RecursiveDescentTracer
             if ($definition->keep) {
                 $length = $this->length;
 
-                if ($this->kept[$rule]) {
+                if ($this->presentInTree[$rule]) {
                     // The terminal is recorded as an ordinary rule containing a
                     // single token, so it can be reduced in the same way
                     $this->entries[$length] = $rule;
@@ -150,14 +150,14 @@ final class RecursiveDescentTracer
 
         // The rule requires a token it cannot start with, so there is nothing
         // to recognize
-        if (!isset($this->first[$rule][$this->buffer->current->id]) && !$this->nullable[$rule]) {
+        if (!isset($this->startTokens[$rule][$this->buffer->current->id]) && !$this->matchesEmptyInput[$rule]) {
             return false;
         }
 
         $mark = $this->length;
-        $kept = $this->kept[$rule];
+        $presentInTree = $this->presentInTree[$rule];
 
-        if ($kept) {
+        if ($presentInTree) {
             $this->entries[$mark] = $rule;
             $this->length = $mark + 1;
         }
@@ -179,7 +179,7 @@ final class RecursiveDescentTracer
             return false;
         }
 
-        if ($kept) {
+        if ($presentInTree) {
             $length = $this->length;
 
             $this->entries[$length] = -$rule - 1;
@@ -249,7 +249,7 @@ final class RecursiveDescentTracer
                 break;
             }
 
-            // A nullable inner rule would match forever without consuming a
+            // An inner rule matching empty input would match forever without consuming a
             // single token, so the repetition stops as soon as it stalls.
             if ($buffer->key === $before) {
                 break;
