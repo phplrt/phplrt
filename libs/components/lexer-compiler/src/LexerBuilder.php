@@ -27,24 +27,51 @@ final class LexerBuilder
     use HasRegexFlags;
 
     /**
+     * Brings the lexer to the form the rest of the passes expect: the states
+     * that cannot be entered are dropped.
+     */
+    public const int PASS_PRIORITY_NORMALIZE = 0;
+
+    /**
+     * Reports the lexer that cannot be compiled.
+     */
+    public const int PASS_PRIORITY_CHECK = 100;
+
+    /**
+     * Rewrites the token definitions, keeping the input they recognize the
+     * same.
+     */
+    public const int PASS_PRIORITY_OPTIMIZE = 200;
+
+    /**
+     * Reports the lexer that has been broken by a rewrite.
+     */
+    public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
+
+    /**
      * @var array<non-empty-string, TokenDefinitionGroup>
      */
     public private(set) array $states = [];
 
     /**
-     * @var array<array-key, list<LexerCompilerPassInterface>>
+     * The passes rewriting and checking the token definitions, indexed by
+     * their priority.
+     *
+     * @var array<int, list<LexerCompilerPassInterface>>
      */
     public private(set) array $passes = [];
 
     public function __construct()
     {
         $this->passes = [
-            0 => [
-                /**
-                 * Dead states are dropped first, so that the code that could
-                 * never be reached does not produce compilation errors.
-                 */
+            /**
+             * Dead states are dropped first, so that the code that could
+             * never be reached does not produce compilation errors.
+             */
+            self::PASS_PRIORITY_NORMALIZE => [
                 new UnreachableStateLexerCompilerPass(),
+            ],
+            self::PASS_PRIORITY_CHECK => [
                 new TokenNameDuplicationLexerCompilerPass(),
                 new TokenNameValidationLexerCompilerPass(),
                 new RegexDuplicationLexerCompilerPass(),
@@ -93,11 +120,21 @@ final class LexerBuilder
     }
 
     /**
+     * Registers the pass rewriting or checking the token definitions.
+     *
+     * The passes of the same priority are processed in the order they have
+     * been registered.
+     *
+     * @api
+     *
+     * @param (self::PASS_PRIORITY_*|int) $priority
      * @return $this
      */
-    public function addCompilerPass(LexerCompilerPassInterface $pass, int $priority = 0): self
+    public function addCompilerPass(LexerCompilerPassInterface $pass, int $priority = self::PASS_PRIORITY_CHECK): self
     {
         $this->passes[$priority][] = $pass;
+
+        \ksort($this->passes);
 
         return $this;
     }

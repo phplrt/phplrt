@@ -40,6 +40,13 @@ final class LexerBuilderResult
     public private(set) array $constants = [];
 
     /**
+     * A map of token definition and its ID, gathered from all states.
+     *
+     * @var \SplObjectStorage<TokenDefinition, int>
+     */
+    private readonly \SplObjectStorage $identifiers;
+
+    /**
      * @param list<TokenDefinition> $tokens
      * @param array<non-empty-string, list<TokenDefinition>> $states
      */
@@ -58,19 +65,29 @@ final class LexerBuilderResult
          */
         $unknown = $this->createUnknownToken();
 
-        /** @var \SplObjectStorage<TokenDefinition, int> $identifiers */
-        $identifiers = new \SplObjectStorage();
+        $this->identifiers = new \SplObjectStorage();
 
-        $this->tokens = $this->index([...$tokens, $unknown], $identifiers);
+        $this->tokens = $this->index([...$tokens, $unknown]);
 
         $result = [];
 
         foreach ($states as $name => $definitions) {
-            $result[$name] = $this->index([...$definitions, $unknown], $identifiers);
+            $result[$name] = $this->index([...$definitions, $unknown]);
         }
 
         $this->states = $result;
         $this->constants = $this->createConstants();
+    }
+
+    /**
+     * Returns the identifier of the given token definition, or {@see null} in
+     * case of the token is not recognized by the lexer.
+     *
+     * @api
+     */
+    public function findTokenId(TokenDefinition $token): ?int
+    {
+        return $this->identifiers[$token] ?? null;
     }
 
     /**
@@ -79,11 +96,11 @@ final class LexerBuilderResult
      * A definition shared between several states keeps a single identifier.
      *
      * @param non-empty-list<TokenDefinition> $definitions
-     * @param \SplObjectStorage<TokenDefinition, int> $identifiers
      * @return non-empty-array<int, TokenDefinition>
      */
-    private function index(array $definitions, \SplObjectStorage $identifiers): array
+    private function index(array $definitions): array
     {
+        $identifiers = $this->identifiers;
         $result = [];
 
         foreach ($definitions as $definition) {
