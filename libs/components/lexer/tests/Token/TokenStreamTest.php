@@ -17,11 +17,11 @@ final class TokenStreamTest extends TestCase
     private static function createExpressionLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('\d++', 'T_NUMBER');
-            $lexer->match('[a-zA-Z_]\w*+', 'T_NAME');
-            $lexer->value('+', 'T_PLUS');
-            $lexer->value('=', 'T_ASSIGN');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('\d++', 'T_NUMBER');
+            $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
+            $lexer->addValue('+', 'T_PLUS');
+            $lexer->addValue('=', 'T_ASSIGN');
         });
     }
 
@@ -90,7 +90,7 @@ final class TokenStreamTest extends TestCase
     public function testValueContainsTheExactLexeme(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('"[^"]*+"', 'T_STRING');
+            $lexer->addPattern('"[^"]*+"', 'T_STRING');
         });
         $source = '"  spaced  "';
 
@@ -103,8 +103,8 @@ final class TokenStreamTest extends TestCase
     public function testOffsetsAreMeasuredInBytes(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('\p{L}++', 'T_WORD');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('\p{L}++', 'T_WORD');
         });
         $source = 'привет мир';
 
@@ -122,7 +122,7 @@ final class TokenStreamTest extends TestCase
     public function testAnonymousTokenHasNoName(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\d++');
+            $lexer->addPattern('\d++');
         });
 
         $tokens = \iterator_to_array($lexer->lex('42'), false);

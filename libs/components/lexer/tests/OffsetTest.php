@@ -16,9 +16,9 @@ final class OffsetTest extends TestCase
     private static function createWordsLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('\d++', 'T_NUMBER');
-            $lexer->match('[a-zA-Z_]\w*+', 'T_NAME');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('\d++', 'T_NUMBER');
+            $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
         });
     }
 

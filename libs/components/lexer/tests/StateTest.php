@@ -15,32 +15,32 @@ final class StateTest extends TestCase
     private static function createInterpolationLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('[a-zA-Z_]\w*+', 'T_NAME');
-            $lexer->value('"', 'T_STRING_BEGIN')->enter('string');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
+            $lexer->addValue('"', 'T_STRING_BEGIN')->enter('string');
 
-            $string = $lexer->state('string');
-            $string->value('"', 'T_STRING_END')->exit();
-            $string->value('{$', 'T_INTERPOLATION_BEGIN')->enter('interpolation');
-            $string->match('[^"{]++', 'T_STRING_CHARS');
+            $string = $lexer->addState('string');
+            $string->addValue('"', 'T_STRING_END')->exit();
+            $string->addValue('{$', 'T_INTERPOLATION_BEGIN')->enter('interpolation');
+            $string->addPattern('[^"{]++', 'T_STRING_CHARS');
 
-            $interpolation = $lexer->state('interpolation');
-            $interpolation->value('}', 'T_INTERPOLATION_END')->exit();
-            $interpolation->match('[a-zA-Z_]\w*+', 'T_INTERPOLATION_NAME');
+            $interpolation = $lexer->addState('interpolation');
+            $interpolation->addValue('}', 'T_INTERPOLATION_END')->exit();
+            $interpolation->addPattern('[a-zA-Z_]\w*+', 'T_INTERPOLATION_NAME');
         });
     }
 
     private static function createNestedCommentsLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('[a-zA-Z_]\w*+', 'T_NAME');
-            $lexer->value('/*', 'T_COMMENT_BEGIN')->enter('comment');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
+            $lexer->addValue('/*', 'T_COMMENT_BEGIN')->enter('comment');
 
-            $comment = $lexer->state('comment');
-            $comment->value('/*', 'T_COMMENT_NESTED')->enter('comment');
-            $comment->value('*/', 'T_COMMENT_END')->exit();
-            $comment->match('[^*/]++', 'T_COMMENT_TEXT');
+            $comment = $lexer->addState('comment');
+            $comment->addValue('/*', 'T_COMMENT_NESTED')->enter('comment');
+            $comment->addValue('*/', 'T_COMMENT_END')->exit();
+            $comment->addPattern('[^*/]++', 'T_COMMENT_TEXT');
         });
     }
 

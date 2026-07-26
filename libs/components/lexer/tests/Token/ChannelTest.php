@@ -19,9 +19,9 @@ final class ChannelTest extends TestCase
     private static function createAnnotatedLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('##[^\n]*+', 'T_DOC')->setChannel('documentation');
-            $lexer->match('[a-zA-Z_]\w*+', 'T_NAME');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('##[^\n]*+', 'T_DOC')->setChannel('documentation');
+            $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
         });
     }
 
@@ -91,8 +91,8 @@ final class ChannelTest extends TestCase
     public function testUnrecognizedFragmentIsMarkedAsUnknown(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('\d++', 'T_NUMBER');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('\d++', 'T_NUMBER');
         });
         $source = '42 ???';
 

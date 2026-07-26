@@ -17,7 +17,7 @@ final class ErrorReportingTest extends TestCase
     private static function createIncompleteLexer(): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('[a-z]++', 'T_NAME');
+            $lexer->addPattern('[a-z]++', 'T_NAME');
         });
     }
 
@@ -71,8 +71,8 @@ final class ErrorReportingTest extends TestCase
     public function testAnalysisIsNotSilentlyTruncated(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('\s++', 'T_WHITESPACE')->setHidden();
-            $lexer->match('[a-z]++', 'T_NAME');
+            $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
+            $lexer->addPattern('[a-z]++', 'T_NAME');
         });
         $source = 'abc 123 def';
 
@@ -83,12 +83,12 @@ final class ErrorReportingTest extends TestCase
     public function testFailureInsideAStateIsReportedToo(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
-            $lexer->match('[a-z]++', 'T_NAME');
-            $lexer->value('"', 'T_STRING_BEGIN')->enter('string');
+            $lexer->addPattern('[a-z]++', 'T_NAME');
+            $lexer->addValue('"', 'T_STRING_BEGIN')->enter('string');
 
-            $string = $lexer->state('string');
-            $string->value('"', 'T_STRING_END')->exit();
-            $string->match('[a-z]++', 'T_STRING_CHARS');
+            $string = $lexer->addState('string');
+            $string->addValue('"', 'T_STRING_END')->exit();
+            $string->addPattern('[a-z]++', 'T_STRING_CHARS');
         });
 
         $this->expectException(RuntimeExceptionInterface::class);
