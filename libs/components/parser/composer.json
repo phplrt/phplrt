@@ -32,7 +32,7 @@
         }
     },
     "require-dev": {
-        "phplrt/parser-compiler": "^4.0",
+        "phplrt/parser-builder": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0"

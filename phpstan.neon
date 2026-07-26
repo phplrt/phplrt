@@ -4,9 +4,9 @@ includes:
   # Components
   - libs/components/exception/phpstan.neon
   - libs/components/lexer/phpstan.neon
-  - libs/components/lexer-compiler/phpstan.neon
+  - libs/components/lexer-builder/phpstan.neon
   - libs/components/parser/phpstan.neon
-  - libs/components/parser-compiler/phpstan.neon
+  - libs/components/parser-builder/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
   - libs/contracts/parser/phpstan.neon

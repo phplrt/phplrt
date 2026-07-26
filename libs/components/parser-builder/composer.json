@@ -1,5 +1,5 @@
 {
-    "name": "phplrt/parser-compiler",
+    "name": "phplrt/parser-builder",
     "type": "library",
     "description": "The phplrt component for assembling a parser",
     "license": "MIT",
@@ -7,7 +7,7 @@
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/compiler-parser"
+        "source": "https://github.com/phplrt/parser-builder"
     },
     "authors": [
         {
@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.4",
         "phplrt/lexer": "^4.0",
-        "phplrt/lexer-compiler": "^4.0",
+        "phplrt/lexer-builder": "^4.0",
         "phplrt/parser": "^4.0"
     },
     "autoload": {

@@ -1,5 +1,5 @@
 {
-    "name": "phplrt/lexer-compiler",
+    "name": "phplrt/lexer-builder",
     "type": "library",
     "description": "The phplrt component for assembling a lexer",
     "license": "MIT",
@@ -7,7 +7,7 @@
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/compiler-lexer"
+        "source": "https://github.com/phplrt/lexer-builder"
     },
     "authors": [
         {
