@@ -6,14 +6,15 @@ namespace Phplrt\Compiler\Parser;
 
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
 use Phplrt\Compiler\Parser\Analysis\ParserAnalysisPassInterface;
+use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
+use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Compiler\DuplicateRuleParserCompilerPass;
 use Phplrt\Compiler\Parser\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Compiler\Parser\Compiler\LeftRecursionValidationParserCompilerPass;
 use Phplrt\Compiler\Parser\Compiler\NestedProductionParserCompilerPass;
+use Phplrt\Compiler\Parser\Compiler\ParserBuildingContext;
 use Phplrt\Compiler\Parser\Compiler\ParserCompilerPassInterface;
 use Phplrt\Compiler\Parser\Compiler\ProductionValidationParserCompilerPass;
 use Phplrt\Compiler\Parser\Compiler\RedundantProductionParserCompilerPass;
@@ -31,14 +32,10 @@ use Phplrt\Compiler\Parser\Definition\TerminalRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
-use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
 use Phplrt\Compiler\Parser\Exception\ParserCompilerException;
-use Phplrt\Parser\Grammar\Alternation;
-use Phplrt\Parser\Grammar\Concatenation;
-use Phplrt\Parser\Grammar\Lexeme;
-use Phplrt\Parser\Grammar\Optional;
-use Phplrt\Parser\Grammar\Repetition;
-use Phplrt\Parser\Grammar\RuleInterface;
+use Phplrt\Compiler\Parser\Transformer\ParserBuilderResultTransformer;
+use Phplrt\Compiler\Parser\Transformer\ParserBuildingContextTransformer;
+use Phplrt\Compiler\Parser\Transformer\ParserResultContextTransformer;
 
 final class ParserBuilder
 {
@@ -66,29 +63,10 @@ final class ParserBuilder
     public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
-     * Describes the assembled grammar for the parser to analyse the input
-     * without walking the rules that cannot match it.
-     *
-     * The rules are assigned their identifiers before this step, so the passes
-     * of this priority are {@see ParserAnalysisPassInterface} ones.
-     */
-    public const int PASS_PRIORITY_ANALYZE = 400;
-
-    /**
      * Contains the rule the analysis starts at, or {@see null} in case of the
      * first rule added to the builder is used
      */
     public private(set) ?RuleDefinition $initial = null;
-
-    /**
-     * The rules of the grammar, in the order they are reached starting from
-     * the initial one.
-     *
-     * @var list<RuleDefinition>
-     */
-    public array $rules {
-        get => $this->collectRules();
-    }
 
     /**
      * The rules added to the builder.
@@ -98,8 +76,8 @@ final class ParserBuilder
      *
      * @var \SplObjectStorage<RuleDefinition, null>
      */
-    public private(set) \SplObjectStorage $declarations {
-        get => $this->declarations ??= new \SplObjectStorage();
+    public private(set) \SplObjectStorage $rules {
+        get => $this->rules ??= new \SplObjectStorage();
     }
 
     /**
@@ -110,9 +88,10 @@ final class ParserBuilder
     public private(set) array $compilerPasses = [];
 
     /**
-     * The passes describing the assembled grammar, indexed by their priority.
+     * The passes describing the assembled grammar, in the order they have been
+     * registered.
      *
-     * @var array<int, list<ParserAnalysisPassInterface>>
+     * @var list<ParserAnalysisPassInterface>
      */
     public private(set) array $analysisPasses = [];
 
@@ -149,10 +128,8 @@ final class ParserBuilder
         ];
 
         $this->analysisPasses = [
-            self::PASS_PRIORITY_ANALYZE => [
-                new LookaheadConstructionParserAnalysisPass(),
-                new KeptConstructionParserAnalysisPass(),
-            ],
+            new LookaheadConstructionParserAnalysisPass(),
+            new TreePresenceConstructionParserAnalysisPass(),
         ];
     }
 
@@ -168,45 +145,6 @@ final class ParserBuilder
         $this->initial = $rule;
 
         return $this;
-    }
-
-    /**
-     * @return list<RuleDefinition>
-     */
-    private function collectRules(): array
-    {
-        /** @var \SplObjectStorage<RuleDefinition, null> $visited */
-        $visited = new \SplObjectStorage();
-        $result = [];
-
-        if ($this->initial !== null) {
-            $this->collectRule($this->initial, $visited, $result);
-        }
-
-        foreach ($this->declarations as $declaration) {
-            $this->collectRule($declaration, $visited, $result);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param \SplObjectStorage<RuleDefinition, null> $visited
-     * @param list<RuleDefinition> $result
-     */
-    private function collectRule(RuleDefinition $rule, \SplObjectStorage $visited, array &$result): void
-    {
-        if ($visited->offsetExists($rule)) {
-            return;
-        }
-
-        $visited->offsetSet($rule);
-
-        $result[] = $rule;
-
-        foreach ($rule->children as $child) {
-            $this->collectRule($child, $visited, $result);
-        }
     }
 
     /**
@@ -339,7 +277,7 @@ final class ParserBuilder
      */
     public function addRule(RuleDefinition $definition): self
     {
-        $this->declarations->offsetSet($definition);
+        $this->rules->offsetSet($definition);
 
         return $this;
     }
@@ -351,7 +289,7 @@ final class ParserBuilder
      */
     public function removeRule(RuleDefinition $definition): self
     {
-        $this->declarations->offsetUnset($definition);
+        $this->rules->offsetUnset($definition);
 
         return $this;
     }
@@ -364,6 +302,7 @@ final class ParserBuilder
      *
      * @api
      *
+     * @param (self::PASS_PRIORITY_*|int) $priority
      * @return $this
      */
     public function addCompilerPass(
@@ -380,20 +319,16 @@ final class ParserBuilder
     /**
      * Registers the pass describing the assembled grammar.
      *
-     * The passes of the same priority are processed in the order they have
-     * been registered.
+     * The analysis passes read the very same grammar and write the metadata of
+     * their own, so they are processed in the order they have been registered.
      *
      * @api
      *
      * @return $this
      */
-    public function addAnalysisPass(
-        ParserAnalysisPassInterface $pass,
-        int $priority = self::PASS_PRIORITY_ANALYZE,
-    ): self {
-        $this->analysisPasses[$priority][] = $pass;
-
-        \ksort($this->analysisPasses);
+    public function addAnalysisPass(ParserAnalysisPassInterface $pass): self
+    {
+        $this->analysisPasses[] = $pass;
 
         return $this;
     }
@@ -403,75 +338,22 @@ final class ParserBuilder
      */
     public function build(LexerBuilderResult $lexer): ParserBuilderResult
     {
-        $context = $this->process($lexer);
+        $building = new ParserBuildingContextTransformer()->transform($this);
 
-        $initial = $context->initial;
+        $this->process($building, $lexer);
 
-        if ($initial === null) {
-            throw new ParserCompilerException('The grammar of the parser contains no rules');
-        }
+        $result = new ParserResultContextTransformer()->transform($building, $lexer);
 
-        $definitions = $context->rules;
+        $this->analyze($result);
 
-        /** @var \SplObjectStorage<RuleDefinition, int> $identifiers */
-        $identifiers = new \SplObjectStorage();
-        $initialId = null;
-
-        foreach ($definitions as $id => $definition) {
-            $identifiers[$definition] = $id;
-
-            if ($definition === $initial) {
-                $initialId = $id;
-            }
-        }
-
-        if ($initialId === null) {
-            throw new CompilationFailedException($initial, \sprintf(
-                'Rule %s the analysis starts at is not defined in the grammar',
-                $initial,
-            ));
-        }
-
-        $grammar = [];
-        $reducers = [];
-        $constants = [];
-
-        foreach ($definitions as $id => $definition) {
-            $grammar[] = $this->createRule($definition, $identifiers, $lexer);
-
-            if ($definition->reducer !== null) {
-                $reducers[$id] = $definition->reducer;
-            }
-
-            if ($definition->name !== null) {
-                $constants[$definition->name] = $id;
-            }
-        }
-
-        $analysis = $this->analyze(new ParserAnalysis(
-            grammar: $grammar,
-            initial: $initialId,
-            reducers: $reducers,
-        ));
-
-        return new ParserBuilderResult(
-            grammar: $analysis->grammar,
-            initial: $analysis->initial,
-            first: $analysis->first,
-            nullable: $analysis->nullable,
-            kept: $analysis->kept,
-            reducers: $analysis->reducers,
-            constants: $constants,
-        );
+        return new ParserBuilderResultTransformer()->transform($result);
     }
 
     /**
      * @throws ParserCompilerException
      */
-    private function process(LexerBuilderResult $lexer): self
+    private function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        $context = clone $this;
-
         try {
             foreach ($this->compilerPasses as $passes) {
                 foreach ($passes as $pass) {
@@ -483,105 +365,21 @@ final class ParserBuilder
         } catch (\Throwable $e) {
             throw ParserCompilerException::becauseInternalErrorOccurs($e);
         }
-
-        return $context;
     }
 
     /**
      * @throws ParserCompilerException
      */
-    private function analyze(ParserAnalysis $analysis): ParserAnalysis
+    private function analyze(ParserResultContext $context): void
     {
         try {
-            foreach ($this->analysisPasses as $passes) {
-                foreach ($passes as $pass) {
-                    $pass->process($analysis);
-                }
+            foreach ($this->analysisPasses as $pass) {
+                $pass->process($context);
             }
         } catch (ParserCompilerException $e) {
             throw $e;
         } catch (\Throwable $e) {
             throw ParserCompilerException::becauseInternalErrorOccurs($e);
         }
-
-        return $analysis;
-    }
-
-    /**
-     * @param \SplObjectStorage<RuleDefinition, int> $identifiers
-     * @throws CompilationFailedException
-     */
-    private function createRule(
-        RuleDefinition $definition,
-        \SplObjectStorage $identifiers,
-        LexerBuilderResult $lexer,
-    ): RuleInterface {
-        return match (true) {
-            $definition instanceof TerminalRuleDefinition => new Lexeme(
-                tokenId: $this->findTokenId($definition, $lexer),
-                keep: $definition->isKept,
-            ),
-            $definition instanceof ConcatenationRuleDefinition => new Concatenation(
-                rules: $this->createReferences($definition, $definition->rules, $identifiers),
-            ),
-            $definition instanceof AlternationRuleDefinition => new Alternation(
-                ruleIds: $this->createReferences($definition, $definition->rules, $identifiers),
-            ),
-            $definition instanceof OptionalRuleDefinition => new Optional(
-                ruleId: $identifiers[$definition->rule],
-            ),
-            $definition instanceof RepetitionRuleDefinition => new Repetition(
-                ruleId: $identifiers[$definition->rule],
-                min: $definition->min,
-                max: $definition->max,
-            ),
-            default => throw new CompilationFailedException($definition, \sprintf(
-                'Unsupported rule definition %s',
-                $definition::class,
-            )),
-        };
-    }
-
-    /**
-     * @param list<RuleDefinition> $rules
-     * @param \SplObjectStorage<RuleDefinition, int> $identifiers
-     * @return non-empty-list<int>
-     * @throws CompilationFailedException
-     */
-    private function createReferences(
-        RuleDefinition $definition,
-        array $rules,
-        \SplObjectStorage $identifiers,
-    ): array {
-        $result = [];
-
-        foreach ($rules as $rule) {
-            $result[] = $identifiers[$rule];
-        }
-
-        if ($result === []) {
-            throw CompilationFailedException::becauseRuleIsEmpty($definition);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @throws CompilationFailedException
-     */
-    private function findTokenId(TerminalRuleDefinition $definition, LexerBuilderResult $lexer): int
-    {
-        $id = match (true) {
-            $definition instanceof TokenIdRuleDefinition => $definition->tokenId,
-            $definition instanceof TokenNameRuleDefinition => $lexer->constants[$definition->tokenName] ?? null,
-            $definition instanceof TokenRuleDefinition => $lexer->findTokenId($definition->token),
-        };
-
-        return $id ?? throw CompilationFailedException::becauseTokenIsUnknown($definition);
-    }
-
-    public function __clone(): void
-    {
-        $this->declarations = clone $this->declarations;
     }
 }

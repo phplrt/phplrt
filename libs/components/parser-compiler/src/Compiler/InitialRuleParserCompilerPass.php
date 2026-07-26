@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Compiler;
 
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Marks the rule the analysis starts at, in case of none has been marked.
@@ -16,16 +15,12 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class InitialRuleParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        if ($builder->initial !== null) {
+        if ($context->initial !== null) {
             return;
         }
 
-        foreach ($builder->declarations as $rule) {
-            $builder->setInitialRule($rule);
-
-            return;
-        }
+        $context->initial = $context->rules[0] ?? null;
     }
 }

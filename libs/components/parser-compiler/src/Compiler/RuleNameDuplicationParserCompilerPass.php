@@ -6,7 +6,6 @@ namespace Phplrt\Compiler\Parser\Compiler;
 
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Checks that rule names are unique.
@@ -17,12 +16,12 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class RuleNameDuplicationParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
         /** @var array<non-empty-string, true> $names */
         $names = [];
 
-        foreach ($builder->rules as $rule) {
+        foreach ($context->rules as $rule) {
             $name = $rule->name;
 
             // Skip anonymous rules

@@ -85,6 +85,11 @@ final class RepetitionRuleDefinition extends ProductionRuleDefinition implements
         return $this;
     }
 
+    public function replaceChildren(\Closure $replace): void
+    {
+        $this->rule = $replace($this->rule);
+    }
+
     protected function printValue(): string
     {
         $reference = $this->rule->printReference();

@@ -11,7 +11,6 @@ use Phplrt\Compiler\Parser\Definition\OptionalRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RepetitionRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Checks that no rule of the grammar refers to itself before it recognizes
@@ -38,9 +37,9 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
      */
     private const int STATUS_COMPLETED = 2;
 
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        $rules = $builder->rules;
+        $rules = $context->rules;
 
         $nullable = $this->calculateNullable($rules);
 

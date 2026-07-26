@@ -13,6 +13,10 @@ namespace Phplrt\Compiler\Parser\Definition;
  */
 final class RuleReference extends RuleDefinition
 {
+    public array $children {
+        get => \is_string($this->target) ? [] : [$this->target];
+    }
+
     /**
      * @param RuleDefinition|non-empty-string $target
      */
@@ -41,6 +45,15 @@ final class RuleReference extends RuleDefinition
         $this->target = $target;
 
         return $this;
+    }
+
+    public function replaceChildren(\Closure $replace): void
+    {
+        if (\is_string($this->target)) {
+            return;
+        }
+
+        $this->target = $replace($this->target);
     }
 
     protected function printValue(): string

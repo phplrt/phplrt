@@ -11,7 +11,6 @@ use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Checks that every token referred to by the grammar is recognized by the lexer
@@ -20,9 +19,9 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class TokenReferenceValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        foreach ($builder->rules as $rule) {
+        foreach ($context->rules as $rule) {
             if (!$rule instanceof TerminalRuleDefinition) {
                 continue;
             }
@@ -85,9 +84,9 @@ final readonly class TokenReferenceValidationParserCompilerPass implements
      */
     private function findTokenByName(LexerBuilderResult $lexer, string $name): ?TokenDefinition
     {
-        $id = $lexer->constants[$name] ?? null;
+        $id = \array_search($name, $lexer->names, true);
 
-        if ($id === null) {
+        if ($id === false) {
             return null;
         }
 

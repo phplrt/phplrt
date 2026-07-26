@@ -20,14 +20,14 @@ use Phplrt\Parser\Grammar\RuleInterface;
 final readonly class LookaheadConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
-    public function process(ParserAnalysis $analysis): void
+    public function process(ParserResultContext $context): void
     {
-        $first = [];
-        $nullable = [];
+        $startTokens = [];
+        $matchesEmptyInput = [];
 
-        foreach ($analysis->grammar as $ruleId => $_) {
-            $first[$ruleId] = [];
-            $nullable[$ruleId] = false;
+        foreach ($context->grammar as $ruleId => $_) {
+            $startTokens[$ruleId] = [];
+            $matchesEmptyInput[$ruleId] = false;
         }
 
         // The rules refer to each other, so the sets grow until they stop
@@ -35,66 +35,66 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
         do {
             $changed = false;
 
-            foreach ($analysis->grammar as $ruleId => $rule) {
-                $before = [\count($first[$ruleId]), $nullable[$ruleId]];
+            foreach ($context->grammar as $ruleId => $rule) {
+                $before = [\count($startTokens[$ruleId]), $matchesEmptyInput[$ruleId]];
 
-                $this->expand($rule, $first, $nullable, $ruleId);
+                $this->expand($rule, $startTokens, $matchesEmptyInput, $ruleId);
 
-                if ($before !== [\count($first[$ruleId]), $nullable[$ruleId]]) {
+                if ($before !== [\count($startTokens[$ruleId]), $matchesEmptyInput[$ruleId]]) {
                     $changed = true;
                 }
             }
         } while ($changed);
 
-        $analysis->setFirst($first)
-            ->setNullable($nullable);
+        $context->startTokens = $startTokens;
+        $context->matchesEmptyInput = $matchesEmptyInput;
     }
 
     /**
-     * @param array<int, array<int, true>> $first
-     * @param array<int, bool> $nullable
+     * @param array<int, array<int, true>> $startTokens
+     * @param array<int, bool> $matchesEmptyInput
      */
-    private function expand(RuleInterface $definition, array &$first, array &$nullable, int $rule): void
+    private function expand(RuleInterface $definition, array &$startTokens, array &$matchesEmptyInput, int $rule): void
     {
         switch (true) {
             case $definition instanceof Lexeme:
-                $first[$rule][$definition->tokenId] = true;
+                $startTokens[$rule][$definition->tokenId] = true;
                 break;
 
             case $definition instanceof Concatenation:
                 $optional = true;
 
                 foreach ($definition->rules as $inner) {
-                    $first[$rule] += $first[$inner];
+                    $startTokens[$rule] += $startTokens[$inner];
 
-                    if (!$nullable[$inner]) {
+                    if (!$matchesEmptyInput[$inner]) {
                         $optional = false;
 
                         break;
                     }
                 }
 
-                $nullable[$rule] = $optional;
+                $matchesEmptyInput[$rule] = $optional;
                 break;
 
             case $definition instanceof Alternation:
                 foreach ($definition->ruleIds as $inner) {
-                    $first[$rule] += $first[$inner];
+                    $startTokens[$rule] += $startTokens[$inner];
 
-                    if ($nullable[$inner]) {
-                        $nullable[$rule] = true;
+                    if ($matchesEmptyInput[$inner]) {
+                        $matchesEmptyInput[$rule] = true;
                     }
                 }
                 break;
 
             case $definition instanceof Optional:
-                $first[$rule] += $first[$definition->ruleId];
-                $nullable[$rule] = true;
+                $startTokens[$rule] += $startTokens[$definition->ruleId];
+                $matchesEmptyInput[$rule] = true;
                 break;
 
             case $definition instanceof Repetition:
-                $first[$rule] += $first[$definition->ruleId];
-                $nullable[$rule] = $definition->min === 0 || $nullable[$definition->ruleId];
+                $startTokens[$rule] += $startTokens[$definition->ruleId];
+                $matchesEmptyInput[$rule] = $definition->min === 0 || $matchesEmptyInput[$definition->ruleId];
                 break;
         }
     }

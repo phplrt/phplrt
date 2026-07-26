@@ -5,14 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Compiler;
 
 use Phplrt\Compiler\Lexer\LexerBuilderResult;
-use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\OptionalRuleDefinition;
-use Phplrt\Compiler\Parser\Definition\RepetitionRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleReference;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Replaces every reference by the rule it points at.
@@ -20,12 +15,12 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class RuleReferenceResolutionParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        $initial = $builder->initial;
+        $initial = $context->initial;
 
         if ($initial instanceof RuleReference) {
-            $builder->setInitialRule($this->resolveRule($initial, $initial, $this->collectNamedRules($builder)));
+            $context->initial = $this->resolveRule($initial, $initial, $this->collectNamedRules($context));
         }
 
         /**
@@ -33,10 +28,15 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
          * name, so the grammar is walked again until nothing changes.
          */
         do {
-            $named = $this->collectNamedRules($builder);
+            $named = $this->collectNamedRules($context);
             $resolved = false;
 
-            foreach ($builder->rules as $rule) {
+            foreach ($context->rules as $rule) {
+                // A reference points at the rule instead of containing it
+                if ($rule instanceof RuleReference) {
+                    continue;
+                }
+
                 $resolved = $this->resolveChildren($rule, $named) || $resolved;
             }
         } while ($resolved);
@@ -45,11 +45,10 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
          * A reference stands for the rule it points at, so it must not reach
          * the grammar as a rule of its own.
          */
-        foreach ([...$builder->declarations] as $declaration) {
-            if ($declaration instanceof RuleReference) {
-                $builder->removeRule($declaration);
-            }
-        }
+        $context->rules = \array_values(\array_filter(
+            $context->rules,
+            static fn(RuleDefinition $rule): bool => !$rule instanceof RuleReference,
+        ));
     }
 
     /**
@@ -68,49 +67,14 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
 
         foreach ($children as $child) {
             if ($child instanceof RuleReference) {
-                $this->replaceChildren($rule, $named);
+                $rule->replaceChildren(fn(RuleDefinition $inner): RuleDefinition
+                    => $this->resolveRule($rule, $inner, $named));
 
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * @param array<non-empty-string, RuleDefinition> $named
-     * @throws CompilationFailedException
-     */
-    private function replaceChildren(RuleDefinition $rule, array $named): void
-    {
-        match (true) {
-            $rule instanceof ConcatenationRuleDefinition,
-            $rule instanceof AlternationRuleDefinition => $rule->setRules(
-                $this->resolveRules($rule, $rule->rules, $named),
-            ),
-            $rule instanceof OptionalRuleDefinition,
-            $rule instanceof RepetitionRuleDefinition => $rule->setRule(
-                $this->resolveRule($rule, $rule->rule, $named),
-            ),
-            default => null,
-        };
-    }
-
-    /**
-     * @param list<RuleDefinition> $rules
-     * @param array<non-empty-string, RuleDefinition> $named
-     * @return list<RuleDefinition>
-     * @throws CompilationFailedException
-     */
-    private function resolveRules(RuleDefinition $rule, array $rules, array $named): array
-    {
-        $result = [];
-
-        foreach ($rules as $child) {
-            $result[] = $this->resolveRule($rule, $child, $named);
-        }
-
-        return $result;
     }
 
     /**
@@ -151,11 +115,11 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
     /**
      * @return array<non-empty-string, RuleDefinition>
      */
-    private function collectNamedRules(ParserBuilder $builder): array
+    private function collectNamedRules(ParserBuildingContext $context): array
     {
         $result = [];
 
-        foreach ($builder->rules as $rule) {
+        foreach ($context->rules as $rule) {
             if ($rule->name === null) {
                 continue;
             }

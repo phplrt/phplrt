@@ -9,7 +9,6 @@ use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\Definition\SequenceRuleDefinitionInterface;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Removes the productions of a single rule that recognize exactly what that
@@ -21,41 +20,34 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class RedundantProductionParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    use HasRuleReplacements;
-
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
         do {
-            $rules = $builder->rules;
-            $parents = $this->calculateParents($rules);
+            $parents = RuleParents::createFromRules($context->rules);
+            $replacements = new RuleReplacements();
 
-            /** @var \SplObjectStorage<RuleDefinition, RuleDefinition> $replacements */
-            $replacements = new \SplObjectStorage();
-
-            foreach ($rules as $rule) {
-                $child = $this->findRedundantChild($rule, $parents, $builder);
+            foreach ($context->rules as $rule) {
+                $child = $this->findRedundantChild($rule, $parents, $context);
 
                 if ($child === null) {
                     continue;
                 }
 
-                $replacements[$rule] = $child;
+                $replacements->replace($rule, $child);
             }
 
-            $this->replaceRules($builder, $rules, $replacements);
-        } while ($replacements->count() > 0);
+            $replacements->applyTo($context);
+        } while (!$replacements->isEmpty);
     }
 
     /**
      * Returns the rule the given production is equivalent to, or {@see null}
      * in case of the production cannot be removed.
-     *
-     * @param \SplObjectStorage<RuleDefinition, list<RuleDefinition>> $parents
      */
     private function findRedundantChild(
         RuleDefinition $rule,
-        \SplObjectStorage $parents,
-        ParserBuilder $builder,
+        RuleParents $parents,
+        ParserBuildingContext $context,
     ): ?RuleDefinition {
         /**
          * A named rule is exposed as an identifier of the grammar and a rule
@@ -79,13 +71,13 @@ final readonly class RedundantProductionParserCompilerPass implements
          * the result the same only while its value is joined with the values of
          * the rule that refers to it.
          */
-        if ($rule === $builder->initial) {
+        if ($rule === $context->initial) {
             return null;
         }
 
-        $referrers = $parents[$rule] ?? [];
+        $referrer = $parents->findSingleParent($rule);
 
-        if (\count($referrers) !== 1 || !$referrers[0] instanceof SequenceRuleDefinitionInterface) {
+        if (!$referrer instanceof SequenceRuleDefinitionInterface) {
             return null;
         }
 

@@ -42,6 +42,11 @@ final class OptionalRuleDefinition extends ProductionRuleDefinition
         return $this;
     }
 
+    public function replaceChildren(\Closure $replace): void
+    {
+        $this->rule = $replace($this->rule);
+    }
+
     protected function printValue(): string
     {
         return $this->rule->printReference() . '?';

@@ -14,5 +14,5 @@ interface ParserAnalysisPassInterface
      *
      * @throws \Throwable in case of any error
      */
-    public function process(ParserAnalysis $analysis): void;
+    public function process(ParserResultContext $context): void;
 }

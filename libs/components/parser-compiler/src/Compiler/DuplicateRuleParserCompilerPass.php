@@ -13,7 +13,6 @@ use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenIdRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenNameRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\TokenRuleDefinition;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Merges the rules recognizing exactly the same input into a single one.
@@ -25,24 +24,19 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class DuplicateRuleParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    use HasRuleReplacements;
-
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
         /**
          * Merging the rules makes the ones referring to them equal as well, so
          * the grammar is walked again until nothing changes.
          */
         do {
-            $rules = $builder->rules;
-
             /** @var array<non-empty-string, RuleDefinition> $originals */
             $originals = [];
 
-            /** @var \SplObjectStorage<RuleDefinition, RuleDefinition> $replacements */
-            $replacements = new \SplObjectStorage();
+            $replacements = new RuleReplacements();
 
-            foreach ($rules as $rule) {
+            foreach ($context->rules as $rule) {
                 $key = $this->createKey($rule);
 
                 if ($key === null) {
@@ -57,11 +51,11 @@ final readonly class DuplicateRuleParserCompilerPass implements
                     continue;
                 }
 
-                $replacements[$rule] = $original;
+                $replacements->replace($rule, $original);
             }
 
-            $this->replaceRules($builder, $rules, $replacements);
-        } while ($replacements->count() > 0);
+            $replacements->applyTo($context);
+        } while (!$replacements->isEmpty);
     }
 
     /**

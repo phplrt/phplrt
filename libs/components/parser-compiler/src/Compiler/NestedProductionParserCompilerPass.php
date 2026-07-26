@@ -8,7 +8,6 @@ use Phplrt\Compiler\Lexer\LexerBuilderResult;
 use Phplrt\Compiler\Parser\Definition\AlternationRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Joins a production with the productions of the same kind nested into it.
@@ -19,13 +18,11 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class NestedProductionParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    use HasRuleReplacements;
-
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
         do {
-            $rules = $builder->rules;
-            $parents = $this->calculateParents($rules);
+            $rules = $context->rules;
+            $parents = RuleParents::createFromRules($rules);
             $joined = [];
 
             foreach ($rules as $rule) {
@@ -35,7 +32,7 @@ final readonly class NestedProductionParserCompilerPass implements
                     continue;
                 }
 
-                $children = $this->expandChildren($rule, $parents, $builder, $joined);
+                $children = $this->expandChildren($rule, $parents, $context, $joined);
 
                 if ($children === null) {
                     continue;
@@ -46,10 +43,10 @@ final readonly class NestedProductionParserCompilerPass implements
 
             /**
              * A joined rule is no longer referred to by the rule above, so it
-             * must not be added to the grammar on its own.
+             * must not stay in the grammar on its own.
              */
-            foreach ($joined as $rule) {
-                $builder->removeRule($rule);
+            if ($joined !== []) {
+                $context->rules = $context->initial?->collectRules() ?? [];
             }
         } while ($joined !== []);
     }
@@ -58,22 +55,20 @@ final readonly class NestedProductionParserCompilerPass implements
      * Returns the rules of the given production with the nested ones joined
      * into it, or {@see null} in case of nothing may be joined.
      *
-     * @param AlternationRuleDefinition|ConcatenationRuleDefinition $rule
-     * @param \SplObjectStorage<RuleDefinition, list<RuleDefinition>> $parents
      * @param list<RuleDefinition> $joined
      * @return list<RuleDefinition>|null
      */
     private function expandChildren(
-        RuleDefinition $rule,
-        \SplObjectStorage $parents,
-        ParserBuilder $builder,
+        AlternationRuleDefinition|ConcatenationRuleDefinition $rule,
+        RuleParents $parents,
+        ParserBuildingContext $context,
         array &$joined,
     ): ?array {
         $result = [];
         $expanded = false;
 
         foreach ($rule->children as $child) {
-            if (!$this->isJoinable($rule, $child, $parents, $builder)) {
+            if (!$this->isJoinable($rule, $child, $parents, $context)) {
                 $result[] = $child;
 
                 continue;
@@ -90,21 +85,18 @@ final readonly class NestedProductionParserCompilerPass implements
         return $expanded ? $result : null;
     }
 
-    /**
-     * @param \SplObjectStorage<RuleDefinition, list<RuleDefinition>> $parents
-     */
     private function isJoinable(
-        RuleDefinition $rule,
+        AlternationRuleDefinition|ConcatenationRuleDefinition $rule,
         RuleDefinition $child,
-        \SplObjectStorage $parents,
-        ParserBuilder $builder,
+        RuleParents $parents,
+        ParserBuildingContext $context,
     ): bool {
         /**
          * A named rule is exposed as an identifier of the grammar, a rule with
          * a reducer builds a node of its own and the initial rule is always
          * present in the result, so none of them may be joined.
          */
-        if ($child->name !== null || $child->reducer !== null || $child === $builder->initial) {
+        if ($child->name !== null || $child->reducer !== null || $child === $context->initial) {
             return false;
         }
 
@@ -121,6 +113,6 @@ final readonly class NestedProductionParserCompilerPass implements
          * The values of a nested concatenation are joined with the values of
          * the rule above only while it is the only rule referring to it.
          */
-        return \count($parents[$child] ?? []) === 1;
+        return $parents->findSingleParent($child) !== null;
     }
 }

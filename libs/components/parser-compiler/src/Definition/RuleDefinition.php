@@ -33,6 +33,76 @@ abstract class RuleDefinition extends Definition
     public array $children { get => []; }
 
     /**
+     * Replaces every rule the current one refers to by the result of the given
+     * callback.
+     *
+     * @param \Closure(RuleDefinition): RuleDefinition $replace
+     */
+    public function replaceChildren(\Closure $replace): void {}
+
+    /**
+     * Returns the rule along with the ones it refers to, directly or not, in
+     * the order they are reached.
+     *
+     * @api
+     *
+     * @return non-empty-list<RuleDefinition>
+     */
+    public function collectRules(): array
+    {
+        /** @var \SplObjectStorage<RuleDefinition, null> $visited */
+        $visited = new \SplObjectStorage();
+
+        $this->collectRule($visited);
+
+        /** @var non-empty-list<RuleDefinition> */
+        return \iterator_to_array($visited, false);
+    }
+
+    /**
+     * @param \SplObjectStorage<RuleDefinition, null> $visited
+     */
+    protected function collectRule(\SplObjectStorage $visited): void
+    {
+        if ($visited->offsetExists($this)) {
+            return;
+        }
+
+        $visited->offsetSet($this);
+
+        foreach ($this->children as $child) {
+            $child->collectRule($visited);
+        }
+    }
+
+    /**
+     * Copies the rule along with the ones it refers to, directly or not.
+     *
+     * A rule may refer to itself and the very same rule may be referred to from
+     * several places, so the copies made so far are carried along: the copy is
+     * registered before its children are reached, and a rule already copied is
+     * returned as is.
+     *
+     * @api
+     *
+     * @param \SplObjectStorage<RuleDefinition, RuleDefinition> $copies
+     */
+    public function clone(\SplObjectStorage $copies): self
+    {
+        if ($copies->offsetExists($this)) {
+            return $copies[$this];
+        }
+
+        $copy = clone $this;
+
+        $copies[$this] = $copy;
+
+        $copy->replaceChildren(static fn(self $child): self => $child->clone($copies));
+
+        return $copy;
+    }
+
+    /**
      * @param non-empty-string|null $name
      */
     public function __construct(

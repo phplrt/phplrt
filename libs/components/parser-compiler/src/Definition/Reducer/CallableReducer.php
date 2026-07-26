@@ -26,6 +26,14 @@ final readonly class CallableReducer implements ReducerInterface
         $this->callback = $callback(...);
     }
 
+    /**
+     * @param CallbackType $callback
+     */
+    public static function createFromCallable(callable $callback): self
+    {
+        return new self($callback);
+    }
+
     public function __toString(): string
     {
         return 'callback';

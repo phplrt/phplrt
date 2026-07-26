@@ -10,7 +10,6 @@ use Phplrt\Compiler\Parser\Definition\ConcatenationRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RepetitionRuleDefinition;
 use Phplrt\Compiler\Parser\Definition\RuleDefinition;
 use Phplrt\Compiler\Parser\Exception\CompilationFailedException;
-use Phplrt\Compiler\Parser\ParserBuilder;
 
 /**
  * Checks that the productions of the grammar are complete.
@@ -18,9 +17,9 @@ use Phplrt\Compiler\Parser\ParserBuilder;
 final readonly class ProductionValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
-    public function process(ParserBuilder $builder, LexerBuilderResult $lexer): void
+    public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        foreach ($builder->rules as $rule) {
+        foreach ($context->rules as $rule) {
             match (true) {
                 $rule instanceof ConcatenationRuleDefinition,
                 $rule instanceof AlternationRuleDefinition => $this->validateChildrenOrFail($rule),

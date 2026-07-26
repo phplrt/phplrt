@@ -48,4 +48,18 @@ trait HasChildRuleDefinitions
 
         return $this;
     }
+
+    /**
+     * @param \Closure(RuleDefinition): RuleDefinition $replace
+     */
+    public function replaceChildren(\Closure $replace): void
+    {
+        $result = [];
+
+        foreach ($this->rules as $rule) {
+            $result[] = $replace($rule);
+        }
+
+        $this->rules = $result;
+    }
 }
