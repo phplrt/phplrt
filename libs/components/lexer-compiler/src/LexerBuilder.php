@@ -83,23 +83,23 @@ final class LexerBuilder
     }
 
     /**
-     * Gets (and registers, in case it does not exist yet) the group of token
-     * definitions of the given lexer state.
+     * Adds the lexer state and returns the group its token definitions belong
+     * to, or returns the group of the state that has been added earlier.
      *
      * A state can only be reached using a {@see TokenDefinition::enter()}
      * transition and left using a {@see TokenDefinition::exit()} one.
      *
      * For example,
      * ```php
-     * $builder->match('"')->enter('string');
-     * $builder->state('string')->match('"')->exit();
+     * $builder->addPattern('"')->enter('string');
+     * $builder->addState('string')->addPattern('"')->exit();
      * ```
      *
      * @api
      *
      * @param non-empty-string $name
      */
-    public function state(string $name): TokenDefinitionGroup
+    public function addState(string $name): TokenDefinitionGroup
     {
         return $this->states[$name] ??= new TokenDefinitionGroup();
     }

@@ -18,7 +18,7 @@ final class PassPriorityTest extends TestCase
         $order = [];
 
         $lexer = new LexerBuilder();
-        $lexer->match('\d++');
+        $lexer->addPattern('\d++');
 
         $lexer->addCompilerPass(
             self::createPass($order, 'optimize'),
@@ -60,7 +60,7 @@ final class PassPriorityTest extends TestCase
         $order = [];
 
         $lexer = new LexerBuilder();
-        $lexer->match('\d++');
+        $lexer->addPattern('\d++');
 
         $lexer->addCompilerPass(self::createPass($order, 'first'));
         $lexer->addCompilerPass(self::createPass($order, 'second'));

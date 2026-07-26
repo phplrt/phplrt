@@ -23,7 +23,7 @@ trait HasTokenDefinitions
      * @param non-empty-string $pattern
      * @param non-empty-string|null $name
      */
-    public function match(string $pattern, ?string $name = null): RegexTokenDefinition
+    public function addPattern(string $pattern, ?string $name = null): RegexTokenDefinition
     {
         $definition = new RegexTokenDefinition($pattern, $name);
 
@@ -36,7 +36,7 @@ trait HasTokenDefinitions
      * @param non-empty-string $value
      * @param non-empty-string|null $name
      */
-    public function value(string $value, ?string $name = null): ValueTokenDefinition
+    public function addValue(string $value, ?string $name = null): ValueTokenDefinition
     {
         $definition = new ValueTokenDefinition($value, $name);
 
