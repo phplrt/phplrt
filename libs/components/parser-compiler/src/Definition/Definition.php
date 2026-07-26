@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Parser\Definition;
 
-use Phplrt\Contracts\Source\ReadableInterface;
-
 abstract class Definition implements \Stringable
 {
     public private(set) ?DefinitionContext $context = null;
 
     /**
+     * @param non-empty-string $pathname
      * @param int<0, max> $offset
      * @return $this
      */
-    public function setSource(ReadableInterface $source, int $offset): self
+    public function setSource(string $pathname, int $offset): self
     {
-        $this->context = new DefinitionContext($source, $offset);
+        $this->context = new DefinitionContext($pathname, $offset);
 
         return $this;
     }

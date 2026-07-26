@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Parser\Definition;
 
 /**
- * Recognizes all of the given rules, one after another.
+ * Recognizes the first of the given rules that matches the input.
  */
-final class ConcatenationRuleDefinition extends ProductionRuleDefinition
+final class AlternationRuleDefinition extends ProductionRuleDefinition
 {
     use HasChildRuleDefinitions;
 
@@ -40,6 +40,6 @@ final class ConcatenationRuleDefinition extends ProductionRuleDefinition
             $references[] = $rule->printReference();
         }
 
-        return \implode(' ', $references);
+        return \implode(' | ', $references);
     }
 }
