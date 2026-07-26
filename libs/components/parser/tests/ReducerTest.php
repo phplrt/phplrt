@@ -18,7 +18,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
 #[Group('phplrt/parser')]
-final class ParserBuilderTest extends TestCase
+final class ReducerTest extends TestCase
 {
     #[TestDox('The rules without a reducer are reduced to the recognized tokens')]
     public function testReducesRulesToTokens(): void
@@ -156,13 +156,45 @@ final class ParserBuilderTest extends TestCase
         self::assertSame('2', $contexts[0]->token?->value);
     }
 
+    #[TestDox('The result does not depend on the optional tables')]
+    public function testReducesWithoutOptionalTables(): void
+    {
+        $reducers = [
+            self::RULE_NUMBER => static fn(Context $context, mixed $children): int => (int) $children->value,
+            self::RULE_OPERATOR => static fn(Context $context, mixed $children): string => '?',
+        ];
+
+        $grammar = self::createGrammar();
+
+        $parser = new Parser(
+            lexer: new ArithmeticLexer(),
+            grammar: $grammar,
+            initial: self::RULE_EXPRESSION,
+            merged: self::analyze($grammar, self::RULE_EXPRESSION, $reducers)->merged,
+            reducers: $reducers,
+        );
+
+        self::assertSame(
+            self::createParser($reducers)->parse('-1 + 2 - 3'),
+            $parser->parse('-1 + 2 - 3'),
+        );
+    }
+
     #[TestDox('The result of an empty grammar rule is an empty list')]
     public function testReducesEmptyResult(): void
     {
+        $grammar = [new Lexeme(ArithmeticLexer::T_NUMBER, false)];
+
+        $analysis = self::analyze($grammar, 0);
+
         $parser = new Parser(
             lexer: new ArithmeticLexer(),
-            grammar: [new Lexeme(ArithmeticLexer::T_NUMBER, false)],
-            initial: 0,
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            first: $analysis->first,
+            nullable: $analysis->nullable,
+            kept: $analysis->kept,
+            merged: $analysis->merged,
         );
 
         self::assertSame([], $parser->parse('1'));
@@ -181,12 +213,12 @@ final class ParserBuilderTest extends TestCase
     /**
      * Expression := ("+" | "-")? Number (("+" | "-") Number)*
      *
-     * @param iterable<int<0, max>, callable(Context, mixed): mixed> $reducers
+     * @return list<RuleInterface>
      */
-    private static function createParser(iterable $reducers = []): Parser
+    private static function createGrammar(): array
     {
-        /** @var list<RuleInterface> $grammar */
-        $grammar = [
+        /** @var list<RuleInterface> */
+        return [
             self::RULE_EXPRESSION => new Concatenation([self::RULE_SIGN, self::RULE_NUMBER, self::RULE_TAIL]),
             self::RULE_NUMBER => new Lexeme(ArithmeticLexer::T_NUMBER),
             self::RULE_TAIL => new Repetition(3),
@@ -196,12 +228,24 @@ final class ParserBuilderTest extends TestCase
             6 => new Lexeme(ArithmeticLexer::T_PLUS, false),
             7 => new Lexeme(ArithmeticLexer::T_MINUS, false),
         ];
+    }
+
+    /**
+     * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
+     */
+    private static function createParser(array $reducers = []): Parser
+    {
+        $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION, $reducers);
 
         return new Parser(
             lexer: new ArithmeticLexer(),
-            grammar: $grammar,
-            initial: self::RULE_EXPRESSION,
-            reducers: $reducers,
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            first: $analysis->first,
+            nullable: $analysis->nullable,
+            kept: $analysis->kept,
+            merged: $analysis->merged,
+            reducers: $analysis->reducers,
         );
     }
 
