@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Lexer\Compiler;
 
-use Phplrt\Compiler\Lexer\LexerBuilder;
-
 /**
  * Interface that must be implemented by compilation passes.
  */
 interface LexerCompilerPassInterface
 {
     /**
-     * You can modify the builder here before it is dumped.
+     * You can rewrite and check the token definitions here before the
+     * identifiers are assigned to them.
      *
      * @throws \Throwable in case of any error
      */
-    public function process(LexerBuilder $builder): void;
+    public function process(LexerBuildingContext $context): void;
 }

@@ -8,7 +8,6 @@ use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\ValueTokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
-use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
  * Checks that there are no duplicate patterns for token definitions
@@ -16,12 +15,12 @@ use Phplrt\Compiler\Lexer\LexerBuilder;
 final readonly class RegexDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
-    public function process(LexerBuilder $builder): void
+    public function process(LexerBuildingContext $context): void
     {
-        $this->validateOrFail($builder->tokens);
+        $this->validateOrFail($context->tokens);
 
-        foreach ($builder->states as $state => $group) {
-            $this->validateOrFail($group->tokens);
+        foreach ($context->states as $state => $group) {
+            $this->validateOrFail($group);
         }
     }
 

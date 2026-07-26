@@ -7,7 +7,6 @@ namespace Phplrt\Compiler\Lexer\Compiler;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TransitionType;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
-use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
  * Checks that the lexer's state transitions are consistent.
@@ -15,16 +14,16 @@ use Phplrt\Compiler\Lexer\LexerBuilder;
 final readonly class TransitionValidationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
-    public function process(LexerBuilder $builder): void
+    public function process(LexerBuildingContext $context): void
     {
-        foreach ($builder->tokens as $definition) {
+        foreach ($context->tokens as $definition) {
             $this->validateRootOrFail($definition);
-            $this->validateTargetOrFail($builder, $definition);
+            $this->validateTargetOrFail($context, $definition);
         }
 
-        foreach ($builder->states as $state) {
-            foreach ($state->tokens as $definition) {
-                $this->validateTargetOrFail($builder, $definition);
+        foreach ($context->states as $state) {
+            foreach ($state as $definition) {
+                $this->validateTargetOrFail($context, $definition);
             }
         }
     }
@@ -50,7 +49,7 @@ final readonly class TransitionValidationLexerCompilerPass implements
     /**
      * @throws CompilationFailedException
      */
-    private function validateTargetOrFail(LexerBuilder $builder, TokenDefinition $definition): void
+    private function validateTargetOrFail(LexerBuildingContext $context, TokenDefinition $definition): void
     {
         $transition = $definition->transition;
 
@@ -61,7 +60,7 @@ final readonly class TransitionValidationLexerCompilerPass implements
         /** @var non-empty-string $state */
         $state = $transition->state;
 
-        if (isset($builder->states[$state])) {
+        if (isset($context->states[$state])) {
             return;
         }
 

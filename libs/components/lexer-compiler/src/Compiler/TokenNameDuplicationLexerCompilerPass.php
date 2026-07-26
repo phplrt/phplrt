@@ -6,7 +6,6 @@ namespace Phplrt\Compiler\Lexer\Compiler;
 
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
-use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
  * Checks that token names are unique across ALL lexer states.
@@ -18,7 +17,7 @@ use Phplrt\Compiler\Lexer\LexerBuilder;
 final readonly class TokenNameDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
-    public function process(LexerBuilder $builder): void
+    public function process(LexerBuildingContext $context): void
     {
         /** @var array<non-empty-string, true> $names */
         $names = [];
@@ -31,10 +30,10 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
          */
         $visited = new \SplObjectStorage();
 
-        $this->validateOrFail($builder->tokens, $names, $visited);
+        $this->validateOrFail($context->tokens, $names, $visited);
 
-        foreach ($builder->states as $state) {
-            $this->validateOrFail($state->tokens, $names, $visited);
+        foreach ($context->states as $state) {
+            $this->validateOrFail($state, $names, $visited);
         }
     }
 

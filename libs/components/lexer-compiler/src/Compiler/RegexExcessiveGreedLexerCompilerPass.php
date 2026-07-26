@@ -7,7 +7,6 @@ namespace Phplrt\Compiler\Lexer\Compiler;
 use Phplrt\Compiler\Lexer\Definition\RegexTokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Exception\CompilationFailedException;
-use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
  * Checks that the lexer does not contain "unmatchable" regular expressions
@@ -20,12 +19,12 @@ final readonly class RegexExcessiveGreedLexerCompilerPass implements
      */
     private const array WIDE_PATTERNS = ['.+', '.*'];
 
-    public function process(LexerBuilder $builder): void
+    public function process(LexerBuildingContext $context): void
     {
-        $this->validateOrFail($builder->tokens);
+        $this->validateOrFail($context->tokens);
 
-        foreach ($builder->states as $state) {
-            $this->validateOrFail($state->tokens);
+        foreach ($context->states as $state) {
+            $this->validateOrFail($state);
         }
     }
 

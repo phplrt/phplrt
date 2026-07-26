@@ -6,7 +6,6 @@ namespace Phplrt\Compiler\Lexer\Compiler;
 
 use Phplrt\Compiler\Lexer\Definition\TokenDefinition;
 use Phplrt\Compiler\Lexer\Definition\TransitionType;
-use Phplrt\Compiler\Lexer\LexerBuilder;
 
 /**
  * Removes the states that cannot be entered from the initial one.
@@ -20,16 +19,16 @@ use Phplrt\Compiler\Lexer\LexerBuilder;
 final readonly class UnreachableStateLexerCompilerPass implements
     LexerCompilerPassInterface
 {
-    public function process(LexerBuilder $builder): void
+    public function process(LexerBuildingContext $context): void
     {
-        $reachable = $this->collectReachable($builder);
+        $reachable = $this->collectReachable($context);
 
-        foreach ($builder->states as $name => $_) {
+        foreach ($context->states as $name => $_) {
             if (isset($reachable[$name])) {
                 continue;
             }
 
-            $builder->removeState($name);
+            unset($context->states[$name]);
         }
     }
 
@@ -38,10 +37,10 @@ final readonly class UnreachableStateLexerCompilerPass implements
      *
      * @return array<non-empty-string, true>
      */
-    private function collectReachable(LexerBuilder $builder): array
+    private function collectReachable(LexerBuildingContext $context): array
     {
         $reachable = [];
-        $queue = $this->getEnteredStates($builder->tokens);
+        $queue = $this->getEnteredStates($context->tokens);
 
         while ($queue !== []) {
             $name = \array_pop($queue);
@@ -52,7 +51,7 @@ final readonly class UnreachableStateLexerCompilerPass implements
 
             $reachable[$name] = true;
 
-            $state = $builder->states[$name] ?? null;
+            $state = $context->states[$name] ?? null;
 
             /**
              * An undefined target is not this pass's business: it is reported
@@ -62,7 +61,7 @@ final readonly class UnreachableStateLexerCompilerPass implements
                 continue;
             }
 
-            foreach ($this->getEnteredStates($state->tokens) as $next) {
+            foreach ($this->getEnteredStates($state) as $next) {
                 $queue[] = $next;
             }
         }
