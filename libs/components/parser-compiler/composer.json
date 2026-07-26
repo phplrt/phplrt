@@ -19,9 +19,7 @@
         "php": "^8.4",
         "phplrt/lexer": "^4.0",
         "phplrt/lexer-compiler": "^4.0",
-        "phplrt/parser": "^4.0",
-        "twig/twig": "^3.23",
-        "laminas/laminas-code": "^4.17"
+        "phplrt/parser": "^4.0"
     },
     "autoload": {
         "psr-4": {
