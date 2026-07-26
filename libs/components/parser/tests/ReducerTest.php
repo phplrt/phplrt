@@ -190,9 +190,9 @@ final class ReducerTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            first: $analysis->first,
-            nullable: $analysis->nullable,
-            kept: $analysis->kept,
+            startTokens: $analysis->startTokens,
+            matchesEmptyInput: $analysis->matchesEmptyInput,
+            presentInTree: $analysis->presentInTree,
         );
 
         self::assertSame([], $parser->parse('1'));
@@ -239,9 +239,9 @@ final class ReducerTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            first: $analysis->first,
-            nullable: $analysis->nullable,
-            kept: $analysis->kept,
+            startTokens: $analysis->startTokens,
+            matchesEmptyInput: $analysis->matchesEmptyInput,
+            presentInTree: $analysis->presentInTree,
             reducers: $reducers,
         );
     }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Tests;
 
-use Phplrt\Compiler\Parser\Analysis\KeptConstructionParserAnalysisPass;
+use Phplrt\Compiler\Parser\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Compiler\Parser\Analysis\LookaheadConstructionParserAnalysisPass;
-use Phplrt\Compiler\Parser\Analysis\ParserAnalysis;
+use Phplrt\Compiler\Parser\Analysis\ParserResultContext;
 use Phplrt\Compiler\Parser\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -21,22 +21,22 @@ abstract class TestCase extends BaseTestCase
      * @param int<0, max> $initial
      * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
      */
-    protected static function analyze(array $grammar, int $initial, array $reducers = []): ParserAnalysis
+    protected static function analyze(array $grammar, int $initial, array $reducers = []): ParserResultContext
     {
-        $analysis = new ParserAnalysis($grammar, $initial, \array_map(
+        $context = new ParserResultContext($grammar, $initial, \array_map(
             static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
             $reducers,
         ));
 
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
-            new KeptConstructionParserAnalysisPass(),
+            new TreePresenceConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {
-            $pass->process($analysis);
+            $pass->process($context);
         }
 
-        return $analysis;
+        return $context;
     }
 }
