@@ -32,7 +32,7 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
         $reducers = $this->getParserReducers();
 
         $context = new ParserResultContext($grammar, $initial, \array_map(
-            CallableReducer::createFromCallable(...),
+            static fn(callable $cb): CallableReducer => new CallableReducer($cb),
             $reducers,
         ));
 
