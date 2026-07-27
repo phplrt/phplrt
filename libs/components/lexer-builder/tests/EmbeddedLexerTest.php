@@ -52,11 +52,11 @@ final class EmbeddedLexerTest extends TestCase
         return $result;
     }
 
-    #[TestDox('A state is read by the lexer it has been declared with')]
-    public function testStateReadByLexerInstance(): void
+    #[TestDox('A fragment is read by the lexer it has been declared with')]
+    public function testLexerGivenAsInstance(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new FragmentLexer());
+        $builder->addEmbeddedLexer('fragment', new FragmentLexer());
 
         $lexer = $builder->build()
             ->toLexer();
@@ -64,7 +64,6 @@ final class EmbeddedLexerTest extends TestCase
         self::assertSame([
             'T_NAME(a)',
             'T_OPEN([)',
-            'T_FRAGMENT(x y)',
             'T_CLOSE(])',
             'T_NAME(b)',
         ], self::tokenize($lexer, 'a [x y] b'));
@@ -76,18 +75,18 @@ final class EmbeddedLexerTest extends TestCase
         $builder = self::createBuilder();
         $lexer = new FragmentLexer();
 
-        $definition = $builder->addEmbeddedState('fragment', $lexer);
+        $definition = $builder->addEmbeddedLexer('fragment', $lexer);
 
         self::assertInstanceOf(RuntimeEmbeddedLexer::class, $definition);
         self::assertSame($lexer, $definition->lexer);
-        self::assertSame(['fragment' => $definition], $builder->embeddedStates);
+        self::assertSame(['fragment' => $definition], $builder->lexers);
     }
 
-    #[TestDox('A state is read by the lexer the code declared for it produces')]
-    public function testStateReadByLexerCode(): void
+    #[TestDox('A fragment is read by the lexer the code declared for it produces')]
+    public function testLexerGivenAsCode(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new PhpCodeEmbeddedLexer(
+        $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer(
             \sprintf('new \\%s()', FragmentLexer::class),
         ));
 
@@ -97,42 +96,41 @@ final class EmbeddedLexerTest extends TestCase
         self::assertSame([
             'T_NAME(a)',
             'T_OPEN([)',
-            'T_FRAGMENT(x y)',
             'T_CLOSE(])',
             'T_NAME(b)',
         ], self::tokenize($lexer, 'a [x y] b'));
     }
 
-    #[TestDox('A state that cannot be entered is removed along with the lexer reading it')]
-    public function testUnreachableStateRemoval(): void
+    #[TestDox('A lexer that cannot be entered is removed')]
+    public function testUnreachableLexerRemoval(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new FragmentLexer());
-        $builder->addEmbeddedState('unused', new FragmentLexer());
+        $builder->addEmbeddedLexer('fragment', new FragmentLexer());
+        $builder->addEmbeddedLexer('unused', new FragmentLexer());
 
         $result = $builder->build();
 
-        self::assertSame(['fragment'], \array_keys($result->embeddedStates));
+        self::assertSame(['fragment'], \array_keys($result->lexers));
     }
 
-    #[TestDox('A state name is taken by a single state, whatever it is read by')]
-    public function testStateNameIsUnique(): void
+    #[TestDox('A name is taken by a single lexer, no matter how it has been declared')]
+    public function testLexerNameIsUnique(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new FragmentLexer());
-        $builder->addState('fragment')
+        $builder->addEmbeddedLexer('fragment', new FragmentLexer());
+        $builder->addLexer('fragment')
             ->addValue(']', 'T_FRAGMENT_CLOSE')
             ->exit();
 
-        self::assertSame([], $builder->embeddedStates);
-        self::assertSame(['fragment'], \array_keys($builder->states));
+        self::assertSame(['fragment'], \array_keys($builder->lexers));
+        self::assertInstanceOf(LexerBuilder::class, $builder->lexers['fragment']);
     }
 
-    #[TestDox('A transition to a state read by a lexer of its own is allowed')]
-    public function testTransitionToEmbeddedState(): void
+    #[TestDox('A token may hand the reading over to a lexer of its own')]
+    public function testTransitionToEmbeddedLexer(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new FragmentLexer());
+        $builder->addEmbeddedLexer('fragment', new FragmentLexer());
 
         $result = $builder->build();
 
@@ -143,10 +141,10 @@ final class EmbeddedLexerTest extends TestCase
     public function testMalformedLexerCode(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new PhpCodeEmbeddedLexer('new '));
+        $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('new '));
 
         $this->expectException(LexerCompilerException::class);
-        $this->expectExceptionMessage('The lexer of the state "fragment" cannot be compiled: ');
+        $this->expectExceptionMessage('The lexer "fragment" cannot be compiled: ');
 
         $builder->build()
             ->toLexer();
@@ -156,11 +154,11 @@ final class EmbeddedLexerTest extends TestCase
     public function testLexerCodeProducingAnythingElse(): void
     {
         $builder = self::createBuilder();
-        $builder->addEmbeddedState('fragment', new PhpCodeEmbeddedLexer('42'));
+        $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('42'));
 
         $this->expectException(LexerCompilerException::class);
         $this->expectExceptionMessage(\sprintf(
-            'The lexer of the state "fragment" must be an instance of %s, int given',
+            'The lexer "fragment" must be an instance of %s, int given',
             LexerInterface::class,
         ));
 

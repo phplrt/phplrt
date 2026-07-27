@@ -7,6 +7,7 @@ namespace Phplrt\Lexer\Tests;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\CompositeTokenInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -78,10 +79,38 @@ abstract class TestCase extends BaseTestCase
                 $expected,
             ));
 
-            $expected += \strlen($token->value);
+            $expected = $token->end;
         }
 
         self::assertSame(\strlen($source), $expected, 'The source is expected to be read in full');
+    }
+
+    /**
+     * Returns the tokens along with the ones they carry.
+     *
+     * @param iterable<mixed, TokenInterface> $tokens
+     * @return list<string>
+     */
+    protected static function describeTree(iterable $tokens, string $indent = ''): array
+    {
+        $result = [];
+
+        foreach ($tokens as $token) {
+            $result[] = $indent . \sprintf(
+                '%s(%s)@%d',
+                $token->name ?? '#' . $token->id,
+                $token->value,
+                $token->offset,
+            );
+
+            if ($token instanceof CompositeTokenInterface) {
+                foreach (self::describeTree($token->children, $indent . '    ') as $child) {
+                    $result[] = $child;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

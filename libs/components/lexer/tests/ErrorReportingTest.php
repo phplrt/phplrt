@@ -86,7 +86,7 @@ final class ErrorReportingTest extends TestCase
             $lexer->addPattern('[a-z]++', 'T_NAME');
             $lexer->addValue('"', 'T_STRING_BEGIN')->enter('string');
 
-            $string = $lexer->addState('string');
+            $string = $lexer->addLexer('string');
             $string->addValue('"', 'T_STRING_END')->exit();
             $string->addPattern('[a-z]++', 'T_STRING_CHARS');
         });

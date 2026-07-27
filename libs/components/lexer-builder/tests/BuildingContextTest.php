@@ -15,17 +15,17 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer-compiler')]
 final class BuildingContextTest extends TestCase
 {
-    #[TestDox('A pass rewriting the states does not affect the builder it has been called on')]
+    #[TestDox('A pass rewriting the lexers does not affect the builder it has been called on')]
     public function testStatesAreIsolated(): void
     {
         $lexer = new LexerBuilder();
         $lexer->addPattern('"')->enter('string');
-        $lexer->addState('string')->addPattern('[^"]++');
+        $lexer->addLexer('string')->addPattern('[^"]++')->exit();
 
         $lexer->addCompilerPass(new class implements LexerCompilerPassInterface {
             public function process(LexerBuildingContext $context): void
             {
-                $context->states['string'][] = new ValueTokenDefinition('"');
+                $context->lexers['unused'] = $context->lexers['string'];
                 $context->tokens[] = new RegexTokenDefinition('\d++');
             }
         });
@@ -33,27 +33,27 @@ final class BuildingContextTest extends TestCase
         $lexer->build();
 
         self::assertCount(1, $lexer->tokens);
-        self::assertCount(1, $lexer->addState('string')->tokens);
+        self::assertSame(['string'], \array_keys($lexer->lexers));
     }
 
-    #[TestDox('A pass removing the states does not affect the builder it has been called on')]
+    #[TestDox('A pass removing the lexers does not affect the builder it has been called on')]
     public function testRemovedStatesAreIsolated(): void
     {
         $lexer = new LexerBuilder();
         $lexer->addPattern('"')->enter('string');
-        $lexer->addState('string')->addPattern('[^"]++')->exit();
+        $lexer->addLexer('string')->addPattern('[^"]++')->exit();
 
         $lexer->addCompilerPass(new class implements LexerCompilerPassInterface {
             public function process(LexerBuildingContext $context): void
             {
-                unset($context->states['string']);
+                unset($context->lexers['string']);
             }
         }, LexerBuilder::PASS_PRIORITY_OPTIMIZE);
 
         $result = $lexer->build();
 
-        self::assertSame([], \array_keys($result->states), 'The state has been dropped from the result');
-        self::assertSame(['string'], \array_keys($lexer->states), 'The state is still defined by the builder');
+        self::assertSame([], \array_keys($result->lexers), 'The state has been dropped from the result');
+        self::assertSame(['string'], \array_keys($lexer->lexers), 'The state is still defined by the builder');
     }
 
     #[TestDox('The token definitions are shared with the builder, so that a parser may refer to them')]
