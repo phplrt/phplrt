@@ -60,7 +60,7 @@ final readonly class RustStylePrinter implements PrinterInterface
          * @var int<1, max>
          */
         private int $width = self::DEFAULT_WIDTH,
-        bool $colors = true,
+        bool $colors = false,
     ) {
         $this->text = new Text();
         $this->wrapper = new LineWrapper($this->text);
