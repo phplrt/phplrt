@@ -10,6 +10,7 @@ use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
@@ -22,6 +23,7 @@ use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 
@@ -116,6 +118,10 @@ final readonly class ParserResultContextTransformer
             ),
             $definition instanceof OptionalRuleDefinition => new Optional(
                 ruleId: $identifiers[$definition->rule],
+            ),
+            $definition instanceof PredicateRuleDefinition => new Predicate(
+                ruleId: $identifiers[$definition->rule],
+                isExpected: $definition->isExpected,
             ),
             $definition instanceof RepetitionRuleDefinition => new Repetition(
                 ruleId: $identifiers[$definition->rule],

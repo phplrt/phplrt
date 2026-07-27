@@ -25,6 +25,7 @@ use Phplrt\Parser\Builder\Compiler\UnreachableRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleReference;
@@ -241,6 +242,38 @@ final class ParserBuilder
         ?string $name = null,
     ): RepetitionRuleDefinition {
         $definition = new RepetitionRuleDefinition($rule, $min, $max, $name);
+
+        $this->addRule($definition);
+
+        return $definition;
+    }
+
+    /**
+     * Adds the rule looking at what comes next without reading it.
+     *
+     * The given rule is recognized the very same way as any other, but nothing
+     * it has recognized is kept: the input stays where it was and the result
+     * gets nothing, so the only thing left is whether it has matched.
+     *
+     * For example,
+     * ```php
+     * // A name that is not followed by a parenthesis
+     * $parser->addConcatenation([
+     *     $parser->addPredicate($parser->addTokenReference('T_PARENTHESIS_OPEN'), isExpected: false),
+     *     $parser->addTokenReference('T_NAME'),
+     * ]);
+     * ```
+     *
+     * @api
+     *
+     * @param non-empty-string|null $name
+     */
+    public function addPredicate(
+        RuleDefinition $rule,
+        bool $isExpected = true,
+        ?string $name = null,
+    ): PredicateRuleDefinition {
+        $definition = new PredicateRuleDefinition($rule, $isExpected, $name);
 
         $this->addRule($definition);
 

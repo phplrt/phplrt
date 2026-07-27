@@ -8,6 +8,7 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Exception\CompilationFailedException;
@@ -114,7 +115,12 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
 
         return match (true) {
             $rule instanceof AlternationRuleDefinition => $rule->rules,
+            /**
+             * A predicate reads nothing, so the rule behind it is reached at
+             * the very same position the predicate has been entered at.
+             */
             $rule instanceof OptionalRuleDefinition,
+            $rule instanceof PredicateRuleDefinition,
             $rule instanceof RepetitionRuleDefinition => [$rule->rule],
             default => [],
         };
@@ -180,7 +186,8 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
         }
 
         return match (true) {
-            $rule instanceof OptionalRuleDefinition => true,
+            $rule instanceof OptionalRuleDefinition,
+            $rule instanceof PredicateRuleDefinition => true,
             $rule instanceof RepetitionRuleDefinition => $rule->min === 0
                 || $nullable[$rule->rule] === true,
             default => false,

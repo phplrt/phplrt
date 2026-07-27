@@ -8,6 +8,7 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\TokenIdRuleDefinition;
@@ -101,6 +102,11 @@ final readonly class DuplicateRuleParserCompilerPass implements
             $rule instanceof OptionalRuleDefinition => \sprintf(
                 'optional(%d)',
                 \spl_object_id($rule->rule),
+            ),
+            $rule instanceof PredicateRuleDefinition => \sprintf(
+                'predicate(%d,%s)',
+                \spl_object_id($rule->rule),
+                $rule->isExpected ? 'expect' : 'reject',
             ),
             $rule instanceof RepetitionRuleDefinition => \sprintf(
                 'repeat(%d,%d,%s)',

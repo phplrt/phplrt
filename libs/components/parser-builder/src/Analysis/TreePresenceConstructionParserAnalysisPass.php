@@ -7,6 +7,7 @@ namespace Phplrt\Parser\Builder\Analysis;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Grammar\SequenceInterface;
@@ -76,6 +77,7 @@ final readonly class TreePresenceConstructionParserAnalysisPass implements
                 $definition instanceof Concatenation => $definition->ruleIds,
                 $definition instanceof Alternation => $definition->ruleIds,
                 $definition instanceof Optional,
+                $definition instanceof Predicate,
                 $definition instanceof Repetition => [$definition->ruleId],
                 default => [],
             };

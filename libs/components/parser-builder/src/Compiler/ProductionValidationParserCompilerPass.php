@@ -7,6 +7,7 @@ namespace Phplrt\Parser\Builder\Compiler;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Exception\CompilationFailedException;
@@ -24,6 +25,7 @@ final readonly class ProductionValidationParserCompilerPass implements
                 $rule instanceof ConcatenationRuleDefinition,
                 $rule instanceof AlternationRuleDefinition => $this->validateChildrenOrFail($rule),
                 $rule instanceof RepetitionRuleDefinition => $this->validateOccurrencesOrFail($rule),
+                $rule instanceof PredicateRuleDefinition => $this->validateReducerOrFail($rule),
                 default => null,
             };
         }
@@ -39,6 +41,24 @@ final readonly class ProductionValidationParserCompilerPass implements
         }
 
         throw CompilationFailedException::becauseRuleIsEmpty($rule);
+    }
+
+    /**
+     * A predicate leaves nothing in the result, so there is nothing its
+     * reducer could be given.
+     *
+     * @throws CompilationFailedException
+     */
+    private function validateReducerOrFail(PredicateRuleDefinition $rule): void
+    {
+        if ($rule->reducer === null) {
+            return;
+        }
+
+        throw new CompilationFailedException($rule, \sprintf(
+            'Rule %s only looks at what comes next, so it builds nothing to reduce',
+            $rule,
+        ));
     }
 
     /**

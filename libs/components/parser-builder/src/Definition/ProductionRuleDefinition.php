@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Definition;
 
 /**
- * @phpstan-sealed AlternationRuleDefinition|ConcatenationRuleDefinition|OptionalRuleDefinition|RepetitionRuleDefinition
+ * @phpstan-sealed AlternationRuleDefinition|ConcatenationRuleDefinition|OptionalRuleDefinition|PredicateRuleDefinition|RepetitionRuleDefinition
  */
 abstract class ProductionRuleDefinition extends RuleDefinition
 {

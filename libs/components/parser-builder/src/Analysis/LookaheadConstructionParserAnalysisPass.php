@@ -8,6 +8,7 @@ use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 
@@ -95,6 +96,14 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
             case $definition instanceof Repetition:
                 $startTokens[$rule] += $startTokens[$definition->ruleId];
                 $matchesEmptyInput[$rule] = $definition->min === 0 || $matchesEmptyInput[$definition->ruleId];
+                break;
+
+            case $definition instanceof Predicate:
+                /**
+                 * A predicate reads nothing, so it begins with no token at all
+                 * and the rule behind it decides what comes first.
+                 */
+                $matchesEmptyInput[$rule] = true;
                 break;
         }
     }
