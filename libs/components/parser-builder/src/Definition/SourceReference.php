@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Definition;
 
-final readonly class DefinitionContext
+final readonly class SourceReference
 {
     public function __construct(
         /**
