@@ -7,6 +7,7 @@ namespace Phplrt\Lexer\Builder\Tests;
 use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
 use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\SubgroupConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
@@ -114,6 +115,7 @@ final class PassPriorityTest extends TestCase
             TokenNameConstructionLexerAnalysisPass::class,
             ChannelConstructionLexerAnalysisPass::class,
             TransitionConstructionLexerAnalysisPass::class,
+            SubgroupConstructionLexerAnalysisPass::class,
             RegexConstructionLexerAnalysisPass::class,
         ], \array_map(
             static fn(LexerAnalysisPassInterface $pass): string => $pass::class,

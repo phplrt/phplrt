@@ -9,6 +9,7 @@ use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
 use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
 use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Analysis\SubgroupConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
@@ -128,6 +129,7 @@ final class LexerBuilder
             new TokenNameConstructionLexerAnalysisPass(),
             new ChannelConstructionLexerAnalysisPass(),
             new TransitionConstructionLexerAnalysisPass(),
+            new SubgroupConstructionLexerAnalysisPass(),
             new RegexConstructionLexerAnalysisPass(),
         ];
     }

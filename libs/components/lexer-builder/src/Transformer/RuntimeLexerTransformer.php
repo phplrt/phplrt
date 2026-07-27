@@ -42,6 +42,7 @@ final readonly class RuntimeLexerTransformer
             channels: $result->channels,
             names: $result->names,
             transitions: self::transformTransitions($result, $lexers),
+            subgroups: $result->subgroups,
         );
     }
 

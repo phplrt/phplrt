@@ -37,6 +37,12 @@ final class LexerResultContext
          */
         public readonly array $lexers = [],
         /**
+         * A map of token ID and the number of subgroups its definition has.
+         *
+         * @var array<int, int<1, max>>
+         */
+        public array $subgroups = [],
+        /**
          * The pattern recognizing the tokens of the lexer.
          */
         public string $pattern = '',
