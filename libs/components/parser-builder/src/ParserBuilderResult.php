@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder;
 
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Builder\Transformer\RuntimeParserTransformer;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
@@ -64,4 +68,13 @@ final readonly class ParserBuilderResult
          */
         public array $constants = [],
     ) {}
+
+    /**
+     * @throws ParserCompilerException in case of the grammar cannot be run
+     */
+    public function toParser(LexerInterface $lexer): ParserInterface
+    {
+        return new RuntimeParserTransformer()
+            ->transform($this, $lexer);
+    }
 }
