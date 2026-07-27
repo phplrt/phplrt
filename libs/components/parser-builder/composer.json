@@ -17,9 +17,11 @@
     ],
     "require": {
         "php": "^8.4",
+        "phplrt/exception": "^4.0",
         "phplrt/lexer": "^4.0",
         "phplrt/lexer-builder": "^4.0",
-        "phplrt/parser": "^4.0"
+        "phplrt/parser": "^4.0",
+        "phplrt/source-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {

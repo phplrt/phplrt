@@ -89,7 +89,7 @@ final readonly class RuntimeParserTransformer
         try {
             $callback = eval($code);
         } catch (\ParseError $e) {
-            throw ParserCompilerException::becauseReducerIsMalformed($rule, $e);
+            throw ParserCompilerException::becauseReducerIsMalformed($rule, $e, $reducer->context);
         }
 
         \assert($callback instanceof \Closure, 'The compiled reducer is a callback');

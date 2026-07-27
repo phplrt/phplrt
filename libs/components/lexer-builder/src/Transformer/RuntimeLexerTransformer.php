@@ -90,11 +90,15 @@ final readonly class RuntimeLexerTransformer
         try {
             $result = eval(\sprintf('return %s;', $lexer->code));
         } catch (\ParseError $e) {
-            throw LexerCompilerException::becauseEmbeddedLexerIsMalformed($name, $e);
+            throw LexerCompilerException::becauseEmbeddedLexerIsMalformed($name, $e, $lexer->context);
         }
 
         if (!$result instanceof LexerInterface) {
-            throw LexerCompilerException::becauseEmbeddedLexerIsInvalid($name, \get_debug_type($result));
+            throw LexerCompilerException::becauseEmbeddedLexerIsInvalid(
+                $name,
+                \get_debug_type($result),
+                $lexer->context,
+            );
         }
 
         return $result;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Definition\Reducer;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Builder\Definition\SourceReference;
 
 /**
@@ -17,7 +18,11 @@ use Phplrt\Parser\Builder\Definition\SourceReference;
  */
 final class PhpCodeReducer implements ReducerInterface
 {
-    public private(set) ?SourceReference $source = null;
+    /**
+     * The place of the source code this reducer has been written in, in case
+     * it has been written at all rather than built by hand.
+     */
+    public private(set) ?SourceReference $context = null;
 
     /**
      * @param non-empty-string $code
@@ -30,13 +35,13 @@ final class PhpCodeReducer implements ReducerInterface
     ) {}
 
     /**
-     * @param non-empty-string $pathname
      * @param int<0, max> $offset
+     * @param int<0, max> $length
      * @return $this
      */
-    public function setSource(string $pathname, int $offset): self
+    public function setSource(ReadableInterface $source, int $offset, int $length = 0): self
     {
-        $this->source = new SourceReference($pathname, $offset);
+        $this->context = new SourceReference($source, $offset, $length);
 
         return $this;
     }

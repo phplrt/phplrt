@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder\Definition\Lexer;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\Definition\SourceReference;
 
 /**
@@ -20,6 +21,10 @@ use Phplrt\Lexer\Builder\Definition\SourceReference;
  */
 final class PhpCodeEmbeddedLexer implements EmbeddedLexerInterface
 {
+    /**
+     * The place of the source code this lexer has been written in, in case it
+     * has been written at all rather than built by hand.
+     */
     public private(set) ?SourceReference $context = null;
 
     /**
@@ -33,13 +38,13 @@ final class PhpCodeEmbeddedLexer implements EmbeddedLexerInterface
     ) {}
 
     /**
-     * @param non-empty-string $pathname
      * @param int<0, max> $offset
+     * @param int<0, max> $length
      * @return $this
      */
-    public function setSource(string $pathname, int $offset): self
+    public function setSource(ReadableInterface $source, int $offset, int $length = 0): self
     {
-        $this->context = new SourceReference($pathname, $offset);
+        $this->context = new SourceReference($source, $offset, $length);
 
         return $this;
     }

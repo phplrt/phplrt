@@ -14,6 +14,6 @@ class CompilationFailedException extends LexerCompilerException
         int $code = 0,
         ?\Throwable $previous = null,
     ) {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $definition->context, $code, $previous);
     }
 }
