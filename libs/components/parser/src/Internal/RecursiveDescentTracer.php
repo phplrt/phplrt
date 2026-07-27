@@ -10,6 +10,7 @@ use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
@@ -178,6 +179,7 @@ final class RecursiveDescentTracer
             $definition instanceof Alternation => $this->matchAlternation($definition),
             $definition instanceof Optional => $this->matchOptional($definition),
             $definition instanceof Repetition => $this->matchRepetition($definition),
+            $definition instanceof Predicate => $this->matchPredicate($definition),
             default => throw new \LogicException(\sprintf(
                 'Unsupported grammar rule %s',
                 $definition::class,
@@ -242,6 +244,24 @@ final class RecursiveDescentTracer
         }
 
         return true;
+    }
+
+    private function matchPredicate(Predicate $rule): bool
+    {
+        $buffer = $this->buffer;
+        $rollback = $buffer->key;
+        $mark = $this->length;
+
+        $matched = $this->match($rule->ruleId);
+
+        /**
+         * A predicate only looks at what comes next, so both the input and the
+         * trace are rolled back, no matter what has been recognized.
+         */
+        $buffer->seek($rollback);
+        $this->length = $mark;
+
+        return $matched === $rule->isExpected;
     }
 
     private function matchRepetition(Repetition $rule): bool

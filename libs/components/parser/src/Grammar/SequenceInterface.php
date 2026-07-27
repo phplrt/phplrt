@@ -11,7 +11,7 @@ namespace Phplrt\Parser\Grammar;
  * recognized, while any other rule passes a single value through.
  *
  * ```abnf
- * rule = x y x ; << concat of "x y z" provides an array of children rules
+ * rule = x y z ; << concat of "x y z" provides an array of children rules
  *              ; this is instance of SequenceInterface
  *
  * rule = x+    ; << repetition [1...max] of "x" also provides an array
