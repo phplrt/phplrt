@@ -16,6 +16,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -164,15 +165,15 @@ final class ParserBuilderTest extends TestCase
             'return \implode(\'+\', \array_map(static fn(mixed $item): string => $item->value, $children));',
         );
 
-        self::assertSame('1+2+3', $parser->parse('1 + 2 + 3'));
+        self::assertSame('1+2+3', $parser->parse(new Source('1 + 2 + 3')));
     }
 
     #[TestDox('A reducer defined as PHP code is given the state of the analysis')]
     public function testReducerAsPhpCodeContext(): void
     {
-        $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->token->value, $ctx->source];');
+        $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->token->value, $ctx->content];');
 
-        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse('1 + 2 + 3'));
+        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse(new Source('1 + 2 + 3')));
     }
 
     #[TestDox('A reducer defined as PHP code that refers to "$this" is unusable until it is bound')]
@@ -183,7 +184,7 @@ final class ParserBuilderTest extends TestCase
         $this->expectException(\Error::class);
         $this->expectExceptionMessage('Using $this when not in object context');
 
-        $parser->parse('1 + 2 + 3');
+        $parser->parse(new Source('1 + 2 + 3'));
     }
 
     #[TestDox('A reducer defined as PHP code that cannot be compiled is reported')]
@@ -299,7 +300,7 @@ final class ParserBuilderTest extends TestCase
             result: $parser->build($lexer->build()),
         );
 
-        $actual = $compiled->parse('1 + 2 + 3');
+        $actual = $compiled->parse(new Source('1 + 2 + 3'));
 
         self::assertIsList($actual);
 
@@ -344,7 +345,7 @@ final class ParserBuilderTest extends TestCase
          * The value of the sum is joined with the values above it everywhere
          * but the initial rule, which has nothing to join it with.
          */
-        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse('1 + 2 + 3')));
+        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse(new Source('1 + 2 + 3'))));
     }
 
     #[TestDox('The compiled parser recognizes the source')]
@@ -357,7 +358,7 @@ final class ParserBuilderTest extends TestCase
             result: self::createParserBuilder()->build($lexer->build()),
         );
 
-        $actual = $parser->parse('1 + 2 - 3');
+        $actual = $parser->parse(new Source('1 + 2 - 3'));
 
         self::assertIsList($actual);
 

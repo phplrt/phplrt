@@ -8,6 +8,7 @@ use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Context;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -262,7 +263,7 @@ final class OptimizationTest extends TestCase
             result: $parser->build($lexer->build()),
         );
 
-        $actual = $compiled->parse('1 + 2 - 3');
+        $actual = $compiled->parse(new Source('1 + 2 - 3'));
 
         self::assertIsList($actual);
 

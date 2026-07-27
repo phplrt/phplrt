@@ -6,6 +6,7 @@ namespace Phplrt\Lexer\Builder\Tests\Stub;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
@@ -17,10 +18,12 @@ final readonly class FragmentLexer implements LexerInterface
 {
     public const int T_FRAGMENT = 100;
 
-    public function lex(string $source, int $offset = 0): iterable
+    public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
-        $end = \strpos($source, ']', $offset);
-        $end = $end === false ? \strlen($source) : $end;
+        $content = $source->content;
+
+        $end = \strpos($content, ']', $offset);
+        $end = $end === false ? \strlen($content) : $end;
 
         $result = [];
 
@@ -29,7 +32,7 @@ final readonly class FragmentLexer implements LexerInterface
                 id: self::T_FRAGMENT,
                 name: 'T_FRAGMENT',
                 channel: Channel::Default,
-                value: \substr($source, $offset, $end - $offset),
+                value: \substr($content, $offset, $end - $offset),
                 offset: $offset,
             );
         }
