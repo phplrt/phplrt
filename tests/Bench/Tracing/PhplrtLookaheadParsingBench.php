@@ -14,6 +14,7 @@ use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Parser;
+use Phplrt\Source\Source;
 
 #[Warmup(1)]
 #[Revs(2)]
@@ -49,15 +50,15 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
             lexer: $lexer,
             grammar: $context->grammar,
             initial: $context->initial,
+            reducers: $reducers,
             startTokens: $context->startTokens,
             matchesEmptyInput: $context->matchesEmptyInput,
             presentInTree: $context->presentInTree,
-            reducers: $reducers,
         );
     }
 
     public function benchParsing(): void
     {
-        $this->parser->parse(self::SAMPLE);
+        $this->parser->parse(Source::new(self::SAMPLE));
     }
 }

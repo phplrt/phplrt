@@ -10,6 +10,7 @@ use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
 use Phplrt\Parser\Parser;
+use Phplrt\Source\Source;
 
 #[Warmup(1)]
 #[Revs(2)]
@@ -34,6 +35,6 @@ final readonly class PhplrtParsingBench extends PhplrtBench
 
     public function benchParsing(): void
     {
-        $this->parser->parse(self::SAMPLE);
+        $this->parser->parse(Source::new(self::SAMPLE));
     }
 }
