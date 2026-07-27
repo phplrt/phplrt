@@ -109,7 +109,7 @@ final readonly class ParserResultContextTransformer
                 keep: $definition->isKept,
             ),
             $definition instanceof ConcatenationRuleDefinition => new Concatenation(
-                rules: $this->createReferences($definition, $definition->rules, $identifiers),
+                ruleIds: $this->createReferences($definition, $definition->rules, $identifiers),
             ),
             $definition instanceof AlternationRuleDefinition => new Alternation(
                 ruleIds: $this->createReferences($definition, $definition->rules, $identifiers),

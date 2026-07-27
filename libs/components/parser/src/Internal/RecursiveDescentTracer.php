@@ -205,7 +205,7 @@ final class RecursiveDescentTracer
         $buffer = $this->buffer;
         $rollback = $buffer->key;
 
-        foreach ($rule->rules as $inner) {
+        foreach ($rule->ruleIds as $inner) {
             if (!$this->match($inner)) {
                 $buffer->seek($rollback);
 

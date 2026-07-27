@@ -73,7 +73,7 @@ final readonly class TreePresenceConstructionParserAnalysisPass implements
 
         foreach ($grammar as $rule => $definition) {
             $children = match (true) {
-                $definition instanceof Concatenation => $definition->rules,
+                $definition instanceof Concatenation => $definition->ruleIds,
                 $definition instanceof Alternation => $definition->ruleIds,
                 $definition instanceof Optional,
                 $definition instanceof Repetition => [$definition->ruleId],

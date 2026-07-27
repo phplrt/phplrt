@@ -91,7 +91,7 @@ abstract class TestCase extends BaseTestCase
     {
         return match (true) {
             $rule instanceof Lexeme => \sprintf('Lexeme(%d, %s)', $rule->tokenId, $rule->keep ? 'keep' : 'skip'),
-            $rule instanceof Concatenation => 'Concatenation(' . \implode(', ', $rule->rules) . ')',
+            $rule instanceof Concatenation => 'Concatenation(' . \implode(', ', $rule->ruleIds) . ')',
             $rule instanceof Alternation => 'Alternation(' . \implode(', ', $rule->ruleIds) . ')',
             $rule instanceof Optional => \sprintf('Optional(%d)', $rule->ruleId),
             $rule instanceof Repetition => \sprintf('Repetition(%d, %d, %s)', $rule->ruleId, $rule->min, $rule->max),

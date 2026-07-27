@@ -10,6 +10,6 @@ final readonly class Concatenation implements SequenceInterface
         /**
          * @var non-empty-list<int>
          */
-        public array $rules,
+        public array $ruleIds,
     ) {}
 }

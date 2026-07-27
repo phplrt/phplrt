@@ -64,7 +64,7 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
             case $definition instanceof Concatenation:
                 $optional = true;
 
-                foreach ($definition->rules as $inner) {
+                foreach ($definition->ruleIds as $inner) {
                     $startTokens[$rule] += $startTokens[$inner];
 
                     if (!$matchesEmptyInput[$inner]) {
