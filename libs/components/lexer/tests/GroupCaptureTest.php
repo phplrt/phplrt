@@ -6,11 +6,13 @@ namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -40,7 +42,7 @@ final class GroupCaptureTest extends TestCase
     {
         $result = [];
 
-        foreach ($lexer->lex($source) as $token) {
+        foreach ($lexer->lex(new Source($source)) as $token) {
             if ($token->captures !== []) {
                 $result[] = $token->captures;
             }
@@ -73,7 +75,7 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::createLexer();
         $source = 'foo %token string:T_A';
 
-        $tokens = \iterator_to_array($lexer->lex($source), false);
+        $tokens = \iterator_to_array($lexer->lex(new Source($source)), false);
         $declaration = $tokens[2];
 
         self::assertSame('T_TOKEN', $declaration->name);
@@ -88,7 +90,7 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::createLexer();
         $source = '%token string:T_A foo';
 
-        self::assertTokensCoverSource($source, $lexer->lex($source));
+        self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));
     }
 
     #[TestDox('A token entering an embedded lexer keeps what its own subgroups have captured')]
@@ -97,17 +99,19 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\[(\w++)\]', 'T_OPEN')->enter('body');
             $lexer->addEmbeddedLexer('body', new class () implements LexerInterface {
-                public function lex(string $source, int $offset = 0): iterable
+                public function lex(ReadableInterface $source, int $offset = 0): iterable
                 {
+                    $content = $source->content;
+
                     return [
-                        new Token(100, 'T_BODY', Channel::Default, \substr($source, $offset), $offset),
-                        new EndOfInputToken(\strlen($source)),
+                        new Token(100, 'T_BODY', Channel::Default, \substr($content, $offset), $offset),
+                        new EndOfInputToken(\strlen($content)),
                     ];
                 }
             });
         });
 
-        $tokens = \iterator_to_array($lexer->lex('[note]hello'), false);
+        $tokens = \iterator_to_array($lexer->lex(new Source('[note]hello')), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);

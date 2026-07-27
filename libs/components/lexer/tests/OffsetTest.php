@@ -7,6 +7,7 @@ namespace Phplrt\Lexer\Tests;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -28,7 +29,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two three';
 
-        $actual = self::describe($lexer->lex($source, 8));
+        $actual = self::describe($lexer->lex(new Source($source), 8));
 
         self::assertSame([
             'T_NAME(three)@8',
@@ -42,7 +43,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two three';
 
-        self::assertTokensMatchSource($source, $lexer->lex($source, 4));
+        self::assertTokensMatchSource($source, $lexer->lex(new Source($source), 4));
     }
 
     #[TestDox('An offset equal to the source length produces only the terminal token')]
@@ -51,7 +52,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two';
 
-        $tokens = \iterator_to_array($lexer->lex($source, \strlen($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(new Source($source), \strlen($source)), false);
 
         self::assertCount(1, $tokens);
         self::assertSame(Channel::EndOfInput, $tokens[0]->channel);
@@ -65,8 +66,8 @@ final class OffsetTest extends TestCase
         $source = 'one two';
 
         self::assertSame(
-            self::describe($lexer->lex($source)),
-            self::describe($lexer->lex($source, 0)),
+            self::describe($lexer->lex(new Source($source))),
+            self::describe($lexer->lex(new Source($source), 0)),
         );
     }
 
@@ -77,6 +78,6 @@ final class OffsetTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        \iterator_to_array($lexer->lex('one two', -1), false);
+        \iterator_to_array($lexer->lex(new Source('one two'), -1), false);
     }
 }

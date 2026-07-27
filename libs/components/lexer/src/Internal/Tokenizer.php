@@ -6,6 +6,7 @@ namespace Phplrt\Lexer\Internal;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\EmptyTokenException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Token\Token;
@@ -66,6 +67,8 @@ final readonly class Tokenizer
      * the tokens of the whole reading in a single array, so no merging is
      * needed.
      *
+     * @param string $content the source code that has been read out of the
+     *        source object
      * @param int<0, max> $offset
      * @param list<Token> $tokens
      *
@@ -73,12 +76,12 @@ final readonly class Tokenizer
      *
      * @return int<0, max> the offset the analysis has stopped at
      */
-    public function tokenize(string $source, int $offset, array &$tokens): int
+    public function tokenize(ReadableInterface $source, string $content, int $offset, array &$tokens): int
     {
-        \preg_match_all($this->pattern, $source, $matches, 0, $offset);
+        \preg_match_all($this->pattern, $content, $matches, 0, $offset);
 
         if (!isset($matches['MARK'])) {
-            return $this->assertCompleted($source, $offset);
+            return $this->assertCompleted($source, $content, $offset);
         }
 
         /**
@@ -144,7 +147,7 @@ final readonly class Tokenizer
             }
 
             if ($length === 0) {
-                throw EmptyTokenException::becauseTokenIsEmpty($token);
+                throw EmptyTokenException::becauseTokenIsEmpty($source, $token);
             }
 
             /**
@@ -173,7 +176,7 @@ final readonly class Tokenizer
             }
         }
 
-        return $this->assertCompleted($source, $offset);
+        return $this->assertCompleted($source, $content, $offset);
     }
 
     /**
@@ -184,21 +187,21 @@ final readonly class Tokenizer
      * @return int<0, max>
      * @throws UnrecognizedTokenException
      */
-    private function assertCompleted(string $source, int $offset): int
+    private function assertCompleted(ReadableInterface $source, string $content, int $offset): int
     {
-        if ($offset >= \strlen($source)) {
+        if ($offset >= \strlen($content)) {
             return $offset;
         }
 
         $token = new UnknownToken(
-            value: \substr($source, $offset, self::ERROR_FRAGMENT_LENGTH),
+            value: \substr($content, $offset, self::ERROR_FRAGMENT_LENGTH),
             offset: $offset,
         );
 
         if (\preg_last_error() !== \PREG_NO_ERROR) {
-            throw UnrecognizedTokenException::becausePcreErrorOccurs($token, \preg_last_error_msg());
+            throw UnrecognizedTokenException::becausePcreErrorOccurs($source, $token, \preg_last_error_msg());
         }
 
-        throw UnrecognizedTokenException::becauseInputIsUnrecognized($token);
+        throw UnrecognizedTokenException::becauseInputIsUnrecognized($source, $token);
     }
 }

@@ -7,6 +7,7 @@ namespace Phplrt\Parser\Tests\Stub;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
@@ -35,9 +36,11 @@ final readonly class ArithmeticLexer implements LexerInterface
         'T_MINUS' => self::T_MINUS,
     ];
 
-    public function lex(string $source, int $offset = 0): iterable
+    public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
-        \preg_match_all(self::PATTERN, $source, $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE, $offset);
+        $content = $source->content;
+
+        \preg_match_all(self::PATTERN, $content, $matches, \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE, $offset);
 
         foreach ($matches as $match) {
             foreach (self::IDENTIFIERS as $name => $id) {
@@ -47,7 +50,7 @@ final readonly class ArithmeticLexer implements LexerInterface
             }
         }
 
-        yield new EndOfInputToken(\strlen($source));
+        yield new EndOfInputToken(\strlen($content));
     }
 
     public static function describe(TokenInterface $token): string

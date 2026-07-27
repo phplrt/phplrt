@@ -6,10 +6,12 @@ namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -40,10 +42,12 @@ final class EmbeddedLexerTest extends TestCase
     private static function createForeignLexer(): LexerInterface
     {
         return new class () implements LexerInterface {
-            public function lex(string $source, int $offset = 0): iterable
+            public function lex(ReadableInterface $source, int $offset = 0): iterable
             {
-                $end = \strpos($source, ']', $offset);
-                $end = $end === false ? \strlen($source) : $end;
+                $content = $source->content;
+
+                $end = \strpos($content, ']', $offset);
+                $end = $end === false ? \strlen($content) : $end;
 
                 $result = [];
 
@@ -52,7 +56,7 @@ final class EmbeddedLexerTest extends TestCase
                         id: 100,
                         name: 'T_FOREIGN',
                         channel: Channel::Default,
-                        value: \substr($source, $offset, $end - $offset),
+                        value: \substr($content, $offset, $end - $offset),
                         offset: $offset,
                     );
                 }
@@ -88,7 +92,7 @@ final class EmbeddedLexerTest extends TestCase
             '    T_STRING_CHARS(hello)@6',
             '    T_STRING_END(")@11',
             'EndOfInput()@12',
-        ], self::describeTree($lexer->lex('name "hello"')));
+        ], self::describeTree($lexer->lex(new Source('name "hello"'))));
     }
 
     #[TestDox('The tokens of an embedded lexer never reach the stream of the lexer that called it')]
@@ -101,7 +105,7 @@ final class EmbeddedLexerTest extends TestCase
             'T_WHITESPACE( )@4',
             'T_STRING(")@5',
             'EndOfInput()@12',
-        ], self::describe($lexer->lex('name "hello"')));
+        ], self::describe($lexer->lex(new Source('name "hello"'))));
     }
 
     #[TestDox('The token that entered an embedded lexer ends where that lexer has stopped')]
@@ -110,7 +114,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = '"hello"';
 
-        $tokens = \iterator_to_array($lexer->lex($source), false);
+        $tokens = \iterator_to_array($lexer->lex(new Source($source)), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
@@ -124,7 +128,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $lexer = self::createStringLexer();
 
-        $tokens = \iterator_to_array($lexer->lex('"hello"'), false);
+        $tokens = \iterator_to_array($lexer->lex(new Source('"hello"')), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
@@ -143,7 +147,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = 'a "b" c';
 
-        self::assertTokensCoverSource($source, $lexer->lex($source));
+        self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));
     }
 
     #[TestDox('A lexer written by hand is embedded the very same way')]
@@ -160,7 +164,7 @@ final class EmbeddedLexerTest extends TestCase
             'T_WHITESPACE( )@7',
             'T_NAME(b)@8',
             'EndOfInput()@9',
-        ], self::describeTree($lexer->lex('a [xyz] b')));
+        ], self::describeTree($lexer->lex(new Source('a [xyz] b'))));
     }
 
     #[TestDox('The terminal token of an embedded lexer is not carried over')]
@@ -169,7 +173,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createHostLexer();
         $source = 'a [xyz] b';
 
-        self::assertTerminatedStream($source, $lexer->lex($source));
+        self::assertTerminatedStream($source, $lexer->lex(new Source($source)));
     }
 
     #[TestDox('An embedded lexer may be entered several times')]
@@ -179,7 +183,7 @@ final class EmbeddedLexerTest extends TestCase
 
         $values = [];
 
-        foreach ($lexer->lex('[one] [two]') as $token) {
+        foreach ($lexer->lex(new Source('[one] [two]')) as $token) {
             if ($token instanceof TokenEmbedding) {
                 $values[] = $token[0]->value;
             }
@@ -194,6 +198,6 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = '"hello';
 
-        self::assertTerminatedStream($source, $lexer->lex($source));
+        self::assertTerminatedStream($source, $lexer->lex(new Source($source)));
     }
 }

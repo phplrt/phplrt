@@ -21,7 +21,8 @@
         "ext-pcre": "*",
         "ext-json": "*",
         "phplrt/lexer": "^4.0",
-        "phplrt/parser-contracts": "^4.0"
+        "phplrt/parser-contracts": "^4.0",
+        "phplrt/source-contracts": "^4.0"
     },
     "suggest": {
         "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in"
@@ -33,6 +34,7 @@
     },
     "require-dev": {
         "phplrt/parser-builder": "^4.0",
+        "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0"

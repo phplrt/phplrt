@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Internal;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
@@ -39,11 +40,13 @@ final readonly class ContextualTraceReducer
          */
         private array $merged,
         int $rule,
-        string $source,
+        ReadableInterface $source,
+        string $content,
     ) {
         $this->context = new Context(
             rule: $rule,
             source: $source,
+            content: $content,
             token: null,
         );
     }

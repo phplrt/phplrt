@@ -20,7 +20,8 @@
         "ext-spl": "*",
         "ext-pcre": "*",
         "ext-json": "*",
-        "phplrt/lexer-contracts": "^4.0"
+        "phplrt/lexer-contracts": "^4.0",
+        "phplrt/source-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -29,6 +30,7 @@
     },
     "require-dev": {
         "phplrt/lexer-builder": "^4.0",
+        "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0"

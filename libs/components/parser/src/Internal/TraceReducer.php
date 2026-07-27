@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Internal;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Grammar\SequenceInterface;
@@ -66,14 +67,18 @@ final readonly class TraceReducer
 
     /**
      * Returns the reducer of the traces of the given source.
+     *
+     * @param string $content the source code that has been read out of the
+     *        source object
      */
-    public function createContext(string $source): ContextualTraceReducer
+    public function createContext(ReadableInterface $source, string $content): ContextualTraceReducer
     {
         return new ContextualTraceReducer(
             reducers: $this->reducers,
             merged: $this->merged,
             rule: $this->rule,
             source: $source,
+            content: $content,
         );
     }
 }

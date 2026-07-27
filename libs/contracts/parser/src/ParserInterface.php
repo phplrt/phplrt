@@ -6,6 +6,7 @@ namespace Phplrt\Contracts\Parser;
 
 use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * An interface that implements methods for parsing source code.
@@ -28,5 +29,5 @@ interface ParserInterface
      *         starting the parsing and indicates problems in the analyzed
      *         source
      */
-    public function parse(string $source): mixed;
+    public function parse(ReadableInterface $source): mixed;
 }

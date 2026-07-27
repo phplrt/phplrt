@@ -14,6 +14,7 @@ use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
 use Phplrt\Parser\Tests\Stub\ArithmeticLexer;
+use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -23,7 +24,7 @@ final class ReducerTest extends TestCase
     #[TestDox('The rules without a reducer are reduced to the recognized tokens')]
     public function testReducesRulesToTokens(): void
     {
-        $actual = self::createParser()->parse('1 + 2 - 3');
+        $actual = self::createParser()->parse(new Source('1 + 2 - 3'));
 
         self::assertSame(
             ['T_NUMBER(1)', 'T_NUMBER(2)', 'T_NUMBER(3)'],
@@ -35,7 +36,7 @@ final class ReducerTest extends TestCase
     public function testOmitsTokensThatAreNotKept(): void
     {
         // The "+" and "-" lexemes of the grammar are not kept
-        $actual = self::createParser()->parse('1 + 2');
+        $actual = self::createParser()->parse(new Source('1 + 2'));
 
         self::assertCount(2, self::describe($actual));
     }
@@ -51,7 +52,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame([1, 2, 3], $parser->parse('1 + 2 + 3'));
+        self::assertSame([1, 2, 3], $parser->parse(new Source('1 + 2 + 3')));
     }
 
     #[TestDox('The reducer of a concatenation receives the list of its children')]
@@ -66,7 +67,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame(6, $parser->parse('1 + 2 + 3'));
+        self::assertSame(6, $parser->parse(new Source('1 + 2 + 3')));
     }
 
     #[TestDox('The reducer of an alternation receives the value of the matched branch')]
@@ -81,7 +82,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame([1, '?', 2], $parser->parse('1 + 2'));
+        self::assertSame([1, '?', 2], $parser->parse(new Source('1 + 2')));
     }
 
     #[TestDox('The reducer of a repetition without iterations receives an empty list')]
@@ -98,7 +99,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        $parser->parse('1');
+        $parser->parse(new Source('1'));
 
         self::assertSame([[]], $received);
     }
@@ -118,8 +119,8 @@ final class ReducerTest extends TestCase
             },
         ];
 
-        self::assertSame(['sign', 1], self::createParser($reducers)->parse('-1'));
-        self::assertSame([1], self::createParser($reducers)->parse('1'));
+        self::assertSame(['sign', 1], self::createParser($reducers)->parse(new Source('-1')));
+        self::assertSame([1], self::createParser($reducers)->parse(new Source('1')));
 
         self::assertSame(['sign', []], $received);
     }
@@ -132,10 +133,10 @@ final class ReducerTest extends TestCase
             self::RULE_EXPRESSION => static fn(Context $context, mixed $children): mixed => null,
         ]);
 
-        self::assertSame([1, 2], $parser->parse('1 + 2'));
+        self::assertSame([1, 2], $parser->parse(new Source('1 + 2')));
     }
 
-    #[TestDox('The context contains the rule, the source and the last recognized token')]
+    #[TestDox('The context contains the rule, the source code and the last recognized token')]
     public function testContext(): void
     {
         $contexts = [];
@@ -148,11 +149,11 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        $parser->parse('1 + 2');
+        $parser->parse(new Source('1 + 2'));
 
         self::assertCount(1, $contexts);
         self::assertSame(self::RULE_EXPRESSION, $contexts[0]->rule);
-        self::assertSame('1 + 2', $contexts[0]->source);
+        self::assertSame('1 + 2', $contexts[0]->content);
         self::assertSame('2', $contexts[0]->token?->value);
     }
 
@@ -174,8 +175,8 @@ final class ReducerTest extends TestCase
         );
 
         self::assertSame(
-            self::createParser($reducers)->parse('-1 + 2 - 3'),
-            $parser->parse('-1 + 2 - 3'),
+            self::createParser($reducers)->parse(new Source('-1 + 2 - 3')),
+            $parser->parse(new Source('-1 + 2 - 3')),
         );
     }
 
@@ -195,7 +196,7 @@ final class ReducerTest extends TestCase
             presentInTree: $analysis->presentInTree,
         );
 
-        self::assertSame([], $parser->parse('1'));
+        self::assertSame([], $parser->parse(new Source('1')));
     }
 
     private const int RULE_EXPRESSION = 0;

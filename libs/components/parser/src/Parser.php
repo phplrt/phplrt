@@ -6,6 +6,9 @@ namespace Phplrt\Parser;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Parser\Exception\ParserException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
@@ -135,7 +138,7 @@ readonly class Parser implements ParserInterface
     /**
      * Checks whether the source is syntactically valid against the grammar.
      */
-    public function check(string $source): bool
+    public function check(ReadableInterface $source): bool
     {
         $buffer = $this->lex($source);
 
@@ -147,21 +150,27 @@ readonly class Parser implements ParserInterface
      *
      * @throws UnexpectedTokenException on a syntax error
      */
-    public function parse(string $source): mixed
+    public function parse(ReadableInterface $source): mixed
     {
         $buffer = $this->lex($source);
 
         $result = $this->trace($buffer);
 
         if ($result instanceof Failure) {
-            throw UnexpectedTokenException::fromToken($result->token ?? $buffer->current, $source);
+            throw UnexpectedTokenException::fromToken($source, $result->token ?? $buffer->current);
         }
 
-        return $this->reducer->createContext($source)
+        try {
+            $content = $source->content;
+        } catch (SourceExceptionInterface $e) {
+            throw ParserException::becauseSourceIsNotReadable($e);
+        }
+
+        return $this->reducer->createContext($source, $content)
             ->reduce($result);
     }
 
-    private function lex(string $source): BufferInterface
+    private function lex(ReadableInterface $source): BufferInterface
     {
         $stream = $this->lexer->lex($source);
 

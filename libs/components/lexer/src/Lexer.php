@@ -8,6 +8,9 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Exception\LexerException;
 use Phplrt\Lexer\Internal\ChannelLoader;
 use Phplrt\Lexer\Internal\Tokenizer;
 use Phplrt\Lexer\Token\EndOfInputToken;
@@ -132,20 +135,41 @@ readonly class Lexer implements LexerInterface
         $this->transitions = $transitions;
     }
 
-    final public function lex(string $source, int $offset = 0): iterable
+    final public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
         // Invariant against the callers not covered by static analysis.
         if ($offset < 0) { // @phpstan-ignore smaller.alwaysFalse
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
 
-        $length = \strlen($source);
+        try {
+            $content = $source->content;
+        } catch (SourceExceptionInterface $e) {
+            throw LexerException::becauseSourceIsNotReadable($e);
+        }
+
+        return $this->execute($source, $content, $offset);
+    }
+
+    /**
+     * Reads the tokens of the source code that has already been read out of
+     * the source object, which is carried along only so that an error may
+     * refer to it.
+     *
+     * @param int<0, max> $offset
+     * @return list<Token>
+     * @throws LexerExceptionInterface
+     * @throws RuntimeExceptionInterface
+     */
+    private function execute(ReadableInterface $source, string $content, int $offset): array
+    {
+        $length = \strlen($content);
 
         /** @var list<Token> $result */
         $result = [];
 
         while ($offset < $length) {
-            $offset = $this->tokenizer->tokenize($source, $offset, $result);
+            $offset = $this->tokenizer->tokenize($source, $content, $offset, $result);
 
             $index = \array_key_last($result);
 
@@ -164,7 +188,7 @@ readonly class Lexer implements LexerInterface
                 break;
             }
 
-            $embedding = $this->enter($lexer, $source, $offset, $result[$index]);
+            $embedding = $this->enter($lexer, $source, $content, $offset, $result[$index]);
 
             $result[$index] = $embedding;
             $offset = $embedding->end;
@@ -185,14 +209,24 @@ readonly class Lexer implements LexerInterface
      */
     private function enter(
         LexerInterface $lexer,
-        string $source,
+        ReadableInterface $source,
+        string $content,
         int $offset,
         Token $token,
     ): TokenEmbedding {
+        /**
+         * The source code has already been read, so a lexer of the same kind
+         * is entered without reading it over again. Any other one is given the
+         * source object and decides on its own how to read it.
+         */
+        $stream = $lexer instanceof self
+            ? $lexer->execute($source, $content, $offset)
+            : $lexer->lex($source, $offset);
+
         $children = [];
         $end = $offset;
 
-        foreach ($lexer->lex($source, $offset) as $child) {
+        foreach ($stream as $child) {
             /**
              * The terminal token only marks the end of the embedded lexer's
              * own fragment, so it is not carried over.
