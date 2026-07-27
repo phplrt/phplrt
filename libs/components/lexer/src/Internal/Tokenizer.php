@@ -6,10 +6,10 @@ namespace Phplrt\Lexer\Internal;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Exception\EmptyTokenException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\UnknownToken;
 
 /**
  * Reads what a single lexer recognizes on its own.
@@ -23,12 +23,6 @@ use Phplrt\Lexer\Token\Token;
  */
 final readonly class Tokenizer
 {
-    /**
-     * An identifier of the pseudo-token describing a source fragment
-     * that could not be read.
-     */
-    private const int UNKNOWN_TOKEN_ID = -1;
-
     /**
      * Max length (in bytes) of the source fragment mentioned in error messages.
      *
@@ -55,6 +49,13 @@ final readonly class Tokenizer
          * @var array<int, true>
          */
         private array $breaks,
+        /**
+         * The number of subgroups each token definition has, indexed by the
+         * token IDs. A token that is not mentioned captures nothing.
+         *
+         * @var array<int, int<1, max>>
+         */
+        private array $subgroups = [],
     ) {}
 
     /**
@@ -62,12 +63,13 @@ final readonly class Tokenizer
      * token that breaks the analysis has been read.
      *
      * Writing into the caller's list (instead of returning an own one) keeps
-     * the tokens of the whole reading in a single array, so no merging is needed.
+     * the tokens of the whole reading in a single array, so no merging is
+     * needed.
      *
      * @param int<0, max> $offset
-     * @param list<TokenInterface> $tokens
+     * @param list<Token> $tokens
      *
-     * @param-out list<TokenInterface> $tokens
+     * @param-out list<Token> $tokens
      *
      * @return int<0, max> the offset the analysis has stopped at
      */
@@ -97,13 +99,14 @@ final readonly class Tokenizer
         $names = $this->names;
         $channels = $this->channels;
         $breaks = $this->breaks;
+        $subgroups = $this->subgroups;
 
         /**
          * A lexer without transitions reads everything it can, so the (much
          * cheaper) boolean check keeps it from paying for the hash lookup on
          * every single token.
          */
-        $breakable = $breaks !== [];
+        $isBreakable = $breaks !== [];
 
         $prototype = new Token(
             id: -1,
@@ -121,18 +124,20 @@ final readonly class Tokenizer
             $token = clone $prototype;
 
             $id = (int) $alias;
-            $name = null;
             $value = $foundValues[$index];
             $length = \strlen($value);
 
-            if (isset($names[$id])) {
-                $name = $names[$id];
-            }
-
             $token->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $token->name = $name;       // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+            /**
+             * The prototype is nameless and belongs to the default channel, so
+             * only the tokens that are not, pay for the writing.
+             */
+            if (isset($names[$id])) {
+                $token->name = $names[$id];         // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            }
 
             if (isset($channels[$id])) {
                 $token->channel = $channels[$id];   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
@@ -142,10 +147,24 @@ final readonly class Tokenizer
                 throw EmptyTokenException::becauseTokenIsEmpty($token);
             }
 
+            /**
+             * The subgroups of all the token definitions share their numbers,
+             * so only the ones this token has are read.
+             */
+            if (isset($subgroups[$id])) {
+                $captures = [];
+
+                for ($group = 1, $count = $subgroups[$id]; $group <= $count; ++$group) {
+                    $captures[] = $matches[$group][$index];
+                }
+
+                $token->captures = $captures;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            }
+
             $tokens[] = $token;
             $offset += $length;
 
-            if ($breakable && isset($breaks[$id])) {
+            if ($isBreakable && isset($breaks[$id])) {
                 /**
                  * The analysis has been stopped on purpose, so the rest of the
                  * source is none of this lexer's business.
@@ -171,10 +190,7 @@ final readonly class Tokenizer
             return $offset;
         }
 
-        $token = new Token(
-            id: self::UNKNOWN_TOKEN_ID,
-            name: null,
-            channel: Channel::Unknown,
+        $token = new UnknownToken(
             value: \substr($source, $offset, self::ERROR_FRAGMENT_LENGTH),
             offset: $offset,
         );

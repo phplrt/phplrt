@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Internal\ChannelLoader;
 use Phplrt\Lexer\Internal\Tokenizer;
 use Phplrt\Lexer\Token\EndOfInputToken;
+use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 
 readonly class Lexer implements LexerInterface
@@ -34,6 +36,7 @@ readonly class Lexer implements LexerInterface
      * @param array<int, non-empty-string> $channels
      * @param array<int, non-empty-string> $names
      * @param array<int, LexerInterface|null> $transitions
+     * @param array<int, int<1, max>> $subgroups
      */
     public function __construct(
         /**
@@ -100,12 +103,30 @@ readonly class Lexer implements LexerInterface
          * ```
          */
         array $transitions = [],
+        /**
+         * A map of token ID and the number of subgroups its definition has.
+         *
+         * The subgroups of all the token definitions share their numbers, so
+         * this is the only thing telling which of them belong to which token.
+         * A token mentioned here is read with its {@see Token::$captures}
+         * filled, while the one that is not, captures nothing.
+         *
+         * For example,
+         * ```php
+         * [
+         *     0 => 2, // the definition of token #0 has two subgroups
+         *     3 => 1,
+         * ]
+         * ```
+         */
+        array $subgroups = [],
     ) {
         $this->tokenizer = new Tokenizer(
             pattern: $pattern,
             channels: ChannelLoader::load($channels),
             names: $names,
             breaks: \array_fill_keys(\array_keys($transitions), true),
+            subgroups: $subgroups,
         );
 
         $this->transitions = $transitions;
@@ -120,7 +141,7 @@ readonly class Lexer implements LexerInterface
 
         $length = \strlen($source);
 
-        /** @var list<TokenInterface> $result */
+        /** @var list<Token> $result */
         $result = [];
 
         while ($offset < $length) {
@@ -159,12 +180,14 @@ readonly class Lexer implements LexerInterface
      * read by the token that called it.
      *
      * @param int<0, max> $offset
+     * @throws LexerExceptionInterface
+     * @throws RuntimeExceptionInterface
      */
     private function enter(
         LexerInterface $lexer,
         string $source,
         int $offset,
-        TokenInterface $token,
+        Token $token,
     ): TokenEmbedding {
         $children = [];
         $end = $offset;
