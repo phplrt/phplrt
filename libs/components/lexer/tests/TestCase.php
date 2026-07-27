@@ -7,9 +7,9 @@ namespace Phplrt\Lexer\Tests;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\CompositeTokenInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\CompositeToken;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -103,7 +103,7 @@ abstract class TestCase extends BaseTestCase
                 $token->offset,
             );
 
-            if ($token instanceof CompositeTokenInterface) {
+            if ($token instanceof CompositeToken) {
                 foreach (self::describeTree($token->children, $indent . '    ') as $child) {
                     $result[] = $child;
                 }

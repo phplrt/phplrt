@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\CompositeTokenInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Lexer\Token\CompositeToken;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use PHPUnit\Framework\Attributes\Group;
@@ -113,7 +113,7 @@ final class EmbeddedLexerTest extends TestCase
         $tokens = \iterator_to_array($lexer->lex($source), false);
         $embedding = $tokens[0];
 
-        self::assertInstanceOf(CompositeTokenInterface::class, $embedding);
+        self::assertInstanceOf(CompositeToken::class, $embedding);
         self::assertSame('"', $embedding->value);
         self::assertSame(0, $embedding->offset);
         self::assertSame(7, $embedding->end);
@@ -127,7 +127,7 @@ final class EmbeddedLexerTest extends TestCase
         $tokens = \iterator_to_array($lexer->lex('"hello"'), false);
         $embedding = $tokens[0];
 
-        self::assertInstanceOf(CompositeTokenInterface::class, $embedding);
+        self::assertInstanceOf(CompositeToken::class, $embedding);
         self::assertCount(2, $embedding);
         self::assertSame('hello', $embedding[0]->value);
         self::assertSame('"', $embedding[1]->value);
@@ -180,7 +180,7 @@ final class EmbeddedLexerTest extends TestCase
         $values = [];
 
         foreach ($lexer->lex('[one] [two]') as $token) {
-            if ($token instanceof CompositeTokenInterface) {
+            if ($token instanceof CompositeToken) {
                 $values[] = $token[0]->value;
             }
         }
