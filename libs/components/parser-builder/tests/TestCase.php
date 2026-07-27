@@ -6,19 +6,17 @@ namespace Phplrt\Parser\Builder\Tests;
 
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
-use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Parser\Context;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
-use Phplrt\Parser\Parser;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -43,36 +41,9 @@ abstract class TestCase extends BaseTestCase
             ->transform($builder->build());
     }
 
-    protected static function createParser(LexerInterface $lexer, ParserBuilderResult $result): Parser
+    protected static function createParser(LexerInterface $lexer, ParserBuilderResult $result): ParserInterface
     {
-        return new Parser(
-            lexer: $lexer,
-            grammar: $result->grammar,
-            initial: $result->initial,
-            startTokens: $result->startTokens,
-            matchesEmptyInput: $result->matchesEmptyInput,
-            presentInTree: $result->presentInTree,
-            reducers: self::createReducers($result),
-        );
-    }
-
-    /**
-     * A reducer defined as PHP code has to be dumped into a generated parser,
-     * so only the executable ones reach the parser being run in place.
-     *
-     * @return array<int<0, max>, callable(Context, mixed): mixed>
-     */
-    private static function createReducers(ParserBuilderResult $result): array
-    {
-        $reducers = [];
-
-        foreach ($result->reducers as $rule => $reducer) {
-            if ($reducer instanceof CallableReducer) {
-                $reducers[$rule] = $reducer->callback;
-            }
-        }
-
-        return $reducers;
+        return $result->toParser($lexer);
     }
 
     /**

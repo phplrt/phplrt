@@ -13,6 +13,7 @@ use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\Lexeme;
 use PHPUnit\Framework\Attributes\Group;
@@ -154,6 +155,64 @@ final class ParserBuilderTest extends TestCase
 
         self::assertContainsOnlyInstancesOf(PhpCodeReducer::class, $result->reducers);
         self::assertNotInstanceOf(CallableReducer::class, $result->reducers[0]);
+    }
+
+    #[TestDox('A reducer defined as PHP code is compiled into the callback the parser calls')]
+    public function testParserWithReducerAsPhpCode(): void
+    {
+        $parser = self::createParserWithReducer(
+            'return \implode(\'+\', \array_map(static fn(mixed $item): string => $item->value, $children));',
+        );
+
+        self::assertSame('1+2+3', $parser->parse('1 + 2 + 3'));
+    }
+
+    #[TestDox('A reducer defined as PHP code is given the state of the analysis')]
+    public function testReducerAsPhpCodeContext(): void
+    {
+        $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->token->value, $ctx->source];');
+
+        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse('1 + 2 + 3'));
+    }
+
+    #[TestDox('A reducer defined as PHP code that refers to "$this" is unusable until it is bound')]
+    public function testReducerAsPhpCodeRequiringObject(): void
+    {
+        $parser = self::createParserWithReducer('return $this->something;');
+
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessage('Using $this when not in object context');
+
+        $parser->parse('1 + 2 + 3');
+    }
+
+    #[TestDox('A reducer defined as PHP code that cannot be compiled is reported')]
+    public function testReducerAsPhpCodeMalformed(): void
+    {
+        $this->expectException(ParserCompilerException::class);
+        $this->expectExceptionMessage('The reducer of the rule Root cannot be compiled: ');
+
+        self::createParserWithReducer('return $children');
+    }
+
+    /**
+     * @param non-empty-string $code
+     */
+    private static function createParserWithReducer(string $code): ParserInterface
+    {
+        $lexer = self::createLexerBuilder();
+
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addTokenReference('T_PLUS')->skip(),
+                $parser->addTokenReference('T_NUMBER'),
+            ])),
+        ], 'Root')->setReducer(new PhpCodeReducer($code)));
+
+        return $parser->build($lexer->build())
+            ->toParser(self::createLexer($lexer));
     }
 
     #[TestDox('The tokens a rule may begin with are computed')]
