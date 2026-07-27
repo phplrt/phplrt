@@ -7,51 +7,33 @@ namespace Phplrt\Lexer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Lexer\Exception\UndefinedStateException;
-use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Internal\ChannelLoader;
-use Phplrt\Lexer\Internal\State;
-use Phplrt\Lexer\Internal\Tokenizer\DelegatingTokenizer;
-use Phplrt\Lexer\Internal\Tokenizer\Tokenizer;
+use Phplrt\Lexer\Internal\Tokenizer;
 use Phplrt\Lexer\Token\EndOfInputToken;
-use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\TokenEmbedding;
 
 readonly class Lexer implements LexerInterface
 {
     /**
-     * An identifier of the pseudo-token describing a source fragment
-     * that could not be read.
+     * Reads everything this lexer recognizes on its own.
      */
-    private const int UNKNOWN_TOKEN_ID = -1;
+    private Tokenizer $tokenizer;
 
     /**
-     * Max length (in bytes) of the source fragment mentioned in error messages.
+     * A map of token ID and what the token does to the reading.
      *
-     * @var int<1, max>
+     * @var array<int, LexerInterface|null>
      */
-    private const int ERROR_FRAGMENT_LENGTH = 64;
-
-    /**
-     * The state described by this lexer.
-     */
-    private State $initial;
-
-    /**
-     * The states reachable from {@see Lexer::$initial}.
-     *
-     * @var array<non-empty-string, State>
-     */
-    private array $states;
+    private array $transitions;
 
     /**
      * The pattern, channels and names are fully consumed by the executor, so
-     * the lexer itself only keeps what it needs to coordinate the states.
+     * the lexer itself only keeps what it needs to reach the other lexers.
      *
      * @param non-empty-string $pattern
      * @param array<int, non-empty-string> $channels
      * @param array<int, non-empty-string> $names
-     * @param array<int, non-empty-string|null> $transitions
-     * @param array<non-empty-string, LexerInterface> $states
+     * @param array<int, LexerInterface|null> $transitions
      */
     public function __construct(
         /**
@@ -85,92 +67,48 @@ readonly class Lexer implements LexerInterface
          */
         array $names = [],
         /**
-         * A map of token ID and the state transition it triggers.
+         * A map of token ID and what the token does to the reading.
          *
-         * The transition is applied AFTER the token itself has been emitted,
-         * so the token always belongs to the state it was matched in.
+         * The token is always read by this lexer itself, so whatever happens
+         * next happens AFTER it has been read.
          *
-         * - A {@see string} value switches the lexer to the named state
-         *   ({@see Lexer::$states} MUST contain such a state).
-         * - A {@see null} value returns the lexer to the state it came from.
+         * - A {@see LexerInterface} value hands the reading over to that
+         *   lexer. Everything it reads is carried by the token itself, so it
+         *   never reaches this stream. Any implementation is allowed here,
+         *   which makes it possible to embed a foreign lexer into the grammar:
+         *   such a lexer reads a fragment on its own and returns the control
+         *   back as soon as it stops, so its terminal token is not carried
+         *   over.
+         * - A {@see null} value ends the reading, which is how a lexer called
+         *   by another one gives the control back.
+         *
+         * Note: A lexer knows nothing about the lexers of its neighbours, and
+         *       the tokens it reads are carried by the token that called it,
+         *       so neither the identifiers nor the names of two lexers can
+         *       ever be confused with each other.
          *
          * For example,
          * ```php
          * [
-         *     0 => 'string', // token #0 enters the "string" state
-         *     1 => null,     // token #1 leaves the current state
+         *     // token #0 is read along with the string it opens
+         *     0 => new Lexer(pattern: '...', transitions: [42 => null]),
+         *     // token #1 is read along with the PHP code it opens
+         *     1 => new PhpTokenLexer(),
+         *     // token #2 is the last one this lexer reads
+         *     2 => null,
          * ]
          * ```
          */
         array $transitions = [],
-        /**
-         * Name of the state and the lexer reading it.
-         *
-         * The lexer itself always describes the initial state, while this
-         * list contains all the additional ones reachable using
-         * {@see Lexer::$transitions}.
-         *
-         * Any {@see LexerInterface} implementation is allowed here, which makes
-         * it possible to embed a foreign lexer into the grammar. Such a lexer
-         * reads a fragment on its own and returns the control back as soon as
-         * it stops, so its terminal token is not included into the result.
-         *
-         * Note: The state namespace is flat, so the nested {@see Lexer::$states}
-         *       of these lexers are ignored.
-         *
-         * Note: Token identifiers are not namespaced either. Every state writes
-         *       into the same stream, so two embedded lexers may well use the
-         *       same identifier for different tokens. Nothing can prevent it
-         *       here, because a foreign lexer never says which identifiers it
-         *       is going to emit.
-         *
-         *       What tells such tokens apart is the grammar rather than the
-         *       identifier: a rule reading an embedded fragment is only
-         *       reachable through the token that entered its state.
-         *
-         * For example,
-         * ```php
-         * [
-         *      'string' => new Lexer(pattern: '...', transitions: [42 => null]),
-         *      'php' => new PhpTokenLexer(), // reads up to "?>" on its own
-         * ]
-         * ```
-         */
-        array $states = [],
     ) {
-        $this->initial = new State(
-            tokenizer: new Tokenizer(
-                pattern: $pattern,
-                channels: ChannelLoader::load($channels),
-                names: $names,
-                breaks: \array_fill_keys(\array_keys($transitions), true),
-            ),
-            transitions: $transitions,
+        $this->tokenizer = new Tokenizer(
+            pattern: $pattern,
+            channels: ChannelLoader::load($channels),
+            names: $names,
+            breaks: \array_fill_keys(\array_keys($transitions), true),
         );
 
-        $this->states = $this->bootLexerStates($states);
-    }
-
-    /**
-     * Gets the lexer configuration and initializes its states.
-     *
-     * A native lexer already carries a precompiled state, while any other
-     * implementation is wrapped into an executor-compatible decorator.
-     *
-     * @param array<non-empty-string, LexerInterface> $states
-     * @return array<non-empty-string, State>
-     */
-    private function bootLexerStates(array $states): array
-    {
-        $result = [];
-
-        foreach ($states as $name => $lexer) {
-            $result[$name] = $lexer instanceof self
-                ? $lexer->initial
-                : new State(new DelegatingTokenizer($lexer));
-        }
-
-        return $result;
+        $this->transitions = $transitions;
     }
 
     final public function lex(string $source, int $offset = 0): iterable
@@ -182,51 +120,33 @@ readonly class Lexer implements LexerInterface
 
         $length = \strlen($source);
 
-        /**
-         * The current state. Each executor stops on its own as soon as it has
-         * read everything it must, so the only thing left to do here is to
-         * switch between the states.
-         */
-        $current = $this->initial;
-
-        /** @var list<State> $stack */
-        $stack = [];
-
         /** @var list<TokenInterface> $result */
         $result = [];
 
         while ($offset < $length) {
-            $previous = $offset;
-            $offset = $current->tokenizer->tokenize($source, $offset, $result);
-
-            // Nothing could be read at this offset
-            if ($offset === $previous) {
-                break;
-            }
+            $offset = $this->tokenizer->tokenize($source, $offset, $result);
 
             $index = \array_key_last($result);
 
-            // The executor has advanced, so at least one token has been read
-            \assert($index !== null);
-
-            $next = $current->transitions[$result[$index]->id] ?? null;
-
-            if ($next === null) {
-                $current = \array_pop($stack) ?? $this->initial;
-
-                continue;
+            if ($index === null) {
+                break;
             }
 
-            $stack[] = $current;
-            $current = $this->states[$next]
-                ?? throw UndefinedStateException::becauseStateIsNotDefined(
-                    state: $next,
-                    available: \array_keys($this->states),
-                );
-        }
+            $lexer = $this->transitions[$result[$index]->id] ?? null;
 
-        if ($offset < $length) {
-            throw $this->createReadingException($source, $offset);
+            /**
+             * The executor only stops on purpose at a token that hands the
+             * reading over, so anything else means this lexer has read
+             * everything it could.
+             */
+            if ($lexer === null) {
+                break;
+            }
+
+            $embedding = $this->enter($lexer, $source, $offset, $result[$index]);
+
+            $result[$index] = $embedding;
+            $offset = $embedding->end;
         }
 
         $result[] = new EndOfInputToken($offset);
@@ -235,16 +155,35 @@ readonly class Lexer implements LexerInterface
     }
 
     /**
+     * Hands the reading over to the given lexer and carries everything it has
+     * read by the token that called it.
+     *
      * @param int<0, max> $offset
      */
-    private function createReadingException(string $source, int $offset): UnrecognizedTokenException
-    {
-        return UnrecognizedTokenException::becauseInputIsUnrecognized(new Token(
-            id: self::UNKNOWN_TOKEN_ID,
-            name: null,
-            channel: Channel::Unknown,
-            value: \substr($source, $offset, self::ERROR_FRAGMENT_LENGTH),
-            offset: $offset,
-        ));
+    private function enter(
+        LexerInterface $lexer,
+        string $source,
+        int $offset,
+        TokenInterface $token,
+    ): TokenEmbedding {
+        $children = [];
+        $end = $offset;
+
+        foreach ($lexer->lex($source, $offset) as $child) {
+            /**
+             * The terminal token only marks the end of the embedded lexer's
+             * own fragment, so it is not carried over.
+             */
+            if ($child->channel === Channel::EndOfInput) {
+                $end = $child->offset;
+
+                break;
+            }
+
+            $children[] = $child;
+            $end = $child->end;
+        }
+
+        return TokenEmbedding::createFromToken($token, $children, $end);
     }
 }

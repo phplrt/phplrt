@@ -9,7 +9,7 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
- * Checks that the lexer's state transitions are consistent.
+ * Checks that the lexer hands the reading over to the lexers it knows.
  */
 final readonly class TransitionValidationLexerCompilerPass implements
     LexerCompilerPassInterface
@@ -17,31 +17,25 @@ final readonly class TransitionValidationLexerCompilerPass implements
     public function process(LexerBuildingContext $context): void
     {
         foreach ($context->tokens as $definition) {
-            $this->validateRootOrFail($definition);
+            $this->validateExitOrFail($context, $definition);
             $this->validateTargetOrFail($context, $definition);
-        }
-
-        foreach ($context->states as $state) {
-            foreach ($state as $definition) {
-                $this->validateTargetOrFail($context, $definition);
-            }
         }
     }
 
     /**
-     * The initial state is the bottom of the state stack, so there is nothing
-     * it could return to.
+     * The outermost lexer is called by nobody, so there is nothing it could
+     * give the control back to.
      *
      * @throws CompilationFailedException
      */
-    private function validateRootOrFail(TokenDefinition $definition): void
+    private function validateExitOrFail(LexerBuildingContext $context, TokenDefinition $definition): void
     {
-        if ($definition->transition?->type !== TransitionType::Exit) {
+        if ($context->isEmbedded || $definition->transition?->type !== TransitionType::Exit) {
             return;
         }
 
         throw new CompilationFailedException($definition, \sprintf(
-            'Token definition %s cannot leave the initial lexer state',
+            'Token definition %s cannot end the reading of a lexer no other lexer calls',
             $definition,
         ));
     }
@@ -57,10 +51,10 @@ final readonly class TransitionValidationLexerCompilerPass implements
             return;
         }
 
-        /** @var non-empty-string $state */
-        $state = $transition->state;
+        /** @var non-empty-string $lexer */
+        $lexer = $transition->lexer;
 
-        if (isset($context->states[$state]) || isset($context->embeddedStates[$state])) {
+        if (isset($context->lexers[$lexer])) {
             return;
         }
 

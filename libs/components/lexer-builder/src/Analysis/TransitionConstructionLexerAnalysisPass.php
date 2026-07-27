@@ -7,10 +7,11 @@ namespace Phplrt\Lexer\Builder\Analysis;
 use Phplrt\Lexer\Builder\Definition\TransitionType;
 
 /**
- * Describes the state transition each token triggers.
+ * Describes what each token does to the reading.
  *
- * A token entering a state is described by the name of that state, while the
- * one leaving the current state is described by {@see null}.
+ * A token handing the reading over is described by the name of the lexer it
+ * hands it over to, while the one ending the reading is described by
+ * {@see null}.
  */
 final readonly class TransitionConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
@@ -19,18 +20,16 @@ final readonly class TransitionConstructionLexerAnalysisPass implements
     {
         $result = [];
 
-        foreach ([$context->tokens, ...\array_values($context->states)] as $definitions) {
-            foreach ($definitions as $id => $definition) {
-                $transition = $definition->transition;
+        foreach ($context->tokens as $id => $definition) {
+            $transition = $definition->transition;
 
-                if ($transition === null) {
-                    continue;
-                }
-
-                $result[$id] = $transition->type === TransitionType::Enter
-                    ? $transition->state
-                    : null;
+            if ($transition === null) {
+                continue;
             }
+
+            $result[$id] = $transition->type === TransitionType::Enter
+                ? $transition->lexer
+                : null;
         }
 
         $context->transitions = $result;

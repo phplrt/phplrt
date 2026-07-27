@@ -13,43 +13,31 @@ use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 /**
  * Represents the result of building a lexer.
  *
- * Token identifiers are unique across ALL states, so a token ID is always
- * enough to distinguish a token, no matter which state produced it.
+ * A token identifier is the position of its definition in this lexer, so it
+ * only means something here: the tokens read by another lexer are carried by
+ * the token that entered it and never reach this stream.
  */
 final readonly class LexerBuilderResult
 {
     public function __construct(
         /**
-         * A map of token ID and its definition of the initial (non-namespaced)
-         * lexer state.
+         * A map of token ID and the definition the lexer recognizes it by.
          *
          * @var non-empty-array<int, TokenDefinition>
          */
         public array $tokens,
         /**
-         * A map of state name and its token definitions, indexed by token ID.
+         * A map of name and the lexer reading the fragment it stands for.
          *
-         * @var array<non-empty-string, non-empty-array<int, TokenDefinition>>
+         * @var array<non-empty-string, self|EmbeddedLexerInterface>
          */
-        public array $states,
+        public array $lexers,
         /**
-         * A map of state name and the lexer reading it.
-         *
-         * @var array<non-empty-string, EmbeddedLexerInterface>
-         */
-        public array $embeddedStates,
-        /**
-         * The pattern recognizing the tokens of the initial state.
+         * The pattern recognizing the tokens of the lexer.
          *
          * @var non-empty-string
          */
         public string $pattern,
-        /**
-         * A map of state name and the pattern recognizing its tokens.
-         *
-         * @var array<non-empty-string, non-empty-string>
-         */
-        public array $statePatterns,
         /**
          * A map of token ID and the channel it is emitted to.
          *
@@ -63,10 +51,10 @@ final readonly class LexerBuilderResult
          */
         public array $names,
         /**
-         * A map of token ID and the state transition it triggers.
+         * A map of token ID and what the token does to the reading.
          *
-         * A {@see string} value enters the named state, while a {@see null} one
-         * leaves the current state.
+         * A {@see string} value hands the reading over to the named lexer,
+         * while a {@see null} one ends the reading of this one.
          *
          * @var array<int, non-empty-string|null>
          */
@@ -74,7 +62,7 @@ final readonly class LexerBuilderResult
     ) {}
 
     /**
-     * @throws LexerCompilerException in case of a state cannot be read
+     * @throws LexerCompilerException in case of a fragment cannot be read
      */
     public function toLexer(): LexerInterface
     {
@@ -90,14 +78,8 @@ final readonly class LexerBuilderResult
      */
     public function findTokenId(TokenDefinition $token): ?int
     {
-        foreach ([$this->tokens, ...\array_values($this->states)] as $definitions) {
-            $id = \array_search($token, $definitions, true);
+        $id = \array_search($token, $this->tokens, true);
 
-            if ($id !== false) {
-                return $id;
-            }
-        }
-
-        return null;
+        return $id === false ? null : $id;
     }
 }

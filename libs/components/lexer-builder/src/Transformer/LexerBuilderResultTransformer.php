@@ -22,10 +22,8 @@ final readonly class LexerBuilderResultTransformer
 
         return new LexerBuilderResult(
             tokens: $context->tokens,
-            states: $context->states,
-            embeddedStates: $context->embeddedStates,
+            lexers: $context->lexers,
             pattern: $context->pattern,
-            statePatterns: $context->statePatterns,
             channels: $context->channels,
             names: $context->names,
             transitions: $context->transitions,

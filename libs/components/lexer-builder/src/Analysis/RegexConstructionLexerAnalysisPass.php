@@ -8,9 +8,7 @@ use Phplrt\Lexer\Builder\Regex\MarkersRegexGenerator;
 use Phplrt\Lexer\Builder\Regex\RegexGeneratorInterface;
 
 /**
- * Describes the pattern each lexer state recognizes its tokens with.
- *
- * Every state is a lexer of its own, so it gets a pattern of its own as well.
+ * Describes the pattern the lexer recognizes its tokens with.
  */
 final readonly class RegexConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
@@ -22,13 +20,5 @@ final readonly class RegexConstructionLexerAnalysisPass implements
     public function process(LexerResultContext $context): void
     {
         $context->pattern = $this->generator->generate($context->tokens, $context->flags);
-
-        $patterns = [];
-
-        foreach ($context->states as $name => $tokens) {
-            $patterns[$name] = $this->generator->generate($tokens, $context->flags);
-        }
-
-        $context->statePatterns = $patterns;
     }
 }

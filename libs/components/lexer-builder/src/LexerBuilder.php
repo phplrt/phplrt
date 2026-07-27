@@ -11,9 +11,6 @@ use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
 use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
-use Phplrt\Lexer\Builder\Builder\HasRegexFlags;
-use Phplrt\Lexer\Builder\Builder\HasTokenDefinitions;
-use Phplrt\Lexer\Builder\Builder\TokenDefinitionGroup;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\Compiler\RegexDuplicationLexerCompilerPass;
@@ -22,10 +19,13 @@ use Phplrt\Lexer\Builder\Compiler\RegexValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TokenNameValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TransitionValidationLexerCompilerPass;
-use Phplrt\Lexer\Builder\Compiler\UnreachableStateLexerCompilerPass;
+use Phplrt\Lexer\Builder\Compiler\UnreachableLexerCompilerPass;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\Transformer\LexerBuilderResultTransformer;
 use Phplrt\Lexer\Builder\Transformer\LexerBuildingContextTransformer;
@@ -33,11 +33,8 @@ use Phplrt\Lexer\Builder\Transformer\LexerResultContextTransformer;
 
 final class LexerBuilder
 {
-    use HasTokenDefinitions;
-    use HasRegexFlags;
-
     /**
-     * Brings the lexer to the form the rest of the passes expect: the states
+     * Brings the lexer to the form the rest of the passes expect: the lexers
      * that cannot be entered are dropped.
      */
     public const int PASS_PRIORITY_NORMALIZE = 0;
@@ -59,16 +56,37 @@ final class LexerBuilder
     public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
-     * @var array<non-empty-string, TokenDefinitionGroup>
+     * Contains {@see true} in case of the lexer is called by another one, so
+     * it is allowed to stop reading and give the control back
      */
-    public private(set) array $states = [];
+    public private(set) bool $isEmbedded = false;
 
     /**
-     * A map of state name and the lexer reading it.
+     * The token definitions the lexer recognizes on its own, in the order they
+     * are tried.
      *
-     * @var array<non-empty-string, EmbeddedLexerInterface>
+     * @var array<array-key, TokenDefinition>
      */
-    public private(set) array $embeddedStates = [];
+    public private(set) array $tokens = [];
+
+    /**
+     * A map of modifier value and the modifier the pattern is compiled with.
+     *
+     * @var array<non-empty-string, RegexModifier>
+     */
+    public private(set) array $flags = [
+        RegexModifier::Compiled->value => RegexModifier::Compiled,
+        RegexModifier::DotAll->value => RegexModifier::DotAll,
+        RegexModifier::Utf8->value => RegexModifier::Utf8,
+        RegexModifier::Multiline->value => RegexModifier::Multiline,
+    ];
+
+    /**
+     * A map of name and the lexer reading the fragment it stands for.
+     *
+     * @var array<non-empty-string, self|EmbeddedLexerInterface>
+     */
+    public private(set) array $lexers = [];
 
     /**
      * The passes rewriting and checking the token definitions, indexed by
@@ -90,11 +108,11 @@ final class LexerBuilder
     {
         $this->compilerPasses = [
             /**
-             * Dead states are dropped first, so that the code that could
+             * Dead lexers are dropped first, so that the code that could
              * never be reached does not produce compilation errors.
              */
             self::PASS_PRIORITY_NORMALIZE => [
-                new UnreachableStateLexerCompilerPass(),
+                new UnreachableLexerCompilerPass(),
             ],
             self::PASS_PRIORITY_CHECK => [
                 new TokenNameDuplicationLexerCompilerPass(),
@@ -115,17 +133,108 @@ final class LexerBuilder
     }
 
     /**
-     * Adds the lexer state and returns the group its token definitions belong
-     * to, or returns the group of the state that has been added earlier.
+     * Adds the token recognized by the given regular expression.
      *
-     * A state can only be reached using a {@see TokenDefinition::enter()}
-     * transition and left using a {@see TokenDefinition::exit()} one.
+     * @api
+     *
+     * @param non-empty-string $pattern
+     * @param non-empty-string|null $name
+     */
+    public function addPattern(string $pattern, ?string $name = null): RegexTokenDefinition
+    {
+        $definition = new RegexTokenDefinition($pattern, $name);
+
+        $this->addToken($definition);
+
+        return $definition;
+    }
+
+    /**
+     * Adds the token recognized by the given value, as it is written.
+     *
+     * @api
+     *
+     * @param non-empty-string $value
+     * @param non-empty-string|null $name
+     */
+    public function addValue(string $value, ?string $name = null): ValueTokenDefinition
+    {
+        $definition = new ValueTokenDefinition($value, $name);
+
+        $this->addToken($definition);
+
+        return $definition;
+    }
+
+    /**
+     * Adds the token definition to the end of the list, so that the ones added
+     * earlier are tried first.
+     *
+     * @api
+     *
+     * @return $this
+     */
+    public function addToken(TokenDefinition $definition): self
+    {
+        $this->removeToken($definition);
+
+        $this->tokens[] = $definition;
+
+        return $this;
+    }
+
+    /**
+     * @api
+     *
+     * @return $this
+     */
+    public function removeToken(TokenDefinition $definition): self
+    {
+        foreach ($this->tokens as $index => $token) {
+            if ($token === $definition) {
+                unset($this->tokens[$index]);
+
+                break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Compiles the pattern of the lexer with the given modifier.
+     *
+     * @api
+     */
+    public function enable(RegexModifier $flag): RegexModifier
+    {
+        return $this->flags[$flag->value] = $flag;
+    }
+
+    /**
+     * @api
+     */
+    public function disable(RegexModifier $flag): RegexModifier
+    {
+        unset($this->flags[$flag->value]);
+
+        return $flag;
+    }
+
+    /**
+     * Adds the lexer reading a fragment of the source and returns the builder
+     * describing it, or returns the builder added earlier under that name.
+     *
+     * A fragment is read on a {@see TokenDefinition::enter()} transition, and
+     * the lexer reading it gives the control back on a
+     * {@see TokenDefinition::exit()} one. Everything it reads is carried by
+     * the token that entered it, so it never reaches this lexer's own stream.
      *
      * For example,
      * ```php
      * $builder->addPattern('"')
      *      ->enter('string');
-     * $builder->addState('string')
+     * $builder->addLexer('string')
      *      ->addPattern('"')
      *      ->exit();
      * ```
@@ -134,55 +243,57 @@ final class LexerBuilder
      *
      * @param non-empty-string $name
      */
-    public function addState(string $name): TokenDefinitionGroup
+    public function addLexer(string $name): self
     {
-        // A state name identifies a single state, whatever it is read by
-        unset($this->embeddedStates[$name]);
+        $lexer = $this->lexers[$name] ?? null;
 
-        return $this->states[$name] ??= new TokenDefinitionGroup();
+        if ($lexer instanceof self) {
+            return $lexer;
+        }
+
+        $lexer = new self();
+        $lexer->isEmbedded = true;
+
+        return $this->lexers[$name] = $lexer;
     }
 
     /**
-     * Adds the lexer state read by a lexer of its own.
+     * Adds the fragment read by a lexer written by hand.
      *
-     * Such a state has no token definitions: the lexer decides on its own
-     * where the fragment it reads ends and returns the control back as soon as
-     * it stops.
+     * Such a lexer decides on its own where the fragment it reads ends, so it
+     * is described by nothing but itself.
      *
      * For example,
      * ```php
      * $builder->addPattern('<\?php')
      *      ->enter('php');
-     * $builder->addEmbeddedState('php', new PhpTokenLexer());
+     * $builder->addEmbeddedLexer('php', new PhpTokenLexer());
      * ```
      *
      * @api
      *
      * @param non-empty-string $name
      */
-    public function addEmbeddedState(
+    public function addEmbeddedLexer(
         string $name,
         EmbeddedLexerInterface|LexerInterface $lexer,
     ): EmbeddedLexerInterface {
-        // A state name identifies a single state, whatever it is read by
-        unset($this->states[$name]);
-
-        return $this->embeddedStates[$name] = $lexer instanceof LexerInterface
+        return $this->lexers[$name] = $lexer instanceof LexerInterface
             ? new RuntimeEmbeddedLexer($lexer)
             : $lexer;
     }
 
     /**
-     * Removes the given lexer state along with everything it is read by.
+     * Removes the lexer added under the given name.
      *
      * @api
      *
      * @param non-empty-string $name
      * @return $this
      */
-    public function removeState(string $name): self
+    public function removeLexer(string $name): self
     {
-        unset($this->states[$name], $this->embeddedStates[$name]);
+        unset($this->lexers[$name]);
 
         return $this;
     }

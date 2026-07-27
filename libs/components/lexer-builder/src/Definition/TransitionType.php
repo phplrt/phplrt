@@ -7,13 +7,12 @@ namespace Phplrt\Lexer\Builder\Definition;
 enum TransitionType
 {
     /**
-     * Pushes a new state onto the lexer's state stack.
+     * Hands the reading over to a lexer of its own.
      */
     case Enter;
 
     /**
-     * Pops the topmost state from the lexer's state stack, returning the
-     * lexer to the state it came from.
+     * Ends the reading, giving the control back to the lexer that called it.
      */
     case Exit;
 }

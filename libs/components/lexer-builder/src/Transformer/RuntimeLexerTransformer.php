@@ -15,77 +15,85 @@ use Phplrt\Lexer\Lexer;
 /**
  * Turns the result of the compilation into the lexer reading the input.
  *
- * The metadata describes the lexer as a whole, and every state is given all of
- * it: a token identifier is unique across all states, and the pattern of a
- * state only ever reports the identifiers of its own tokens, so the entries of
- * the neighbours are unreachable rather than harmful.
+ * A lexer reading a fragment is compiled the very same way, so the metadata of
+ * each of them describes nothing but its own tokens.
+ *
+ * A name is what a grammar refers to a lexer by, and nothing refers to a lexer
+ * once it has been built, so the names are resolved here and the compiled
+ * lexer is given the lexers themselves.
  */
 final readonly class RuntimeLexerTransformer
 {
     /**
-     * @throws LexerCompilerException in case of a state cannot be read
+     * @throws LexerCompilerException in case of a fragment cannot be read
      */
     public function transform(LexerBuilderResult $result): Lexer
     {
-        $states = [];
+        $lexers = [];
 
-        foreach ($result->statePatterns as $name => $pattern) {
-            $states[$name] = $this->transformState($result, $pattern);
+        foreach ($result->lexers as $name => $lexer) {
+            $lexers[$name] = $lexer instanceof LexerBuilderResult
+                ? $this->transform($lexer)
+                : self::transformEmbeddedLexer($name, $lexer);
         }
 
-        foreach ($result->embeddedStates as $name => $lexer) {
-            $states[$name] = self::transformEmbeddedLexer($name, $lexer);
-        }
-
-        return $this->transformState($result, $result->pattern, $states);
-    }
-
-    /**
-     * @param non-empty-string $pattern
-     * @param array<non-empty-string, LexerInterface> $states
-     */
-    private function transformState(LexerBuilderResult $result, string $pattern, array $states = []): Lexer
-    {
         return new Lexer(
-            pattern: $pattern,
+            pattern: $result->pattern,
             channels: $result->channels,
             names: $result->names,
-            transitions: $result->transitions,
-            states: $states,
+            transitions: self::transformTransitions($result, $lexers),
         );
     }
 
     /**
-     * @param non-empty-string $state
+     * @param array<non-empty-string, LexerInterface> $lexers
+     * @return array<int, LexerInterface|null>
      * @throws LexerCompilerException
      */
-    private static function transformEmbeddedLexer(string $state, EmbeddedLexerInterface $lexer): LexerInterface
+    private static function transformTransitions(LexerBuilderResult $result, array $lexers): array
+    {
+        $transitions = [];
+
+        foreach ($result->transitions as $id => $name) {
+            $transitions[$id] = $name === null
+                ? null
+                : $lexers[$name] ?? throw LexerCompilerException::becauseLexerIsNotDefined($name);
+        }
+
+        return $transitions;
+    }
+
+    /**
+     * @param non-empty-string $name
+     * @throws LexerCompilerException
+     */
+    private static function transformEmbeddedLexer(string $name, EmbeddedLexerInterface $lexer): LexerInterface
     {
         return match (true) {
             $lexer instanceof RuntimeEmbeddedLexer => $lexer->lexer,
-            $lexer instanceof PhpCodeEmbeddedLexer => self::compileEmbeddedLexer($state, $lexer),
+            $lexer instanceof PhpCodeEmbeddedLexer => self::compileEmbeddedLexer($name, $lexer),
         };
     }
 
     /**
-     * Compiles the expression a state is read by into the lexer itself.
+     * Compiles the expression a fragment is read by into the lexer itself.
      *
      * The compilation is done out of the object context, so that the code
      * cannot reach the transformer itself.
      *
-     * @param non-empty-string $state
+     * @param non-empty-string $name
      * @throws LexerCompilerException
      */
-    private static function compileEmbeddedLexer(string $state, PhpCodeEmbeddedLexer $lexer): LexerInterface
+    private static function compileEmbeddedLexer(string $name, PhpCodeEmbeddedLexer $lexer): LexerInterface
     {
         try {
             $result = eval(\sprintf('return %s;', $lexer->code));
         } catch (\ParseError $e) {
-            throw LexerCompilerException::becauseEmbeddedLexerIsMalformed($state, $e);
+            throw LexerCompilerException::becauseEmbeddedLexerIsMalformed($name, $e);
         }
 
         if (!$result instanceof LexerInterface) {
-            throw LexerCompilerException::becauseEmbeddedLexerIsInvalid($state, \get_debug_type($result));
+            throw LexerCompilerException::becauseEmbeddedLexerIsInvalid($name, \get_debug_type($result));
         }
 
         return $result;

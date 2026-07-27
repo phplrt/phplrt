@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Lexer\Internal\Tokenizer;
+namespace Phplrt\Lexer\Internal;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
@@ -12,16 +12,16 @@ use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Token\Token;
 
 /**
- * Reads a single lexer state.
+ * Reads what a single lexer recognizes on its own.
  *
- * The executor knows nothing about the lexer states: it only stops as soon as
+ * The executor knows nothing about the other lexers: it only stops as soon as
  * a token that breaks the analysis has been read, leaving the decision on what
  * to do next to the {@see Lexer}.
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
-final readonly class Tokenizer implements TokenizerInterface
+final readonly class Tokenizer
 {
     /**
      * An identifier of the pseudo-token describing a source fragment
@@ -62,7 +62,7 @@ final readonly class Tokenizer implements TokenizerInterface
      * token that breaks the analysis has been read.
      *
      * Writing into the caller's list (instead of returning an own one) keeps
-     * the tokens of all states in a single array, so no merging is needed.
+     * the tokens of the whole reading in a single array, so no merging is needed.
      *
      * @param int<0, max> $offset
      * @param list<TokenInterface> $tokens
@@ -99,9 +99,9 @@ final readonly class Tokenizer implements TokenizerInterface
         $breaks = $this->breaks;
 
         /**
-         * A state without transitions cannot be left, so the (much cheaper)
-         * boolean check keeps such a state from paying for the hash lookup
-         * on every single token.
+         * A lexer without transitions reads everything it can, so the (much
+         * cheaper) boolean check keeps it from paying for the hash lookup on
+         * every single token.
          */
         $breakable = $breaks !== [];
 
@@ -148,7 +148,7 @@ final readonly class Tokenizer implements TokenizerInterface
             if ($breakable && isset($breaks[$id])) {
                 /**
                  * The analysis has been stopped on purpose, so the rest of the
-                 * source is none of this state's business.
+                 * source is none of this lexer's business.
                  */
                 return $offset;
             }
@@ -159,7 +159,7 @@ final readonly class Tokenizer implements TokenizerInterface
 
     /**
      * The pattern could not be applied any further, so anything left in the
-     * source is unreadable for this state.
+     * source is unreadable for this lexer.
      *
      * @param int<0, max> $offset
      * @return int<0, max>

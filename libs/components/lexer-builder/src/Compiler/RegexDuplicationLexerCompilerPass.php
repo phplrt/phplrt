@@ -18,10 +18,6 @@ final readonly class RegexDuplicationLexerCompilerPass implements
     public function process(LexerBuildingContext $context): void
     {
         $this->validateOrFail($context->tokens);
-
-        foreach ($context->states as $state => $group) {
-            $this->validateOrFail($group);
-        }
     }
 
     /**

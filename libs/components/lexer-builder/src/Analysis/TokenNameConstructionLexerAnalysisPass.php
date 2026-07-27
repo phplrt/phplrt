@@ -17,14 +17,12 @@ final readonly class TokenNameConstructionLexerAnalysisPass implements
     {
         $result = [];
 
-        foreach ([$context->tokens, ...\array_values($context->states)] as $definitions) {
-            foreach ($definitions as $id => $definition) {
-                if ($definition->name === null) {
-                    continue;
-                }
-
-                $result[$id] = $definition->name;
+        foreach ($context->tokens as $id => $definition) {
+            if ($definition->name === null) {
+                continue;
             }
+
+            $result[$id] = $definition->name;
         }
 
         $context->names = $result;

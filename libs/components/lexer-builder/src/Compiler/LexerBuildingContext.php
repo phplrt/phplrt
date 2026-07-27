@@ -7,6 +7,7 @@ namespace Phplrt\Lexer\Builder\Compiler;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\LexerBuilder;
 
 /**
  * Contains the token definitions the compiler passes rewrite and check.
@@ -19,28 +20,27 @@ final class LexerBuildingContext
 {
     public function __construct(
         /**
-         * The token definitions of the initial (non-namespaced) lexer state.
+         * The token definitions the lexer recognizes on its own.
          *
          * @var list<TokenDefinition>
          */
         public array $tokens = [],
         /**
-         * A map of state name and its token definitions.
+         * A map of name and the lexer reading the fragment it stands for.
          *
-         * @var array<non-empty-string, list<TokenDefinition>>
+         * @var array<non-empty-string, LexerBuilder|EmbeddedLexerInterface>
          */
-        public array $states = [],
-        /**
-         * A map of state name and the lexer reading it.
-         *
-         * @var array<non-empty-string, EmbeddedLexerInterface>
-         */
-        public array $embeddedStates = [],
+        public array $lexers = [],
         /**
          * A map of modifier value and the modifier itself.
          *
          * @var array<non-empty-string, RegexModifier>
          */
         public array $flags = [],
+        /**
+         * Contains {@see true} in case of the lexer is called by another one,
+         * so it is allowed to stop reading and give the control back
+         */
+        public bool $isEmbedded = false,
     ) {}
 }

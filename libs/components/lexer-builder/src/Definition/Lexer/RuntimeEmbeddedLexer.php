@@ -7,11 +7,11 @@ namespace Phplrt\Lexer\Builder\Definition\Lexer;
 use Phplrt\Contracts\Lexer\LexerInterface;
 
 /**
- * Reads a lexer state using the given lexer.
+ * Reads a fragment of the source using the given lexer.
  *
  * For example,
  * ```php
- * $builder->addEmbeddedState('php', new PhpTokenLexer());
+ * $builder->addEmbeddedLexer('php', new PhpTokenLexer());
  * ```
  */
 final readonly class RuntimeEmbeddedLexer implements EmbeddedLexerInterface

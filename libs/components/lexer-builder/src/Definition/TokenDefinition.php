@@ -39,8 +39,8 @@ abstract class TokenDefinition extends Definition
     public ChannelInterface $channel = self::DEFAULT_TOKEN_CHANNEL;
 
     /**
-     * Contains the lexer state change triggered by this token, or {@see null}
-     * in case of the token does not affect the lexer state
+     * Contains what this token does to the reading, or {@see null} in case of
+     * the token changes nothing
      */
     public private(set) ?Transition $transition = null;
 
@@ -64,11 +64,11 @@ abstract class TokenDefinition extends Definition
     }
 
     /**
-     * @param non-empty-string $state
+     * @param non-empty-string $lexer
      */
-    public function enter(string $state): self
+    public function enter(string $lexer): self
     {
-        return $this->setTransition(Transition::enter($state));
+        return $this->setTransition(Transition::enter($lexer));
     }
 
     public function exit(): self

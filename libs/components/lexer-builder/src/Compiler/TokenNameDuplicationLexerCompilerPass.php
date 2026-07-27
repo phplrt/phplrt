@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Compiler;
 
-use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
- * Checks that token names are unique across ALL lexer states.
+ * Checks that token names are unique within the lexer.
  *
- * Token identifiers form a single global space and each named token is
- * exposed as a class constant of the generated lexer, so two states cannot
- * reuse the same name.
+ * Each named token is exposed as a class constant of the generated lexer, so
+ * a name cannot be reused. A lexer reading a fragment of its own is a class of
+ * its own, which is why its names are none of this one's business.
  */
 final readonly class TokenNameDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
@@ -22,42 +21,13 @@ final readonly class TokenNameDuplicationLexerCompilerPass implements
         /** @var array<non-empty-string, true> $names */
         $names = [];
 
-        /**
-         * A definition shared between several states is a single token, so it
-         * must not be reported as a duplicate of itself.
-         *
-         * @var \SplObjectStorage<TokenDefinition, true> $visited
-         */
-        $visited = new \SplObjectStorage();
-
-        $this->validateOrFail($context->tokens, $names, $visited);
-
-        foreach ($context->states as $state) {
-            $this->validateOrFail($state, $names, $visited);
-        }
-    }
-
-    /**
-     * @param array<array-key, TokenDefinition> $definitions
-     * @param array<non-empty-string, true> $names
-     * @param \SplObjectStorage<TokenDefinition, true> $visited
-     * @throws CompilationFailedException
-     */
-    private function validateOrFail(array $definitions, array &$names, \SplObjectStorage $visited): void
-    {
-        foreach ($definitions as $definition) {
+        foreach ($context->tokens as $definition) {
             $name = $definition->name;
 
             // Skip anonymous tokens
             if ($name === null) {
                 continue;
             }
-
-            if (isset($visited[$definition])) {
-                continue;
-            }
-
-            $visited[$definition] = true;
 
             if (isset($names[$name])) {
                 throw new CompilationFailedException($definition, \sprintf(

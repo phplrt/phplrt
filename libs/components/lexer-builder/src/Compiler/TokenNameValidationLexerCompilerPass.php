@@ -16,10 +16,6 @@ final readonly class TokenNameValidationLexerCompilerPass implements
     public function process(LexerBuildingContext $context): void
     {
         $this->validateOrFail($context->tokens);
-
-        foreach ($context->states as $state) {
-            $this->validateOrFail($state);
-        }
     }
 
     /**

@@ -8,14 +8,14 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\Definition\SourceReference;
 
 /**
- * Reads a lexer state using the lexer the given PHP code produces.
+ * Reads a fragment of the source using the lexer the given PHP code produces.
  *
  * The code is an expression, so what it evaluates to is the business of the
  * grammar it is written in, as long as it is a {@see LexerInterface}.
  *
  * For example,
  * ```php
- * $builder->addEmbeddedState('php', new PhpCodeEmbeddedLexer('new \App\PhpTokenLexer()'));
+ * $builder->addEmbeddedLexer('php', new PhpCodeEmbeddedLexer('new \App\PhpTokenLexer()'));
  * ```
  */
 final class PhpCodeEmbeddedLexer implements EmbeddedLexerInterface

@@ -13,6 +13,10 @@ use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
  */
 class Token implements TokenInterface
 {
+    public int $end {
+        get => $this->offset + \strlen($this->value);
+    }
+
     public function __construct(
         public int $id,
         /**

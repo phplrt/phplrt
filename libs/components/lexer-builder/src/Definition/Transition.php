@@ -5,30 +5,31 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder\Definition;
 
 /**
- * Describes a lexer state change triggered by a token.
+ * Describes what a token does to the reading.
  *
- * The transition is applied AFTER the token has been emitted, so the token
- * itself always belongs to the state it was matched in.
+ * The transition is applied AFTER the token has been read, so the token itself
+ * always belongs to the lexer that has read it.
  */
 final readonly class Transition implements \Stringable
 {
     private function __construct(
         public TransitionType $type,
         /**
-         * The target state name of the {@see TransitionType::Enter}
-         * transition, or {@see null} for {@see TransitionType::Exit}.
+         * The name of the lexer the {@see TransitionType::Enter} transition
+         * hands the reading over to, or {@see null} for
+         * {@see TransitionType::Exit}.
          *
          * @var non-empty-string|null
          */
-        public ?string $state = null,
+        public ?string $lexer = null,
     ) {}
 
     /**
-     * @param non-empty-string $state
+     * @param non-empty-string $lexer
      */
-    public static function enter(string $state): self
+    public static function enter(string $lexer): self
     {
-        return new self(TransitionType::Enter, $state);
+        return new self(TransitionType::Enter, $lexer);
     }
 
     public static function exit(): self
@@ -39,8 +40,8 @@ final readonly class Transition implements \Stringable
     public function __toString(): string
     {
         return match ($this->type) {
-            TransitionType::Enter => \sprintf('enters the "%s" state', (string) $this->state),
-            TransitionType::Exit => 'leaves the current state',
+            TransitionType::Enter => \sprintf('is read along with the "%s" lexer', (string) $this->lexer),
+            TransitionType::Exit => 'ends the reading',
         };
     }
 }
