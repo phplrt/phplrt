@@ -49,7 +49,7 @@ final readonly class PrettyTokenPrinter implements TokenPrinterInterface
         }
 
         if ($channel === Channel::Unknown && $name === null) {
-            return \sprintf('%s (unknown)', $this->printValue($token));
+            return \sprintf('%s', $this->printValue($token));
         }
 
         if ($channel instanceof Channel) {
