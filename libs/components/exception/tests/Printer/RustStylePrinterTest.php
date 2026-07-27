@@ -7,8 +7,9 @@ namespace Phplrt\Exception\Tests\Printer;
 use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\Level;
 use Phplrt\Exception\Printer\RustStylePrinter;
-use Phplrt\Exception\SnippetReader;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
+use Phplrt\Exception\Snippet\Reader\Content\StringContent;
+use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -22,7 +23,7 @@ final class RustStylePrinterTest extends TestCase
     public function testPrintsLinesWithTheUnderlinedFragment(): void
     {
         $printer = new RustStylePrinter();
-        $reader = new SnippetReader();
+        $reader = new SourceLineReader();
 
         self::assertSame(<<<'OUT'
             2 | line 2
@@ -31,14 +32,14 @@ final class RustStylePrinterTest extends TestCase
               |   ^^
             5 | line 5
             6 | line 6
-            OUT, $printer->print($reader->createFromString(self::createSource(), 23, 2, 2)));
+            OUT, $printer->print($reader->read(new StringContent(self::createSource()), 23, 2, 2)));
     }
 
     #[TestDox('The line numbers are aligned to the widest one')]
     public function testAlignsLineNumbers(): void
     {
         $printer = new RustStylePrinter();
-        $reader = new SnippetReader();
+        $reader = new SourceLineReader();
 
         $source = \implode("\n", \array_map(static fn(int $i): string => 'line ' . $i, \range(1, 12)));
 
@@ -49,7 +50,7 @@ final class RustStylePrinterTest extends TestCase
                | ^^^^^^^
             11 | line 11
             12 | line 12
-            OUT, $printer->print($reader->createFromString($source, 63, 7, 2)));
+            OUT, $printer->print($reader->read(new StringContent($source), 63, 7, 2)));
     }
 
     #[TestDox('The multi-byte characters are underlined as single ones')]
@@ -85,7 +86,7 @@ final class RustStylePrinterTest extends TestCase
     public function testUnderlinesEveryLineOfTheFragment(): void
     {
         $printer = new RustStylePrinter();
-        $reader = new SnippetReader();
+        $reader = new SourceLineReader();
 
         self::assertSame(<<<'OUT'
             3 | line 3
@@ -96,7 +97,7 @@ final class RustStylePrinterTest extends TestCase
             6 | line 6
               | ^^^^
             7 | line 7
-            OUT, $printer->print($reader->createFromString(self::createSource(), 26, 13, 1)));
+            OUT, $printer->print($reader->read(new StringContent(self::createSource()), 26, 13, 1)));
     }
 
     #[TestDox('A line exceeding the available width is wrapped')]
@@ -184,7 +185,7 @@ final class RustStylePrinterTest extends TestCase
     public function testDoesNotUnderlineLineWithoutCharactersOfTheFragment(): void
     {
         $printer = new RustStylePrinter();
-        $reader = new SnippetReader();
+        $reader = new SourceLineReader();
 
         self::assertSame(<<<'OUT'
             1 | line 1
@@ -192,7 +193,7 @@ final class RustStylePrinterTest extends TestCase
             2 |
             3 | line 3
               | ^^^^^^
-            OUT, $printer->print($reader->createFromString("line 1\n\nline 3", 3, 12, 0)));
+            OUT, $printer->print($reader->read(new StringContent("line 1\n\nline 3"), 3, 12, 0)));
     }
 
     #[TestDox('The error message is printed above the source code')]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Tests\Snippet\Internal\Content;
+namespace Phplrt\Exception\Tests\Snippet\Reader\Content;
 
 use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
 use Phplrt\Exception\Snippet\Reader\Content\ContentInterface;

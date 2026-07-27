@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Tests\Snippet\Internal;
+namespace Phplrt\Exception\Tests\Snippet\Reader;
 
 use Phplrt\Exception\Snippet\Reader\Content\FileContent;
 use Phplrt\Exception\Snippet\Reader\Content\StringContent;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
 #[Group('phplrt/exception')]
-final class SourceLineReaderTest extends TestCase
+final class ChunkedFileReadingTest extends TestCase
 {
     /**
      * @var non-empty-string

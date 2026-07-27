@@ -2,18 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Tests;
+namespace Phplrt\Exception\Tests\Snippet\Reader;
 
+use Phplrt\Exception\ErrorInfoResult;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
+use Phplrt\Exception\Snippet\Reader\Content\FileContent;
+use Phplrt\Exception\Snippet\Reader\Content\StringContent;
+use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Snippet\SourceLine;
-use Phplrt\Exception\SnippetReader;
+use Phplrt\Exception\Tests\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
 #[Group('phplrt/exception')]
-final class SnippetReaderTest extends TestCase
+final class SourceLineReaderTest extends TestCase
 {
     /**
      * Each line of the source is 6 bytes long, so with a single-byte
@@ -27,68 +31,54 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('Reads the captured line along with N lines before and after it')]
     public function testReadsLinesAroundTheCapturedOne(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             ' #2@7: line 2',
             ' #3@14: line 3',
             '>#4@21:3-3: line 4',
             ' #5@28: line 5',
             ' #6@35: line 6',
-        ], self::describe($reader->createFromString(code: self::SOURCE, offset: 23, lines: 2)));
+        ], self::describe(self::readString(code: self::SOURCE, offset: 23, lines: 2)));
     }
 
     #[TestDox('Reads exactly N * 2 + 1 lines when the source is large enough')]
     public function testReadsDoubledLinesCountAndTheCapturedOne(): void
     {
-        $reader = new SnippetReader();
-
         for ($lines = 0; $lines <= 3; ++$lines) {
-            self::assertCount(\min($lines * 2 + 1, 7), $reader->createFromString(self::SOURCE, 23, 0, $lines));
+            self::assertCount(\min($lines * 2 + 1, 7), self::readString(self::SOURCE, 23, 0, $lines));
         }
     }
 
     #[TestDox('Reads only the captured line in case no additional lines are requested')]
     public function testReadsOnlyTheCapturedLine(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#4@21:3-3: line 4',
-        ], self::describe($reader->createFromString(self::SOURCE, 23, 0, 0)));
+        ], self::describe(self::readString(self::SOURCE, 23, 0, 0)));
     }
 
     #[TestDox('The result is indexed by the line numbers')]
     public function testResultIsIndexedByLineNumbers(): void
     {
-        $reader = new SnippetReader();
-
-        self::assertSame([2, 3, 4, 5, 6], \array_keys($reader->createFromString(self::SOURCE, 23, 0, 2)));
+        self::assertSame([2, 3, 4, 5, 6], \array_keys(self::readString(self::SOURCE, 23, 0, 2)));
     }
 
     #[TestDox('The result contains exactly one captured line in case the fragment is located on a single line')]
     public function testResultContainsExactlyOneCapturedLine(): void
     {
-        $reader = new SnippetReader();
-
-        self::assertSame([4], self::getCapturedLineNumbers($reader->createFromString(self::SOURCE, 23, 3, 2)));
+        self::assertSame([4], self::getCapturedLineNumbers(self::readString(self::SOURCE, 23, 3, 2)));
     }
 
     #[TestDox('The lines are located at the specified offsets of the source')]
     public function testLinesMatchTheSource(): void
     {
-        $reader = new SnippetReader();
-
         for ($offset = 0, $length = \strlen(self::SOURCE); $offset <= $length; ++$offset) {
-            self::assertLinesMatchSource(self::SOURCE, $reader->createFromString(self::SOURCE, $offset, 9, 2));
+            self::assertLinesMatchSource(self::SOURCE, self::readString(self::SOURCE, $offset, 9, 2));
         }
     }
 
     #[TestDox('Reading any fragment of any source is equivalent to splitting it by the delimiters')]
     public function testIsEquivalentToTheSourceSplitting(): void
     {
-        $reader = new SnippetReader();
-
         \mt_srand(0xDEAD_BEEF);
 
         for ($i = 0; $i < 200; ++$i) {
@@ -98,7 +88,7 @@ final class SnippetReaderTest extends TestCase
                 foreach ([0, 1, 4, 9, 32] as $length) {
                     self::assertSame(
                         self::split($source, $offset, $length, 2),
-                        self::describe($reader->createFromString($source, $offset, $length, 2)),
+                        self::describe(self::readString($source, $offset, $length, 2)),
                         \sprintf(
                             'Invalid snippet of the %s source at offset %d of length %d',
                             \var_export($source, true),
@@ -114,43 +104,35 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('Non-existent lines before the beginning of the source are omitted')]
     public function testOmitsLinesBeforeTheBeginningOfSource(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#1@0:4-4: line 1',
             ' #2@7: line 2',
             ' #3@14: line 3',
-        ], self::describe($reader->createFromString(self::SOURCE, 3, 0, 2)));
+        ], self::describe(self::readString(self::SOURCE, 3, 0, 2)));
     }
 
     #[TestDox('Non-existent lines after the end of the source are omitted')]
     public function testOmitsLinesAfterTheEndOfSource(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             ' #5@28: line 5',
             ' #6@35: line 6',
             '>#7@42:4-4: line 7',
-        ], self::describe($reader->createFromString(self::SOURCE, 45, 0, 2)));
+        ], self::describe(self::readString(self::SOURCE, 45, 0, 2)));
     }
 
     #[TestDox('The source containing a single line is read as the captured one')]
     public function testReadsSingleLineSource(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#1@0:4-4: line 1',
-        ], self::describe($reader->createFromString('line 1', 3, 0, 2)));
+        ], self::describe(self::readString('line 1', 3, 0, 2)));
     }
 
     #[TestDox('The empty source is read as a single empty captured line')]
     public function testReadsEmptySource(): void
     {
-        $reader = new SnippetReader();
-
-        $actual = $reader->createFromString('', 0, 0, 2);
+        $actual = self::readString('', 0, 0, 2);
 
         self::assertCount(1, $actual);
         self::assertInstanceOf(CapturedSourceLine::class, $actual[1]);
@@ -164,12 +146,10 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('The trailing delimiter of the source produces an empty last line')]
     public function testTrailingDelimiterProducesAnEmptyLastLine(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             ' #1@0: line 1',
             '>#2@7:1-1: ',
-        ], self::describe($reader->createFromString("line 1\n", 7, 0, 2)));
+        ], self::describe(self::readString("line 1\n", 7, 0, 2)));
     }
 
     /**
@@ -179,8 +159,6 @@ final class SnippetReaderTest extends TestCase
     #[DataProvider('delimitersDataProvider')]
     public function testSupportedDelimiters(string $delimiter): void
     {
-        $reader = new SnippetReader();
-
         $source = \implode($delimiter, ['line 1', 'line 2', 'line 3']);
         $size = 6 + \strlen($delimiter);
 
@@ -188,7 +166,7 @@ final class SnippetReaderTest extends TestCase
             \sprintf(' #1@%d: line 1', 0),
             \sprintf(' #2@%d: line 2', $size),
             \sprintf('>#3@%d:1-1: line 3', $size * 2),
-        ], self::describe($reader->createFromString($source, $size * 2, 0, 2)));
+        ], self::describe(self::readString($source, $size * 2, 0, 2)));
     }
 
     /**
@@ -203,8 +181,6 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('Every line of the captured fragment is returned as a captured one')]
     public function testCapturesEveryLineOfTheFragment(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             ' #2@7: line 2',
             ' #3@14: line 3',
@@ -212,44 +188,38 @@ final class SnippetReaderTest extends TestCase
             '>#5@28:1-7: line 5',
             '>#6@35:1-4: line 6',
             ' #7@42: line 7',
-        ], self::describe($reader->createFromString(self::SOURCE, 23, 15, 2)));
+        ], self::describe(self::readString(self::SOURCE, 23, 15, 2)));
     }
 
     #[TestDox('The lines after the captured ones are read from the end of the fragment')]
     public function testReadsLinesAfterTheEndOfFragment(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#1@0:3-7: line 1',
             '>#2@7:1-7: line 2',
             '>#3@14:1-4: line 3',
             ' #4@21: line 4',
-        ], self::describe($reader->createFromString(self::SOURCE, 2, 15, 1)));
+        ], self::describe(self::readString(self::SOURCE, 2, 15, 1)));
     }
 
     #[TestDox('A fragment ending at the beginning of a line does not capture this line')]
     public function testFragmentEndingAtTheBeginningOfLineDoesNotCaptureIt(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#4@21:1-7: line 4',
-        ], self::describe($reader->createFromString(self::SOURCE, 21, 7, 0)));
+        ], self::describe(self::readString(self::SOURCE, 21, 7, 0)));
 
         self::assertSame([
             '>#4@21:1-7: line 4',
             '>#5@28:1-2: line 5',
-        ], self::describe($reader->createFromString(self::SOURCE, 21, 8, 0)));
+        ], self::describe(self::readString(self::SOURCE, 21, 8, 0)));
     }
 
     #[TestDox('A fragment of zero length is captured by a single line')]
     public function testZeroLengthFragmentIsCapturedBySingleLine(): void
     {
-        $reader = new SnippetReader();
-
         for ($offset = 0, $size = \strlen(self::SOURCE); $offset <= $size; ++$offset) {
-            $actual = $reader->createFromString(self::SOURCE, $offset, 0, 2);
+            $actual = self::readString(self::SOURCE, $offset, 0, 2);
 
             self::assertCount(1, self::getCapturedLineNumbers($actual));
 
@@ -264,11 +234,9 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('The captured columns point to the boundaries of the fragment')]
     public function testCapturedColumnsPointToTheFragmentBoundaries(): void
     {
-        $reader = new SnippetReader();
-
         $source = "line 1\nline 2";
 
-        foreach ($reader->createFromString($source, 2, 8, 0) as $line) {
+        foreach (self::readString($source, 2, 8, 0) as $line) {
             self::assertInstanceOf(CapturedSourceLine::class, $line);
 
             $captured = \substr($line->value, $line->startColumn - 1, $line->endColumn - $line->startColumn);
@@ -280,10 +248,8 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('The captured column points to the character located at the captured offset')]
     public function testCapturedColumnPointsToTheCapturedOffset(): void
     {
-        $reader = new SnippetReader();
-
         for ($offset = 0, $length = \strlen(self::SOURCE); $offset < $length; ++$offset) {
-            $captured = self::findFirstCapturedLine($reader->createFromString(self::SOURCE, $offset, 0, 2));
+            $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, $offset, 0, 2));
 
             self::assertSame(
                 self::SOURCE[$offset],
@@ -296,9 +262,7 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('An offset pointing to the delimiter belongs to the preceding line')]
     public function testOffsetInsideDelimiterBelongsToThePrecedingLine(): void
     {
-        $reader = new SnippetReader();
-
-        $captured = self::findFirstCapturedLine($reader->createFromString(self::SOURCE, 6, 0, 0));
+        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, 6, 0, 0));
 
         self::assertSame(1, $captured->number);
         self::assertSame(7, $captured->startColumn);
@@ -307,10 +271,8 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('The column never exceeds the length of the line')]
     public function testColumnNeverExceedsTheLengthOfTheLine(): void
     {
-        $reader = new SnippetReader();
-
         // The offset points to the "\n" of the "\r\n" delimiter.
-        $captured = self::findFirstCapturedLine($reader->createFromString("line 1\r\nline 2", 7, 0, 0));
+        $captured = self::findFirstCapturedLine(self::readString("line 1\r\nline 2", 7, 0, 0));
 
         self::assertSame(1, $captured->number);
         self::assertSame(7, $captured->startColumn);
@@ -320,9 +282,7 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('A negative offset is reduced to the beginning of the source')]
     public function testNegativeOffsetIsReducedToTheBeginningOfSource(): void
     {
-        $reader = new SnippetReader();
-
-        $captured = self::findFirstCapturedLine($reader->createFromString(self::SOURCE, -42, 0, 0));
+        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, -42, 0, 0));
 
         self::assertSame(1, $captured->number);
         self::assertSame(1, $captured->startColumn);
@@ -331,9 +291,7 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('An offset outside the source is reduced to the end of the source')]
     public function testOverflowedOffsetIsReducedToTheEndOfSource(): void
     {
-        $reader = new SnippetReader();
-
-        $captured = self::findFirstCapturedLine($reader->createFromString(self::SOURCE, 42_000, 0, 0));
+        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, 42_000, 0, 0));
 
         self::assertSame(7, $captured->number);
         self::assertSame(7, $captured->startColumn);
@@ -342,46 +300,39 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('A negative length is reduced to an empty fragment')]
     public function testNegativeLengthIsReducedToAnEmptyFragment(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame(
-            self::describe($reader->createFromString(self::SOURCE, 23, 0, 0)),
-            self::describe($reader->createFromString(self::SOURCE, 23, -42, 0)),
+            self::describe(self::readString(self::SOURCE, 23, 0, 0)),
+            self::describe(self::readString(self::SOURCE, 23, -42, 0)),
         );
     }
 
     #[TestDox('A length outside the source is reduced to the end of the source')]
     public function testOverflowedLengthIsReducedToTheEndOfSource(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame(
-            self::describe($reader->createFromString(self::SOURCE, 42, 6, 0)),
-            self::describe($reader->createFromString(self::SOURCE, 42, 42_000, 0)),
+            self::describe(self::readString(self::SOURCE, 42, 6, 0)),
+            self::describe(self::readString(self::SOURCE, 42, 42_000, 0)),
         );
     }
 
     #[TestDox('The empty line closing the source is captured by a fragment ending outside of it')]
     public function testOverflowedLengthCapturesTheTrailingEmptyLine(): void
     {
-        $reader = new SnippetReader();
-
         self::assertSame([
             '>#1@0:1-7: line 1',
             '>#2@7:1-1: ',
-        ], self::describe($reader->createFromString("line 1\n", 0, 42_000, 0)));
+        ], self::describe(self::readString("line 1\n", 0, 42_000, 0)));
     }
 
     #[TestDox('Reads the snippet from a file in the same way as from a string')]
     public function testReadsFile(): void
     {
-        $reader = new SnippetReader();
         $pathname = self::createSourceFile(self::SOURCE);
 
         try {
             self::assertSame(
-                self::describe($reader->createFromString(self::SOURCE, 23, 15, 2)),
-                self::describe($reader->createFromPathname($pathname, 23, 15, 2)),
+                self::describe(self::readString(self::SOURCE, 23, 15, 2)),
+                self::describe(self::readFile($pathname, 23, 15, 2)),
             );
         } finally {
             @\unlink($pathname);
@@ -391,37 +342,50 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('Reading a non-existent file is not allowed')]
     public function testReadsNonExistentFile(): void
     {
-        $reader = new SnippetReader();
-
         $this->expectException(SourceNotReadableException::class);
 
-        $reader->createFromPathname(__DIR__ . '/non-existent-file.txt', 0);
+        self::readFile(__DIR__ . '/non-existent-file.txt', 0);
     }
 
     #[TestDox('Reading a directory instead of a file is not allowed')]
     public function testReadsDirectory(): void
     {
-        $reader = new SnippetReader();
-
         $this->expectException(SourceNotReadableException::class);
 
-        $reader->createFromPathname(__DIR__, 0);
+        self::readFile(__DIR__, 0);
     }
 
-    #[TestDox('The default number of lines around the captured one is used')]
-    public function testDefaultLinesCount(): void
-    {
-        $reader = new SnippetReader();
+    /**
+     * @param int<0, max> $offset
+     * @param int<0, max> $length
+     * @param int<0, max> $lines
+     * @return array<int<1, max>, SourceLine>
+     */
+    private static function readString(
+        string $code,
+        int $offset,
+        int $length = 0,
+        int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
+    ): array {
+        return new SourceLineReader()
+            ->read(new StringContent($code), $offset, $length, $lines);
+    }
 
-        self::assertSame(
-            self::describe($reader->createFromString(
-                self::SOURCE,
-                23,
-                0,
-                SnippetReader::DEFAULT_LINES_AROUND,
-            )),
-            self::describe($reader->createFromString(self::SOURCE, 23)),
-        );
+    /**
+     * @param int<0, max> $offset
+     * @param int<0, max> $length
+     * @param int<0, max> $lines
+     * @return array<int<1, max>, SourceLine>
+     * @throws SourceNotReadableException
+     */
+    private static function readFile(
+        string $pathname,
+        int $offset,
+        int $length = 0,
+        int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
+    ): array {
+        return new SourceLineReader()
+            ->read(new FileContent($pathname), $offset, $length, $lines);
     }
 
     /**
