@@ -60,7 +60,7 @@ final readonly class RustStylePrinter implements PrinterInterface
          * @var int<1, max>
          */
         private int $width = self::DEFAULT_WIDTH,
-        bool $colors = false,
+        bool $colors = true,
     ) {
         $this->text = new Text();
         $this->wrapper = new LineWrapper($this->text);
@@ -158,9 +158,18 @@ final readonly class RustStylePrinter implements PrinterInterface
      */
     private function printRow(string $number, int $digits, string $value, string $delimiter): string
     {
-        $result = \str_pad($number, $digits, ' ', \STR_PAD_LEFT) . self::GUTTER . $value;
+        $frame = \str_pad($number, $digits, ' ', \STR_PAD_LEFT) . self::GUTTER;
 
-        return $delimiter === '' ? \rtrim($result) : $result . $delimiter;
+        if ($delimiter === '') {
+            $value = \rtrim($value);
+
+            // Nothing follows the gutter, so it ends the row itself
+            if ($value === '') {
+                $frame = \rtrim($frame);
+            }
+        }
+
+        return $this->style->frame($frame) . $value . $delimiter;
     }
 
     /**
@@ -198,27 +207,85 @@ final readonly class RustStylePrinter implements PrinterInterface
         if ($info->message !== null) {
             $name = $info->class === null
                 ? $info->level->value
-                : \sprintf('%s[%s]', $info->level->value, $info->class);
+                : \sprintf('%s[%s]', $info->level->value, $this->getClassName($info->class));
 
-            $title = $this->cut(\sprintf('%s: %s', $name, $info->message), \max(1, $this->width));
+            $title = \sprintf('%s: %s', $name, $info->message);
 
-            $result[] = \str_starts_with($title, $name)
-                ? $this->style->paint($name, $info->level) . \substr($title, \strlen($name))
-                : $title;
+            // The message is the only thing telling what has happened, so it
+            // is carried over to the next lines instead of being cut off
+            foreach ($this->wrap($title, \max(1, $this->width)) as $index => $line) {
+                $result[] = $index === 0 && \str_starts_with($line, $name)
+                    ? $this->style->paint($name, $info->level) . \substr($line, \strlen($name))
+                    : $line;
+            }
         }
 
         if ($info->pathname !== null) {
             $location = $info->pathname . $this->printPosition($lines);
             $available = \max(1, $this->width - $digits - $this->text->calculateLength(self::ARROW));
 
-            $result[] = \str_repeat(' ', $digits) . self::ARROW . $this->cut($location, $available);
+            $result[] = $this->style->frame(\str_repeat(' ', $digits) . self::ARROW)
+                . $this->cut($location, $available);
         }
 
         if ($result !== [] && $lines !== []) {
-            $result[] = \str_repeat(' ', $digits) . \rtrim(self::GUTTER);
+            $result[] = $this->style->frame(\str_repeat(' ', $digits) . \rtrim(self::GUTTER));
         }
 
         return $result;
+    }
+
+    /**
+     * Splits the value into the lines fitting into the available width,
+     * breaking it between the words wherever it is possible.
+     *
+     * @param int<1, max> $width
+     * @return non-empty-list<string>
+     */
+    private function wrap(string $value, int $width): array
+    {
+        $result = [];
+        $line = '';
+
+        foreach (\explode(' ', $value) as $word) {
+            $merged = $line === '' ? $word : $line . ' ' . $word;
+
+            if ($this->text->calculateLength($merged) <= $width) {
+                $line = $merged;
+
+                continue;
+            }
+
+            if ($line !== '') {
+                $result[] = $line;
+            }
+
+            // A word that does not fit into the width on its own is the only
+            // case the value is broken in the middle of it
+            while (($length = $this->text->calculateLength($word)) > $width) {
+                $result[] = $this->text->slice($word, 0, $width);
+                $word = $this->text->slice($word, $width, $length - $width);
+            }
+
+            $line = $word;
+        }
+
+        if ($line !== '' || $result === []) {
+            $result[] = $line;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the name of the class without the namespace it belongs to, so
+     * that a long namespace does not take the room the message needs.
+     */
+    private function getClassName(string $class): string
+    {
+        $offset = \strrpos($class, '\\');
+
+        return $offset === false ? $class : \substr($class, $offset + 1);
     }
 
     /**

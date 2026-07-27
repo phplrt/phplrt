@@ -39,6 +39,11 @@ final readonly class AnsiStyle implements StyleInterface
      */
     private const string SEQUENCE_DIMMED = '90';
 
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_FRAME = '94';
+
     public function paint(string $value, Level $level): string
     {
         return $this->wrap($value, $this->getSequence($level));
@@ -47,6 +52,11 @@ final readonly class AnsiStyle implements StyleInterface
     public function dim(string $value): string
     {
         return $this->wrap($value, self::SEQUENCE_DIMMED);
+    }
+
+    public function frame(string $value): string
+    {
+        return $this->wrap($value, self::SEQUENCE_FRAME);
     }
 
     public function getDelimiter(): string

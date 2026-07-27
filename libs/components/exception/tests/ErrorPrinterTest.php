@@ -61,7 +61,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsErrorInfo(): void
     {
         self::assertSame(<<<'OUT'
-            error[App\Exception]: Something went wrong
+            error[SumNodeException]: Something went wrong
               |
             1 | first line
             2 | second line
@@ -70,7 +70,7 @@ final class ErrorPrinterTest extends TestCase
             OUT, (string) new ErrorPrinter()
                 ->print(new Source(self::SOURCE), 18, 4)
                 ->withMessage('Something went wrong')
-                ->withClass('App\Exception'));
+                ->withClass('App\Node\SumNodeException'));
     }
 
     #[TestDox('The whole description of the error may be given at once')]
@@ -82,11 +82,11 @@ final class ErrorPrinterTest extends TestCase
         self::assertSame(
             (string) $printer->print($source, 18, 4)
                 ->withMessage('Something went wrong')
-                ->withClass('App\Exception'),
+                ->withClass('App\Node\SumNodeException'),
             (string) $printer->print($source, 18, 4)
                 ->withErrorInfo(new ErrorInfo(
                     message: 'Something went wrong',
-                    class: 'App\Exception',
+                    class: 'App\Node\SumNodeException',
                 )),
         );
     }

@@ -25,6 +25,13 @@ interface StyleInterface
     public function dim(string $value): string;
 
     /**
+     * Decorates the frame around the source code: the numbers of the lines,
+     * the gutter separating them and the arrow pointing at the location of
+     * the error.
+     */
+    public function frame(string $value): string;
+
+    /**
      * Returns the visible representation of the line delimiter or an empty
      * string in case it should not be printed.
      */

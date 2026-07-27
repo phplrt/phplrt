@@ -254,13 +254,14 @@ final class RustStylePrinterTest extends TestCase
         ));
     }
 
-    #[TestDox('The error information exceeding the available width is cut')]
-    public function testCutsErrorInformation(): void
+    #[TestDox('The message exceeding the available width is carried over to the next line')]
+    public function testWrapsErrorMessage(): void
     {
         $printer = new RustStylePrinter(width: 24);
 
         self::assertSame(<<<'OUT'
-            error: Message that is …
+            error: Message that is
+            too long to be printed
              --> /a/very/very/very/…
               |
             1 | line 1
@@ -270,6 +271,44 @@ final class RustStylePrinterTest extends TestCase
             new ErrorInfo(
                 message: 'Message that is too long to be printed',
                 pathname: '/a/very/very/very/very/deep/app.php',
+            ),
+        ));
+    }
+
+    #[TestDox('A word exceeding the available width on its own is broken in the middle')]
+    public function testWrapsUnbreakableErrorMessage(): void
+    {
+        $printer = new RustStylePrinter(width: 12);
+
+        self::assertSame(<<<'OUT'
+            error: Some
+            unpronouncea
+            bleword is
+            here
+              |
+            1 | line 1
+              | ^^^^
+            OUT, $printer->print(
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            new ErrorInfo(message: 'Some unpronounceableword is here'),
+        ));
+    }
+
+    #[TestDox('The class the error is named by is printed without the namespace it belongs to')]
+    public function testPrintsShortClassName(): void
+    {
+        $printer = new RustStylePrinter();
+
+        self::assertSame(<<<'OUT'
+            error[UnexpectedTokenException]: Something went wrong
+              |
+            1 | line 1
+              | ^^^^
+            OUT, $printer->print(
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            new ErrorInfo(
+                message: 'Something went wrong',
+                class: 'Phplrt\Parser\Exception\UnexpectedTokenException',
             ),
         ));
     }
@@ -325,9 +364,9 @@ final class RustStylePrinterTest extends TestCase
 
         self::assertSame(
             \sprintf("\e[%1\$sm%2\$s\e[0m: Oops\n", $sequence, $level->value)
-            . "  |\n"
-            . \sprintf("1 | li\e[%smne\e[0m 1\n", $sequence)
-            . \sprintf("  |   \e[%sm^^\e[0m", $sequence),
+            . "\e[94m  |\e[0m\n"
+            . \sprintf("\e[94m1 | \e[0mli\e[%smne\e[0m 1\n", $sequence)
+            . \sprintf("\e[94m  | \e[0m  \e[%sm^^\e[0m", $sequence),
             $printer->print(
                 [new CapturedSourceLine(1, 0, 'line 1', 3, 5)],
                 new ErrorInfo(message: 'Oops', level: $level),
@@ -341,9 +380,9 @@ final class RustStylePrinterTest extends TestCase
         $printer = new RustStylePrinter(colors: true);
 
         self::assertSame(
-            "1 | line 1\e[90m␤\e[0m\n"
-            . "2 | \e[90m␤\e[0m\n"
-            . '3 | line 3',
+            "\e[94m1 | \e[0mline 1\e[90m␤\e[0m\n"
+            . "\e[94m2 | \e[0m\e[90m␤\e[0m\n"
+            . "\e[94m3 | \e[0mline 3",
             $printer->print([
                 new SourceLine(1, 0, 'line 1'),
                 new SourceLine(2, 7, ''),
@@ -358,8 +397,8 @@ final class RustStylePrinterTest extends TestCase
         $printer = new RustStylePrinter(width: 16, colors: true);
 
         self::assertSame(
-            "1 | aaaaaaaabb\e[90m…\e[0m\n"
-            . "  | \e[90m…\e[0mbbbb",
+            "\e[94m1 | \e[0maaaaaaaabb\e[90m…\e[0m\n"
+            . "\e[94m  | \e[0m\e[90m…\e[0mbbbb",
             $printer->print([new SourceLine(1, 0, \str_repeat('a', 8) . \str_repeat('b', 6))]),
         );
     }

@@ -24,6 +24,11 @@ final readonly class PlainStyle implements StyleInterface
         return $value;
     }
 
+    public function frame(string $value): string
+    {
+        return $value;
+    }
+
     public function getDelimiter(): string
     {
         return '';
