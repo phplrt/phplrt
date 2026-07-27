@@ -70,13 +70,7 @@ final readonly class TokenReferenceValidationParserCompilerPass implements
 
     private function findTokenById(LexerBuilderResult $lexer, int $id): ?TokenDefinition
     {
-        foreach ([$lexer->tokens, ...\array_values($lexer->states)] as $definitions) {
-            if (isset($definitions[$id])) {
-                return $definitions[$id];
-            }
-        }
-
-        return null;
+        return $lexer->tokens[$id] ?? null;
     }
 
     /**
