@@ -59,8 +59,8 @@ readonly class Lexer implements LexerInterface
          * For example,
          * ```php
          * [
-         *     0 => 'hidden',
-         *     1 => 'unknown',
+         *     0 => 'Hidden',
+         *     1 => 'Unknown',
          * ]
          * ```
          */
