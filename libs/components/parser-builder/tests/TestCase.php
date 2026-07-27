@@ -15,6 +15,7 @@ use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -94,6 +95,11 @@ abstract class TestCase extends BaseTestCase
             $rule instanceof Concatenation => 'Concatenation(' . \implode(', ', $rule->ruleIds) . ')',
             $rule instanceof Alternation => 'Alternation(' . \implode(', ', $rule->ruleIds) . ')',
             $rule instanceof Optional => \sprintf('Optional(%d)', $rule->ruleId),
+            $rule instanceof Predicate => \sprintf(
+                'Predicate(%d, %s)',
+                $rule->ruleId,
+                $rule->isExpected ? 'expect' : 'reject',
+            ),
             $rule instanceof Repetition => \sprintf('Repetition(%d, %d, %s)', $rule->ruleId, $rule->min, $rule->max),
             default => $rule::class,
         };
