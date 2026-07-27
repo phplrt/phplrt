@@ -60,7 +60,7 @@ final readonly class TransitionValidationLexerCompilerPass implements
         /** @var non-empty-string $state */
         $state = $transition->state;
 
-        if (isset($context->states[$state])) {
+        if (isset($context->states[$state]) || isset($context->embeddedStates[$state])) {
             return;
         }
 

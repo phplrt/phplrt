@@ -6,7 +6,7 @@ namespace Phplrt\Lexer\Builder\Definition;
 
 abstract class Definition implements \Stringable
 {
-    public private(set) ?DefinitionContext $context = null;
+    public private(set) ?SourceReference $context = null;
 
     /**
      * @param non-empty-string $pathname
@@ -15,7 +15,7 @@ abstract class Definition implements \Stringable
      */
     public function setSource(string $pathname, int $offset): self
     {
-        $this->context = new DefinitionContext($pathname, $offset);
+        $this->context = new SourceReference($pathname, $offset);
 
         return $this;
     }

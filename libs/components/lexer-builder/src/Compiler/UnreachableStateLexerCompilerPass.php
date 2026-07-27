@@ -30,6 +30,14 @@ final readonly class UnreachableStateLexerCompilerPass implements
 
             unset($context->states[$name]);
         }
+
+        foreach ($context->embeddedStates as $name => $_) {
+            if (isset($reachable[$name])) {
+                continue;
+            }
+
+            unset($context->embeddedStates[$name]);
+        }
     }
 
     /**
@@ -54,8 +62,9 @@ final readonly class UnreachableStateLexerCompilerPass implements
             $state = $context->states[$name] ?? null;
 
             /**
-             * An undefined target is not this pass's business: it is reported
-             * by the {@see TransitionValidationLexerCompilerPass}.
+             * A state read by a lexer of its own has no transitions to walk,
+             * while an undefined one is not this pass's business: it is
+             * reported by the {@see TransitionValidationLexerCompilerPass}.
              */
             if ($state === null) {
                 continue;

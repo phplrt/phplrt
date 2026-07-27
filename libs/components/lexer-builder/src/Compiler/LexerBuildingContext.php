@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Compiler;
 
+use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
@@ -29,6 +30,12 @@ final class LexerBuildingContext
          * @var array<non-empty-string, list<TokenDefinition>>
          */
         public array $states = [],
+        /**
+         * A map of state name and the lexer reading it.
+         *
+         * @var array<non-empty-string, EmbeddedLexerInterface>
+         */
+        public array $embeddedStates = [],
         /**
          * A map of modifier value and the modifier itself.
          *

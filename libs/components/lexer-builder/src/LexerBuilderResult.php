@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 
 /**
@@ -30,6 +32,12 @@ final readonly class LexerBuilderResult
          * @var array<non-empty-string, non-empty-array<int, TokenDefinition>>
          */
         public array $states,
+        /**
+         * A map of state name and the lexer reading it.
+         *
+         * @var array<non-empty-string, EmbeddedLexerInterface>
+         */
+        public array $embeddedStates,
         /**
          * The pattern recognizing the tokens of the initial state.
          *
@@ -65,6 +73,9 @@ final readonly class LexerBuilderResult
         public array $transitions,
     ) {}
 
+    /**
+     * @throws LexerCompilerException in case of a state cannot be read
+     */
     public function toLexer(): LexerInterface
     {
         return new RuntimeLexerTransformer()

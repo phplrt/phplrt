@@ -43,6 +43,7 @@ final readonly class LexerResultContextTransformer
             tokens: $tokens,
             states: $states,
             flags: \array_values($context->flags),
+            embeddedStates: $context->embeddedStates,
         );
     }
 

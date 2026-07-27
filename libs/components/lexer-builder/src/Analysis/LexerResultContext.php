@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Analysis;
 
+use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 
@@ -34,6 +35,12 @@ final class LexerResultContext
          * @var list<RegexModifier>
          */
         public readonly array $flags,
+        /**
+         * A map of state name and the lexer reading it.
+         *
+         * @var array<non-empty-string, EmbeddedLexerInterface>
+         */
+        public readonly array $embeddedStates = [],
         /**
          * The pattern recognizing the tokens of the initial state.
          */

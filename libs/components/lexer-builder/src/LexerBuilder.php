@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder;
 
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
 use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
@@ -22,6 +23,8 @@ use Phplrt\Lexer\Builder\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TokenNameValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TransitionValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\UnreachableStateLexerCompilerPass;
+use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
+use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\Transformer\LexerBuilderResultTransformer;
@@ -59,6 +62,13 @@ final class LexerBuilder
      * @var array<non-empty-string, TokenDefinitionGroup>
      */
     public private(set) array $states = [];
+
+    /**
+     * A map of state name and the lexer reading it.
+     *
+     * @var array<non-empty-string, EmbeddedLexerInterface>
+     */
+    public private(set) array $embeddedStates = [];
 
     /**
      * The passes rewriting and checking the token definitions, indexed by
@@ -126,11 +136,44 @@ final class LexerBuilder
      */
     public function addState(string $name): TokenDefinitionGroup
     {
+        // A state name identifies a single state, whatever it is read by
+        unset($this->embeddedStates[$name]);
+
         return $this->states[$name] ??= new TokenDefinitionGroup();
     }
 
     /**
-     * Removes the given lexer state along with all of its token definitions.
+     * Adds the lexer state read by a lexer of its own.
+     *
+     * Such a state has no token definitions: the lexer decides on its own
+     * where the fragment it reads ends and returns the control back as soon as
+     * it stops.
+     *
+     * For example,
+     * ```php
+     * $builder->addPattern('<\?php')
+     *      ->enter('php');
+     * $builder->addEmbeddedState('php', new PhpTokenLexer());
+     * ```
+     *
+     * @api
+     *
+     * @param non-empty-string $name
+     */
+    public function addEmbeddedState(
+        string $name,
+        EmbeddedLexerInterface|LexerInterface $lexer,
+    ): EmbeddedLexerInterface {
+        // A state name identifies a single state, whatever it is read by
+        unset($this->states[$name]);
+
+        return $this->embeddedStates[$name] = $lexer instanceof LexerInterface
+            ? new RuntimeEmbeddedLexer($lexer)
+            : $lexer;
+    }
+
+    /**
+     * Removes the given lexer state along with everything it is read by.
      *
      * @api
      *
@@ -139,7 +182,7 @@ final class LexerBuilder
      */
     public function removeState(string $name): self
     {
-        unset($this->states[$name]);
+        unset($this->states[$name], $this->embeddedStates[$name]);
 
         return $this;
     }
