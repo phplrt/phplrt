@@ -35,6 +35,7 @@ class CompatibilityTest extends TestCase
             public ChannelInterface $channel;
             public ReadableInterface $source;
             public int $offset;
+            public int $end;
             public string $value;
             public int $bytes;
 

@@ -13,13 +13,13 @@ namespace Phplrt\Contracts\Lexer;
  *  - A numeric identifier ({@see $id})
  *  - Channel (for hidden/system tokens, {@see $channel})
  *  - A textual value ({@see $value})
- *  - Positional information ({@see $offset})
+ *  - Positional information ({@see $offset} and {@see $end})
  *  - Optional logical name ({@see $name})
  *
  * Note: Implementations MUST guarantee:
- *   - {@see $length} === strlen($value)
- *   - {@see $end} represents the position immediately AFTER the last character
  *   - {@see $offset} is zero-based
+ *   - {@see $end} is the position immediately AFTER the fragment the token
+ *     has been read from
  *
  * @readonly An implementation MUST be immutable.
  */
@@ -83,6 +83,19 @@ interface TokenInterface extends \Stringable
      * @var int<0, max>
      */
     public int $offset {
+        get;
+    }
+
+    /**
+     * Absolute byte offset of the position right after the token.
+     *
+     * The end of an ordinary token is where its value ends, while a token
+     * reading a fragment using a lexer of its own spans as far as that lexer
+     * has read, no matter how short its own value is.
+     *
+     * @var int<0, max>
+     */
+    public int $end {
         get;
     }
 
