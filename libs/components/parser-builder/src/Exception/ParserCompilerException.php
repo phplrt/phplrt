@@ -12,4 +12,14 @@ class ParserCompilerException extends \Exception
 
         return new self(\sprintf($template, $exception->getMessage()), 0, $exception);
     }
+
+    /**
+     * @param non-empty-string $rule
+     */
+    public static function becauseReducerIsMalformed(string $rule, \ParseError $error): self
+    {
+        $template = 'The reducer of the rule %s cannot be compiled: %s';
+
+        return new self(\sprintf($template, $rule, $error->getMessage()), 0, $error);
+    }
 }
