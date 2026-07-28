@@ -16,7 +16,10 @@
         }
     ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.4",
+        "phplrt/lexer": "^4.0",
+        "phplrt/parser": "^4.0",
+        "phplrt/source": "^4.0"
     },
     "extra": {
         "branch-alias": {
