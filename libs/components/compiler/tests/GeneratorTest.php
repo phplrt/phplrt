@@ -10,11 +10,13 @@ use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Generator\GeneratedOutput;
+use Phplrt\Compiler\Generator\PhpCodePrinter;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
+use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\File;
 use Phplrt\Source\Source;
@@ -107,6 +109,63 @@ final class GeneratorTest extends TestCase
 
         self::assertStringContainsString('$state_string = new \\Phplrt\\Lexer\\Lexer(', $code);
         self::assertStringContainsString('0 => $state_string,', $code);
+    }
+
+    #[TestDox('A rule is reduced by a method named after it')]
+    public function testReducerIsGeneratedAsAMethod(): void
+    {
+        $code = (string) $this->compile('grammar.pp2')->generate();
+
+        self::assertStringContainsString(
+            'private static function reduceExpression(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed',
+            $code,
+        );
+        self::assertStringContainsString('0 => self::reduceExpression(...),', $code);
+    }
+
+    #[TestDox('A rule reduced by the parser itself is reduced by a method of its own')]
+    public function testReducerOfTheParserIsNotStatic(): void
+    {
+        $code = (string) $this->generateOf(<<<'PP2'
+            %token T_NAME [a-z]++
+
+            Name -> { return $this->rename($children); } : <T_NAME> ;
+            PP2);
+
+        self::assertStringContainsString(
+            'private function reduceName(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed',
+            $code,
+        );
+        self::assertStringContainsString('0 => $this->reduceName(...),', $code);
+    }
+
+    #[TestDox('A rule named by nothing is reduced by a method named after its identifier')]
+    public function testReducerOfAnUnnamedRuleIsNamedAfterIt(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addPattern('\d++', 'T_NUMBER');
+
+        $parser = new ParserBuilder();
+        $parser->addTokenReference('T_NUMBER')
+            ->setReducer(new PhpCodeReducer('return 42;'));
+
+        $code = (string) self::build($lexer, $parser);
+
+        self::assertStringContainsString('function reduceRule0(', $code);
+        self::assertStringContainsString('0 => self::reduceRule0(...),', $code);
+    }
+
+    #[TestDox('Two rules spelled the same way are reduced by methods of their own')]
+    public function testReducersOfTheSameNameAreToldApart(): void
+    {
+        $reducer = new PhpCodeReducer('return 42;');
+
+        $names = new PhpCodePrinter()->createMethodNames(
+            reducers: [0 => $reducer, 1 => $reducer],
+            constants: ['The Number' => 0, 'TheNumber' => 1],
+        );
+
+        self::assertSame([0 => 'reduceTheNumber', 1 => 'reduceTheNumber1'], $names);
     }
 
     #[TestDox('A rule reduced by a callback is reported')]
@@ -225,6 +284,13 @@ final class GeneratorTest extends TestCase
     {
         return new Compiler()
             ->load(new File(__DIR__ . '/resources/' . $name));
+    }
+
+    private function generateOf(string $grammar): GeneratedOutput
+    {
+        return new Compiler()
+            ->load(new Source($grammar))
+            ->generate();
     }
 
     private static function build(LexerBuilder $lexer, ParserBuilder $parser): GeneratedOutput

@@ -21,6 +21,9 @@ readonly class {{ class }} extends \Phplrt\Parser\Parser
 {{ include('parser/arguments.php.twig')|trim|indent(3, true) }}
         );
     }
+{% if parser.reducers is not empty %}
+{{ include('parser/methods.php.twig')|trim(side='right')|indent(1) }}
+{% endif %}
 {% if class is null %}
 };
 {% else %}

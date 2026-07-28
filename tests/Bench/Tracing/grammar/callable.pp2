@@ -75,7 +75,7 @@ MaybeModifiersNamedCallableParameter -> {
 
     foreach ($children as $modifier) {
         if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-            switch ($modifier->getName()) {
+            switch ($modifier->name) {
                 case 'T_AMP':
                     $result->isOutput = true;
                     break;
@@ -147,7 +147,7 @@ MaybeModifiersTypedCallableParameter -> {
 
     foreach ($children as $modifier) {
         if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-            switch ($modifier->getName()) {
+            switch ($modifier->name) {
                 case 'T_AMP':
                     $result->isOutput = true;
                     break;

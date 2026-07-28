@@ -53,6 +53,13 @@ final readonly class PhpCodePrinter
     private const string VARIABLE_PREFIX = '$state_';
 
     /**
+     * The prefix of the method a rule is reduced by.
+     *
+     * @var non-empty-string
+     */
+    private const string METHOD_PREFIX = 'reduce';
+
+    /**
      * The characters a single level of nesting is written with.
      *
      * @var non-empty-string
@@ -132,29 +139,108 @@ final readonly class PhpCodePrinter
     }
 
     /**
-     * Writes the given reducer down as the callback converting a rule into a
-     * node of the syntax tree.
+     * Names the methods the given reducers are written as.
      *
+     * A reducer belongs to a rule and is read along with it, so it is named
+     * after the very rule it reduces rather than after the place it is
+     * declared at.
+     *
+     * @param array<int<0, max>, ReducerInterface> $reducers
+     * @param array<non-empty-string, int> $constants a map of rule name and its
+     *        identifier
+     * @return array<int<0, max>, non-empty-string>
+     */
+    public function createMethodNames(array $reducers, array $constants): array
+    {
+        $rules = \array_flip($constants);
+        $names = [];
+        $taken = [];
+
+        foreach (\array_keys($reducers) as $id) {
+            $name = self::createMethodName($id, $rules[$id] ?? null);
+
+            // Two rules named differently may still be spelled the same way,
+            // and a method is reached by nothing but its name
+            for ($suffix = 1; isset($taken[$name]); ++$suffix) {
+                $name = self::createMethodName($id, $rules[$id] ?? null) . $suffix;
+            }
+
+            $taken[$name] = true;
+            $names[$id] = $name;
+        }
+
+        return $names;
+    }
+
+    /**
+     * Writes the given reducer down as the method converting a rule into a node
+     * of the syntax tree.
+     *
+     * @param non-empty-string $name
      * @return non-empty-string
      * @throws UnsupportedReducerException in case of the reducer cannot be
      *         written down
      */
-    public function printReducer(ReducerInterface $reducer, int $id): string
+    public function printReducerMethod(ReducerInterface $reducer, int $id, string $name): string
     {
-        $code = match (true) {
+        $code = self::createReducerCode($reducer, $id);
+
+        return \vsprintf("private%s function %s(\\%s \$ctx, mixed \$children): mixed\n{\n%s\n}", [
+            // A body referring to the parser is read as a part of it, while
+            // the rest is read on its own
+            self::containsObjectReference($code) ? '' : ' static',
+            $name,
+            Context::class,
+            $this->indent($code, first: true),
+        ]);
+    }
+
+    /**
+     * Writes the reducer of a rule down as the callback the parser reduces it
+     * by.
+     *
+     * @param non-empty-string $name
+     * @return non-empty-string
+     * @throws UnsupportedReducerException in case of the reducer cannot be
+     *         written down
+     */
+    public function printReducerCallback(ReducerInterface $reducer, int $id, string $name): string
+    {
+        if (self::containsObjectReference(self::createReducerCode($reducer, $id))) {
+            return \sprintf('$this->%s(...)', $name);
+        }
+
+        return \sprintf('%s::%s(...)', self::SCOPE_TOKENS, $name);
+    }
+
+    /**
+     * @return non-empty-string
+     * @throws UnsupportedReducerException
+     */
+    private static function createReducerCode(ReducerInterface $reducer, int $id): string
+    {
+        return match (true) {
             $reducer instanceof PhpCodeReducer => $reducer->code,
             // A callback is a value of the process it has been built in and
             // cannot be spelled
             $reducer instanceof CallableReducer => throw UnsupportedReducerException::becauseReducerCannotBeGenerated($id, $reducer),
         };
+    }
 
-        return \vsprintf("%sfunction (\\%s \$ctx, mixed \$children): mixed {\n%s\n}", [
-            // A body referring to the object it belongs to is written as a
-            // callback that has to be bound before it is called
-            self::containsObjectReference($code) ? '' : 'static ',
-            Context::class,
-            $this->indent($code, first: true),
-        ]);
+    /**
+     * @return non-empty-string
+     */
+    private static function createMethodName(int $id, ?string $rule): string
+    {
+        $name = $rule === null ? '' : \preg_replace('/\W++/', '', $rule);
+
+        // A rule may be named in any way the grammar is written in, while a
+        // method is named the way PHP is written in
+        if ($name === null || $name === '') {
+            return self::METHOD_PREFIX . 'Rule' . $id;
+        }
+
+        return self::METHOD_PREFIX . \ucfirst($name);
     }
 
     /**

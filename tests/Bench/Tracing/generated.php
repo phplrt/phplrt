@@ -273,451 +273,51 @@ return new readonly class extends \Phplrt\Parser\Parser {
             ],
             initial: 0,
             reducers: [
-                2 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    $count = \count($children);
-
-                        if ($count === 1) {
-                            return $children[0];
-                        }
-
-                        $condition = match ($children[1]->getName()) {
-                            'T_EQ' => new Type\Condition\EqualConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            'T_NEQ' => new Type\Condition\NotEqualConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            'T_GTE' => new Type\Condition\GreaterThanOrEqualConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            'T_ANGLE_BRACKET_CLOSE' => new Type\Condition\GreaterThanConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            'T_LTE' => new Type\Condition\LessThanOrEqualConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            'T_ANGLE_BRACKET_OPEN' => new Type\Condition\LessThanConditionNode(
-                                $children[0],
-                                $children[2],
-                            ),
-                            default => throw Exception\InvalidConditionalOperatorException::becauseConditionalOperatorIsInvalid(
-                                $children[1]->value,
-                                $offset,
-                            ),
-                        };
-
-                        return new Type\TernaryExpressionNode(
-                            $condition,
-                            $children[3],
-                            $children[4],
-                        );
-                },
-                5 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    if (\count($children) === 2) {
-                            return new Type\UnionTypeNode($children[0], $children[1]);
-                        }
-
-                        return $children;
-                },
-                6 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    if (\count($children) === 2) {
-                            return new Type\IntersectionTypeNode($children[0], $children[1]);
-                        }
-
-                        return $children;
-                },
-                8 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    if (\is_array($children)) {
-                            return new Type\NullableTypeNode($children[1]);
-                        }
-
-                        return $children;
-                },
-                11 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    $statement = \array_shift($children);
-
-                        foreach ($children as $child) {
-                            switch (true) {
-                                // In case of list type
-                                case $child === true:
-
-                                    $statement = new Type\TypesListNode($statement);
-                                    break;
-                                // In case of offset access type
-                                case $child instanceof Type\TypeNode:
-
-                                    $statement = new Type\TypeOffsetAccessNode($statement, $child);
-                                    break;
-                                default:
-                                    throw Exception\InternalSemanticException::becauseSubNodeIsUnexpected(
-                                        \get_debug_type($child),
-                                        $offset,
-                                    );
-                            }
-                        }
-
-                        return $statement;
-                },
-                16 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\VariableLiteralNode::parse($token->value);
-                },
-                18 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return $children;
-                },
-                19 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return $children;
-                },
-                20 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\StringLiteralNode::createFromDoubleQuotedString($token->value);
-                },
-                21 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\StringLiteralNode::createFromSingleQuotedString($token->value);
-                },
-                22 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\FloatLiteralNode::parse($token->value);
-                },
-                26 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\IntLiteralNode::parse($token->value);
-                },
-                31 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\BoolLiteralNode::parse($token->value);
-                },
-                32 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Literal\NullLiteralNode($children->value);
-                },
-                33 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\ConstMaskNode($children[0]);
-                },
-                35 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Name($children, true);
-                },
-                37 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return Type\Identifier::createFromString($children->value);
-                },
-                45 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Name($children, false);
-                },
-                47 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // <ClassName> :: <ConstPrefix> "*"
-                        if (\count($children) === 3) {
-                            return new Type\ClassConstMaskNode(
-                                $children[0],
-                                $children[1],
-                            );
-                        }
-
-                        // <ClassName> :: <ConstName>
-                        if ($children[1] instanceof Type\Identifier) {
-                            return new Type\ClassConstNode(
-                                $children[0],
-                                $children[1],
-                            );
-                        }
-
-                        // <ClassName> :: "*"
-                        return new Type\ClassConstMaskNode($children[0]);
-                },
-                52 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $name = \array_shift($children);
-
-                        $parameters = isset($children[0]) && $children[0] instanceof Type\Callable\CallableParameterListNode
-                            ? \array_shift($children)
-                            : new Type\Callable\CallableParameterListNode();
-
-                        return new Type\CallableTypeNode(
-                            name: $name,
-                            parameters: $parameters,
-                            type: $children[0] ?? null,
-                        );
-                },
-                54 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Callable\CallableParameterListNode($children);
-                },
-                55 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $result = \end($children);
-
-                        if ($children[0] instanceof Type\Attribute\AttributeGroupListNode) {
-                            $result->attributes = $children[0];
-                        }
-
-                        return $result;
-                },
-                57 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Attribute\AttributeGroupListNode($children);
-                },
-                58 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Attribute\AttributeGroupNode($children);
-                },
-                61 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Attribute\AttributeNode(
-                            $children[0],
-                        );
-                },
-                63 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Attribute\AttributeArgumentListNode($children);
-                },
-                64 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Attribute\AttributeArgumentNode($children[0]);
-                },
-                72 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    if (\count($children) === 1) {
-                            return $children[0];
-                        }
-
-                        if ($children[0]->isVariadic) {
-                            throw Exception\VariadicWithDefaultException::becauseVariadicHasDefault($offset);
-                        }
-
-                        $children[0]->isOptional = true;
-                        return $children[0];
-                },
-                74 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    if (\count($children) === 1) {
-                            return $children[0];
-                        }
-
-                        if ($children[1]->isVariadic) {
-                            throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
-                        }
-
-                        $children[1]->isVariadic = true;
-                        return $children[1];
-                },
-                77 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    if (\count($children) === 1) {
-                            return $children[0];
-                        }
-
-                        $children[0]->name = $children[1];
-                        return $children[0];
-                },
-                78 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    $result = \reset($children);
-
-                        foreach ($children as $modifier) {
-                            if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-                                switch ($modifier->getName()) {
-                                    case 'T_AMP':
-                                        $result->isOutput = true;
-                                        break;
-                                    case 'T_ELLIPSIS':
-                                        if ($result->isVariadic) {
-                                            throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
-                                        }
-                                        $result->isVariadic = true;
-                                        break;
-                                }
-                            }
-                        }
-
-                        return $result;
-                },
-                79 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Callable\CallableParameterNode($children[0]);
-                },
-                87 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $token = $ctx->token;
-
-                    return Type\Literal\VariableLiteralNode::parse($token->value);
-                },
-                90 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    if (!\is_array($children)) {
-                            return $children;
-                        }
-
-                        $result = \end($children);
-
-                        foreach ($children as $modifier) {
-                            if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-                                switch ($modifier->getName()) {
-                                    case 'T_AMP':
-                                        $result->isOutput = true;
-                                        break;
-                                    case 'T_ELLIPSIS':
-                                        if ($result->isVariadic) {
-                                            throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
-                                        }
-                                        $result->isVariadic = true;
-                                        break;
-                                }
-                            }
-                        }
-
-                        return $result;
-                },
-                92 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Callable\CallableParameterNode(null, $children[0]);
-                },
-                103 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $fields = $parameters = null;
-
-                        // Shape fields
-                        if (\end($children) instanceof Type\Shape\FieldsListNode) {
-                            $fields = \array_pop($children);
-                        }
-
-                        // Template parameters
-                        if (\end($children) instanceof Type\Template\TemplateArgumentListNode) {
-                            $parameters = \array_pop($children);
-                        }
-
-                        return new Type\NamedTypeNode(
-                            $children[0],
-                            $parameters,
-                            $fields,
-                        );
-                },
-                106 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Template\TemplateArgumentListNode($children);
-                },
-                108 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $hint = $attributes = null;
-
-                        if (\reset($children) instanceof Type\Attribute\AttributeGroupListNode) {
-                            $attributes = \array_shift($children);
-                        }
-
-                        $type = \array_pop($children);
-
-                        if (\reset($children) !== false) {
-                            $hint = \reset($children);
-                        }
-
-                        return new Type\Template\TemplateArgumentNode(
-                            $type,
-                            $hint,
-                            $attributes,
-                        );
-                },
-                111 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return Type\Identifier::createFromString($children->value);
-                },
-                116 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    if ($children === []) {
-                            return new Type\Shape\FieldsListNode();
-                        }
-
-                        $parameters = null;
-
-                        if (\end($children) instanceof Type\Template\TemplateArgumentListNode) {
-                            $parameters = \array_pop($children);
-                        }
-
-                        $fields = \reset($children) instanceof Type\Shape\FieldsListNode
-                            ? \array_shift($children)
-                            : new Type\Shape\FieldsListNode();
-
-                        if ($children !== []) {
-                            $fields->sealed = false;
-                        }
-
-                        return \array_filter([$parameters, $fields]);
-                },
-                120 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    // The variables below are declared by the compiler
-                    $offset = $ctx->token->offset;
-
-                    $explicit = [];
-                        $implicit = false;
-
-                        foreach ($children as $field) {
-                            if ($field instanceof Type\Shape\ExplicitFieldNode) {
-                                $key = $field->index;
-
-                                if (\in_array($key, $explicit, true)) {
-                                    throw Exception\ShapeFieldDuplicationException::becauseShapeFieldIsDuplicated($key, $field->offset);
-                                }
-
-                                $explicit[] = $key;
-                            } else {
-                                $implicit = true;
-                            }
-                        }
-
-                        if ($explicit !== [] && $implicit) {
-                            throw Exception\ShapeKeysMixingException::becauseShapeKeysAreMixed($offset);
-                        }
-
-                        return new Type\Shape\FieldsListNode($children);
-                },
-                121 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $result = \end($children);
-
-                        if ($children[0] instanceof Type\Attribute\AttributeGroupListNode) {
-                            $result->attributes = $children[0];
-                        }
-
-                        return $result;
-                },
-                123 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    $name = $children[0];
-                        $value = \array_pop($children);
-
-                        // In case of "nullable" suffix defined
-                        $optional = \count($children) === 2;
-
-                        return match (true) {
-                            $name instanceof Type\Literal\IntLiteralNode
-                                => new Type\Shape\NumericFieldNode($name, $value, $optional),
-                            $name instanceof Type\Literal\StringLiteralNode
-                                => new Type\Shape\StringNamedFieldNode($name, $value, $optional),
-                            $name instanceof Type\ClassConstNode
-                                => new Type\Shape\ClassConstFieldNode($name, $value, $optional),
-                            $name instanceof Type\ClassConstMaskNode
-                                => new Type\Shape\ClassConstMaskFieldNode($name, $value, $optional),
-                            $name instanceof Type\ConstMaskNode
-                                => new Type\Shape\ConstMaskFieldNode($name, $value, $optional),
-                            default => new Type\Shape\NamedFieldNode($name, $value, $optional),
-                        };
-                },
-                127 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return new Type\Shape\ImplicitFieldNode($children[0]);
-                },
-                137 => static function (\Phplrt\Parser\Context $ctx, mixed $children): mixed {
-                    return $children[1] ?? true;
-                },
+                2 => self::reduceTernaryExpressionOrLogicalType(...),
+                5 => self::reduceUnionType(...),
+                6 => self::reduceIntersectionType(...),
+                8 => self::reducePrefixedNullableType(...),
+                11 => self::reduceTypesList(...),
+                16 => self::reduceThisLiteral(...),
+                18 => self::reduceRawLiteral(...),
+                19 => self::reduceStringLiteral(...),
+                20 => self::reduceDoubleQuotedStringLiteral(...),
+                21 => self::reduceSingleQuotedStringLiteral(...),
+                22 => self::reduceFloatLiteral(...),
+                26 => self::reduceIntLiteral(...),
+                31 => self::reduceBoolLiteral(...),
+                32 => self::reduceNullLiteral(...),
+                33 => self::reduceConstMaskLiteral(...),
+                35 => self::reduceFullQualifiedName(...),
+                37 => self::reduceIdentifier(...),
+                45 => self::reduceRelativeName(...),
+                47 => self::reduceClassConstLiteral(...),
+                52 => self::reduceCallableType(...),
+                54 => self::reduceCallableParameters(...),
+                55 => self::reduceCallableParameter(...),
+                57 => self::reduceAttributeGroupsList(...),
+                58 => self::reduceAttributeGroup(...),
+                61 => self::reduceAttribute(...),
+                63 => self::reduceAttributeArguments(...),
+                64 => self::reduceAttributeArgument(...),
+                72 => self::reduceMaybeDefaultCallableParameter(...),
+                74 => self::reduceMaybePrefixedVariadicTypedNamedCallableParameter(...),
+                77 => self::reduceMaybeTypedNamedCallableParameter(...),
+                78 => self::reduceMaybeModifiersTypedCallableParameter(...),
+                79 => self::reduceTypedCallableParameter(...),
+                87 => self::reduceVariableLiteral(...),
+                90 => self::reduceMaybeModifiersNamedCallableParameter(...),
+                92 => self::reduceMaybeNamedCallableParameter(...),
+                103 => self::reduceNamedType(...),
+                106 => self::reduceTemplateArguments(...),
+                108 => self::reduceTemplateArgument(...),
+                111 => self::reduceIdentifierWithExtraSpace(...),
+                116 => self::reduceShapeFields(...),
+                120 => self::reduceShapeFieldsList(...),
+                121 => self::reduceShapeField(...),
+                123 => self::reduceExplicitField(...),
+                127 => self::reduceImplicitField(...),
+                137 => self::reduceTypeListOrOffsetSuffix(...),
             ],
             startTokens: [
                 [
@@ -2245,5 +1845,540 @@ return new readonly class extends \Phplrt\Parser\Parser {
                 true,
             ],
         );
+    }
+
+    private static function reduceTernaryExpressionOrLogicalType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        $count = \count($children);
+
+            if ($count === 1) {
+                return $children[0];
+            }
+
+            $condition = match ($children[1]->getName()) {
+                'T_EQ' => new Type\Condition\EqualConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                'T_NEQ' => new Type\Condition\NotEqualConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                'T_GTE' => new Type\Condition\GreaterThanOrEqualConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                'T_ANGLE_BRACKET_CLOSE' => new Type\Condition\GreaterThanConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                'T_LTE' => new Type\Condition\LessThanOrEqualConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                'T_ANGLE_BRACKET_OPEN' => new Type\Condition\LessThanConditionNode(
+                    $children[0],
+                    $children[2],
+                ),
+                default => throw Exception\InvalidConditionalOperatorException::becauseConditionalOperatorIsInvalid(
+                    $children[1]->value,
+                    $offset,
+                ),
+            };
+
+            return new Type\TernaryExpressionNode(
+                $condition,
+                $children[3],
+                $children[4],
+            );
+    }
+
+    private static function reduceUnionType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if (\count($children) === 2) {
+                return new Type\UnionTypeNode($children[0], $children[1]);
+            }
+
+            return $children;
+    }
+
+    private static function reduceIntersectionType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if (\count($children) === 2) {
+                return new Type\IntersectionTypeNode($children[0], $children[1]);
+            }
+
+            return $children;
+    }
+
+    private static function reducePrefixedNullableType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if (\is_array($children)) {
+                return new Type\NullableTypeNode($children[1]);
+            }
+
+            return $children;
+    }
+
+    private static function reduceTypesList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        $statement = \array_shift($children);
+
+            foreach ($children as $child) {
+                switch (true) {
+                    // In case of list type
+                    case $child === true:
+
+                        $statement = new Type\TypesListNode($statement);
+                        break;
+                    // In case of offset access type
+                    case $child instanceof Type\TypeNode:
+
+                        $statement = new Type\TypeOffsetAccessNode($statement, $child);
+                        break;
+                    default:
+                        throw Exception\InternalSemanticException::becauseSubNodeIsUnexpected(
+                            \get_debug_type($child),
+                            $offset,
+                        );
+                }
+            }
+
+            return $statement;
+    }
+
+    private static function reduceThisLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\VariableLiteralNode::parse($token->value);
+    }
+
+    private static function reduceRawLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children;
+    }
+
+    private static function reduceStringLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children;
+    }
+
+    private static function reduceDoubleQuotedStringLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\StringLiteralNode::createFromDoubleQuotedString($token->value);
+    }
+
+    private static function reduceSingleQuotedStringLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\StringLiteralNode::createFromSingleQuotedString($token->value);
+    }
+
+    private static function reduceFloatLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\FloatLiteralNode::parse($token->value);
+    }
+
+    private static function reduceIntLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\IntLiteralNode::parse($token->value);
+    }
+
+    private static function reduceBoolLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\BoolLiteralNode::parse($token->value);
+    }
+
+    private static function reduceNullLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Literal\NullLiteralNode($children->value);
+    }
+
+    private static function reduceConstMaskLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\ConstMaskNode($children[0]);
+    }
+
+    private static function reduceFullQualifiedName(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Name($children, true);
+    }
+
+    private static function reduceIdentifier(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return Type\Identifier::createFromString($children->value);
+    }
+
+    private static function reduceRelativeName(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Name($children, false);
+    }
+
+    private static function reduceClassConstLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // <ClassName> :: <ConstPrefix> "*"
+            if (\count($children) === 3) {
+                return new Type\ClassConstMaskNode(
+                    $children[0],
+                    $children[1],
+                );
+            }
+
+            // <ClassName> :: <ConstName>
+            if ($children[1] instanceof Type\Identifier) {
+                return new Type\ClassConstNode(
+                    $children[0],
+                    $children[1],
+                );
+            }
+
+            // <ClassName> :: "*"
+            return new Type\ClassConstMaskNode($children[0]);
+    }
+
+    private static function reduceCallableType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $name = \array_shift($children);
+
+            $parameters = isset($children[0]) && $children[0] instanceof Type\Callable\CallableParameterListNode
+                ? \array_shift($children)
+                : new Type\Callable\CallableParameterListNode();
+
+            return new Type\CallableTypeNode(
+                name: $name,
+                parameters: $parameters,
+                type: $children[0] ?? null,
+            );
+    }
+
+    private static function reduceCallableParameters(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Callable\CallableParameterListNode($children);
+    }
+
+    private static function reduceCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $result = \end($children);
+
+            if ($children[0] instanceof Type\Attribute\AttributeGroupListNode) {
+                $result->attributes = $children[0];
+            }
+
+            return $result;
+    }
+
+    private static function reduceAttributeGroupsList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Attribute\AttributeGroupListNode($children);
+    }
+
+    private static function reduceAttributeGroup(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Attribute\AttributeGroupNode($children);
+    }
+
+    private static function reduceAttribute(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Attribute\AttributeNode(
+                $children[0],
+            );
+    }
+
+    private static function reduceAttributeArguments(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Attribute\AttributeArgumentListNode($children);
+    }
+
+    private static function reduceAttributeArgument(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Attribute\AttributeArgumentNode($children[0]);
+    }
+
+    private static function reduceMaybeDefaultCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        if (\count($children) === 1) {
+                return $children[0];
+            }
+
+            if ($children[0]->isVariadic) {
+                throw Exception\VariadicWithDefaultException::becauseVariadicHasDefault($offset);
+            }
+
+            $children[0]->isOptional = true;
+            return $children[0];
+    }
+
+    private static function reduceMaybePrefixedVariadicTypedNamedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        if (\count($children) === 1) {
+                return $children[0];
+            }
+
+            if ($children[1]->isVariadic) {
+                throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
+            }
+
+            $children[1]->isVariadic = true;
+            return $children[1];
+    }
+
+    private static function reduceMaybeTypedNamedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if (\count($children) === 1) {
+                return $children[0];
+            }
+
+            $children[0]->name = $children[1];
+            return $children[0];
+    }
+
+    private static function reduceMaybeModifiersTypedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        $result = \reset($children);
+
+            foreach ($children as $modifier) {
+                if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    switch ($modifier->getName()) {
+                        case 'T_AMP':
+                            $result->isOutput = true;
+                            break;
+                        case 'T_ELLIPSIS':
+                            if ($result->isVariadic) {
+                                throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
+                            }
+                            $result->isVariadic = true;
+                            break;
+                    }
+                }
+            }
+
+            return $result;
+    }
+
+    private static function reduceTypedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Callable\CallableParameterNode($children[0]);
+    }
+
+    private static function reduceVariableLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        return Type\Literal\VariableLiteralNode::parse($token->value);
+    }
+
+    private static function reduceMaybeModifiersNamedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        if (!\is_array($children)) {
+                return $children;
+            }
+
+            $result = \end($children);
+
+            foreach ($children as $modifier) {
+                if ($modifier instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    switch ($modifier->getName()) {
+                        case 'T_AMP':
+                            $result->isOutput = true;
+                            break;
+                        case 'T_ELLIPSIS':
+                            if ($result->isVariadic) {
+                                throw Exception\VariadicRedefinitionException::becauseVariadicIsRedefined($offset);
+                            }
+                            $result->isVariadic = true;
+                            break;
+                    }
+                }
+            }
+
+            return $result;
+    }
+
+    private static function reduceMaybeNamedCallableParameter(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Callable\CallableParameterNode(null, $children[0]);
+    }
+
+    private static function reduceNamedType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $fields = $parameters = null;
+
+            // Shape fields
+            if (\end($children) instanceof Type\Shape\FieldsListNode) {
+                $fields = \array_pop($children);
+            }
+
+            // Template parameters
+            if (\end($children) instanceof Type\Template\TemplateArgumentListNode) {
+                $parameters = \array_pop($children);
+            }
+
+            return new Type\NamedTypeNode(
+                $children[0],
+                $parameters,
+                $fields,
+            );
+    }
+
+    private static function reduceTemplateArguments(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Template\TemplateArgumentListNode($children);
+    }
+
+    private static function reduceTemplateArgument(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $hint = $attributes = null;
+
+            if (\reset($children) instanceof Type\Attribute\AttributeGroupListNode) {
+                $attributes = \array_shift($children);
+            }
+
+            $type = \array_pop($children);
+
+            if (\reset($children) !== false) {
+                $hint = \reset($children);
+            }
+
+            return new Type\Template\TemplateArgumentNode(
+                $type,
+                $hint,
+                $attributes,
+            );
+    }
+
+    private static function reduceIdentifierWithExtraSpace(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return Type\Identifier::createFromString($children->value);
+    }
+
+    private static function reduceShapeFields(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if ($children === []) {
+                return new Type\Shape\FieldsListNode();
+            }
+
+            $parameters = null;
+
+            if (\end($children) instanceof Type\Template\TemplateArgumentListNode) {
+                $parameters = \array_pop($children);
+            }
+
+            $fields = \reset($children) instanceof Type\Shape\FieldsListNode
+                ? \array_shift($children)
+                : new Type\Shape\FieldsListNode();
+
+            if ($children !== []) {
+                $fields->sealed = false;
+            }
+
+            return \array_filter([$parameters, $fields]);
+    }
+
+    private static function reduceShapeFieldsList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $offset = $ctx->token->offset;
+
+        $explicit = [];
+            $implicit = false;
+
+            foreach ($children as $field) {
+                if ($field instanceof Type\Shape\ExplicitFieldNode) {
+                    $key = $field->index;
+
+                    if (\in_array($key, $explicit, true)) {
+                        throw Exception\ShapeFieldDuplicationException::becauseShapeFieldIsDuplicated($key, $field->offset);
+                    }
+
+                    $explicit[] = $key;
+                } else {
+                    $implicit = true;
+                }
+            }
+
+            if ($explicit !== [] && $implicit) {
+                throw Exception\ShapeKeysMixingException::becauseShapeKeysAreMixed($offset);
+            }
+
+            return new Type\Shape\FieldsListNode($children);
+    }
+
+    private static function reduceShapeField(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $result = \end($children);
+
+            if ($children[0] instanceof Type\Attribute\AttributeGroupListNode) {
+                $result->attributes = $children[0];
+            }
+
+            return $result;
+    }
+
+    private static function reduceExplicitField(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $name = $children[0];
+            $value = \array_pop($children);
+
+            // In case of "nullable" suffix defined
+            $optional = \count($children) === 2;
+
+            return match (true) {
+                $name instanceof Type\Literal\IntLiteralNode
+                    => new Type\Shape\NumericFieldNode($name, $value, $optional),
+                $name instanceof Type\Literal\StringLiteralNode
+                    => new Type\Shape\StringNamedFieldNode($name, $value, $optional),
+                $name instanceof Type\ClassConstNode
+                    => new Type\Shape\ClassConstFieldNode($name, $value, $optional),
+                $name instanceof Type\ClassConstMaskNode
+                    => new Type\Shape\ClassConstMaskFieldNode($name, $value, $optional),
+                $name instanceof Type\ConstMaskNode
+                    => new Type\Shape\ConstMaskFieldNode($name, $value, $optional),
+                default => new Type\Shape\NamedFieldNode($name, $value, $optional),
+            };
+    }
+
+    private static function reduceImplicitField(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return new Type\Shape\ImplicitFieldNode($children[0]);
+    }
+
+    private static function reduceTypeListOrOffsetSuffix(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children[1] ?? true;
     }
 };

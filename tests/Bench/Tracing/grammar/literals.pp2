@@ -5,9 +5,7 @@ Literal
   | ClassConstLiteral()
   ;
 
-RawLiteral -> {
-    return $children;
-}
+RawLiteral
   : StringLiteral()
   | FloatLiteral()
   | IntLiteral()
@@ -28,7 +26,7 @@ ThisLiteral -> {
   : <T_THIS>
   ;
 
-StringLiteral -> { return $children; }
+StringLiteral
   : DoubleQuotedStringLiteral()
   | SingleQuotedStringLiteral()
   ;

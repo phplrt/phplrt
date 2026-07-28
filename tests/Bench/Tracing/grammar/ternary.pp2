@@ -6,7 +6,7 @@ TernaryExpressionOrLogicalType -> {
         return $children[0];
     }
 
-    $condition = match ($children[1]->getName()) {
+    $condition = match ($children[1]->name) {
         'T_EQ' => new Type\Condition\EqualConditionNode(
             $children[0],
             $children[2],

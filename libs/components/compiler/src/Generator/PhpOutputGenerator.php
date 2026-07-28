@@ -61,7 +61,8 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
         $this->twig->addFunction(new TwigFunction('value', $this->printer->printValue(...)));
         $this->twig->addFunction(new TwigFunction('variable', $this->printer->printVariable(...)));
         $this->twig->addFunction(new TwigFunction('rule', $this->printer->printRule(...)));
-        $this->twig->addFunction(new TwigFunction('reducer', $this->printer->printReducer(...)));
+        $this->twig->addFunction(new TwigFunction('method', $this->printer->printReducerMethod(...)));
+        $this->twig->addFunction(new TwigFunction('callback', $this->printer->printReducerCallback(...)));
         $this->twig->addFunction(new TwigFunction('expression', $this->printer->printEmbeddedLexer(...)));
         $this->twig->addFilter(new TwigFilter('indent', $this->printer->indent(...)));
         $this->twig->addTest(new TwigTest('embedded', self::isEmbedded(...)));
@@ -79,6 +80,10 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
                 'class' => $context->class,
                 'lexer' => $result->lexer,
                 'parser' => $result->parser,
+                'methods' => $this->printer->createMethodNames(
+                    reducers: $result->parser->reducers,
+                    constants: $result->parser->constants,
+                ),
             ]);
         } catch (\Throwable $e) {
             throw self::findGeneratorException($e)
