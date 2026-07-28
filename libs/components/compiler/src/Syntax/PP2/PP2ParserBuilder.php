@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Compiler\Syntax\PP2;
 
-use Phplrt\Compiler\Node\Declaration\Declaration;
 use Phplrt\Compiler\Node\Declaration\IncludeDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
 use Phplrt\Compiler\Node\Declaration\RuleDeclaration;
@@ -21,8 +20,6 @@ use Phplrt\Compiler\Node\Statement\RuleReference;
 use Phplrt\Compiler\Node\Statement\Statement;
 use Phplrt\Compiler\Node\Statement\TokenReference;
 use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Parser\Builder\ParserBuilder;
@@ -32,47 +29,9 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 /**
  * Reads a PP2 grammar file into the declarations it is written of.
  */
-final readonly class PP2Grammar
+final readonly class PP2ParserBuilder
 {
-    private ParserInterface $parser;
-
-    public function __construct()
-    {
-        $lexer = PP2Lexer::createBuilder()
-            ->build();
-
-        $this->parser = self::createBuilder()
-            ->build($lexer)
-            ->toParser($lexer->toLexer());
-    }
-
-    /**
-     * Returns the declarations of the given grammar file, in the order they
-     * are written.
-     *
-     * @api
-     *
-     * @return list<Declaration>
-     * @throws UnexpectedTokenException on a syntax error
-     */
-    public function parse(ReadableInterface $source): array
-    {
-        $parsed = $this->parser->parse($source);
-
-        \assert(\is_array($parsed), 'A grammar file is a list of declarations');
-
-        $result = [];
-
-        foreach ($parsed as $declaration) {
-            \assert($declaration instanceof Declaration, 'The value is a declaration');
-
-            $result[] = $declaration;
-        }
-
-        return $result;
-    }
-
-    private static function createBuilder(): ParserBuilder
+    public static function create(): ParserBuilder
     {
         $parser = new ParserBuilder();
 
@@ -291,27 +250,35 @@ final readonly class PP2Grammar
 
     private static function createZeroOrOne(Context $context, mixed $children): Quantifier
     {
-        return new Quantifier(0, 1, self::readTerminal($children)->offset);
+        $token = self::readTerminal($children);
+
+        return new Quantifier(0, 1, $token->offset, self::calculateLength($token));
     }
 
     private static function createOneOrMore(Context $context, mixed $children): Quantifier
     {
-        return new Quantifier(1, \INF, self::readTerminal($children)->offset);
+        $token = self::readTerminal($children);
+
+        return new Quantifier(1, \INF, $token->offset, self::calculateLength($token));
     }
 
     private static function createZeroOrMore(Context $context, mixed $children): Quantifier
     {
-        return new Quantifier(0, \INF, self::readTerminal($children)->offset);
+        $token = self::readTerminal($children);
+
+        return new Quantifier(0, \INF, $token->offset, self::calculateLength($token));
     }
 
     private static function createRangeFromTo(Context $context, mixed $children): Quantifier
     {
         $from = self::readToken($children, 0);
+        $to = self::readToken($children, 1);
 
         return new Quantifier(
             min: self::readNumber($from),
-            max: self::readNumber(self::readToken($children, 1)),
+            max: self::readNumber($to),
             offset: $from->offset,
+            length: self::calculateSpan($from->offset, $to->end),
         );
     }
 
@@ -319,14 +286,14 @@ final readonly class PP2Grammar
     {
         $from = self::readToken($children, 0);
 
-        return new Quantifier(self::readNumber($from), \INF, $from->offset);
+        return new Quantifier(self::readNumber($from), \INF, $from->offset, self::calculateLength($from));
     }
 
     private static function createRangeTo(Context $context, mixed $children): Quantifier
     {
         $to = self::readToken($children, 0);
 
-        return new Quantifier(0, self::readNumber($to), $to->offset);
+        return new Quantifier(0, self::readNumber($to), $to->offset, self::calculateLength($to));
     }
 
     private static function createRangeExactly(Context $context, mixed $children): Quantifier
@@ -334,7 +301,7 @@ final readonly class PP2Grammar
         $token = self::readTerminal($children);
         $count = self::readNumber($token);
 
-        return new Quantifier($count, $count, $token->offset);
+        return new Quantifier($count, $count, $token->offset, self::calculateLength($token));
     }
 
     private static function createTokenDeclaration(Context $context, mixed $children): TokenDeclaration
@@ -361,6 +328,7 @@ final readonly class PP2Grammar
             next: self::findCapture($declaration, 3),
             isHidden: $isHidden,
             offset: $declaration->offset,
+            length: self::calculateLength($declaration),
         );
     }
 
@@ -372,6 +340,7 @@ final readonly class PP2Grammar
             name: self::readCapture($context, $declaration, 0),
             value: self::readCapture($context, $declaration, 1),
             offset: $declaration->offset,
+            length: self::calculateLength($declaration),
         );
     }
 
@@ -382,6 +351,7 @@ final readonly class PP2Grammar
         return new IncludeDeclaration(
             target: self::readCapture($context, $declaration, 0),
             offset: $declaration->offset,
+            length: self::calculateLength($declaration),
         );
     }
 
@@ -411,6 +381,7 @@ final readonly class PP2Grammar
             reducer: $reducer,
             isKept: $isKept,
             offset: $name->offset,
+            length: self::calculateSpan($name->offset, $body->offset + $body->length),
         );
     }
 
@@ -428,14 +399,14 @@ final readonly class PP2Grammar
             ? ''
             : \substr($context->content, $open->end, $close->offset - $open->end);
 
-        return new CodeReducer(\trim($code), $token->offset);
+        return new CodeReducer(\trim($code), $token->offset, self::calculateLength($token));
     }
 
     private static function createClassReducer(Context $context, mixed $children): ClassReducer
     {
         $token = self::readToken($children, 0);
 
-        return new ClassReducer(self::readValue($token), $token->offset);
+        return new ClassReducer(self::readValue($token), $token->offset, self::calculateLength($token));
     }
 
     private static function createAlternation(Context $context, mixed $children): Statement
@@ -446,7 +417,7 @@ final readonly class PP2Grammar
             return $statements[0];
         }
 
-        return new Alternation($statements, $statements[0]->offset);
+        return new Alternation($statements, $statements[0]->offset, self::calculateStatementsLength($statements));
     }
 
     private static function createConcatenation(Context $context, mixed $children): Statement
@@ -457,7 +428,7 @@ final readonly class PP2Grammar
             return $statements[0];
         }
 
-        return new Concatenation($statements, $statements[0]->offset);
+        return new Concatenation($statements, $statements[0]->offset, self::calculateStatementsLength($statements));
     }
 
     private static function createRepetition(Context $context, mixed $children): Statement
@@ -473,28 +444,31 @@ final readonly class PP2Grammar
             return $statement;
         }
 
-        return new Repetition($statement, $quantifier, $statement->offset);
+        return new Repetition($statement, $quantifier, $statement->offset, self::calculateSpan(
+            $statement->offset,
+            $quantifier->offset + $quantifier->length,
+        ));
     }
 
     private static function createKeptTokenReference(Context $context, mixed $children): TokenReference
     {
         $token = self::readToken($children, 0);
 
-        return new TokenReference(self::readValue($token), true, $token->offset);
+        return new TokenReference(self::readValue($token), true, $token->offset, self::calculateLength($token));
     }
 
     private static function createSkippedTokenReference(Context $context, mixed $children): TokenReference
     {
         $token = self::readToken($children, 0);
 
-        return new TokenReference(self::readValue($token), false, $token->offset);
+        return new TokenReference(self::readValue($token), false, $token->offset, self::calculateLength($token));
     }
 
     private static function createRuleReference(Context $context, mixed $children): RuleReference
     {
         $token = self::readToken($children, 0);
 
-        return new RuleReference(self::readValue($token), $token->offset);
+        return new RuleReference(self::readValue($token), $token->offset, self::calculateLength($token));
     }
 
     private static function createInlinePattern(Context $context, mixed $children): InlinePattern
@@ -505,7 +479,43 @@ final readonly class PP2Grammar
         // to the pattern itself
         $pattern = \str_replace('\\"', '"', \substr($token->value, 1, -1));
 
-        return new InlinePattern($pattern, $token->offset);
+        return new InlinePattern($pattern, $token->offset, self::calculateLength($token));
+    }
+
+    /**
+     * Returns the number of bytes the given token has been read from.
+     *
+     * @return int<0, max>
+     */
+    private static function calculateLength(TokenInterface $token): int
+    {
+        return self::calculateSpan($token->offset, $token->end);
+    }
+
+    /**
+     * Returns the number of bytes between the given positions.
+     *
+     * @param int<0, max> $from
+     * @param int<0, max> $to
+     * @return int<0, max>
+     */
+    private static function calculateSpan(int $from, int $to): int
+    {
+        return \max(0, $to - $from);
+    }
+
+    /**
+     * Returns the number of bytes the statements of a production are written
+     * of, from the beginning of the first one to the end of the last.
+     *
+     * @param non-empty-list<Statement> $statements
+     * @return int<0, max>
+     */
+    private static function calculateStatementsLength(array $statements): int
+    {
+        $last = $statements[\count($statements) - 1];
+
+        return self::calculateSpan($statements[0]->offset, $last->offset + $last->length);
     }
 
     /**

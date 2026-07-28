@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar;
+namespace Phplrt\Compiler\Syntax\PP2;
 
-use Phplrt\Compiler\Grammar\Internal\PhpEmbeddingLexer;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use Phplrt\Source\File;
 
 /**
  * Describes the lexer reading a PP2 grammar file.
@@ -15,7 +13,7 @@ use Phplrt\Source\File;
  * while a block of PHP code is read by a lexer of its own: a brace written
  * inside a string is only a brace for PHP itself.
  */
-final class PP2Lexer
+final class PP2LexerBuilder
 {
     /**
      * Reads the body of a reducer written as PHP code.
@@ -49,7 +47,7 @@ final class PP2Lexer
      *
      * @api
      */
-    public static function createBuilder(): LexerBuilder
+    public static function create(): LexerBuilder
     {
         $builder = new LexerBuilder();
 
@@ -130,6 +128,6 @@ final class PP2Lexer
 
     private static function addEmbeddedLexers(LexerBuilder $builder): void
     {
-        $builder->addEmbeddedLexer(self::LEXER_PHP, new PhpEmbeddingLexer());
+        $builder->addEmbeddedLexer(self::LEXER_PHP, new PP2PhpEmbeddingLexer());
     }
 }

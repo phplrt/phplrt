@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Grammar\Internal;
+namespace Phplrt\Compiler\Syntax\Common;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
