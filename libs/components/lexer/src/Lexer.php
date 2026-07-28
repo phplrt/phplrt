@@ -10,7 +10,7 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Exception\LexerException;
+use Phplrt\Lexer\Exception\LexerSourceException;
 use Phplrt\Lexer\Internal\ChannelLoader;
 use Phplrt\Lexer\Internal\Tokenizer;
 use Phplrt\Lexer\Token\EndOfInputToken;
@@ -145,7 +145,7 @@ readonly class Lexer implements LexerInterface
         try {
             $content = $source->content;
         } catch (SourceExceptionInterface $e) {
-            throw LexerException::becauseSourceIsNotReadable($e);
+            throw LexerSourceException::becauseSourceIsNotReadable($e);
         }
 
         return $this->execute($source, $content, $offset);

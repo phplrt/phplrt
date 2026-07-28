@@ -15,12 +15,14 @@ use Phplrt\Contracts\Source\ReadableInterface;
  */
 final class EmptyTokenException extends LexerRuntimeException
 {
-    public static function becauseTokenIsEmpty(ReadableInterface $source, TokenInterface $token): self
-    {
-        return new self($source, $token, \sprintf(
-            'Token %s matches an empty string at offset %d, which makes the lexer unable to advance',
-            $token->name ?? '#' . $token->id,
-            $token->offset,
-        ));
+    public static function becauseTokenIsEmpty(
+        ReadableInterface $source,
+        TokenInterface $token,
+        ?\Throwable $previous = null,
+    ): self {
+        $message = 'Token %s matches an empty string, which makes the lexer unable to advance';
+        $message = \sprintf($message, $token);
+
+        return new self($source, $token, $message, previous: $previous);
     }
 }

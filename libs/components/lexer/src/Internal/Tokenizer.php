@@ -8,6 +8,7 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\EmptyTokenException;
+use Phplrt\Lexer\Exception\PcreErrorException;
 use Phplrt\Lexer\Exception\UnrecognizedTokenException;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\UnknownToken;
@@ -199,7 +200,7 @@ final readonly class Tokenizer
         );
 
         if (\preg_last_error() !== \PREG_NO_ERROR) {
-            throw UnrecognizedTokenException::becausePcreErrorOccurs($source, $token, \preg_last_error_msg());
+            throw PcreErrorException::becausePcreErrorOccurs($source, $token, \preg_last_error_msg());
         }
 
         throw UnrecognizedTokenException::becauseInputIsUnrecognized($source, $token);

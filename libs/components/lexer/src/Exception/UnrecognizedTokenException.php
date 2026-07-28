@@ -15,25 +15,13 @@ use Phplrt\Contracts\Source\ReadableInterface;
  */
 final class UnrecognizedTokenException extends LexerRuntimeException
 {
-    public static function becauseInputIsUnrecognized(ReadableInterface $source, TokenInterface $token): self
-    {
-        return new self($source, $token, \sprintf(
-            'Unrecognized %s at offset %d',
-            $token,
-            $token->offset,
-        ));
-    }
-
-    public static function becausePcreErrorOccurs(
+    public static function becauseInputIsUnrecognized(
         ReadableInterface $source,
         TokenInterface $token,
-        string $error,
+        ?\Throwable $previous = null,
     ): self {
-        return new self($source, $token, \sprintf(
-            'A PCRE error (%s) occurred while reading %s at offset %d',
-            $error,
-            $token,
-            $token->offset,
-        ));
+        $message = \sprintf('Unrecognized %s', $token);
+
+        return new self($source, $token, $message, previous: $previous);
     }
 }
