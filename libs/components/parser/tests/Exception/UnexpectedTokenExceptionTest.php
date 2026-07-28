@@ -39,7 +39,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
         $exception = UnexpectedTokenException::fromToken(new Source(self::SOURCE), $this->createToken());
 
         self::assertSame(<<<'OUT'
-            error[Phplrt\Parser\Exception\UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
+            error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
               |
             1 | first line
             2 | second line
@@ -56,7 +56,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
         $exception = UnexpectedTokenException::fromToken($source, $this->createToken());
 
         self::assertSame(<<<'OUT'
-            error[Phplrt\Parser\Exception\UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
+            error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
              --> /app/example.pp2:2:8
               |
             1 | first line
@@ -75,7 +75,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
         );
 
         self::assertSame(<<<'OUT'
-            error[Phplrt\Parser\Exception\UnexpectedTokenException]: Syntax error, unexpected end of input
+            error[UnexpectedTokenException]: Syntax error, unexpected end of input
               |
             1 |
               | ^

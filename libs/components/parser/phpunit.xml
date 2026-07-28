@@ -10,6 +10,7 @@
     <php>
         <ini name="error_reporting" value="-1"/>
         <ini name="memory_limit" value="-1"/>
+        <env name="NO_COLOR" value="1"/>
     </php>
 
     <testsuites>
