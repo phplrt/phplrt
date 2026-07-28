@@ -1,0 +1,44 @@
+
+AttributeGroupsList -> {
+    return new Type\Attribute\AttributeGroupListNode($children);
+}
+  : AttributeGroup()+
+  ;
+
+AttributeGroup -> {
+    return new Type\Attribute\AttributeGroupNode($children);
+}
+  : ::T_ATTR_OPEN::
+        AttributesList() ::T_COMMA::?
+    ::T_SQUARE_BRACKET_CLOSE::
+  ;
+
+AttributesList
+  : Attribute() (
+      ::T_COMMA:: Attribute()
+    )*
+  ;
+
+Attribute -> {
+    return new Type\Attribute\AttributeNode(
+        $children[0],
+    );
+}
+  : Name() AttributeArguments()?
+  ;
+
+AttributeArguments -> {
+    return new Type\Attribute\AttributeArgumentListNode($children);
+}
+  : ::T_PARENTHESIS_OPEN::
+      AttributeArgument() (
+        ::T_COMMA:: AttributeArgument()
+      )* ::T_COMMA::?
+    ::T_PARENTHESIS_CLOSE::
+  ;
+
+AttributeArgument -> {
+    return new Type\Attribute\AttributeArgumentNode($children[0]);
+}
+  : Type()
+  ;

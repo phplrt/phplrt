@@ -1,0 +1,158 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Language Syntax Summary
+ * -----------------------------------------------------------------------------
+ */
+
+%include grammar/lexemes                // Lexeme/Token Definitions
+%include grammar/common                 // Common Utils
+%include grammar/literals               // Literal Definitions
+%include grammar/template-arguments     // T<TArg, TArg2>
+%include grammar/callable               // callable(mixed): void
+%include grammar/shape-fields           // array { key: int, ...<TKey, TValue> }
+%include grammar/named-type             // Map<int<0, max>, non-empty-string>
+%include grammar/ternary                // T is A ? B : C
+%include grammar/attribute              // #[attr]
+
+%pragma root Type
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Type Statement
+ * -----------------------------------------------------------------------------
+ *
+ *  Constant references to external definitions or
+ *  describe the type in some way.
+ *
+ */
+
+Type
+  : Expression()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Ternary Expression
+ * -----------------------------------------------------------------------------
+ *
+ *  Ternary conditional expressions, like:
+ *  - T is A ? B : C - for equality type conditions.
+ *  - T is not A ? B ? C - for non-equality type conditions.
+ *
+ */
+
+Expression
+  : TernaryExpressionOrLogicalType()
+  ;
+
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Logical Statements
+ * -----------------------------------------------------------------------------
+ *
+ *  Logical statements denote union or intersection types, like:
+ *  - A | B | C - for union type references.
+ *  - A & B & C - for intersection type references.
+ *
+ */
+
+LogicalType
+  : UnionType()
+  ;
+
+UnionType -> {
+    if (\count($children) === 2) {
+        return new Type\UnionTypeNode($children[0], $children[1]);
+    }
+
+    return $children;
+}
+  : IntersectionType() (::T_OR:: UnionType())?
+  ;
+
+IntersectionType -> {
+    if (\count($children) === 2) {
+        return new Type\IntersectionTypeNode($children[0], $children[1]);
+    }
+
+    return $children;
+}
+  : UnaryType() (::T_AMP:: IntersectionType())?
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Unary Statements
+ * -----------------------------------------------------------------------------
+ *
+ *  Unary statements denote terminal types, like:
+ *  - A - for type reference.
+ *  - ?A - for nullable type reference.
+ *  - 'some' - for string literal reference.
+ *  - etc...
+ *
+ */
+
+UnaryType
+  : PrefixedNullableType()
+  ;
+
+// stmt = ?Type
+PrefixedNullableType -> {
+    if (\is_array($children)) {
+        return new Type\NullableTypeNode($children[1]);
+    }
+
+    return $children;
+}
+  : <T_QMARK> TypesList()
+  | TypesList()
+  ;
+
+TypesList -> {
+    $statement = \array_shift($children);
+
+    foreach ($children as $child) {
+        switch (true) {
+            // In case of list type
+            case $child === true:
+
+                $statement = new Type\TypesListNode($statement);
+                break;
+            // In case of offset access type
+            case $child instanceof Type\TypeNode:
+
+                $statement = new Type\TypeOffsetAccessNode($statement, $child);
+                break;
+            default:
+                throw Exception\InternalSemanticException::becauseSubNodeIsUnexpected(
+                    \get_debug_type($child),
+                    $offset,
+                );
+        }
+    }
+
+    return $statement;
+}
+  : PrimaryType()
+    TypeListOrOffsetSuffix()*
+  ;
+
+// - Returns `true` in case of a list type (`T[]`).
+// - Returns `NamedTypeNode` in case of an offset access type (`T[Y]`).
+TypeListOrOffsetSuffix -> {
+    return $children[1] ?? true;
+}
+  : <T_SQUARE_BRACKET_OPEN>
+      Type()?
+    ::T_SQUARE_BRACKET_CLOSE::
+  ;
+
+PrimaryType
+  : ::T_PARENTHESIS_OPEN:: Type() ::T_PARENTHESIS_CLOSE::
+  | ThisLiteral()
+  | Literal()
+  | CallableType()
+  | NamedType()
+  ;

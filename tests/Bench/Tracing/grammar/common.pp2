@@ -1,0 +1,33 @@
+
+Name
+  : FullQualifiedName()
+  | RelativeName()
+  ;
+
+FullQualifiedName -> {
+    return new Type\Name($children, true);
+}
+  : ::T_NS_DELIMITER:: Identifier() (::T_NS_DELIMITER:: Identifier())*
+  ;
+
+RelativeName -> {
+    return new Type\Name($children, false);
+}
+  : Identifier() (::T_NS_DELIMITER:: Identifier())*
+  ;
+
+Identifier -> {
+    return Type\Identifier::createFromString($children->value);
+}
+  : <T_NAME>
+  | <T_NAME_WITH_SPACE>
+  | <T_EQ>
+  | <T_BOOL_LITERAL>
+  | <T_NULL_LITERAL>
+  ;
+
+IdentifierWithExtraSpace -> {
+    return Type\Identifier::createFromString($children->value);
+}
+    : <T_NAME_WITH_SPACE>
+    ;

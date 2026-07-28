@@ -1,0 +1,108 @@
+
+Literal
+  : RawLiteral()
+  | ConstMaskLiteral()
+  | ClassConstLiteral()
+  ;
+
+RawLiteral -> {
+    return $children;
+}
+  : StringLiteral()
+  | FloatLiteral()
+  | IntLiteral()
+  | BoolLiteral()
+  | NullLiteral()
+  ;
+
+VariableLiteral -> {
+    return Type\Literal\VariableLiteralNode::parse($token->value);
+}
+  : <T_VARIABLE>
+  | <T_THIS>
+  ;
+
+ThisLiteral -> {
+    return Type\Literal\VariableLiteralNode::parse($token->value);
+}
+  : <T_THIS>
+  ;
+
+StringLiteral -> { return $children; }
+  : DoubleQuotedStringLiteral()
+  | SingleQuotedStringLiteral()
+  ;
+
+DoubleQuotedStringLiteral -> {
+    return Type\Literal\StringLiteralNode::createFromDoubleQuotedString($token->value);
+}
+  : <T_DQ_STRING_LITERAL>
+  ;
+
+SingleQuotedStringLiteral -> {
+    return Type\Literal\StringLiteralNode::createFromSingleQuotedString($token->value);
+}
+  : <T_SQ_STRING_LITERAL>
+  ;
+
+FloatLiteral -> {
+    return Type\Literal\FloatLiteralNode::parse($token->value);
+}
+  : <T_PFX_FLOAT_LITERAL>
+  | <T_SFX_FLOAT_LITERAL>
+  | <T_EXP_LITERAL>
+  ;
+
+IntLiteral -> {
+    return Type\Literal\IntLiteralNode::parse($token->value);
+}
+  : <T_BIN_INT_LITERAL>
+  | <T_OCT_INT_LITERAL>
+  | <T_HEX_INT_LITERAL>
+  | <T_DEC_INT_LITERAL>
+  ;
+
+BoolLiteral -> {
+    return Type\Literal\BoolLiteralNode::parse($token->value);
+}
+  : <T_BOOL_LITERAL>
+  ;
+
+NullLiteral -> {
+    return new Type\Literal\NullLiteralNode($children->value);
+}
+  : <T_NULL_LITERAL>
+  ;
+
+ConstMaskLiteral -> {
+    return new Type\ConstMaskNode($children[0]);
+}
+  : Name() ::T_ASTERISK::
+  ;
+
+ClassConstLiteral -> {
+    // <ClassName> :: <ConstPrefix> "*"
+    if (\count($children) === 3) {
+        return new Type\ClassConstMaskNode(
+            $children[0],
+            $children[1],
+        );
+    }
+
+    // <ClassName> :: <ConstName>
+    if ($children[1] instanceof Type\Identifier) {
+        return new Type\ClassConstNode(
+            $children[0],
+            $children[1],
+        );
+    }
+
+    // <ClassName> :: "*"
+    return new Type\ClassConstMaskNode($children[0]);
+}
+  : Name() ::T_DOUBLE_COLON::
+    ( Identifier() <T_ASTERISK>
+    | Identifier()
+    | <T_ASTERISK>
+    )
+  ;
