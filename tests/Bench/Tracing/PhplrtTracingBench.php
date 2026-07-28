@@ -19,25 +19,26 @@ use Phplrt\Source\Source;
 #[Iterations(2)]
 #[RetryThreshold(0.2)]
 #[BeforeMethods('prepare')]
-final readonly class PhplrtOptimizedCompilerParsingBench extends PhplrtBench
+final readonly class PhplrtTracingBench extends PhplrtBench
 {
     private Parser $parser;
 
     public function prepare(): void
     {
-        new Compiler()
-            ->load(new File(__DIR__ . '/grammar.pp2'))
-            ->generate()
+        if (!\is_readable(__DIR__ . '/generated.php')) {
+            new Compiler()
+                ->load(new File(__DIR__ . '/grammar.pp2'))
+                ->generate()
                 ->withClassImport('TypeLang\Parser\Exception')
                 ->withClassImport('TypeLang\Type')
-                ->save(__DIR__ . '/generated.php')
-        ;
+                ->save(__DIR__ . '/generated.php');
+        }
 
         $this->parser = require __DIR__ . '/generated.php';
     }
 
     public function benchParsing(): void
     {
-        $this->parser->parse(new Source(self::SAMPLE));
+        $this->parser->check(new Source(self::SAMPLE));
     }
 }
