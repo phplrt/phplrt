@@ -8,25 +8,18 @@ use Phplrt\Compiler\Node\Node;
 
 /**
  * States how many times a statement may repeat.
- *
- * For example,
- * ```
- * ?       // {0,1}
- * *       // {0,}
- * +       // {1,}
- * {2,5}
- * ```
  */
 final readonly class Quantifier extends Node
 {
     /**
-     * @param int<0, max> $min
-     * @param int<0, max>|float $max
      * @param int<0, max> $offset
+     * @param int<0, max> $length
      */
     public function __construct(
         /**
          * The least number of times the statement must repeat.
+         *
+         * @var int<0, max>
          */
         public int $min = 0,
         /**
@@ -35,10 +28,16 @@ final readonly class Quantifier extends Node
          *
          * The range is written by hand, so the greatest number may well be
          * lower than the least one.
+         *
+         * @var int<0, max>|float
          */
         public int|float $max = \INF,
         int $offset = 0,
+        int $length = 0,
     ) {
-        parent::__construct(offset: $offset);
+        parent::__construct(
+            offset: $offset,
+            length: $length,
+        );
     }
 }

@@ -17,10 +17,12 @@
     ],
     "require": {
         "php": "^8.4",
+        "phplrt/exception": "^4.0",
         "phplrt/lexer": "^4.0",
         "phplrt/lexer-builder": "^4.0",
         "phplrt/parser": "^4.0",
         "phplrt/parser-builder": "^4.0",
+        "phplrt/source": "^4.0",
         "phplrt/source-contracts": "^4.0"
     },
     "autoload": {
@@ -29,7 +31,6 @@
         }
     },
     "require-dev": {
-        "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.1.38",
         "phpstan/phpstan-strict-rules": "^2.0"

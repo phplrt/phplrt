@@ -9,23 +9,18 @@ use Phplrt\Compiler\Node\Statement\Statement;
 
 /**
  * Declares a rule of the parser.
- *
- * For example,
- * ```
- * #Sum -> { return new SumNode($children); }
- *   : Number() (::T_PLUS:: Number())*
- *   ;
- * ```
  */
 final readonly class RuleDeclaration extends Declaration
 {
     /**
-     * @param non-empty-string $name
      * @param int<0, max> $offset
+     * @param int<0, max> $length
      */
     public function __construct(
         /**
          * The name the rule is referred to by.
+         *
+         * @var non-empty-string
          */
         public string $name,
         /**
@@ -38,13 +33,17 @@ final readonly class RuleDeclaration extends Declaration
          */
         public ?Reducer $reducer = null,
         /**
-         * Contains {@see true} in case of the rule is declared with the "#"
-         * prefix, so it is kept in the syntax tree even when it recognizes a
-         * single child
+         * Contains {@see true} in case of the rule is kept in the syntax tree
+         * even when it recognizes a single child
          */
         public bool $isKept = false,
         int $offset = 0,
+        int $length = 0,
     ) {
-        parent::__construct([$body], $offset);
+        parent::__construct(
+            children: [$body],
+            offset: $offset,
+            length: $length,
+        );
     }
 }

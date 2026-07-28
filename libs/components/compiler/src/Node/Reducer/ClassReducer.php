@@ -6,18 +6,12 @@ namespace Phplrt\Compiler\Node\Reducer;
 
 /**
  * Converts a rule into an instance of the given class.
- *
- * For example,
- * ```
- * Sum -> \App\Node\SumNode
- *   : ...
- * ```
  */
 final readonly class ClassReducer extends Reducer
 {
     /**
-     * @param non-empty-string $class
      * @param int<0, max> $offset
+     * @param int<0, max> $length
      */
     public function __construct(
         /**
@@ -25,10 +19,16 @@ final readonly class ClassReducer extends Reducer
          *
          * The name is not resolved here: whether such a class exists is only
          * known where the generated parser is run.
+         *
+         * @var non-empty-string
          */
         public string $class,
         int $offset = 0,
+        int $length = 0,
     ) {
-        parent::__construct(offset: $offset);
+        parent::__construct(
+            offset: $offset,
+            length: $length,
+        );
     }
 }

@@ -18,6 +18,10 @@ use Phplrt\Compiler\Node\Statement\Statement;
  * quantifier) is still readable here and is reported later, at the position
  * the node carries.
  *
+ * Every grammar format is read into this very tree, so a node says what an
+ * element means and never how it is spelled: the spelling belongs to the
+ * format that has been read and lives with the parser reading it.
+ *
  * @phpstan-sealed Declaration|Quantifier|Reducer|Statement
  */
 abstract readonly class Node
@@ -36,5 +40,12 @@ abstract readonly class Node
          * @var int<0, max>
          */
         public int $offset = 0,
+        /**
+         * The number of bytes of the grammar file the node is written of, or
+         * "0" in case of the node ends where it starts.
+         *
+         * @var int<0, max>
+         */
+        public int $length = 0,
     ) {}
 }
