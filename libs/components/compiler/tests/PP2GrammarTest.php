@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Tests;
 
-use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Node\Declaration\RuleDeclaration;
 use Phplrt\Compiler\Node\Declaration\TokenDeclaration;
 use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Node\Statement\Concatenation;
 use Phplrt\Compiler\Node\Statement\InlinePattern;
+use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
@@ -164,7 +164,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The escaping of the quotes surrounding an inline pattern is undone')]
     public function testInlinePatternQuotes(): void
     {
-        $declarations = new PP2Grammar()->parse(new Source('A : "\"" ;'));
+        $declarations = new PP2Parser()->parse(new Source('A : "\"" ;'));
 
         $rule = $declarations[0];
 
@@ -224,7 +224,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('A reducer written as code is read up to the brace closing it')]
     public function testCodeReducer(): void
     {
-        $declarations = new PP2Grammar()->parse(new Source(<<<'PP2'
+        $declarations = new PP2Parser()->parse(new Source(<<<'PP2'
             A -> {
                 if ($children === []) {
                     return null;
@@ -252,7 +252,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The position a declaration starts at is where it is written')]
     public function testDeclarationOffsets(): void
     {
-        $declarations = new PP2Grammar()->parse(new Source(<<<'PP2'
+        $declarations = new PP2Parser()->parse(new Source(<<<'PP2'
             %token T_A a
 
             A : <T_A> ;
@@ -270,7 +270,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The position of a statement is where the statement itself is written')]
     public function testStatementOffsets(): void
     {
-        $declarations = new PP2Grammar()->parse(new Source('A : <T_A> ::T_B:: ;'));
+        $declarations = new PP2Parser()->parse(new Source('A : <T_A> ::T_B:: ;'));
 
         $rule = $declarations[0];
 
@@ -286,6 +286,6 @@ final class PP2GrammarTest extends TestCase
     {
         $this->expectException(UnexpectedTokenException::class);
 
-        new PP2Grammar()->parse(new Source('A : ;'));
+        new PP2Parser()->parse(new Source('A : ;'));
     }
 }

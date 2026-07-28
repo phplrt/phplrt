@@ -1,0 +1,9 @@
+// The extension is omitted, so the reference is resolved by trying the
+// extension of every format there is
+%include lexemes
+
+// The very same grammar is referred to from here and from the grammar below,
+// which reads it once
+%include nested/expression.pp3
+
+%pragma root Expression

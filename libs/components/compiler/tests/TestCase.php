@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Tests;
 
-use Phplrt\Compiler\Grammar\PP2Grammar;
 use Phplrt\Compiler\Node\Declaration;
 use Phplrt\Compiler\Node\Node;
 use Phplrt\Compiler\Node\Reducer;
 use Phplrt\Compiler\Node\Statement;
+use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -24,7 +24,7 @@ abstract class TestCase extends BaseTestCase
     {
         $result = [];
 
-        foreach (new PP2Grammar()->parse(new Source($source)) as $declaration) {
+        foreach (new PP2Parser()->parse(new Source($source)) as $declaration) {
             $result[] = self::describeNode($declaration);
         }
 

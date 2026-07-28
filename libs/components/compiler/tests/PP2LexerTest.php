@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Tests;
 
-use Phplrt\Compiler\Grammar\PP2Lexer;
+use Phplrt\Compiler\Syntax\PP2\PP2LexerBuilder;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\TokenEmbedding;
@@ -20,7 +20,7 @@ final class PP2LexerTest extends TestCase
      */
     private static function tokenize(string $source): array
     {
-        $lexer = PP2Lexer::createBuilder()
+        $lexer = PP2LexerBuilder::create()
             ->build()
             ->toLexer();
 
