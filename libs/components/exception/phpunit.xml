@@ -10,6 +10,9 @@
     <php>
         <ini name="error_reporting" value="-1"/>
         <ini name="memory_limit" value="-1"/>
+        <!-- The expected output of the printers is the plain one, no matter
+             whether the tests are run in a terminal or not -->
+        <env name="NO_COLOR" value="1"/>
     </php>
 
     <testsuites>

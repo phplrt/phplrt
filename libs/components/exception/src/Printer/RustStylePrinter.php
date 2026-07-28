@@ -6,8 +6,7 @@ namespace Phplrt\Exception\Printer;
 
 use Phplrt\Exception\Printer\Internal\LinePart;
 use Phplrt\Exception\Printer\Internal\LineWrapper;
-use Phplrt\Exception\Printer\Internal\Style\AnsiStyle;
-use Phplrt\Exception\Printer\Internal\Style\PlainStyle;
+use Phplrt\Exception\Printer\Internal\Style\StyleFactory;
 use Phplrt\Exception\Printer\Internal\Style\StyleInterface;
 use Phplrt\Exception\Printer\Internal\Text;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
@@ -60,11 +59,17 @@ final readonly class RustStylePrinter implements PrinterInterface
          * @var int<1, max>
          */
         private int $width = self::DEFAULT_WIDTH,
-        bool $colors = false,
+        /**
+         * Contains {@see true} in case of the output must be decorated by the
+         * escape sequences, {@see false} in case of it must stay plain, or
+         * {@see null} in case of the decision belongs to the output itself:
+         * a terminal that has not been asked to stay plain gets the colors.
+         */
+        ?bool $colors = null,
     ) {
         $this->text = new Text();
         $this->wrapper = new LineWrapper($this->text);
-        $this->style = $colors ? new AnsiStyle() : new PlainStyle();
+        $this->style = StyleFactory::create($colors);
     }
 
     public function print(iterable $snippets, ?ErrorInfo $info = null): string
@@ -264,7 +269,7 @@ final readonly class RustStylePrinter implements PrinterInterface
             // case the value is broken in the middle of it
             while (($length = $this->text->calculateLength($word)) > $width) {
                 $result[] = $this->text->slice($word, 0, $width);
-                $word = $this->text->slice($word, $width, $length - $width);
+                $word = $this->text->slice($word, $width, \max(0, $length - $width));
             }
 
             $line = $word;

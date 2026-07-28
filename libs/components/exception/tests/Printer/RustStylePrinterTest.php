@@ -343,14 +343,70 @@ final class RustStylePrinterTest extends TestCase
     #[TestDox('The error is not highlighted until the colors are enabled')]
     public function testDoesNotHighlightErrorByDefault(): void
     {
+        $printer = new RustStylePrinter(colors: false);
+
+        self::assertStringNotContainsString("\e", self::printExample($printer));
+    }
+
+    #[TestDox('The output asked to stay plain is not highlighted')]
+    public function testDoesNotHighlightPlainOutput(): void
+    {
+        // The "NO_COLOR" variable is set by the configuration of the tests
         $printer = new RustStylePrinter();
 
-        $actual = $printer->print(
+        self::assertStringNotContainsString("\e", self::printExample($printer));
+    }
+
+    #[TestDox('The output asked to print the colors is highlighted')]
+    public function testHighlightsForcedOutput(): void
+    {
+        self::withEnv(['NO_COLOR' => null, 'FORCE_COLOR' => '1'], static function (): void {
+            $printer = new RustStylePrinter();
+
+            self::assertStringContainsString("\e", self::printExample($printer));
+        });
+    }
+
+    #[TestDox('The decision of the caller wins over the one of the output')]
+    public function testExplicitColorsWinOverTheOutput(): void
+    {
+        // The "NO_COLOR" variable is set by the configuration of the tests
+        $printer = new RustStylePrinter(colors: true);
+
+        self::assertStringContainsString("\e", self::printExample($printer));
+    }
+
+    private static function printExample(RustStylePrinter $printer): string
+    {
+        return $printer->print(
             [new CapturedSourceLine(1, 0, 'line 1', 3, 5)],
             new ErrorInfo(message: 'Oops'),
         );
+    }
 
-        self::assertStringNotContainsString("\e", $actual);
+    /**
+     * Runs the callback with the given environment variables, restoring
+     * everything it has changed afterwards.
+     *
+     * @param array<non-empty-string, string|null> $variables
+     */
+    private static function withEnv(array $variables, \Closure $then): void
+    {
+        $previous = [];
+
+        foreach ($variables as $name => $value) {
+            $previous[$name] = \getenv($name);
+
+            $value === null ? \putenv($name) : \putenv($name . '=' . $value);
+        }
+
+        try {
+            $then();
+        } finally {
+            foreach ($previous as $name => $value) {
+                $value === false ? \putenv($name) : \putenv($name . '=' . $value);
+            }
+        }
     }
 
     /**
