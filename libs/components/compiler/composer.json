@@ -17,13 +17,15 @@
     ],
     "require": {
         "php": "^8.4",
+        "laminas/laminas-code": "^4.17",
         "phplrt/exception": "^4.0",
         "phplrt/lexer": "^4.0",
         "phplrt/lexer-builder": "^4.0",
         "phplrt/parser": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
-        "phplrt/source-contracts": "^4.0"
+        "phplrt/source-contracts": "^4.0",
+        "twig/twig": "^3.28"
     },
     "autoload": {
         "psr-4": {

@@ -1,0 +1,6 @@
+{% for name, state in lexers %}
+{% if state is not embedded and state.lexers is not empty %}
+{{ include('lexer/states.php.twig', {lexers: state.lexers, path: path ~ name ~ '_'})|trim }}
+{% endif %}
+{{ variable(path ~ name) }} = {{ include('lexer.php.twig', {lexer: state, name: name, path: path ~ name ~ '_'})|trim }};
+{% endfor %}

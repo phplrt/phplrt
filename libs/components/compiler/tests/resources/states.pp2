@@ -1,0 +1,6 @@
+%token        T_QUOTE_OPEN  "      -> string
+%token string:T_TEXT        [^"]++
+%token string:T_QUOTE_CLOSE "      -> default
+%skip         T_WHITESPACE  \s++
+
+Str : <T_QUOTE_OPEN> "\," ;

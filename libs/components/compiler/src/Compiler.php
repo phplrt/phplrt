@@ -4,14 +4,23 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Phplrt\Compiler\Exception\CompilerRuntimeException;
+use Phplrt\Compiler\Generator\GeneratedOutput;
+use Phplrt\Compiler\Generator\OutputGeneratorInterface;
+use Phplrt\Compiler\Generator\PhpOutputGenerator;
 use Phplrt\Compiler\Loader\ReferenceLoader;
 use Phplrt\Compiler\Loader\SyntaxLoaderRegistry;
+use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 
-final class Compiler implements CompilerInterface
+final class Compiler
 {
     public ParserBuilder $parser;
 
@@ -41,10 +50,19 @@ final class Compiler implements CompilerInterface
         $this->loader = new ReferenceLoader($this, $this->loaders);
     }
 
-    public function load(ReadableInterface $source): void
+    /**
+     * Reads the given grammar along with every grammar it refers to.
+     *
+     * @throws CompilerRuntimeException in case of the grammar says something that
+     *         cannot be expressed or refers to a grammar that cannot be found
+     * @throws RuntimeExceptionInterface in case of the grammar cannot be
+     *         recognized
+     * @throws SourceExceptionInterface in case of the grammar cannot be read
+     */
+    public function load(ReadableInterface $source): self
     {
         if (!$this->markAsLoaded($source)) {
-            return;
+            return $this;
         }
 
         $loader = $this->loaders->selectFor($source);
@@ -57,6 +75,8 @@ final class Compiler implements CompilerInterface
         foreach ($loader->load($source, $this->parser, $this->lexer) as $reference) {
             $this->loader->load($source, $reference);
         }
+
+        return $this;
     }
 
     /**
@@ -83,7 +103,7 @@ final class Compiler implements CompilerInterface
         return $this->loaded[$pathname] = true;
     }
 
-    public function build(): CompilerResultInterface
+    public function build(): CompilerResult
     {
         $lexer = $this->lexer->build();
         $parser = $this->parser->build($lexer);
@@ -91,6 +111,26 @@ final class Compiler implements CompilerInterface
         return new CompilerResult(
             lexer: $lexer,
             parser: $parser,
+        );
+    }
+
+    /**
+     * Writes the grammar that has been read down as source code.
+     *
+     * @throws LexerCompilerException in case of the tokens cannot be read
+     * @throws ParserCompilerException in case of the grammar cannot be built
+     */
+    public function generate(OutputGeneratorInterface $generator = new PhpOutputGenerator()): GeneratedOutput
+    {
+        return new GeneratedOutput($this->build(), $generator);
+    }
+
+    public function getParser(): ParserInterface
+    {
+        $result = $this->build();
+
+        return $result->parser->toParser(
+            lexer: $result->lexer->toLexer(),
         );
     }
 }

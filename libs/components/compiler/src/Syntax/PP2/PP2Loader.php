@@ -62,6 +62,31 @@ class PP2Loader implements SyntaxLoaderInterface
     private const string REDUCER_KEEP = 'return $children;';
 
     /**
+     * The variables a reducer may be written of, along with what each of them
+     * stands for.
+     *
+     * A grammar is written about the language it recognizes rather than about
+     * the parser recognizing it, so what the analysis has reached is written by
+     * a name of its own instead of being walked to through the context.
+     *
+     * @var array<non-empty-string, non-empty-string>
+     */
+    private const array REDUCER_VARIABLES = [
+        '$source' => '$ctx->source',
+        '$content' => '$ctx->content',
+        '$token' => '$ctx->token',
+        '$offset' => '$ctx->token->offset',
+        '$rule' => '$ctx->rule',
+    ];
+
+    /**
+     * The line telling the reducer apart from the variables it is given.
+     *
+     * @var non-empty-string
+     */
+    private const string REDUCER_VARIABLES_NOTICE = '// The variables below are declared by the compiler';
+
+    /**
      * Reading a grammar file needs a parser of its own, which is built once
      * and reused by every grammar this loader reads.
      *
@@ -274,7 +299,7 @@ class PP2Loader implements SyntaxLoaderInterface
 
         $reducer = $declaration->reducer;
 
-        $compiled = new PhpCodeReducer($code);
+        $compiled = new PhpCodeReducer(self::createReducerVariables($code) . $code);
         $compiled->setSource(
             source: $source,
             offset: $reducer === null ? $declaration->offset : $reducer->offset,
@@ -309,6 +334,50 @@ class PP2Loader implements SyntaxLoaderInterface
          * the children over as they are.
          */
         return $declaration->isKept ? self::REDUCER_KEEP : '';
+    }
+
+    /**
+     * Returns the declarations of the variables the given body is written of,
+     * or an empty string in case of the body is written of none of them.
+     */
+    private static function createReducerVariables(string $code): string
+    {
+        $used = self::findVariables($code);
+        $declarations = [];
+
+        foreach (self::REDUCER_VARIABLES as $variable => $expression) {
+            if (isset($used[$variable])) {
+                $declarations[] = \sprintf('%s = %s;', $variable, $expression);
+            }
+        }
+
+        if ($declarations === []) {
+            return '';
+        }
+
+        return self::REDUCER_VARIABLES_NOTICE . "\n"
+            . \implode("\n", $declarations) . "\n\n";
+    }
+
+    /**
+     * Returns the variables the given code is written of.
+     *
+     * The code is read the way PHP reads it, so a variable written inside a
+     * string or a comment is not mistaken for the variable itself.
+     *
+     * @return array<non-empty-string, true>
+     */
+    private static function findVariables(string $code): array
+    {
+        $variables = [];
+
+        foreach (\token_get_all('<?php ' . $code) as $token) {
+            if (\is_array($token) && $token[0] === \T_VARIABLE && $token[1] !== '') {
+                $variables[$token[1]] = true;
+            }
+        }
+
+        return $variables;
     }
 
     /**

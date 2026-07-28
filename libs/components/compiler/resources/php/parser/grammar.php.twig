@@ -1,0 +1,5 @@
+[
+{% for id, definition in parser.grammar %}
+    {{ rule(definition, id, lexer.names) }},
+{% endfor %}
+]

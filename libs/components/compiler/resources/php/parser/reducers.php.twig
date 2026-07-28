@@ -1,0 +1,5 @@
+[
+{% for id, definition in parser.reducers %}
+    {{ id }} => {{ reducer(definition, id)|indent(1) }},
+{% endfor %}
+]

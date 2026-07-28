@@ -188,6 +188,41 @@ final class PP2LoaderTest extends TestCase
         self::assertSame('return 42;', $reducer->code);
     }
 
+    #[TestDox('A reducer is given the variables it is written of')]
+    public function testReducerVariablesAreDeclared(): void
+    {
+        $this->load('A -> { return $token->offset === $offset; } : <T_A> ;');
+
+        $reducer = $this->parser->initial?->reducer;
+
+        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
+        self::assertStringContainsString("\$token = \$ctx->token;\n", $reducer->code);
+        self::assertStringContainsString("\$offset = \$ctx->token->offset;\n", $reducer->code);
+        self::assertStringEndsWith('return $token->offset === $offset;', $reducer->code);
+    }
+
+    #[TestDox('A reducer is given nothing but the variables it is written of')]
+    public function testUnusedReducerVariablesAreNotDeclared(): void
+    {
+        $this->load('A -> { return $children; } : <T_A> ;');
+
+        $reducer = $this->parser->initial?->reducer;
+
+        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
+        self::assertSame('return $children;', $reducer->code);
+    }
+
+    #[TestDox('A variable written inside a string is not a variable of a reducer')]
+    public function testReducerVariablesAreReadTheWayPhpReadsThem(): void
+    {
+        $this->load('A -> { return \'$offset\'; } : <T_A> ;');
+
+        $reducer = $this->parser->initial?->reducer;
+
+        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
+        self::assertSame('return \'$offset\';', $reducer->code);
+    }
+
     #[TestDox('A reducer written as a class name builds an instance of it')]
     public function testClassReducer(): void
     {

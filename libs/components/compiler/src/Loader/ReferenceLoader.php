@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Loader;
 
-use Phplrt\Compiler\CompilerInterface;
+use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\Exception\CompilerRuntimeException;
 use Phplrt\Compiler\Exception\GrammarNotFoundException;
 use Phplrt\Compiler\Exception\IncludeException;
@@ -31,7 +31,7 @@ final readonly class ReferenceLoader
     private const string DIRECTORY_CURRENT = '.';
 
     public function __construct(
-        private CompilerInterface $context,
+        private Compiler $context,
         private SyntaxLoaderRegistry $loaders,
     ) {}
 
