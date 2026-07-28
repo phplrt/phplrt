@@ -88,21 +88,59 @@ final readonly class PrettyTokenPrinter implements TokenPrinterInterface
         return \preg_replace('/\h+/u', ' ', $value) ?? $value;
     }
 
+    private function strlen(string $value): int
+    {
+        if (\function_exists('\\grapheme_strlen')) {
+            $result = \grapheme_strlen($value);
+
+            if (\is_int($result)) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_strlen')) {
+            return \mb_strlen($value);
+        }
+
+        return \strlen($value);
+    }
+
+    /**
+     * @param int<0, max> $offset
+     * @param int<0, max>|null $length
+     */
+    private function substr(string $value, int $offset, ?int $length = null): string
+    {
+        if (\function_exists('\\grapheme_substr')) {
+            $result = \grapheme_substr($value, $offset, $length);
+
+            if ($result !== false) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_substr')) {
+            return \mb_substr($value, $offset, $length);
+        }
+
+        return \substr($value, $offset, $length);
+    }
+
     private function shouldBeShorten(string $value): bool
     {
-        $length = \mb_strlen($value);
+        $length = $this->strlen($value);
 
-        return $length > $this->length + \mb_strlen($this->suffix($value));
+        return $length > $this->length + $this->strlen($this->suffix($value));
     }
 
     private function suffix(string $value): string
     {
-        return \sprintf($this->suffix, \mb_strlen($value) - $this->length);
+        return \sprintf($this->suffix, $this->strlen($value) - $this->length);
     }
 
     private function shorten(string $value): string
     {
-        $prefix = $this->wrap(\mb_substr($value, 0, $this->length) . '…');
+        $prefix = $this->wrap($this->substr($value, 0, $this->length) . '…');
 
         return $prefix . $this->suffix($value);
     }
