@@ -16,6 +16,6 @@ final readonly class CompilerResult implements CompilerResultInterface
 
     public function __toString(): string
     {
-        // TODO: Implement __toString() method.
+        throw new \LogicException('Not implemented yet');
     }
 }
