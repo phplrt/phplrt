@@ -26,4 +26,16 @@ interface RuntimeExceptionInterface extends ParserExceptionInterface
     public TokenInterface $token {
         get;
     }
+
+    /**
+     * The final offset at which the parser error occurred.
+     *
+     * If the offset is not specified ({@see null}), the token offset
+     * ({@see TokenInterface::$end}) can be used instead.
+     *
+     * @var int<0, max>|null
+     */
+    public ?int $end {
+        get;
+    }
 }
