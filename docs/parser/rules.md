@@ -1,152 +1,186 @@
-# Rules
+# Grammar Rules
 
-In addition, there are other grammar rules. Note that each of the rules 
-contains a `reduce()` method.
+A grammar is a flat array of rules. Each rule sits at an index, and rules
+refer to each other by that index:
 
-Each terminal rule contains the following method signature:
-- `reduce(BufferInterface $buffer): ?TokenInterface;`
+```php
+$grammar = [
+    0 => new Concatenation([1, 2]), // "read rule #1, then rule #2"
+    1 => new Lexeme(tokenId: 0),
+    2 => new Lexeme(tokenId: 1),
+];
+```
 
-Each non-terminal rule contains the following method signature:
-- `reduce(BufferInterface $buffer, \Closure $next): mixed;`
+There are five rule classes, and between them they cover everything EBNF can
+say. You will usually get them from a
+[grammar file](/docs/compiler/grammar) or
+[the builder](/docs/parser/builder), but it helps to know what each one does.
 
 ## Lexeme
 
-Refers to the token defined in the lexer.
+Reads a single token. This is where a grammar touches the actual input —
+every other rule is written in terms of other rules.
 
 ```php
-<?php
 use Phplrt\Parser\Grammar\Lexeme;
 
-$kept = new Lexeme('T_NUMBER');
+new Lexeme(tokenId: 0);              // read T_DIGIT, keep it
+new Lexeme(tokenId: 1, keep: false); // read T_COMMA, throw it away
 ```
 
-![/img/docs/rule-lexeme.png](/img/docs/rule-lexeme.png)
-
-The picture shows the scheme of work of this rule. Let's now create this buffer
-on which we will further check the rules:
-
-```php
-<?php
-
-use Phplrt\Buffer\ArrayBuffer;use Phplrt\Lexer\Token\Token;
-
-$buffer = new ArrayBuffer([
-    new Token('T_DIGIT', '2', 0),
-    new Token('T_PLUS', '+', 2),
-    new Token('T_DIGIT', '2', 4),
-]);
+```pp2
+Rule : <T_DIGIT> ;    // keep
+Rule : ::T_COMMA:: ;  // read and discard
 ```
 
-And let's try to reproduce its work:
+`keep: false` is for punctuation. A comma between list items has to be
+*there*, but nobody needs it in the result — dropping it early means you do
+not have to filter it out later.
+
+Note the token is addressed by **id**, not by name. What it looks like in the
+source is the lexer's business.
+
+## Concatenation
+
+Reads several rules, one after another. All of them must match, in order.
 
 ```php
-<?php
-
-$rule = new \Phplrt\Parser\Grammar\Lexeme('T_PLUS');
-
-while ($buffer->valid()) {
-    var_dump($buffer->key(), $rule->reduce($buffer));
-
-    $buffer->next();
-}
-
-//
-// Approximate Output:
-//
-// int(0)   NULL
-//
-// int(1)   object(Phplrt\Lexer\Token\Token)#7 (4) {
-//              ["offset":private] => int(2)
-//              ["value":private]  => string(1) "+"
-//              ["name":private]   => string(6) "T_PLUS"
-//          }
-//
-// int(2)   NULL
-//
-```
-
-This rule contains an additional Boolean option (second argument), which 
-indicates that this token will be visible as one of the `$children` of 
-the [AST builder](/docs/parser/ast) methods.
-
-```php
-<?php
-use Phplrt\Parser\Grammar\Lexeme;
-
-$skipped = new Lexeme('T_WHITESPACE', false);
-```
-
-## Concatenation 
-
-Sequence of rules.
-
-```php
-<?php
 use Phplrt\Parser\Grammar\Concatenation;
 
-//
-// EBNF: 
-//  concat = some1 any2 rule3;
-//
-new Concatenation([<ID_1>, <ID_2>, <ID_3>]);
+new Concatenation([1, 2, 1]);
 ```
 
-## Alternation 
+```pp2
+Rule : Number() Plus() Number() ;
+```
 
-Choosing between several rules.
+If any of them fails, the whole sequence fails: the input rewinds to where
+the sequence started and everything read along the way is dropped.
+
+## Alternation
+
+Tries the rules in order and takes the first one that matches.
 
 ```php
-<?php
 use Phplrt\Parser\Grammar\Alternation;
 
-//
-// EBNF: 
-//  choice = some1 | any2 ;
-//
-new Alternation([<ID_1>, <ID_1>]);
+new Alternation([1, 2]);
 ```
 
-## Repetition
-
-Repeat one or more rules.
-
-```php
-<?php
-use Phplrt\Parser\Grammar\Repetition;
-
-//
-// EBNF:
-//  repeat_zero_or_more = some* ;
-//
-new Repetition(<ID_1>, 0, \INF); // repeat rule #1 from 0 to inf
-
-//
-// EBNF: 
-//  repeat_one_or_more = some+ ;
-//
-new Repetition(<ID_2>, 1, \INF); // repeat rule #2 from 1 to inf
-
-//
-// EBNF: 
-//  repeat_1_2_or_3_times = some{1,3} ;
-//
-new Repetition(<ID_3>, 1, 3); // repeat rule #3 from 1 to 3
+```pp2
+Rule : Number() | Name() ;
 ```
+
+**The order is part of the meaning.** The first match wins, and the rest are
+never tried — even if one of them would have read more of the input:
+
+```pp2
+Rule : "a" | "ab" ;   // never reads "ab"
+Rule : "ab" | "a" ;   // ✔
+```
+
+This is what makes a PEG grammar unambiguous. If you are coming from a
+classic EBNF tool that picks the longest match, this is the one habit you
+need to unlearn.
 
 ## Optional
 
-Optional rule
+Reads a rule if it is there, and succeeds either way.
 
 ```php
-<?php
 use Phplrt\Parser\Grammar\Optional;
 
-//
-// EBNF:
-//  optional = some? ;
-//
-
-$optional = new Optional(<ID_1>);
-
-// Same as "new Repetition(<ID_1>, 0, 1)", but faster
+new Optional(ruleId: 1);
 ```
+
+```pp2
+Rule : Sign()? ;
+```
+
+If the inner rule does not match, nothing is read and nothing is added to the
+result — the parse simply continues from the same place.
+
+## Repetition
+
+Reads a rule as many times as it keeps matching.
+
+```php
+use Phplrt\Parser\Grammar\Repetition;
+
+new Repetition(ruleId: 1);                 // zero or more, "*"
+new Repetition(ruleId: 1, min: 1);         // one or more,  "+"
+new Repetition(ruleId: 1, min: 2, max: 5); // between two and five
+```
+
+```pp2
+Rule : Number()* ;
+Rule : Number()+ ;
+Rule : Number(){2,5} ;
+```
+
+Repetition is greedy: it reads as many times as it can and does not give any
+of them back. It also stops as soon as an iteration reads nothing, so a rule
+that matches the empty input cannot loop forever.
+
+## Predicate
+
+Looks at what comes next **without reading it**. Nothing is consumed and
+nothing lands in the result — the only thing left is whether it matched.
+
+```php
+use Phplrt\Parser\Grammar\Predicate;
+
+new Predicate(ruleId: 1);                    // "&" — must match here
+new Predicate(ruleId: 1, isExpected: false); // "!" — must not match here
+```
+
+This is how a rule refuses a position that belongs to somebody else. For
+example, "a name that is not a function call":
+
+```php
+new Concatenation([
+    2, // Predicate(ruleId: 1 /* "(" */, isExpected: false)
+    3, // Lexeme(T_NAME)
+]);
+```
+
+EBNF has nothing like this, and neither does the `.pp3` syntax — a predicate
+describes *how* something is read rather than *what* the language contains.
+Build it with [the parser builder](/docs/parser/builder) or by hand.
+
+## Sequences and Single Values
+
+One distinction matters when you write reducers.
+
+`Concatenation` and `Repetition` implement `SequenceInterface`: they recognize
+a *list* of things, so their value is a list.
+
+```pp2
+Rule : Number() Plus() Number() ;  // $children is an array
+Rule : Number()+ ;                 // $children is an array
+```
+
+Everything else passes a **single value** through:
+
+```pp2
+Rule : Number() | Name() ;   // $children is whatever matched
+Rule : Number()? ;           // $children is the Number, or nothing
+Rule : <T_DIGIT> ;           // $children is the token
+```
+
+That is why a reducer often starts with an `is_array()` check — a rule that
+can match one thing *or* several will hand you one thing or several.
+
+More on this in [Results and Reducers](/docs/parser/ast).
+
+## The Interfaces
+
+```
+RuleInterface
+├── TerminalInterface     — Lexeme
+└── ProductionInterface   — Alternation, Optional, Predicate
+    └── SequenceInterface — Concatenation, Repetition
+```
+
+A *terminal* is matched against the input. A *production* is matched by means
+of other rules. A *sequence* is a production whose value is a list.

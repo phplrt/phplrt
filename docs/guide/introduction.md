@@ -1,107 +1,161 @@
 # Introduction
 
-PHP Language Recognition Tool (phplrt) - it is a set of libraries for the
-development of the so-called &laquo;frontend&raquo; programming languages.
-After writing a grammar describing the syntax of your language, you get an
-[abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+Phplrt (PHP Language Recognition Tool) is a set of libraries for reading
+source code: your own configuration format, a template language, a query
+syntax, a subset of PHP — anything with rules.
 
-The tool is divided into two components - a component for development, the
-so-called [compiler-compiler](https://en.wikipedia.org/wiki/Compiler-compiler)
-(or compiler generator) and a runtime component used for parsing after the 
-development of the language itself.
+You describe the language once, and phplrt turns that description into two
+things:
 
-For brevity, your `composer.json` file may contain lines similar to the following:
+- a **lexer**, which cuts the text into tokens (`42`, `+`, `"hello"`);
+- a **parser**, which checks that those tokens appear in a valid order and
+  builds whatever result you want out of them.
 
-```json
-{
-    "require": {
-        "phplrt/runtime": "^3.2"
-    },
-    "require-dev": {
-        "phplrt/phplrt": "^3.2"
-    }
-}
+## The Shortest Possible Example
+
+Here is a calculator that adds numbers. The grammar is four lines:
+
+```php
+use Phplrt\Compiler\Compiler;
+use Phplrt\Source\Source;
+
+$parser = new Compiler()
+    ->load(new Source(<<<'PP3'
+        %token T_DIGIT       \d++
+        %token T_PLUS        \+
+        %skip  T_WHITESPACE  \s++
+
+        Sum -> { return \array_sum($children); }
+          : Number() (::T_PLUS:: Number())*
+          ;
+
+        Number -> { return (int) $children->value; }
+          : <T_DIGIT>
+          ;
+        PP3))
+    ->getParser();
+
+echo $parser->parse(new Source('2 + 3 + 4')); // 9
 ```
 
-However, it should be noted that, although this is a valid, but not mandatory
-option. Each library can be used separately, and the components interact
-directly with each other using interfaces (using &laquo;contract&raquo; 
-components). For example, you might well use completely custom lexer, and use
-the `phplrt` as a parser only, like this:
+That is the whole library in miniature: `%token` describes the words,
+the rules describe the sentences, and `-> { ... }` says what to build.
 
-```json
-{
-    "require": {
-        "phplrt/parser": "^3.2",
-        "custom/lexer": "*"
-    }
-}
+## The Two Halves
+
+Phplrt is split into a **development** half and a **runtime** half, and it
+is worth knowing which is which.
+
+The **compiler** (`phplrt/compiler`) reads grammar files. It is a
+[compiler-compiler](https://en.wikipedia.org/wiki/Compiler-compiler): it does
+not read *your users'* code, it reads *your grammar* and produces a parser.
+You use it while developing, and — ideally — you run it once and commit the
+result.
+
+The **runtime** (`phplrt/runtime`, i.e. the lexer, the parser and the source
+reader) is what actually reads your users' code. It knows nothing about grammar files: it takes a compiled table
+of tokens and rules and runs it.
+
 ```
+grammar.pp3  ──[ compiler ]──▶  Parser.php  ──[ runtime ]──▶  your AST
+   (dev)                        (committed)                   (production)
+```
+
+You can skip the middle step and compile the grammar on every run — the
+example above does exactly that. It is convenient while you are still
+changing the grammar every five minutes, and slow once you are not.
 
 ## Components
 
-Now let's move on to the components themselves and a description of what they
-are responsible for.
+Each component is a separate composer package, and they talk to each other
+through interfaces, so you can replace any of them with your own.
 
 ### Source
 
-As the name implies, the component is responsible for minimal abstraction
-over the source code. The minimum capabilities of the source interface is
-to read data and obtain auxiliary information, such as the name of the file
-from which the source was created and the identification hash of the
-source code.
+Whatever you are reading, phplrt wants it wrapped in a *source* object: a
+file, a string, or a stream. That object knows how to give up its content and
+what to call itself in an error message.
 
-To install the component, use the command `composer require phplrt/source`.
+```bash
+composer require phplrt/source
+```
 
-### Position
-
-The position component provides the ability to process information about the
-position in the source code: offset in bytes, line and column. And also work
-with intervals: Start and end positions in the source.
-
-To install the component, use the command `composer require phplrt/position`.
-
-### Exception
-
-The exception component provides advanced error and error message manipulation
-capabilities, allowing their internal information containing PHP data to be
-delegated to an external language.
-
-To install the component, use the command `composer require phplrt/exception`.
+[Read more →](/docs/source)
 
 ### Lexer
 
-The lexer component provides the ability to group a sequence of characters
-according to some criteria, forming so-called tokens (or lexemes) from the
-source code.
+The lexer turns characters into tokens. It is regex-driven, supports hidden
+tokens (whitespace, comments) and can hand a fragment over to another lexer —
+which is how you read a string literal, or PHP inside HTML.
 
-To install the component, use the command `composer require phplrt/lexer`.
+```bash
+composer require phplrt/lexer
+```
 
-### Buffer
-
-The buffer component provides a set of classes with the ability to convert
-a list of tokens from a lexer to an iterator with the ability to loop back
-to a specific token.
-
-Each driver from the package contains its own features and can both store
-the entire data set in memory, as well as a certain segment.
-
-To install the component, use the command `composer require phplrt/buffer`.
+[Read more →](/docs/lexer)
 
 ### Parser
 
-The parser component allows you to parse grammar rules and check user data
-for compliance with these rules.
+The parser takes the tokens and matches them against a grammar. It recognizes
+a [PEG](https://en.wikipedia.org/wiki/Parsing_expression_grammar) by
+backtracking recursive descent over a table of rules, predicts with FIRST
+sets so that hopeless branches are skipped by a single lookup, and builds the
+result only once the whole input has been recognized. In practice: the
+alternatives are ordered — the first one that matches wins — and there is
+never any ambiguity.
 
-As it is parsed, the parser can also build an abstract syntax tree for
-later use by the user.
+```bash
+composer require phplrt/parser
+```
 
-To install the component, use the command `composer require phplrt/parser`.
+[Read more →](/docs/parser)
 
-### Visitor
+### Lexer Builder and Parser Builder
 
-The visitor component allows you to traverse each node of the abstract
-syntax tree by applying a set of rules generated by the user to it,
-such as replacing nodes, changing values, copying, and so on.
+These describe a lexer and a grammar *in PHP*, then compile and optimize
+them. The grammar compiler is built on top of them, and you can use them
+directly if you would rather build your grammar in code than in a file.
 
-To install the component, use the command `composer require phplrt/visitor`.
+```bash
+composer require phplrt/lexer-builder phplrt/parser-builder
+```
+
+[Read more →](/docs/parser/builder)
+
+### Compiler
+
+The compiler reads `.pp3` grammar files, resolves `%include` references
+between them, and either hands you a ready parser or writes one out as PHP
+code.
+
+```bash
+composer require phplrt/compiler --dev
+```
+
+[Read more →](/docs/compiler)
+
+### Exception
+
+Errors that point at a piece of source code are much easier to fix than
+errors that do not. This component renders them:
+
+```
+error[UnexpectedTokenException]: Syntax error, unexpected "+" (T_PLUS)
+ --> example.txt:1:5
+  |
+1 | 2 + + 3
+  |     ^
+```
+
+```bash
+composer require phplrt/exception
+```
+
+[Read more →](/docs/errors)
+
+## Where To Go Next
+
+- [Quick Start](/docs/guide/quick-start) — build a small language end to end.
+- [Grammar Syntax](/docs/compiler/grammar) — everything a `.pp3` file can say.
+- [Lexer](/docs/lexer) — tokens, channels and nested lexers.
+- [Parser](/docs/parser) — rules, reducers and the result they build.

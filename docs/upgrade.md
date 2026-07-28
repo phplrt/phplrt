@@ -1,5 +1,327 @@
 # Upgrade Guide
 
+## Upgrading To 4.0 From 3.x
+
+Version 4.0 is a rewrite. Almost every public API changed, so this is a
+porting guide rather than a list of renames. The good news: the grammar
+files mostly survive, and that is where the bulk of the work usually lives.
+
+### PHP 8.4 Required
+
+> Likelihood Of Impact: **High**
+
+Phplrt 4.0 requires PHP 8.4. The API uses property hooks, asymmetric
+visibility and `new` in initializers throughout — which is also why so much
+of it looks different.
+
+### Getters Became Properties
+
+> Likelihood Of Impact: **High**
+
+Everything that was `getX()` is now a property. This is the single most
+common change you will hit.
+
+```php
+// 3.x
+$token->getName();
+$token->getOffset();
+$token->getValue();
+$token->getBytes();
+
+$source->getContents();
+$source->getPathname();
+
+// 4.x
+$token->name;
+$token->offset;
+$token->value;
+$token->end;      // see below — not the same as getBytes()
+
+$source->content;
+$source->pathname;
+```
+
+`getBytes()` returned the length of the token. There is no direct
+replacement: use `$token->end - $token->offset`, which is the same thing for
+an ordinary token and *more* correct for a token that entered a nested lexer.
+
+### Tokens Are Identified By Number
+
+> Likelihood Of Impact: **High**
+
+In 3.x a token was addressed by its name. In 4.x it has an `int $id`, and the
+name is optional metadata for error messages.
+
+```php
+// 3.x
+if ($token->getName() === 'T_DIGIT') { /* ... */ }
+
+// 4.x
+if ($token->id === MyParser::T_DIGIT) { /* ... */ }
+```
+
+[Generated parsers](/docs/compiler/generation) expose the ids as class
+constants, so you do not have to track the numbers yourself.
+
+### Channels Replaced "Skipped Tokens"
+
+> Likelihood Of Impact: **Medium**
+
+The lexer no longer takes a list of names to skip. Every token now carries a
+[channel](/docs/lexer/tokens), and the parser reads the default one.
+
+```php
+// 3.x
+$lexer = new Lexer($tokens, ['T_WHITESPACE']);
+
+// 4.x
+$builder->addPattern('\s++', 'T_WHITESPACE')
+    ->hide();
+```
+
+Unlike skipping, a hidden token is still produced — so you can look at
+comments and whitespace when you need them, and custom channels let you keep
+a token out of the grammar without throwing it away.
+
+### The Lexer Is Built, Not Configured
+
+> Likelihood Of Impact: **High**
+
+`Phplrt\Lexer\Lexer` no longer takes a map of names and patterns. It takes a
+single compiled regular expression and a set of tables — which you get from
+`LexerBuilder`.
+
+```php
+// 3.x
+$lexer = new Lexer([
+    'T_DIGIT' => '\d+',
+    'T_PLUS'  => '\+',
+]);
+
+// 4.x
+use Phplrt\Lexer\Builder\LexerBuilder;
+
+$builder = new LexerBuilder();
+$builder->addPattern('\d++', 'T_DIGIT');
+$builder->addValue('+', 'T_PLUS');
+
+$lexer = $builder->build()
+    ->toLexer();
+```
+
+The `append()`, `prepend()`, `prependMany()` and `skip()` methods are gone;
+`addPattern()`, `addValue()` and `hide()` cover the same ground. Building is
+also where patterns are validated, so a broken regex is reported with the
+token that owns it instead of failing at match time.
+
+### The Parser Takes Explicit Arguments
+
+> Likelihood Of Impact: **High**
+
+The `Parser::CONFIG_*` options are gone, replaced by constructor parameters:
+
+```php
+// 3.x
+$parser = new Parser($lexer, $grammar, [
+    Parser::CONFIG_INITIAL_RULE => 'expression',
+    Parser::CONFIG_AST_BUILDER  => new MyBuilder(),
+]);
+
+// 4.x
+$parser = new Parser(
+    lexer: $lexer,
+    grammar: $grammar,
+    initial: 0,
+    reducers: [0 => $callback],
+);
+```
+
+Rules are keyed by **integers** rather than by name, and they refer to each
+other by index. In practice you do not write this array by hand — see
+[the parser builder](/docs/parser/builder).
+
+### BuilderInterface Became Per-Rule Reducers
+
+> Likelihood Of Impact: **High**
+
+The single AST builder with a `switch` overrule names is gone. Each rule now
+carries its own reducer.
+
+```php
+// 3.x
+class MyBuilder implements BuilderInterface
+{
+    public function build(Context $ctx, $children)
+    {
+        switch ($ctx->getState()) {
+            case 'Number': return new NumberNode($children);
+            case 'Sum':    return new SumNode($children);
+        }
+
+        return null;
+    }
+}
+
+// 4.x — in the grammar file
+Number -> { return new \NumberNode($offset, $children->value); } 
+    : <T_DIGIT> ;
+Sum    -> { return new \SumNode($children); } 
+    : Number() ::T_PLUS:: Number() ;
+```
+
+```php
+// 4.x — or through the builder
+$number->setReducer(static fn(Context $ctx, mixed $children): NumberNode
+    => new NumberNode($children)
+);
+```
+
+The reducer signature is `callable(Context $ctx, mixed $children): mixed`,
+same as before, but `$ctx->getState()` is now `$ctx->rule` and holds an
+integer.
+
+Returning `null` still means "leave the children alone".
+
+### Grammar Rule Classes
+
+> Likelihood Of Impact: **Medium**
+
+The rules moved from `Phplrt\Parser\Grammar` (3.2) — same namespace, but they
+are now `readonly` value objects that reference other rules by **integer id**,
+and `Lexeme` takes a token id instead of a name.
+
+```php
+// 3.x
+new Lexeme('T_DIGIT');
+new Lexeme('T_WHITESPACE', false);
+new Repetition($ruleId, 0, \INF);
+
+// 4.x
+new Lexeme(MyLexer::T_DIGIT);
+new Lexeme(MyLexer::T_WHITESPACE, false);
+new Repetition($ruleId, 0, \INF);
+```
+
+`reduce()` is gone from the rule classes: matching is done by the parser's
+internal tracer, and the rules are pure data. This is what made the lookahead
+tables and code generation possible.
+
+### The Buffer Package Is Gone
+
+> Likelihood Of Impact: **Low**
+
+`phplrt/buffer` was merged into `phplrt/parser` as an internal detail
+(`Phplrt\Parser\Internal\Buffer`). The parser no longer exposes a buffer, and
+you do not choose one.
+
+### The Position and Visitor Packages Are Gone
+
+> Likelihood Of Impact: **Medium**
+
+`phplrt/position` and `phplrt/visitor` have been removed.
+
+Positions: the exception component computes lines and columns when it renders
+an error, which was the main use for it. See
+[Error Reporting](/docs/errors).
+
+Visitors: 4.x does not prescribe an AST shape, so it cannot prescribe a way to
+walk one. Your nodes are your own classes; walk them however suits them.
+
+### Sources Are Constructed Directly
+
+> Likelihood Of Impact: **Medium**
+
+The static factory methods on `File` are gone.
+
+```php
+// 3.x
+File::fromPathname('/app/x.txt');
+File::fromSources('2 + 2');
+
+// 4.x
+new File('/app/x.txt');
+new Source('2 + 2');
+new VirtualFile('x.txt', '2 + 2'); // a string with a name
+```
+
+`SourceFactory` is there if you need the "figure out what this is" behaviour.
+
+### Code Generation Is Back
+
+> Likelihood Of Impact: **Low**
+
+3.0 removed generation of a full PHP class in favour of a config array. 4.0
+brings the class back, and it now includes the lexer, the token constants and
+the reducers as real methods:
+
+```php
+new Compiler()
+    ->load(new File(__DIR__ . '/grammar.pp3'))
+    ->generate()
+        ->withNamespace('App\Parser')
+        ->save(__DIR__ . '/LanguageParser.php', 'LanguageParser');
+```
+
+See [Code Generation](/docs/compiler/generation).
+
+### The `.pp` Format Is No Longer Read
+
+> Likelihood Of Impact: **Medium**
+
+Grammars written in the original Hoa-style `.pp` format are not supported.
+A `.pp` file is still recognized by its extension, so you get a clear error
+rather than a confusing parse failure.
+
+Rename your grammars to `.pp3` (or `.pp2`) and check the following:
+
+- **Token declarations are unchanged**: `%token`, `%skip`, `%pragma`,
+  `%include` all mean the same thing.
+- **`%pragma` is now `root` only.** Other pragmas — lexer settings,
+  unification, error levels — are gone; the corresponding behaviour is either
+  the default or configured in PHP.
+- **Rule bodies are unchanged**: `<T_X>`, `::T_X::`, `Rule()`, `|`, `?`, `*`,
+  `+`, `{n,m}`, `#Rule` and `-> { ... }` all still work.
+- **Reducer variables changed slightly.** `$file` is gone (use `$source`);
+  `$state` is gone (use `$rule`, which is an int); `$content` is new.
+
+### Grammar Files: What To Check
+
+Most `.pp2` grammars from 3.x compile unchanged. The things that bite:
+
+**Left recursion is now rejected at build time.** It never worked at runtime
+either, but 3.x would let you compile it. Rewrite as a repetition:
+
+```pp2
+// ✘ rejected
+Expression : Expression() ::T_PLUS:: Number() ;
+
+// ✔
+Expression : Number() (::T_PLUS:: Number())* ;
+```
+
+**Reducers returning `null`** mean "no result" and pass the children through.
+If a rule of yours legitimately produces `null`, wrap it.
+
+**Reducers returning arrays** are flattened into the rule above. If you
+relied on nesting, return an object instead. See
+[Results and Reducers](/docs/parser/ast).
+
+### Package Names
+
+> Likelihood Of Impact: **Low**
+
+| 3.x                        | 4.x                                         |
+|----------------------------|---------------------------------------------|
+| `phplrt/lexer`             | `phplrt/lexer` (+ `phplrt/lexer-builder`)   |
+| `phplrt/parser`            | `phplrt/parser` (+ `phplrt/parser-builder`) |
+| `phplrt/compiler`          | `phplrt/compiler`                           |
+| `phplrt/source`            | `phplrt/source`                             |
+| `phplrt/exception`         | `phplrt/exception`                          |
+| `phplrt/buffer`            | removed — merged into `phplrt/parser`       |
+| `phplrt/position`          | removed                                     |
+| `phplrt/visitor`           | removed                                     |
+| `phplrt/ast-contracts`     | removed — 4.x does not define a node shape  |
+
 ## Upgrading To 3.2 From 3.1
 
 ### Grammar Package Removed
@@ -11,7 +333,7 @@ classes and interfaces associated with this package have been moved inside
 the `phplrt/parser` package.
 
 - All classes `Phplrt\Grammar\*` has been renamed to `Phplrt\Parser\Grammar\*`.
-- All interfaces `Phplrt\Contracts\Grammar\*` has been renamed to 
+- All interfaces `Phplrt\Contracts\Grammar\*` has been renamed to
   `Phplrt\Parser\Grammar\*`.
 
 ### Buffer Package Has Been Moved
@@ -21,109 +343,3 @@ the `phplrt/parser` package.
 - Interface `Phplrt\Contracts\Lexer\BufferInterface` has been moved
   into `Phplrt\Buffer\BufferInterface`.
 - All classes `Phplrt\Lexer\Buffer\*` has been moved into `Phplrt\Buffer\*`.
-
-## Upgrading To 3.0 From 2.3
-
-### PHP 7.4 Required
-
-> Likelihood Of Impact: **Medium**
-
-PHP 7.1 will no longer be actively maintained as of December 2019. Therefore, 
-phplrt 3.0 requires PHP 7.4 or greater.
-
-### Compilation To PHP Class Was Removed
-
-> Likelihood Of Impact: **Medium**
-
-The compiler code generation in the full-fledged PHP class has been removed 
-and has been replaced by the generation of configs.
-
-```php
-$compiler = new \Phplrt\Compiler\Compiler();
-
-/** @var \Phplrt\Compiler\Generator $assembly */
-$assembly = $compiler->build();
-```
-
-- Method `Phplrt\Compiler\Generator::generateGrammar(string $class): string` 
-    has been removed.
-- Method `Phplrt\Compiler\Generator::generateBuilder(string $class): string` 
-    has been removed.
-- Method `Phplrt\Compiler\Generator::generate(string $class): string` has been 
-    modified to `Phplrt\Compiler\Generator::generate(): string`.
-
-#### Old 2.3.x Behaviour
-
-```php
-echo $assembly->generate('ClassName');
-// class ClassName extends Parser 
-// {
-//    ...
-// }
-```
-
-#### New 3.x Behaviour
-
-```php
-echo $assembly->generate();
-// return [
-//     'tokens' => [...],
-//     'rules'  => [...],
-//     ...etc
-// ];
-```
-
-### Zend Generator Has Been Replaced By Laminas Generator
-
-> Likelihood Of Impact: **Low**
-
-The Zend project has been abandoned and is no longer supported: 
-[https://getlaminas.org/blog/2019-12-31-out-with-the-old-in-with-the-new.html](https://getlaminas.org/blog/2019-12-31-out-with-the-old-in-with-the-new.html)
-
-### Change the logic of the `prependMany` method
-
-> Likelihood Of Impact: **Medium**
-
-In the phplrt 2.3, calling the `prependMany()` method added tokens by default 
-in the following order:
-
-```php
-$lexer->prependMany([
-    'a' => 'a',
-    'b' => 'b',
-    'c' => 'c',
-]);
-
-// phplrt 2.3 lexer's data:
-//  [
-//      'c' => 'c',
-//      'b' => 'b',
-//      'a' => 'a',
-//  ]
-
-// New behavior:
-//  [
-//      'a' => 'a',
-//      'b' => 'b',
-//      'c' => 'c',
-//  ]
-```
-
-In order to return to the old behavior, explicit transfer of the second 
-argument is required:
-
-```php
-$lexer->prependMany([
-    'a' => 'a',
-    'b' => 'b',
-    'c' => 'c',
-], true);
-
-// Expected token definitions:
-//  [
-//      'c' => 'c',
-//      'b' => 'b',
-//      'a' => 'a',
-//  ]
-```
-
