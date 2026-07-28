@@ -67,11 +67,9 @@ final readonly class DuplicateRuleParserCompilerPass implements
      */
     private function createKey(RuleDefinition $rule): ?string
     {
-        /**
-         * A named rule is exposed as an identifier of the grammar and a rule
-         * with a reducer builds a node of its own, so neither may be merged.
-         */
-        if ($rule->name !== null || $rule->reducer !== null) {
+        // A rule with a reducer builds a node of its own, so it may not be
+        // merged
+        if ($rule->reducer !== null) {
             return null;
         }
 

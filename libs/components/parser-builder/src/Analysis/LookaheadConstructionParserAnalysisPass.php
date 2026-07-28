@@ -47,8 +47,32 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
             }
         } while ($changed);
 
-        $context->startTokens = $startTokens;
+        $context->startTokens = self::sort($startTokens);
         $context->matchesEmptyInput = $matchesEmptyInput;
+    }
+
+    /**
+     * Returns the sets of the tokens ordered by the identifiers they are
+     * indexed by.
+     *
+     * The sets are filled in while the rules refer to each other, so the order
+     * they end up in is the order the grammar has been walked in rather than
+     * one that means anything.
+     *
+     * @param array<int, array<int, true>> $startTokens
+     * @return array<int, array<int, true>>
+     */
+    private static function sort(array $startTokens): array
+    {
+        foreach ($startTokens as $rule => $tokens) {
+            \ksort($tokens);
+
+            $startTokens[$rule] = $tokens;
+        }
+
+        \ksort($startTokens);
+
+        return $startTokens;
     }
 
     /**

@@ -13,11 +13,13 @@ use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Compiler\DuplicateRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\LeftRecursionValidationParserCompilerPass;
-use Phplrt\Parser\Builder\Compiler\NestedProductionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\NestedRepetitionParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
 use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
 use Phplrt\Parser\Builder\Compiler\ProductionValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\RedundantProductionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\RepeatedAlternativeParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\RuleNameDuplicationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\RuleReferenceResolutionParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\TokenReferenceValidationParserCompilerPass;
@@ -123,8 +125,15 @@ final class ParserBuilder
             ],
             self::PASS_PRIORITY_OPTIMIZE => [
                 new RedundantProductionParserCompilerPass(),
-                new NestedProductionParserCompilerPass(),
+                new NestedConcatenationParserCompilerPass(),
+                new NestedRepetitionParserCompilerPass(),
+                /**
+                 * The rules recognizing the same input become the very same
+                 * rule here, so the alternatives repeating each other are only
+                 * told apart afterwards.
+                 */
                 new DuplicateRuleParserCompilerPass(),
+                new RepeatedAlternativeParserCompilerPass(),
             ],
         ];
 

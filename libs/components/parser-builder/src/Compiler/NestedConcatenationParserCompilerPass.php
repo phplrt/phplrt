@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Compiler;
 
 use Phplrt\Lexer\Builder\LexerBuilderResult;
-use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
- * Joins a production with the productions of the same kind nested into it.
+ * Joins a concatenation with the concatenations nested into it.
  *
- * Both concatenation and alternation are associative, so the nested production
- * is an extra step of the analysis and an extra rule of the grammar.
+ * A concatenation is associative, so the nested one is an extra step of the
+ * analysis and an extra rule of the grammar while the rules of both of them are
+ * recognized one after another all the same.
  */
-final readonly class NestedProductionParserCompilerPass implements
+final readonly class NestedConcatenationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
@@ -26,9 +26,20 @@ final readonly class NestedProductionParserCompilerPass implements
             $joined = [];
 
             foreach ($rules as $rule) {
-                if (!$rule instanceof ConcatenationRuleDefinition
-                    && !$rule instanceof AlternationRuleDefinition
-                ) {
+                /**
+                 * [!NOTE!] An alternation is associative as well, but joining
+                 *          it with the alternation nested into it makes the
+                 *          parser SLOWER instead of faster.
+                 *
+                 *          The analysis skips a rule as soon as the token it
+                 *          reads cannot start it, so a nested alternation is
+                 *          skipped along with every rule of it by a single
+                 *          lookup in the lookahead table. Joining the two turns
+                 *          that single lookup into a lookup per rule, and a
+                 *          grammar fails to recognize an alternative far more
+                 *          often than it recognizes one.
+                 */
+                if (!$rule instanceof ConcatenationRuleDefinition) {
                     continue;
                 }
 
@@ -52,14 +63,14 @@ final readonly class NestedProductionParserCompilerPass implements
     }
 
     /**
-     * Returns the rules of the given production with the nested ones joined
+     * Returns the rules of the given concatenation with the nested ones joined
      * into it, or {@see null} in case of nothing may be joined.
      *
      * @param list<RuleDefinition> $joined
      * @return list<RuleDefinition>|null
      */
     private function expandChildren(
-        AlternationRuleDefinition|ConcatenationRuleDefinition $rule,
+        ConcatenationRuleDefinition $rule,
         RuleParents $parents,
         ParserBuildingContext $context,
         array &$joined,
@@ -68,7 +79,7 @@ final readonly class NestedProductionParserCompilerPass implements
         $expanded = false;
 
         foreach ($rule->children as $child) {
-            if (!$this->isJoinable($rule, $child, $parents, $context)) {
+            if (!$this->isJoinable($child, $parents, $context)) {
                 $result[] = $child;
 
                 continue;
@@ -86,23 +97,16 @@ final readonly class NestedProductionParserCompilerPass implements
     }
 
     private function isJoinable(
-        AlternationRuleDefinition|ConcatenationRuleDefinition $rule,
         RuleDefinition $child,
         RuleParents $parents,
         ParserBuildingContext $context,
     ): bool {
         /**
-         * A named rule is exposed as an identifier of the grammar, a rule with
-         * a reducer builds a node of its own and the initial rule is always
-         * present in the result, so none of them may be joined.
+         * A rule with a reducer builds a node of its own and the initial rule
+         * is always present in the result, so neither may be joined.
          */
-        if ($child->name !== null || $child->reducer !== null || $child === $context->initial) {
+        if ($child->reducer !== null || $child === $context->initial) {
             return false;
-        }
-
-        // An alternation passes the value of the matched rule through
-        if ($rule instanceof AlternationRuleDefinition) {
-            return $child instanceof AlternationRuleDefinition;
         }
 
         if (!$child instanceof ConcatenationRuleDefinition) {

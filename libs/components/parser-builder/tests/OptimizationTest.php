@@ -84,7 +84,7 @@ final class OptimizationTest extends TestCase
         ], self::describe(self::compile($parser)));
     }
 
-    #[TestDox('The nested alternations are joined into one')]
+    #[TestDox('A nested alternation is left as is, since it is skipped along with every rule of it')]
     public function testNestedAlternation(): void
     {
         $parser = new ParserBuilder();
@@ -97,10 +97,11 @@ final class OptimizationTest extends TestCase
         ]));
 
         self::assertSame([
-            '0: Alternation(1, 2, 3)',
+            '0: Alternation(1, 2)',
             '1: Lexeme(1, keep)',
-            '2: Lexeme(2, skip)',
-            '3: Lexeme(3, skip)',
+            '2: Alternation(3, 4)',
+            '3: Lexeme(2, skip)',
+            '4: Lexeme(3, skip)',
         ], self::describe(self::compile($parser)));
     }
 
@@ -166,7 +167,145 @@ final class OptimizationTest extends TestCase
         ], self::describe(self::compile($parser)));
     }
 
-    #[TestDox('A named rule is left as is')]
+    #[TestDox('A repetition of a single occurrence is joined with the rule above')]
+    public function testSingleRepetition(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRepetition($parser->addTokenReference('T_NUMBER'), max: 1, min: 1),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('An optional rule that is always recognized is replaced by that rule')]
+    public function testOptionalOfAnAlwaysMatchingRule(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addOptional($parser->addRepetition($parser->addTokenReference('T_NUMBER'))),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 3)',
+            '1: Repetition(2, 0, INF)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('An optional rule that may fail is left as is')]
+    public function testOptionalOfAFailingRule(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addOptional($parser->addRepetition($parser->addTokenReference('T_NUMBER'), min: 1)),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 4)',
+            '1: Optional(2)',
+            '2: Repetition(3, 1, INF)',
+            '3: Lexeme(1, keep)',
+            '4: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('A repetition of a repetition is joined into one')]
+    public function testNestedRepetition(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRepetition(
+                $parser->addRepetition($parser->addTokenReference('T_NUMBER'), min: 1),
+            ),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 3)',
+            '1: Repetition(2, 0, INF)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('A repetition demanding several occurrences is left as is')]
+    public function testNestedRepetitionOfSeveralOccurrences(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRepetition(
+                $parser->addRepetition($parser->addTokenReference('T_NUMBER'), min: 1),
+                min: 2,
+            ),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 4)',
+            '1: Repetition(2, 2, INF)',
+            '2: Repetition(3, 1, INF)',
+            '3: Lexeme(1, keep)',
+            '4: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('An alternative repeating an earlier one is removed')]
+    public function testRepeatedAlternative(): void
+    {
+        $parser = new ParserBuilder();
+
+        $number = $parser->addTokenReference('T_NUMBER');
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addAlternation([
+                $number,
+                $parser->addTokenReference('T_MINUS')->skip(),
+                $number,
+            ]),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 4)',
+            '1: Alternation(2, 3)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(3, skip)',
+            '4: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('The alternatives recognizing the same input are told apart before being removed')]
+    public function testRepeatedAlternativeWrittenTwice(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addAlternation([
+                $parser->addTokenReference('T_NUMBER'),
+                $parser->addTokenReference('T_MINUS')->skip(),
+                $parser->addTokenReference('T_NUMBER'),
+            ]),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        self::assertSame([
+            '0: Concatenation(1, 4)',
+            '1: Alternation(2, 3)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(3, skip)',
+            '4: Lexeme(2, skip)',
+        ], self::describe(self::compile($parser)));
+    }
+
+    #[TestDox('A named rule is removed as well, since the analysis reaches nothing by a name')]
     public function testNamedRule(): void
     {
         $parser = new ParserBuilder();
@@ -177,13 +316,83 @@ final class OptimizationTest extends TestCase
 
         $result = self::compile($parser);
 
-        self::assertSame(['Group' => 1], $result->constants);
+        self::assertSame([
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Lexeme(2, skip)',
+        ], self::describe($result));
+        self::assertSame([], $result->constants);
+    }
+
+    #[TestDox('The name of a rule building a node of its own is kept')]
+    public function testNamedRuleWithReducer(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Group')
+                ->setReducer(static fn(Context $context, mixed $children): mixed => $children),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        $result = self::compile($parser);
+
         self::assertSame([
             '0: Concatenation(1, 3)',
             '1: Concatenation(2)',
             '2: Lexeme(1, keep)',
             '3: Lexeme(2, skip)',
         ], self::describe($result));
+        self::assertSame(['Group' => 1], $result->constants);
+    }
+
+    #[TestDox('A rule whose value is joined further up is removed as well')]
+    public function testRuleReachedThroughAnAlternation(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addAlternation([
+                $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Number'),
+                $parser->addTokenReference('T_MINUS')->skip(),
+            ]),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        $result = self::compile($parser);
+
+        self::assertSame([
+            '0: Concatenation(1, 4)',
+            '1: Alternation(2, 3)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(3, skip)',
+            '4: Lexeme(2, skip)',
+        ], self::describe($result));
+        self::assertSame([], $result->constants);
+    }
+
+    #[TestDox('A rule whose value is given to a reducer is left as is')]
+    public function testRuleGivenToAReducer(): void
+    {
+        $parser = new ParserBuilder();
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addAlternation([
+                $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Number'),
+                $parser->addTokenReference('T_MINUS')->skip(),
+            ])->setReducer(static fn(Context $context, mixed $children): mixed => $children),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        $result = self::compile($parser);
+
+        self::assertSame([
+            '0: Concatenation(1, 5)',
+            '1: Alternation(2, 4)',
+            '2: Concatenation(3)',
+            '3: Lexeme(1, keep)',
+            '4: Lexeme(3, skip)',
+            '5: Lexeme(2, skip)',
+        ], self::describe($result));
+        self::assertSame(['Number' => 2], $result->constants);
     }
 
     #[TestDox('A rule building a node of its own is left as is')]
@@ -276,6 +485,31 @@ final class OptimizationTest extends TestCase
         }
 
         self::assertSame(['1', '2', '3'], $values);
+    }
+
+    #[TestDox('A parser with the named rules removed recognizes the source the same way')]
+    public function testParsingWithoutNamedRules(): void
+    {
+        $lexer = self::createLexerBuilder();
+
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Operand'),
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addAlternation([
+                    $parser->addTokenReference('T_PLUS')->skip(),
+                    $parser->addTokenReference('T_MINUS')->skip(),
+                ]),
+                $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Operation'),
+            ])),
+        ]));
+
+        $compiled = self::createParser(
+            lexer: self::createLexer($lexer),
+            result: $parser->build($lexer->build()),
+        );
+
+        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse(new Source('1 + 2 - 3'))));
     }
 
     private static function compile(ParserBuilder $parser): ParserBuilderResult
