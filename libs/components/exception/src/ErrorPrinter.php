@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Printer\ErrorInfo;
@@ -39,21 +38,29 @@ final readonly class ErrorPrinter
      * @param int<0, max> $offset the byte offset of the fragment the error
      *        occurred in
      * @param int<0, max> $length the size of that fragment in bytes
-     * @throws SourceExceptionInterface in case the source code cannot be
-     *         obtained from the source itself
      */
     public function print(ReadableInterface $source, int $offset, int $length = 0): ErrorInfoResult
     {
+        $pathname = null;
+
+        // Only a source that belongs to a file can be referred to by its
+        // name, be the file a real one or not
+        if ($source instanceof FileInterface) {
+            $pathname = \realpath($source->pathname);
+
+            if ($pathname === false) {
+                $pathname = $source->pathname;
+            }
+        }
+
         return new ErrorInfoResult(
             reader: $this->reader,
             printer: $this->printer,
             content: $this->getContent($source),
             offset: $offset,
             length: $length,
-            // Only a source that belongs to a file can be referred to by its
-            // name, be the file a real one or not
             info: new ErrorInfo(
-                pathname: $source instanceof FileInterface ? $source->pathname : null,
+                pathname: $pathname,
             ),
         );
     }
@@ -62,8 +69,6 @@ final readonly class ErrorPrinter
      * A source stored in a file that can be read from the disk is read from
      * there, so that only the fragment around the captured one is loaded.
      * Anything else describes the source code it already holds.
-     *
-     * @throws SourceExceptionInterface
      */
     private function getContent(ReadableInterface $source): ContentInterface
     {

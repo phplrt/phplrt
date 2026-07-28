@@ -15,7 +15,7 @@ use Phplrt\Exception\Snippet\Reader\SourceLineReader;
  * The error along with the fragment of the source code it occurred in, ready
  * to be printed.
  *
- * Everything the error is described by is added afterwards, one thing at a
+ * Everything the error is described by is added afterward, one thing at a
  * time, and the source code is read only at the moment the whole thing is
  * turned into a string.
  *
@@ -28,7 +28,7 @@ final readonly class ErrorInfoResult implements \Stringable
      *
      * @var int<0, max>
      */
-    public const int DEFAULT_LINES_AROUND = 1;
+    public const int DEFAULT_LINES_AROUND = 2;
 
     /**
      * @param int<0, max> $offset
