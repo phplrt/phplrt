@@ -8,7 +8,7 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Parser\Exception\ParserException;
+use Phplrt\Parser\Exception\ParserSourceException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
@@ -163,7 +163,7 @@ readonly class Parser implements ParserInterface
         try {
             $content = $source->content;
         } catch (SourceExceptionInterface $e) {
-            throw ParserException::becauseSourceIsNotReadable($e);
+            throw ParserSourceException::becauseSourceIsNotReadable($e);
         }
 
         return $this->reducer->createContext($source, $content)

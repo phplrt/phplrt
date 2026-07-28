@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Tests;
 
-use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Grammar\RuleInterface;
