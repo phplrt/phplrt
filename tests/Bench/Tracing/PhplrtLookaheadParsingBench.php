@@ -59,6 +59,6 @@ final readonly class PhplrtLookaheadParsingBench extends PhplrtBench
 
     public function benchParsing(): void
     {
-        $this->parser->parse(Source::new(self::SAMPLE));
+        $this->parser->parse(new Source(self::SAMPLE));
     }
 }
