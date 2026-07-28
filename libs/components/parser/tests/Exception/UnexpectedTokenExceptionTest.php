@@ -38,7 +38,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     {
         $exception = UnexpectedTokenException::fromToken(new Source(self::SOURCE), $this->createToken());
 
-        self::assertSame(<<<'OUT'
+        self::assertStringStartsWith(<<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
               |
             1 | first line

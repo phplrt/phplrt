@@ -71,7 +71,7 @@ final class CompilerTest extends TestCase
         try {
             $this->load('broken.pp2');
         } catch (IncludeException $e) {
-            self::assertSame('The grammar "nested/broken" cannot be read', $e->getMessage());
+            self::assertSame('An error occurred while loading "nested/broken" grammar', $e->getMessage());
             self::assertSame(0, $e->offset);
             self::assertSame(22, $e->end);
             self::assertInstanceOf(UnsupportedPragmaException::class, $e->getPrevious());

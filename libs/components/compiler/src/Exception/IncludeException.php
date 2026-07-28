@@ -21,7 +21,7 @@ final class IncludeException extends CompilerRuntimeException
         GrammarReference $reference,
         \Throwable $previous,
     ): self {
-        $message = \sprintf('An error occurred in "%s"', $reference->target);
+        $message = \sprintf('An error occurred while loading "%s" grammar', $reference->target);
 
         return new self(
             source: $source,
