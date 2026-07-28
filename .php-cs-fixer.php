@@ -6,14 +6,17 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 const DIR_INCLUDE = [
     // Components
+    __DIR__ . '/libs/components/compiler/src',
     __DIR__ . '/libs/components/exception/src',
     __DIR__ . '/libs/components/lexer/src',
     __DIR__ . '/libs/components/lexer-builder/src',
     __DIR__ . '/libs/components/parser/src',
     __DIR__ . '/libs/components/parser-builder/src',
+    __DIR__ . '/libs/components/source/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/parser/src',
+    __DIR__ . '/libs/contracts/source/src',
 ];
 
 const DIR_EXCLUDE = [];

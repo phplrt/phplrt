@@ -2,14 +2,17 @@ includes:
   - phar://phpstan.phar/conf/bleedingEdge.neon
   - vendor/phpstan/phpstan-strict-rules/rules.neon
   # Components
+  - libs/components/compiler/phpstan.neon
   - libs/components/exception/phpstan.neon
   - libs/components/lexer/phpstan.neon
   - libs/components/lexer-builder/phpstan.neon
   - libs/components/parser/phpstan.neon
   - libs/components/parser-builder/phpstan.neon
+  - libs/components/source/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
   - libs/contracts/parser/phpstan.neon
+  - libs/contracts/source/phpstan.neon
 parameters:
   level: max
   strictRules:
