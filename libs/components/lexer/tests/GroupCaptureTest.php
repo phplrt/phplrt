@@ -98,7 +98,7 @@ final class GroupCaptureTest extends TestCase
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\[(\w++)\]', 'T_OPEN')->enter('body');
-            $lexer->addEmbeddedLexer('body', new class () implements LexerInterface {
+            $lexer->addEmbeddedLexer('body', new class implements LexerInterface {
                 public function lex(ReadableInterface $source, int $offset = 0): iterable
                 {
                     $content = $source->content;

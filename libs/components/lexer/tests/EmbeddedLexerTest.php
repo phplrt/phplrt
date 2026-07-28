@@ -8,9 +8,9 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
+use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -41,7 +41,7 @@ final class EmbeddedLexerTest extends TestCase
      */
     private static function createForeignLexer(): LexerInterface
     {
-        return new class () implements LexerInterface {
+        return new class implements LexerInterface {
             public function lex(ReadableInterface $source, int $offset = 0): iterable
             {
                 $content = $source->content;
