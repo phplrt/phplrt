@@ -31,7 +31,6 @@ final class SourceFactory implements SourceFactoryInterface
      * @api
      *
      * @param non-empty-string|null $pathname
-     *
      * @phpstan-return ($pathname is null ? Source : VirtualFile)
      */
     public function createEmpty(?string $pathname = null): Source|VirtualFile

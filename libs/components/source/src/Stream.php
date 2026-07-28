@@ -94,7 +94,6 @@ class Stream extends Readable
      * Extracts "local" bool flag stream information from metadata
      *
      * @param StreamMetaType $metadata Stream metadata array
-     *
      * @return bool {@see true} if the stream is local, {@see false} otherwise
      */
     private function getIsLocalInfoFromMetadata(array $metadata): bool
@@ -107,7 +106,6 @@ class Stream extends Readable
      * Extracts stream mode from metadata
      *
      * @param StreamMetaType $metadata Stream metadata array
-     *
      * @return non-empty-string The stream access mode
      */
     private function getModeFromMetadata(array $metadata): string
@@ -125,7 +123,6 @@ class Stream extends Readable
      * Extracts stream URI from metadata
      *
      * @param StreamMetaType $metadata Stream metadata array
-     *
      * @return non-empty-string|null The stream URI or {@see null} if not available
      */
     private function findUriFromMetadata(array $metadata): ?string
@@ -147,7 +144,6 @@ class Stream extends Readable
      *     mode: non-empty-string,
      *     seek: int<0, max>,
      * }
-     *
      * @throws \LogicException When the stream does not have a URI
      */
     public function __serialize(): array
@@ -172,7 +168,6 @@ class Stream extends Readable
      *     seek: int<0, max>,
      *     ...
      * } $data
-     *
      * @throws NotReadableException When the stream cannot be opened
      * @throws NotAccessibleException When the stream is not seekable
      */

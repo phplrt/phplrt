@@ -15,18 +15,14 @@ interface SourceFactoryInterface
 
     /**
      * @param non-empty-string|null $pathname
-     *
      * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
      * @throws SourceExceptionInterface in case of an error in creating the source object
      */
     public function createFromStream(mixed $stream, ?string $pathname = null): ReadableInterface;
 
     /**
      * @param non-empty-string|null $pathname
-     *
      * @phpstan-return ($pathname is null ? ReadableInterface : FileInterface)
-     *
      * @throws SourceExceptionInterface in case of an error in creating the source object
      */
     public function createFromString(string $content, ?string $pathname = null): ReadableInterface;
