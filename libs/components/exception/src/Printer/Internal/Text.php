@@ -19,9 +19,19 @@ final readonly class Text
      */
     public function calculateLength(string $value): int
     {
-        $result = \grapheme_strlen($value);
+        if (\function_exists('\\grapheme_strlen')) {
+            $result = \grapheme_strlen($value);
 
-        return \is_int($result) ? \max(0, $result) : \strlen($value);
+            if (\is_int($result)) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_strlen')) {
+            return \mb_strlen($value);
+        }
+
+        return \strlen($value);
     }
 
     /**
@@ -32,8 +42,18 @@ final readonly class Text
      */
     public function slice(string $value, int $offset, int $length): string
     {
-        $result = \grapheme_substr($value, $offset, $length);
+        if (\function_exists('\\grapheme_substr')) {
+            $result = \grapheme_substr($value, $offset, $length);
 
-        return $result === false ? \substr($value, $offset, $length) : $result;
+            if ($result !== false) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_substr')) {
+            return \mb_substr($value, $offset, $length);
+        }
+
+        return \substr($value, $offset, $length);
     }
 }

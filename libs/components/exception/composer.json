@@ -17,7 +17,6 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-intl": "*",
         "phplrt/source-contracts": "^4.0"
     },
     "autoload": {
@@ -26,6 +25,7 @@
         }
     },
     "require-dev": {
+        "ext-intl": "*",
         "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.1.38",
