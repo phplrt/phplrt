@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
@@ -137,6 +139,11 @@ readonly class Parser implements ParserInterface
 
     /**
      * Checks whether the source is syntactically valid against the grammar.
+     *
+     * @throws LexerExceptionInterface in case of the source cannot be read into
+     *         tokens
+     * @throws LexerRuntimeExceptionInterface in case of the source contains
+     *         what no token recognizes
      */
     public function check(ReadableInterface $source): bool
     {
@@ -149,6 +156,11 @@ readonly class Parser implements ParserInterface
      * Parses the source into an AST.
      *
      * @throws UnexpectedTokenException on a syntax error
+     * @throws ParserSourceException in case of the source cannot be read
+     * @throws LexerExceptionInterface in case of the source cannot be read into
+     *         tokens
+     * @throws LexerRuntimeExceptionInterface in case of the source contains
+     *         what no token recognizes
      */
     public function parse(ReadableInterface $source): mixed
     {
@@ -170,6 +182,12 @@ readonly class Parser implements ParserInterface
             ->reduce($result);
     }
 
+    /**
+     * @throws LexerExceptionInterface in case of the source cannot be read into
+     *         tokens
+     * @throws LexerRuntimeExceptionInterface in case of the source contains
+     *         what no token recognizes
+     */
     private function lex(ReadableInterface $source): BufferInterface
     {
         $stream = $this->lexer->lex($source);
