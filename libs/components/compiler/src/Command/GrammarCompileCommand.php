@@ -125,7 +125,6 @@ final class GrammarCompileCommand extends Command
         return $name;
     }
 
-
     /**
      * @return list<non-empty-string>
      */

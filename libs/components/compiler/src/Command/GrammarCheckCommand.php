@@ -194,7 +194,6 @@ final class GrammarCheckCommand extends Command
         }
         $output->writeln(\sprintf(' PCRE:      <info>%d</info> bytes', \strlen($result->lexer->pattern)));
 
-
         $output->writeln('');
         $output->writeln(' <comment>Rules:</comment>');
         if ($output->isVeryVerbose()) {
@@ -205,7 +204,6 @@ final class GrammarCheckCommand extends Command
             $output->writeln('   <fg=gray>// Number of rules after optimization of transition rules</>');
         }
         $output->writeln(\sprintf('   After:  <info>%d</info>', $this->getRulesAfterOptimization($result)));
-
 
         $output->writeln('');
         $output->writeln(' <comment>Tokens:</comment>');
