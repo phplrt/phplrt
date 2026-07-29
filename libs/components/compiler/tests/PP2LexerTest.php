@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Tests;
 
-use Phplrt\Compiler\Syntax\PP2\PP2LexerBuilder;
+use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\TokenEmbedding;
+use Phplrt\Source\File;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -16,12 +18,28 @@ use PHPUnit\Framework\Attributes\TestDox;
 final class PP2LexerTest extends TestCase
 {
     /**
+     * The grammar describing the format, which is where the lexer of it comes
+     * from.
+     *
+     * @var non-empty-string
+     */
+    private const string GRAMMAR = __DIR__ . '/../resources/grammar/pp2.pp3';
+
+    /**
+     * Compiling the grammar takes long enough to be done once for the whole
+     * test case.
+     */
+    private static ?LexerInterface $lexer = null;
+
+    /**
      * @return list<TokenInterface>
      */
     private static function tokenize(string $source): array
     {
-        $lexer = PP2LexerBuilder::create()
+        $lexer = self::$lexer ??= new Compiler()
+            ->load(new File(self::GRAMMAR))
             ->build()
+            ->lexer
             ->toLexer();
 
         $result = [];

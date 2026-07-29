@@ -67,7 +67,7 @@ final class GeneratorTest extends TestCase
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
-            ->withNamespace('Example\\Some');
+            ->withNamespaceName('Example\\Some');
 
         self::assertStringContainsString("\nnamespace Example\\Some;\n", $code);
     }
