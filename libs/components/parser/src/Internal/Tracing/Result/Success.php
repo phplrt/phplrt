@@ -31,5 +31,19 @@ final class Success extends Result
          * @var int<0, max>
          */
         public int $length,
+        /**
+         * The token the recognition stopped at.
+         *
+         * The whole input is recognized only in case this is the terminal
+         * token, so anything else is the beginning of the fragment the grammar
+         * says nothing about.
+         */
+        public TokenInterface $stoppedAt,
+        /**
+         * The furthest the recognition has reached, which is not where it has
+         * stopped, or {@see null} in case of the input has been recognized in
+         * full.
+         */
+        public ?Failure $furthest = null,
     ) {}
 }

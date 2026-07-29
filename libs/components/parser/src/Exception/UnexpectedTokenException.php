@@ -9,18 +9,32 @@ use Phplrt\Contracts\Source\ReadableInterface;
 
 class UnexpectedTokenException extends ParserRuntimeException
 {
+    /**
+     * The identifiers of the tokens that could have been read instead, in no
+     * particular order.
+     *
+     * @var list<int>
+     */
+    public private(set) array $expected = [];
+
+    /**
+     * @param list<int> $expected
+     */
     public static function fromToken(
         ReadableInterface $source,
         TokenInterface $token,
+        array $expected = [],
         ?\Throwable $previous = null,
     ): self {
-        $message = \sprintf('Syntax error, unexpected %s', $token);
-
-        return new self(
+        $instance = new self(
             source: $source,
             token: $token,
-            message: $message,
+            message: \sprintf('Syntax error, unexpected %s', $token),
             previous: $previous,
         );
+
+        $instance->expected = $expected;
+
+        return $instance;
     }
 }

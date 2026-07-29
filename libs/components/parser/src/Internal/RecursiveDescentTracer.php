@@ -59,7 +59,7 @@ final class RecursiveDescentTracer
          */
         private readonly array $presentInTree,
     ) {
-        $this->error = new ErrorReport($buffer);
+        $this->error = new ErrorReport($buffer, $grammar, $startTokens);
     }
 
     /**
@@ -87,16 +87,33 @@ final class RecursiveDescentTracer
             return new Failure($buffer->current);
         }
 
-        $self = new self($grammar, $buffer, $startTokens, $matchesEmptyInput, $presentInTree);
+        $self = new self(
+            grammar: $grammar,
+            buffer: $buffer,
+            startTokens: $startTokens,
+            matchesEmptyInput: $matchesEmptyInput,
+            presentInTree: $presentInTree,
+        );
 
-        if ($self->match($initial) && $self->isEndOfInput()) {
-            return new Success(
-                entries: $self->entries,
-                length: $self->length,
-            );
+        if (!$self->match($initial)) {
+            return $self->error->finish();
         }
 
-        return $self->error->finish();
+        return new Success(
+            entries: $self->entries,
+            length: $self->length,
+            /**
+             * The rules are greedy, so whatever the recognition has stopped at
+             * is the first token the grammar cannot read.
+             */
+            stoppedAt: $buffer->current,
+            /**
+             * An input that has not been read to its end has broken somewhere,
+             * and where it has broken is not where the reading has stopped, so
+             * the report is kept for whoever has to say what is wrong.
+             */
+            furthest: $self->isEndOfInput() ? null : $self->error->finish(),
+        );
     }
 
     /**
@@ -132,7 +149,7 @@ final class RecursiveDescentTracer
 
                 // A failure behind the reported one changes nothing
                 if ($buffer->key >= $error->furthest) {
-                    $error->record($id);
+                    $error->record($rule);
                 }
 
                 return false;
@@ -163,6 +180,15 @@ final class RecursiveDescentTracer
         // The rule requires a token it cannot start with, so there is nothing
         // to recognize
         if (!isset($this->startTokens[$rule][$this->buffer->current->id]) && !$this->matchesEmptyInput[$rule]) {
+            /**
+             * Only a failure ahead of the reported one is worth remembering:
+             * the rules rejected alongside this one are the ones it contains,
+             * so the tokens they may begin with are already among its own.
+             */
+            if ($this->buffer->key > $this->error->furthest) {
+                $this->error->record($rule);
+            }
+
             return false;
         }
 
