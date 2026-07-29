@@ -10,6 +10,7 @@ use PhpBench\Attributes\RetryThreshold;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
 use Phplrt\Compiler\Compiler;
+use Phplrt\Parser\Analysis\Mode;
 use Phplrt\Parser\Parser;
 use Phplrt\Source\File;
 use Phplrt\Source\Source;
@@ -19,7 +20,7 @@ use Phplrt\Source\Source;
 #[Iterations(2)]
 #[RetryThreshold(0.2)]
 #[BeforeMethods('prepare')]
-final readonly class PhplrtTracingBench extends PhplrtBench
+final readonly class PhplrtTolerantBench extends PhplrtBench
 {
     private Parser $parser;
 
@@ -39,6 +40,6 @@ final readonly class PhplrtTracingBench extends PhplrtBench
 
     public function benchParsing(): void
     {
-        $this->parser->check(new Source(self::SAMPLE));
+        $this->parser->analyze(new Source(self::SAMPLE), Mode::Tolerant);
     }
 }

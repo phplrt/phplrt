@@ -19,7 +19,7 @@ use Phplrt\Source\Source;
 #[Iterations(2)]
 #[RetryThreshold(0.2)]
 #[BeforeMethods('prepare')]
-final readonly class PhplrtCompiledBench extends PhplrtBench
+final readonly class PhplrtParsingBench extends PhplrtBench
 {
     private Parser $parser;
 
