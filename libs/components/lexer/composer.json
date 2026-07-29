@@ -28,6 +28,7 @@
     },
     "require-dev": {
         "ext-mbstring": "*",
+        "phplrt/exception": "^4.0",
         "phplrt/lexer-builder": "^4.0",
         "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
@@ -37,6 +38,9 @@
         "psr-4": {
             "Phplrt\\Lexer\\Tests\\": "tests"
         }
+    },
+    "suggest": {
+        "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0"

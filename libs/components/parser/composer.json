@@ -32,6 +32,7 @@
         }
     },
     "require-dev": {
+        "phplrt/exception": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
