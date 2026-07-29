@@ -13,7 +13,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  *
  * The token is written the way it is written in the source, so its value is
  * the fragment that entered the embedded lexer rather than the fragment read
- * by it: where the reading has stopped is told by {@see TokenEmbedding::$end}.
+ * by it: how far the reading has gone is told by {@see TokenEmbedding::$size}.
  *
  * @template-implements \IteratorAggregate<int, TokenInterface>
  * @template-implements \ArrayAccess<int, TokenInterface>
@@ -28,7 +28,7 @@ final class TokenEmbedding extends Token implements
     /**
      * @param non-empty-string|null $name
      * @param int<0, max> $offset
-     * @param int<0, max> $end
+     * @param int<0, max> $size
      * @param list<TokenInterface> $children
      * @param list<string> $captures
      */
@@ -38,7 +38,7 @@ final class TokenEmbedding extends Token implements
         ChannelInterface $channel,
         string $value,
         int $offset,
-        int $end,
+        int $size,
         /**
          * The tokens the embedded lexer has read, in the order it has read
          * them.
@@ -48,16 +48,16 @@ final class TokenEmbedding extends Token implements
     ) {
         // The token spans as far as the embedded lexer has read, rather than
         // as far as its own value does
-        parent::__construct($id, $name, $channel, $value, $offset, $captures, $end);
+        parent::__construct($id, $name, $channel, $value, $offset, $captures, $size);
     }
 
     /**
      * Creates the embedding of the given token.
      *
      * @param list<TokenInterface> $children
-     * @param int<0, max> $end
+     * @param int<0, max> $size
      */
-    public static function createFromToken(Token $token, array $children, int $end): self
+    public static function createFromToken(Token $token, array $children, int $size): self
     {
         return new self(
             id: $token->id,
@@ -65,7 +65,7 @@ final class TokenEmbedding extends Token implements
             channel: $token->channel,
             value: $token->value,
             offset: $token->offset,
-            end: $end,
+            size: $size,
             children: $children,
             captures: $token->captures,
         );

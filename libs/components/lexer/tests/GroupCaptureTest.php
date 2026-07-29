@@ -81,7 +81,7 @@ final class GroupCaptureTest extends TestCase
         self::assertSame('T_TOKEN', $declaration->name);
         self::assertSame('%token string:T_A', $declaration->value);
         self::assertSame(4, $declaration->offset);
-        self::assertSame(\strlen($source), $declaration->end);
+        self::assertSame(\strlen($source) - 4, $declaration->size);
     }
 
     #[TestDox('The captures do not change the way the source is covered by the stream')]

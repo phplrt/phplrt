@@ -79,7 +79,7 @@ abstract class TestCase extends BaseTestCase
                 $expected,
             ));
 
-            $expected = $token->end;
+            $expected = $token->offset + $token->size;
         }
 
         self::assertSame(\strlen($source), $expected, 'The source is expected to be read in full');

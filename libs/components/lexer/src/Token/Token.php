@@ -14,12 +14,12 @@ use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
 class Token implements TokenInterface
 {
     /** @phpstan-ignore-next-line : readonly annotation workaround */
-    public int $end {
-        get => $this->end ??= $this->offset + \strlen($this->value);
+    public int $size {
+        get => $this->size ??= \strlen($this->value);
     }
 
     /**
-     * @param int<0, max>|null $end
+     * @param int<0, max>|null $size
      */
     public function __construct(
         public int $id,
@@ -44,13 +44,13 @@ class Token implements TokenInterface
          */
         public array $captures = [],
         /**
-         * The position the token ends at, or {@see null} in case of the token
-         * ends where its own value does.
+         * The size of the fragment the token has been read from, or
+         * {@see null} in case of the token is as large as its own value.
          */
-        ?int $end = null,
+        ?int $size = null,
     ) {
-        if ($end !== null) {
-            $this->end = $end;
+        if ($size !== null) {
+            $this->size = $size;
         }
     }
 

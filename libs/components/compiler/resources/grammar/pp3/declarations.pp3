@@ -115,7 +115,7 @@ TokenDeclaration -> {
         isHidden: $children->value === '%skip',
         actions: $actions,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_TOKEN>

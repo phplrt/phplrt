@@ -35,15 +35,11 @@ $source->getPathname();
 $token->name;
 $token->offset;
 $token->value;
-$token->end;      // see below — not the same as getBytes()
+$token->size;
 
 $source->content;
 $source->pathname;
 ```
-
-`getBytes()` returned the length of the token. There is no direct
-replacement: use `$token->end - $token->offset`, which is the same thing for
-an ordinary token and *more* correct for a token that entered a nested lexer.
 
 ### Tokens Are Identified By Number
 

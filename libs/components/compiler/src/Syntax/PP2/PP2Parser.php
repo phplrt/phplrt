@@ -490,7 +490,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             next: $next === '' ? null : $next,
             isHidden: \str_starts_with($children->value, '%skip'),
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -509,7 +509,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             name: $name,
             value: $value,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -526,7 +526,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
             target: $target,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -574,7 +574,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
 
         $code = $open === null || $close === null
             ? ''
-            : \substr($ctx->content, $open->end, $close->offset - $open->end);
+            : \substr($ctx->content, $open->offset + $open->size, $close->offset - $open->offset - $open->size);
 
         $lines = \explode("\n", $code);
 
@@ -587,7 +587,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         return new \Phplrt\Compiler\Node\Reducer\CodeReducer(
             code: \trim(\implode("\n", $lines)),
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -603,7 +603,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         return new \Phplrt\Compiler\Node\Reducer\ClassReducer(
             class: $class->value,
             offset: $class->offset,
-            length: \max(0, $class->end - $class->offset),
+            length: $class->size,
         );
     }
 
@@ -695,7 +695,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             name: $name->value,
             isKept: true,
             offset: $name->offset,
-            length: \max(0, $name->end - $name->offset),
+            length: $name->size,
         );
     }
 
@@ -712,7 +712,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             name: $name->value,
             isKept: false,
             offset: $name->offset,
-            length: \max(0, $name->end - $name->offset),
+            length: $name->size,
         );
     }
 
@@ -728,7 +728,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         return new \Phplrt\Compiler\Node\Statement\RuleReference(
             name: $name->value,
             offset: $name->offset,
-            length: \max(0, $name->end - $name->offset),
+            length: $name->size,
         );
     }
 
@@ -739,7 +739,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         return new \Phplrt\Compiler\Node\Statement\InlinePattern(
             pattern: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -751,7 +751,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: 0,
             max: 1,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -763,7 +763,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: 1,
             max: \INF,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -775,7 +775,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: 0,
             max: \INF,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 
@@ -798,7 +798,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: $min,
             max: $max,
             offset: $from->offset,
-            length: \max(0, $to->end - $from->offset),
+            length: \max(0, $to->offset + $to->size - $from->offset),
         );
     }
 
@@ -818,7 +818,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: $min,
             max: \INF,
             offset: $from->offset,
-            length: \max(0, $from->end - $from->offset),
+            length: $from->size,
         );
     }
 
@@ -838,7 +838,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: 0,
             max: $max,
             offset: $to->offset,
-            length: \max(0, $to->end - $to->offset),
+            length: $to->size,
         );
     }
 
@@ -854,7 +854,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
             min: $count,
             max: $count,
             offset: $children->offset,
-            length: \max(0, $children->end - $children->offset),
+            length: $children->size,
         );
     }
 }

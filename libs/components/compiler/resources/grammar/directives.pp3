@@ -29,7 +29,7 @@ PragmaDeclaration -> {
         name: $name,
         value: $value,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_PRAGMA>
@@ -51,7 +51,7 @@ IncludeDeclaration -> {
     return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
         target: $target,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_INCLUDE>

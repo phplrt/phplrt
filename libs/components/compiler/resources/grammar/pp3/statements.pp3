@@ -72,7 +72,7 @@ InlineValue -> {
     return new \Phplrt\Compiler\Node\Statement\InlineValue(
         value: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_STRING>
@@ -93,7 +93,7 @@ InlinePattern -> {
     return new \Phplrt\Compiler\Node\Statement\InlinePattern(
         pattern: \str_replace('\\/', '/', \substr($children->value, 1, -1)),
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_REGEX>

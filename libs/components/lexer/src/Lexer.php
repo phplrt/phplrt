@@ -191,7 +191,7 @@ readonly class Lexer implements LexerInterface
             $embedding = $this->enter($lexer, $source, $content, $offset, $result[$index]);
 
             $result[$index] = $embedding;
-            $offset = $embedding->end;
+            $offset = $embedding->offset + $embedding->size;
         }
 
         $result[] = new EndOfInputToken($offset);
@@ -238,9 +238,11 @@ readonly class Lexer implements LexerInterface
             }
 
             $children[] = $child;
-            $end = $child->end;
+            $end = $child->offset + $child->size;
         }
 
-        return TokenEmbedding::createFromToken($token, $children, $end);
+        // The embedding starts where the token that entered the lexer does,
+        // rather than where the lexer itself has started reading
+        return TokenEmbedding::createFromToken($token, $children, \max(0, $end - $token->offset));
     }
 }

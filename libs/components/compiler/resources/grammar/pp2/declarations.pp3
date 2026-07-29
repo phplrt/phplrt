@@ -50,7 +50,7 @@ TokenDeclaration -> {
         next: $next === '' ? null : $next,
         isHidden: \str_starts_with($children->value, '%skip'),
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_TOKEN>
@@ -125,7 +125,7 @@ ClassReducer -> {
     return new \Phplrt\Compiler\Node\Reducer\ClassReducer(
         class: $class->value,
         offset: $class->offset,
-        length: \max(0, $class->end - $class->offset),
+        length: $class->size,
     );
 }
   : ::T_ARROW:: <T_NAME>

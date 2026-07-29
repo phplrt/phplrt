@@ -148,7 +148,7 @@ KeptTokenReference -> {
         name: $name->value,
         isKept: true,
         offset: $name->offset,
-        length: \max(0, $name->end - $name->offset),
+        length: $name->size,
     );
 }
   : ::T_ANGLE_OPEN:: <T_NAME> ::T_ANGLE_CLOSE::
@@ -170,7 +170,7 @@ SkippedTokenReference -> {
         name: $name->value,
         isKept: false,
         offset: $name->offset,
-        length: \max(0, $name->end - $name->offset),
+        length: $name->size,
     );
 }
   : ::T_DOUBLE_COLON:: <T_NAME> ::T_DOUBLE_COLON::
@@ -194,7 +194,7 @@ RuleReference -> {
     return new \Phplrt\Compiler\Node\Statement\RuleReference(
         name: $name->value,
         offset: $name->offset,
-        length: \max(0, $name->end - $name->offset),
+        length: $name->size,
     );
 }
   : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::

@@ -79,13 +79,13 @@ foreach ($token as $child) { /* ... */ }
 Two things about the values:
 
 ```php
-$token->value; // '"'  — only the token's own text
-$token->end;   // 11   — but it spans everything the inner lexer read
+$token->value; // '"'  — only the token's own text, 1 byte of it
+$token->size;  // 9    — but it spans everything the inner lexer read
 ```
 
-`value` is the quote that opened the string. `end` is where the string
-*finished*. That is why `end` exists as a property instead of being computed
-from the value.
+`value` is the quote that opened the string, while `size` covers the whole
+string. That is why `size` exists as a property instead of being computed from
+the value.
 
 ## In A Grammar File
 

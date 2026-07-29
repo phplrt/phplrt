@@ -74,7 +74,12 @@ abstract class CompilerRuntimeException extends CompilerException
             if ($current instanceof ParserRuntimeExceptionInterface) {
                 $token = $current->token;
 
-                yield self::describe($current, $current->source, $token->offset, $current->end ?? $token->end);
+                yield self::describe(
+                    $current,
+                    $current->source,
+                    $token->offset,
+                    $current->end ?? $token->offset + $token->size,
+                );
 
                 continue;
             }
@@ -82,7 +87,7 @@ abstract class CompilerRuntimeException extends CompilerException
             if ($current instanceof LexerRuntimeExceptionInterface) {
                 $token = $current->token;
 
-                yield self::describe($current, $current->source, $token->offset, $token->end);
+                yield self::describe($current, $current->source, $token->offset, $token->offset + $token->size);
             }
         } while (($current = $current->getPrevious()) !== null);
     }

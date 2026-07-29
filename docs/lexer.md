@@ -115,7 +115,7 @@ foreach ($lexer->lex(new Source('23 + 42')) as $token) {
     $token->name;    // string — "T_DIGIT"
     $token->value;   // string — "23"
     $token->offset;  // int    — 0, in bytes
-    $token->end;     // int    — 2, in bytes
+    $token->size;    // int    — 2, in bytes
     $token->channel; // Channel::Default
 }
 ```

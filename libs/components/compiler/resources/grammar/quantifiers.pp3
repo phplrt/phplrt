@@ -26,7 +26,7 @@ ZeroOrOne -> {
         min: 0,
         max: 1,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_QUESTION_MARK>
@@ -43,7 +43,7 @@ OneOrMore -> {
         min: 1,
         max: \INF,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_PLUS>
@@ -60,7 +60,7 @@ ZeroOrMore -> {
         min: 0,
         max: \INF,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_ASTERISK>
@@ -101,7 +101,7 @@ RangeFromTo -> {
         min: $min,
         max: $max,
         offset: $from->offset,
-        length: \max(0, $to->end - $from->offset),
+        length: \max(0, $to->offset + $to->size - $from->offset),
     );
 }
   : <T_INT> ::T_COMMA:: <T_INT>
@@ -126,7 +126,7 @@ RangeFrom -> {
         min: $min,
         max: \INF,
         offset: $from->offset,
-        length: \max(0, $from->end - $from->offset),
+        length: $from->size,
     );
 }
   : <T_INT> ::T_COMMA::
@@ -151,7 +151,7 @@ RangeTo -> {
         min: 0,
         max: $max,
         offset: $to->offset,
-        length: \max(0, $to->end - $to->offset),
+        length: $to->size,
     );
 }
   : ::T_COMMA:: <T_INT>
@@ -172,7 +172,7 @@ RangeExactly -> {
         min: $count,
         max: $count,
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_INT>

@@ -149,7 +149,7 @@ final class PP2LexerTest extends TestCase
         self::assertSame('{ return [\'}\', "{"]; /* } */ }', \substr(
             $source,
             $php->children[0]->offset,
-            $php->end - $php->children[0]->offset,
+            $php->offset + $php->size - $php->children[0]->offset,
         ));
 
         self::assertSame('T_EQ', $tokens[2]->name);

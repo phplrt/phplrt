@@ -50,7 +50,7 @@ final readonly class PhpBlockLexer implements LexerInterface
             }
 
             $result[] = $token;
-            $end = $token->end;
+            $end = $token->offset + $token->size;
 
             if ($token->value === self::BRACE_OPEN
                 || \in_array($token->id, self::INTERPOLATION_TOKENS, true)

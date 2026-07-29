@@ -9,7 +9,7 @@ foreach ($lexer->lex(new Source('23 + 42')) as $token) {
     $token->name;    // T_DIGIT — its human-readable name, or null
     $token->value;   // "23"    — the exact text that matched
     $token->offset;  // 0       — where it starts, in bytes
-    $token->end;     // 2       — where it ends, in bytes
+    $token->size;    // 2       — how long it is, in bytes
     $token->channel; // Channel::Default
 }
 ```
@@ -42,19 +42,22 @@ System tokens use negative identifiers, so they can never collide with yours:
 
 ## Offsets
 
-`offset` and `end` are **byte** offsets, not character offsets, and `end` is
-the position immediately *after* the token:
+`offset` and `size` are counted in **bytes**, not in characters, so the two of
+them address the fragment directly:
 
 ```php
 $content = $source->content;
 
 // The exact fragment the token was read from
-$text = \substr($content, $token->offset, $token->end - $token->offset);
+$text = \substr($content, $token->offset, $token->size);
+
+// Where the next token starts
+$next = $token->offset + $token->size;
 ```
 
-For an ordinary token `end` is simply `offset + strlen($value)`. It differs
-only for a token that [entered a nested lexer](/docs/lexer/embedding), where
-the token spans everything that lexer read.
+For an ordinary token `size` is simply `strlen($value)`. It differs only for a
+token that [entered a nested lexer](/docs/lexer/embedding), which is as large
+as everything that lexer read.
 
 ## Printing
 

@@ -35,7 +35,7 @@ CodeReducer -> {
 
     $code = $open === null || $close === null
         ? ''
-        : \substr($ctx->content, $open->end, $close->offset - $open->end);
+        : \substr($ctx->content, $open->offset + $open->size, $close->offset - $open->offset - $open->size);
 
     $lines = \explode("\n", $code);
 
@@ -48,7 +48,7 @@ CodeReducer -> {
     return new \Phplrt\Compiler\Node\Reducer\CodeReducer(
         code: \trim(\implode("\n", $lines)),
         offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
+        length: $children->size,
     );
 }
   : <T_PHP>

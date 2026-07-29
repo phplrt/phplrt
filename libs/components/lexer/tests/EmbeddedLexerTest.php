@@ -108,7 +108,7 @@ final class EmbeddedLexerTest extends TestCase
         ], self::describe($lexer->lex(new Source('name "hello"'))));
     }
 
-    #[TestDox('The token that entered an embedded lexer ends where that lexer has stopped')]
+    #[TestDox('The token that entered an embedded lexer spans as far as that lexer has read')]
     public function testEmbeddingSpansTheFragmentItHasRead(): void
     {
         $lexer = self::createStringLexer();
@@ -120,7 +120,7 @@ final class EmbeddedLexerTest extends TestCase
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
         self::assertSame('"', $embedding->value);
         self::assertSame(0, $embedding->offset);
-        self::assertSame(7, $embedding->end);
+        self::assertSame(7, $embedding->size, 'The size is that of the string rather than of the quote opening it');
     }
 
     #[TestDox('The tokens read by an embedded lexer are reachable through the token that entered it')]

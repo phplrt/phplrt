@@ -51,12 +51,15 @@ abstract class ParserRuntimeException extends ParserException implements
                 continue;
             }
 
-            $end = $current instanceof ParserRuntimeExceptionInterface
-                ? $current->end ?? $current->token->end
-                : $current->token->end;
+            $token = $current->token;
+            $end = $token->offset + $token->size;
+
+            if ($current instanceof ParserRuntimeExceptionInterface) {
+                $end = $current->end ?? $end;
+            }
 
             yield new ErrorPrinter()
-                ->print($current->source, $current->token->offset)
+                ->print($current->source, $token->offset)
                 ->withEndOffset($end)
                 ->withMessage($current->getMessage())
                 ->withClass($current::class);

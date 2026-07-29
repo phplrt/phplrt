@@ -30,8 +30,9 @@ interface RuntimeExceptionInterface extends ParserExceptionInterface
     /**
      * The final offset at which the parser error occurred.
      *
-     * If the offset is not specified ({@see null}), the token offset
-     * ({@see TokenInterface::$end}) can be used instead.
+     * If the offset is not specified ({@see null}), the position right after
+     * the token ({@see TokenInterface::$offset} + {@see TokenInterface::$size})
+     * can be used instead.
      *
      * @var int<0, max>|null
      */
