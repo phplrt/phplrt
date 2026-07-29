@@ -7,7 +7,6 @@ namespace Phplrt\Lexer\Builder\Tests;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
-use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
