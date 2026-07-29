@@ -204,10 +204,12 @@ final class FileContent implements ContentInterface
      */
     private function fetch(int $from, int $to): string
     {
-        $content = @\file_get_contents($this->pathname, false, null, $from, \max(0, $to - $from));
+        $pathname = $this->pathname;
 
-        if ($content === false) {
-            throw SourceNotReadableException::becauseFileIsNotReadable($this->pathname);
+        $content = @\file_get_contents($pathname, false, null, $from, \max(0, $to - $from));
+
+        if ($content === false || !\is_file($pathname)) {
+            throw SourceNotReadableException::becauseFileIsNotReadable($pathname);
         }
 
         return $content;
