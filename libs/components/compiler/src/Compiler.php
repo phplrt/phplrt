@@ -22,9 +22,9 @@ use Phplrt\Parser\Builder\ParserBuilder;
 
 final class Compiler
 {
-    public ParserBuilder $parser;
+    public readonly ParserBuilder $parser;
 
-    public LexerBuilder $lexer;
+    public readonly LexerBuilder $lexer;
 
     private readonly ReferenceLoader $loader;
 
