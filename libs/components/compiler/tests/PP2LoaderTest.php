@@ -18,6 +18,7 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleReference;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\VirtualFile;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -280,6 +281,23 @@ final class PP2LoaderTest extends TestCase
         $this->load($source);
 
         self::assertSame('A -> { return 42; } : "\+"', $this->readSource($source, $this->parser->initial));
+    }
+
+    #[TestDox('A predicate is not written in this format')]
+    public function testPredicatesAreReported(): void
+    {
+        foreach (['&', '!'] as $sign) {
+            $this->parser = new ParserBuilder();
+            $this->lexer = new LexerBuilder();
+
+            try {
+                $this->load(\sprintf("%%token T_A a\nA : %s<T_A> ;", $sign));
+
+                self::fail(\sprintf('The "%s" predicate has been accepted', $sign));
+            } catch (UnexpectedTokenException) {
+                self::assertTrue(true);
+            }
+        }
     }
 
     #[TestDox('A reference to another grammar is given away instead of being read')]

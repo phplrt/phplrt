@@ -20,6 +20,7 @@ use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Node\Statement\Alternation;
 use Phplrt\Compiler\Node\Statement\Concatenation;
 use Phplrt\Compiler\Node\Statement\InlinePattern;
+use Phplrt\Compiler\Node\Statement\Predicate;
 use Phplrt\Compiler\Node\Statement\Repetition;
 use Phplrt\Compiler\Node\Statement\RuleReference;
 use Phplrt\Compiler\Node\Statement\Statement;
@@ -455,6 +456,10 @@ class PP2Loader implements SyntaxLoaderInterface
                 $this->loadStatements($statement->statements, $source, $parser, $lexer),
             ),
             $statement instanceof Repetition => $this->createRepetition($statement, $source, $parser, $lexer),
+            $statement instanceof Predicate => $parser->addPredicate(
+                rule: $this->loadStatement($statement->statement, $source, $parser, $lexer),
+                isExpected: $statement->isExpected,
+            ),
             $statement instanceof RuleReference => $parser->addRuleReference($statement->name),
             $statement instanceof TokenReference => $parser->addTokenReference($statement->name)
                 ->setKept($statement->isKept),

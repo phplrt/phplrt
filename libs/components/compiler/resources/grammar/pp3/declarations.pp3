@@ -1,0 +1,154 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Declarations Of The PP3 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  Everything a grammar file of this format is written of, apart from the
+ *  directives both formats share.
+ *
+ */
+
+Declaration
+  : TokenDeclaration()
+  | PragmaDeclaration()
+  | IncludeDeclaration()
+  | LexerDeclaration()
+  | RuleDeclaration()
+  ;
+
+/**
+ * A token to read, like:
+ *  - %token string:T_QUOTE " -> state(string), channel(strings)
+ *  - %skip *:T_WHITESPACE \s++
+ *
+ *  A declaration is read as a single token whose subgroups capture its parts,
+ *  so which value is which is decided by its position: the state it belongs to,
+ *  its name, its pattern and everything it does to the reading.
+ *
+ *  A token that is read but never reaches the parser is declared with "%skip"
+ *  instead of "%token", and nothing else about it differs.
+ *
+ *  The actions are captured as a single value, so they are told apart here, and
+ *  every one of them is pointed at by the place it is written at: the arrow is
+ *  what the actions of a declaration begin after, and nothing but an action may
+ *  be written past it.
+ */
+TokenDeclaration -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $name = $children->captures[1] ?? '';
+    $pattern = $children->captures[2] ?? '';
+
+    if ($name === '' || $pattern === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+    }
+
+    $state = $children->captures[0] ?? '';
+    $actions = [];
+
+    if (($children->captures[3] ?? '') !== '') {
+        $arrow = \strrpos($children->value, '->');
+
+        // A declaration carrying an action is always written of an arrow, so
+        // the declaration itself is only pointed at in theory
+        $start = $arrow === false ? 0 : $arrow;
+
+        \preg_match_all(
+            pattern: '/([a-zA-Z_][a-zA-Z0-9_]*+)\h*+\(\h*+([a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)/',
+            subject: \substr($children->value, $start),
+            matches: $matches,
+            flags: \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE,
+        );
+
+        foreach ($matches as $match) {
+            [$action, $at] = $match[0];
+
+            $word = $match[1][0];
+            $argument = $match[2][0] ?? '';
+
+            $actions[] = new \Phplrt\Compiler\Node\Declaration\TokenAction(
+                name: $word,
+                argument: $argument === '' ? null : $argument,
+                offset: \max(0, $children->offset + $start + $at),
+                length: \strlen($action),
+            );
+        }
+    }
+
+    return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
+        name: $name,
+        pattern: $pattern,
+        state: $state === '' ? null : $state,
+        isHidden: \str_starts_with($children->value, '%skip'),
+        actions: $actions,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_TOKEN>
+  | <T_SKIP>
+  ;
+
+/**
+ * A lexer written by hand, like:
+ *  - %lexer php -> { new \App\Lexer\PhpLexer() }
+ *
+ *  The body is an expression building the lexer rather than a block of
+ *  statements, so it is read the way the body of a reducer is and is left for
+ *  the compilation to make sense of.
+ */
+LexerDeclaration -> {
+    \assert(\is_array($children));
+
+    $declaration = $children[0] ?? null;
+    $lexer = $children[1] ?? null;
+
+    \assert($declaration instanceof \Phplrt\Lexer\Token\Token);
+    \assert($lexer instanceof \Phplrt\Compiler\Node\Reducer\CodeReducer);
+
+    $name = $declaration->captures[0] ?? '';
+
+    if ($name === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $declaration);
+    }
+
+    return new \Phplrt\Compiler\Node\Declaration\LexerDeclaration(
+        name: $name,
+        lexer: $lexer,
+        offset: $declaration->offset,
+        length: \max(0, $lexer->offset + $lexer->length - $declaration->offset),
+    );
+}
+  : <T_LEXER> CodeReducer()
+  ;
+
+/**
+ * A rule of the parser, like:
+ *  - Sum -> { return new SumNode($children); } : Number() ;
+ *
+ *  The name is written first, the reducer after it and what the rule recognizes
+ *  past the colon, so the declaration is read from both ends: whatever is left
+ *  between them is the reducer, in case it has been written at all.
+ */
+RuleDeclaration -> {
+    \assert(\is_array($children));
+
+    $name = \array_shift($children);
+    $body = \array_pop($children);
+    $reducer = \array_pop($children);
+
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
+    \assert($body instanceof \Phplrt\Compiler\Node\Statement\Statement);
+    \assert($reducer === null || $reducer instanceof \Phplrt\Compiler\Node\Reducer\Reducer);
+
+    return new \Phplrt\Compiler\Node\Declaration\RuleDeclaration(
+        name: $name->value,
+        body: $body,
+        reducer: $reducer,
+        offset: $name->offset,
+        length: \max(0, $body->offset + $body->length - $name->offset),
+    );
+}
+  : <T_NAME> CodeReducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
+  ;

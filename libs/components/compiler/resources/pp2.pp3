@@ -1,251 +1,38 @@
-//
-// The PP2 grammar format, written in PP3.
-//
-// The format itself is frozen: it is read exactly the way phplrt 3.x read it,
-// so that a grammar written back then keeps working. The description of it is
-// written in the current format because that is the one the compiler reads.
-//
-// The parser this file is compiled into is generated into
-// "src/Syntax/PP2/PP2Parser.php" and is committed along with it, and every node
-// the file is read into is built by "PP2NodeFactory", which is named in full: a
-// reducer is written into the generated parser and is evaluated as it is alike,
-// and only one of the two places knows what this file imports.
-//
+/**
+ * -----------------------------------------------------------------------------
+ *  The PP2 Grammar Format, Written In PP3
+ * -----------------------------------------------------------------------------
+ *
+ *  The format is frozen: it is read exactly the way phplrt 3.x read it, so that
+ *  a grammar written back then keeps working. The description of it is written
+ *  in the current format because that is the one the compiler reads.
+ *
+ *  Reading a grammar file needs a parser, so the parser of a format cannot be
+ *  built from the grammar describing it while it runs: it is generated into
+ *  "src/Syntax/PP2/PP2Parser.php" ahead of time and is committed along with
+ *  this file. Run "composer dev:syntax" after changing anything here.
+ *
+ *  Everything a rule is turned into is written in the rule itself, and every
+ *  class it names is named in full: the very same body is written into the
+ *  generated parser and is evaluated as it is alike, and only one of the two
+ *  places knows what this file imports.
+ *
+ */
 
-%skip T_WHITESPACE \s++
-%skip T_COMMENT    //[^\r\n]*+
-%skip T_DOC        /\*(.*?)\*/
+%include grammar/lexemes            // The tokens both formats read alike
+%include grammar/pp2/lexemes        // The tokens of this format
 
-//
-// A declaration is read as a single token whose subgroups capture its parts:
-// the state it belongs to, its name, its pattern and the state it switches to.
-//
-// Which value is which is decided by its position rather than by its content: a
-// pattern may be spelled exactly like a name and may begin with the two slashes
-// a comment begins with. A single expression knows every position at once, which
-// is what tells the values apart.
-//
-%token T_TOKEN   %token\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+(\S++))?
-%token T_SKIP    %skip\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+(\S++))?
-%token T_PRAGMA  %pragma\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\h++(\S++)
-%token T_INCLUDE %include\h++(\S++)
-
-// A reducer written as code is told from a reducer written as a class name by
-// the brace, so the arrow alone always opens the latter
-%token T_PHP     ->\s*+(?=\{) -> state(php)
-%token T_ARROW   ->
-
-// The "::=" separator is spelled with the same colons a skipped token reference
-// is surrounded by
-%token T_DOUBLE_COLON      ::(?!=)
-%token T_EQ                ::=|:|=
-
-%token T_HASH              #
-%token T_SEMICOLON         ;
-%token T_OR                \|
-%token T_PARENTHESIS_OPEN  \(
-%token T_PARENTHESIS_CLOSE \)
-%token T_ANGLE_OPEN        <
-%token T_ANGLE_CLOSE       >
-%token T_QUESTION_MARK     \?
-%token T_PLUS              \+
-%token T_ASTERISK          \*
-%token T_BRACE_OPEN        \{
-%token T_BRACE_CLOSE       \}
-%token T_COMMA             ,
-
-%token T_INT               \d++
-%token T_STRING            "[^"\\]*+(?:\\.[^"\\]*+)*+"
-%token T_NAME              \\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\[a-zA-Z_][a-zA-Z0-9_]*+)*+
-
-// A brace written inside a string is only a brace for PHP itself, so the block
-// of code is read the way PHP reads it
-%lexer php -> { new \Phplrt\Compiler\Syntax\PP2\PP2PhpEmbeddingLexer() }
+%include grammar/directives         // %pragma, %include
+%include grammar/pp2/declarations   // %token, a rule of the parser
+%include grammar/reducers           // -> { ... }
+%include grammar/statements         // What a rule recognizes
+%include grammar/pp2/statements     // Nothing is written before a statement
+%include grammar/quantifiers        // How many times a statement repeats
 
 %pragma root Grammar
 
-//
-// A grammar file is a list of declarations, each of them written either as
-// a "%" directive or as a rule of the parser.
-//
-
+/**
+ * A grammar file is a list of declarations, each of them written either as a
+ * "%" directive or as a rule of the parser.
+ */
 Grammar : Declaration()* ;
-
-Declaration
-  : TokenDeclaration()
-  | SkippedTokenDeclaration()
-  | PragmaDeclaration()
-  | IncludeDeclaration()
-  | RuleDeclaration()
-  ;
-
-// %token string:T_QUOTE " -> default
-TokenDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createTokenDeclaration($ctx, $children); }
-  : <T_TOKEN>
-  ;
-
-// %skip T_WHITESPACE \s++
-SkippedTokenDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createSkippedTokenDeclaration($ctx, $children); }
-  : <T_SKIP>
-  ;
-
-// %pragma root Expression
-PragmaDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createPragmaDeclaration($ctx, $children); }
-  : <T_PRAGMA>
-  ;
-
-// %include grammar/lexemes
-IncludeDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createIncludeDeclaration($ctx, $children); }
-  : <T_INCLUDE>
-  ;
-
-// #Sum -> { return new SumNode($children); } : Number() ;
-RuleDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRuleDeclaration($ctx, $children); }
-  : KeptMarker()? <T_NAME> Reducer()? ::T_EQ:: Alternation() ::T_SEMICOLON::?
-  ;
-
-// The marker builds no node of its own: it only says that the rule it belongs
-// to is kept in the tree
-KeptMarker -> { return true; } : <T_HASH> ;
-
-Reducer
-  : CodeReducer()
-  | ClassReducer()
-  ;
-
-CodeReducer
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createCodeReducer($ctx, $children); }
-  : <T_PHP>
-  ;
-
-ClassReducer
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createClassReducer($ctx, $children); }
-  : ::T_ARROW:: <T_NAME>
-  ;
-
-//
-// What a rule of the parser recognizes: the alternatives it is written of,
-// each of them a sequence of statements.
-//
-
-// Number() | Name()
-Alternation
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createAlternation($ctx, $children); }
-  : Concatenation() AlternationTail()*
-  ;
-
-AlternationTail : ::T_OR:: Concatenation() ;
-
-// Number() ::T_PLUS:: Number()
-Concatenation
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createConcatenation($ctx, $children); }
-  : Suffixed()+
-  ;
-
-// Number()*
-Suffixed
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRepetition($ctx, $children); }
-  : Primary() Quantifier()?
-  ;
-
-Primary
-  : Group()
-  | KeptTokenReference()
-  | SkippedTokenReference()
-  | RuleReference()
-  | InlinePattern()
-  ;
-
-// ( Number() | Name() )
-Group : ::T_PARENTHESIS_OPEN:: Alternation() ::T_PARENTHESIS_CLOSE:: ;
-
-// <T_NAME>
-KeptTokenReference
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createKeptTokenReference($ctx, $children); }
-  : ::T_ANGLE_OPEN:: <T_NAME> ::T_ANGLE_CLOSE::
-  ;
-
-// ::T_NAME::
-SkippedTokenReference
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createSkippedTokenReference($ctx, $children); }
-  : ::T_DOUBLE_COLON:: <T_NAME> ::T_DOUBLE_COLON::
-  ;
-
-// Number()
-RuleReference
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRuleReference($ctx, $children); }
-  : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::
-  ;
-
-// "\+"
-InlinePattern
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createInlinePattern($ctx, $children); }
-  : <T_STRING>
-  ;
-
-//
-// How many times a statement may repeat.
-//
-
-Quantifier
-  : ZeroOrOne()
-  | OneOrMore()
-  | ZeroOrMore()
-  | Range()
-  ;
-
-// ?
-ZeroOrOne
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createZeroOrOne($ctx, $children); }
-  : <T_QUESTION_MARK>
-  ;
-
-// +
-OneOrMore
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createOneOrMore($ctx, $children); }
-  : <T_PLUS>
-  ;
-
-// *
-ZeroOrMore
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createZeroOrMore($ctx, $children); }
-  : <T_ASTERISK>
-  ;
-
-Range : ::T_BRACE_OPEN:: RangeBody() ::T_BRACE_CLOSE:: ;
-
-RangeBody
-  : RangeFromTo()
-  | RangeFrom()
-  | RangeTo()
-  | RangeExactly()
-  ;
-
-// {2,5}
-RangeFromTo
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeFromTo($ctx, $children); }
-  : <T_INT> ::T_COMMA:: <T_INT>
-  ;
-
-// {2,}
-RangeFrom
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeFrom($ctx, $children); }
-  : <T_INT> ::T_COMMA::
-  ;
-
-// {,5}
-RangeTo
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeTo($ctx, $children); }
-  : ::T_COMMA:: <T_INT>
-  ;
-
-// {5}
-RangeExactly
-  -> { return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeExactly($ctx, $children); }
-  : <T_INT>
-  ;

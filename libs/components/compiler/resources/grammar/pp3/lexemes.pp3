@@ -1,0 +1,36 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes Of The PP3 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  What this format spells in a way of its own: a token says what it does by
+ *  naming the action instead of naming the state it ends up in, a token may be
+ *  declared for every state at once, a lexer may be written by hand, and a rule
+ *  is separated from what it recognizes by a colon and nothing else.
+ *
+ */
+
+/**
+ * The declaration of a token: the state it belongs to, its name, its pattern
+ * and everything it does to the reading.
+ *
+ * The actions are captured the way they are written rather than one by one: a
+ * subgroup captures a single value, while a token may do any number of things,
+ * so telling them apart is left to the one reading the declaration.
+ */
+%token T_TOKEN            %token\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
+%token T_SKIP             %skip\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
+
+// The code building a lexer is read by a lexer of its own, so the declaration
+// itself ends at the name of the state it reads
+%token T_LEXER            %lexer\h++([a-zA-Z_][a-zA-Z0-9_]*+)
+
+// The separator of a rule is spelled with the same colon a skipped token
+// reference is surrounded by a pair of
+%token T_DOUBLE_COLON     ::
+%token T_COLON            :
+
+// What a predicate is written with: look ahead for the statement, and look
+// ahead for anything but it
+%token T_AMPERSAND        &
+%token T_EXCLAMATION      !

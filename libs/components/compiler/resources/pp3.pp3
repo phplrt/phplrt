@@ -1,244 +1,37 @@
-//
-// The PP3 grammar format, written in the very format it describes.
-//
-// The parser this file is compiled into is generated into
-// "src/Syntax/PP3/PP3Parser.php" and is committed along with it: reading a
-// grammar file needs a parser, and this is the one that reads them all.
-//
-// Every node the file is read into is built by "PP3NodeFactory", which is named
-// in full: a reducer is written into the generated parser and is evaluated as
-// it is alike, and only one of the two places knows what this file imports.
-//
+/**
+ * -----------------------------------------------------------------------------
+ *  The PP3 Grammar Format, Written In PP3
+ * -----------------------------------------------------------------------------
+ *
+ *  This is the format the compiler reads today, described in the very format it
+ *  describes.
+ *
+ *  Reading a grammar file needs a parser, so the parser of a format cannot be
+ *  built from the grammar describing it while it runs: it is generated into
+ *  "src/Syntax/PP3/PP3Parser.php" ahead of time and is committed along with
+ *  this file. Run "composer dev:syntax" after changing anything here.
+ *
+ *  Everything a rule is turned into is written in the rule itself, and every
+ *  class it names is named in full: the very same body is written into the
+ *  generated parser and is evaluated as it is alike, and only one of the two
+ *  places knows what this file imports.
+ *
+ */
 
-%skip T_WHITESPACE \s++
-%skip T_COMMENT    //[^\r\n]*+
-%skip T_DOC        /\*(.*?)\*/
+%include grammar/lexemes            // The tokens both formats read alike
+%include grammar/pp3/lexemes        // The tokens of this format
 
-//
-// A declaration is read as a single token whose subgroups capture its parts:
-// the state it belongs to, its name, its pattern and everything it does.
-//
-// Which value is which is decided by its position rather than by its content: a
-// pattern may be spelled exactly like a name and may begin with the two slashes
-// a comment begins with. A single expression knows every position at once, which
-// is what tells the values apart.
-//
-%token T_TOKEN   %token\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
-%token T_SKIP    %skip\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
-%token T_PRAGMA  %pragma\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\h++(\S++)
-%token T_INCLUDE %include\h++(\S++)
-
-// The code building a lexer is read by a lexer of its own, so the declaration
-// itself ends at the name of the state it reads
-%token T_LEXER   %lexer\h++([a-zA-Z_][a-zA-Z0-9_]*+)
-
-// A reducer is always written as a block of code, so the arrow of a rule is
-// only ever followed by a brace
-%token T_PHP     ->\s*+(?=\{) -> state(php)
-
-// The separator of a rule is spelled with the same colon a skipped token
-// reference is surrounded by a pair of
-%token T_DOUBLE_COLON      ::
-%token T_COLON             :
-
-%token T_SEMICOLON         ;
-%token T_OR                \|
-%token T_PARENTHESIS_OPEN  \(
-%token T_PARENTHESIS_CLOSE \)
-%token T_ANGLE_OPEN        <
-%token T_ANGLE_CLOSE       >
-%token T_QUESTION_MARK     \?
-%token T_PLUS              \+
-%token T_ASTERISK          \*
-%token T_BRACE_OPEN        \{
-%token T_BRACE_CLOSE       \}
-%token T_COMMA             ,
-
-%token T_INT               \d++
-%token T_STRING            "[^"\\]*+(?:\\.[^"\\]*+)*+"
-%token T_NAME              \\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\[a-zA-Z_][a-zA-Z0-9_]*+)*+
-
-// A brace written inside a string is only a brace for PHP itself, so the block
-// of code is read the way PHP reads it
-%lexer php -> { new \Phplrt\Compiler\Syntax\PP3\PP3PhpEmbeddingLexer() }
+%include grammar/directives         // %pragma, %include
+%include grammar/pp3/declarations   // %token, %lexer, a rule of the parser
+%include grammar/reducers           // -> { ... }
+%include grammar/statements         // What a rule recognizes
+%include grammar/pp3/statements     // &Number(), !Number()
+%include grammar/quantifiers        // How many times a statement repeats
 
 %pragma root Grammar
 
-//
-// A grammar file is a list of declarations, each of them written either as
-// a "%" directive or as a rule of the parser.
-//
-
+/**
+ * A grammar file is a list of declarations, each of them written either as a
+ * "%" directive or as a rule of the parser.
+ */
 Grammar : Declaration()* ;
-
-Declaration
-  : TokenDeclaration()
-  | SkippedTokenDeclaration()
-  | PragmaDeclaration()
-  | IncludeDeclaration()
-  | LexerDeclaration()
-  | RuleDeclaration()
-  ;
-
-// %token string:T_QUOTE " -> state(string)
-TokenDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createTokenDeclaration($ctx, $children); }
-  : <T_TOKEN>
-  ;
-
-// %skip T_WHITESPACE \s++
-SkippedTokenDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createSkippedTokenDeclaration($ctx, $children); }
-  : <T_SKIP>
-  ;
-
-// %pragma root Expression
-PragmaDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createPragmaDeclaration($ctx, $children); }
-  : <T_PRAGMA>
-  ;
-
-// %include grammar/lexemes
-IncludeDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createIncludeDeclaration($ctx, $children); }
-  : <T_INCLUDE>
-  ;
-
-// %lexer php -> { new \App\PhpLexer() }
-LexerDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createLexerDeclaration($ctx, $children); }
-  : <T_LEXER> Reducer()
-  ;
-
-// Sum -> { return new SumNode($children); } : Number() ;
-RuleDeclaration
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRuleDeclaration($ctx, $children); }
-  : <T_NAME> Reducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
-  ;
-
-Reducer
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createCodeReducer($ctx, $children); }
-  : <T_PHP>
-  ;
-
-//
-// What a rule of the parser recognizes: the alternatives it is written of,
-// each of them a sequence of statements.
-//
-
-// Number() | Name()
-Alternation
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createAlternation($ctx, $children); }
-  : Concatenation() AlternationTail()*
-  ;
-
-AlternationTail : ::T_OR:: Concatenation() ;
-
-// Number() ::T_PLUS:: Number()
-Concatenation
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createConcatenation($ctx, $children); }
-  : Suffixed()+
-  ;
-
-// Number()*
-Suffixed
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRepetition($ctx, $children); }
-  : Primary() Quantifier()?
-  ;
-
-Primary
-  : Group()
-  | KeptTokenReference()
-  | SkippedTokenReference()
-  | RuleReference()
-  | InlinePattern()
-  ;
-
-// ( Number() | Name() )
-Group : ::T_PARENTHESIS_OPEN:: Alternation() ::T_PARENTHESIS_CLOSE:: ;
-
-// <T_NAME>
-KeptTokenReference
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createKeptTokenReference($ctx, $children); }
-  : ::T_ANGLE_OPEN:: <T_NAME> ::T_ANGLE_CLOSE::
-  ;
-
-// ::T_NAME::
-SkippedTokenReference
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createSkippedTokenReference($ctx, $children); }
-  : ::T_DOUBLE_COLON:: <T_NAME> ::T_DOUBLE_COLON::
-  ;
-
-// Number()
-RuleReference
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRuleReference($ctx, $children); }
-  : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::
-  ;
-
-// "\+"
-InlinePattern
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createInlinePattern($ctx, $children); }
-  : <T_STRING>
-  ;
-
-//
-// How many times a statement may repeat.
-//
-
-Quantifier
-  : ZeroOrOne()
-  | OneOrMore()
-  | ZeroOrMore()
-  | Range()
-  ;
-
-// ?
-ZeroOrOne
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createZeroOrOne($ctx, $children); }
-  : <T_QUESTION_MARK>
-  ;
-
-// +
-OneOrMore
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createOneOrMore($ctx, $children); }
-  : <T_PLUS>
-  ;
-
-// *
-ZeroOrMore
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createZeroOrMore($ctx, $children); }
-  : <T_ASTERISK>
-  ;
-
-Range : ::T_BRACE_OPEN:: RangeBody() ::T_BRACE_CLOSE:: ;
-
-RangeBody
-  : RangeFromTo()
-  | RangeFrom()
-  | RangeTo()
-  | RangeExactly()
-  ;
-
-// {2,5}
-RangeFromTo
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRangeFromTo($ctx, $children); }
-  : <T_INT> ::T_COMMA:: <T_INT>
-  ;
-
-// {2,}
-RangeFrom
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRangeFrom($ctx, $children); }
-  : <T_INT> ::T_COMMA::
-  ;
-
-// {,5}
-RangeTo
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRangeTo($ctx, $children); }
-  : ::T_COMMA:: <T_INT>
-  ;
-
-// {5}
-RangeExactly
-  -> { return \Phplrt\Compiler\Syntax\PP3\PP3NodeFactory::createRangeExactly($ctx, $children); }
-  : <T_INT>
-  ;

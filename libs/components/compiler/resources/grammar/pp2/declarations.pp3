@@ -1,0 +1,132 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Declarations Of The PP2 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  Everything a grammar file of this format is written of, apart from the
+ *  directives both formats share.
+ *
+ */
+
+Declaration
+  : TokenDeclaration()
+  | PragmaDeclaration()
+  | IncludeDeclaration()
+  | RuleDeclaration()
+  ;
+
+/**
+ * A token to read, like:
+ *  - %token string:T_QUOTE " -> default
+ *  - %skip T_WHITESPACE \s++
+ *
+ *  A declaration is read as a single token whose subgroups capture its parts,
+ *  so which value is which is decided by its position: the state it belongs to,
+ *  its name, its pattern and the state it switches to.
+ *
+ *  A token that is read but never reaches the parser is declared with "%skip"
+ *  instead of "%token", and nothing else about it differs.
+ *
+ *  The state the token switches to is recorded as it is written: what entering
+ *  it means is decided while the grammar is being read into a lexer.
+ */
+TokenDeclaration -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $name = $children->captures[1] ?? '';
+    $pattern = $children->captures[2] ?? '';
+
+    if ($name === '' || $pattern === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+    }
+
+    $state = $children->captures[0] ?? '';
+    $next = $children->captures[3] ?? '';
+
+    return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
+        name: $name,
+        pattern: $pattern,
+        state: $state === '' ? null : $state,
+        next: $next === '' ? null : $next,
+        isHidden: \str_starts_with($children->value, '%skip'),
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_TOKEN>
+  | <T_SKIP>
+  ;
+
+/**
+ * A rule of the parser, like:
+ *  - #Sum -> { return new SumNode($children); } ::= Number() ;
+ *
+ *  The name is written first, the reducer after it and what the rule recognizes
+ *  past the separator, so the declaration is read from both ends: whatever is
+ *  left between them is the reducer, in case it has been written at all.
+ *
+ *  The "#" marker keeps the name of the rule on the compiled parser, so that
+ *  the grammar may still be modified once it has been built.
+ */
+RuleDeclaration -> {
+    \assert(\is_array($children));
+
+    $isKept = ($children[0] ?? null) === true;
+
+    if ($isKept) {
+        \array_shift($children);
+    }
+
+    $name = \array_shift($children);
+    $body = \array_pop($children);
+    $reducer = \array_pop($children);
+
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
+    \assert($body instanceof \Phplrt\Compiler\Node\Statement\Statement);
+    \assert($reducer === null || $reducer instanceof \Phplrt\Compiler\Node\Reducer\Reducer);
+
+    return new \Phplrt\Compiler\Node\Declaration\RuleDeclaration(
+        name: $name->value,
+        body: $body,
+        reducer: $reducer,
+        isKept: $isKept,
+        offset: $name->offset,
+        length: \max(0, $body->offset + $body->length - $name->offset),
+    );
+}
+  : KeptMarker()? <T_NAME> Reducer()? ::T_EQ:: Alternation() ::T_SEMICOLON::?
+  ;
+
+// The marker builds no node of its own: it only says that the rule it belongs
+// to is one of those kept by name
+KeptMarker -> { return true; } : <T_HASH> ;
+
+Reducer
+  : CodeReducer()
+  | ClassReducer()
+  ;
+
+/**
+ * A reducer written as the name of a class, like:
+ *  - -> \App\Ast\SumNode
+ *
+ *  The name is not resolved here: whether such a class exists is only known
+ *  where the parser is run.
+ */
+ClassReducer -> {
+    \assert(\is_array($children));
+
+    $token = $children[0] ?? null;
+
+    \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($token->value !== '', 'The lexer never produces an empty token');
+
+    return new \Phplrt\Compiler\Node\Reducer\ClassReducer(
+        class: $token->value,
+        offset: $token->offset,
+        length: \max(0, $token->end - $token->offset),
+    );
+}
+  : ::T_ARROW:: <T_NAME>
+  ;

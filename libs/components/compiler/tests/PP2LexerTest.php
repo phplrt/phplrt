@@ -23,7 +23,7 @@ final class PP2LexerTest extends TestCase
      *
      * @var non-empty-string
      */
-    private const string GRAMMAR = __DIR__ . '/../resources/grammar/pp2.pp3';
+    private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
 
     /**
      * Compiling the grammar takes long enough to be done once for the whole

@@ -14,6 +14,7 @@ use Phplrt\Compiler\Tests\Stub\LexerPassStub;
 use Phplrt\Compiler\Tests\Stub\ParserPassStub;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\UserDefinedChannel;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\PhpCodeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
@@ -22,6 +23,7 @@ use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Source\Source;
 use Phplrt\Source\VirtualFile;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -86,6 +88,60 @@ final class PP3LoaderTest extends TestCase
         $this->expectException(UnexpectedTokenException::class);
 
         $this->load("%token T_A a\nA -> \\App\\Node : <T_A> ;");
+    }
+
+    #[TestDox('A statement written after "&" is recognized without being read')]
+    public function testExpectedPredicate(): void
+    {
+        $parser = $this->compile(<<<'PP3'
+            %token T_A a
+            %token T_B b
+
+            Pair -> { return \count($children); }
+              : &<T_A> <T_A> <T_B>
+              ;
+            PP3);
+
+        // The predicate reads nothing, so the "a" is still there to be read
+        // and never reaches the rule twice
+        self::assertSame(2, $parser->parse(new Source('ab')));
+    }
+
+    #[TestDox('A statement written after "!" is recognized when the statement is not')]
+    public function testUnexpectedPredicate(): void
+    {
+        $parser = $this->compile(<<<'PP3'
+            %skip  T_WHITESPACE \s++
+            %token T_INT        \d++
+            %token T_NAME       [a-z]++
+
+            %pragma root Lonely
+
+            Lonely -> { return $children[0]->value; }
+              : <T_INT> !<T_NAME>
+              ;
+            PP3);
+
+        self::assertSame('42', $parser->parse(new Source('42')));
+
+        $this->expectException(UnexpectedTokenException::class);
+
+        $parser->parse(new Source('42 beta'));
+    }
+
+    #[TestDox('A predicate stands before the quantifier of the statement it looks at')]
+    public function testPredicateAppliesToTheQuantifiedStatement(): void
+    {
+        $parser = $this->compile(<<<'PP3'
+            %token T_A a
+            %token T_B b
+
+            Pair -> { return \count($children); }
+              : &<T_A>+ <T_A> <T_A> <T_B>
+              ;
+            PP3);
+
+        self::assertSame(3, $parser->parse(new Source('aab')));
     }
 
     #[TestDox('A reducer written as code is read')]
@@ -387,6 +443,14 @@ final class PP3LoaderTest extends TestCase
         $compiler->load(new VirtualFile(self::PATHNAME, $source));
 
         return $compiler->build();
+    }
+
+    private function compile(string $source): ParserInterface
+    {
+        $compiler = new Compiler();
+        $compiler->load(new VirtualFile(self::PATHNAME, $source));
+
+        return $compiler->getParser();
     }
 
     /**

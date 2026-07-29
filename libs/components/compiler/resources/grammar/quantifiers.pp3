@@ -1,0 +1,179 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Quantifiers
+ * -----------------------------------------------------------------------------
+ *
+ *  How many times a statement may repeat. Both formats spell this exactly the
+ *  same way.
+ *
+ */
+
+Quantifier
+  : ZeroOrOne()
+  | OneOrMore()
+  | ZeroOrMore()
+  | Range()
+  ;
+
+/**
+ * Never or once, like:
+ *  - Number()?
+ */
+ZeroOrOne -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: 0,
+        max: 1,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_QUESTION_MARK>
+  ;
+
+/**
+ * At least once, like:
+ *  - Number()+
+ */
+OneOrMore -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: 1,
+        max: \INF,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_PLUS>
+  ;
+
+/**
+ * Any number of times, like:
+ *  - Number()*
+ */
+ZeroOrMore -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: 0,
+        max: \INF,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_ASTERISK>
+  ;
+
+Range : ::T_BRACE_OPEN:: RangeBody() ::T_BRACE_CLOSE:: ;
+
+RangeBody
+  : RangeFromTo()
+  | RangeFrom()
+  | RangeTo()
+  | RangeExactly()
+  ;
+
+/**
+ * Between two numbers of times, like:
+ *  - Number(){2,5}
+ *
+ *  The range is written by hand, so the greatest number may well be lower than
+ *  the least one. Whether it makes sense is decided while the grammar is being
+ *  compiled rather than while it is being read.
+ */
+RangeFromTo -> {
+    \assert(\is_array($children));
+
+    $from = $children[0] ?? null;
+    $to = $children[1] ?? null;
+
+    \assert($from instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($to instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+    $min = (int) $from->value;
+    $max = (int) $to->value;
+
+    \assert($min >= 0 && $max >= 0, 'A number is written of digits only');
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: $min,
+        max: $max,
+        offset: $from->offset,
+        length: \max(0, $to->end - $from->offset),
+    );
+}
+  : <T_INT> ::T_COMMA:: <T_INT>
+  ;
+
+/**
+ * At least a number of times, like:
+ *  - Number(){2,}
+ */
+RangeFrom -> {
+    \assert(\is_array($children));
+
+    $from = $children[0] ?? null;
+
+    \assert($from instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+    $min = (int) $from->value;
+
+    \assert($min >= 0, 'A number is written of digits only');
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: $min,
+        max: \INF,
+        offset: $from->offset,
+        length: \max(0, $from->end - $from->offset),
+    );
+}
+  : <T_INT> ::T_COMMA::
+  ;
+
+/**
+ * At most a number of times, like:
+ *  - Number(){,5}
+ */
+RangeTo -> {
+    \assert(\is_array($children));
+
+    $to = $children[0] ?? null;
+
+    \assert($to instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+    $max = (int) $to->value;
+
+    \assert($max >= 0, 'A number is written of digits only');
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: 0,
+        max: $max,
+        offset: $to->offset,
+        length: \max(0, $to->end - $to->offset),
+    );
+}
+  : ::T_COMMA:: <T_INT>
+  ;
+
+/**
+ * Exactly a number of times, like:
+ *  - Number(){5}
+ */
+RangeExactly -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $count = (int) $children->value;
+
+    \assert($count >= 0, 'A number is written of digits only');
+
+    return new \Phplrt\Compiler\Node\Statement\Quantifier(
+        min: $count,
+        max: $count,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_INT>
+  ;

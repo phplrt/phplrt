@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Syntax\PP2;
+namespace Phplrt\Compiler\Syntax\Common;
 
-use Phplrt\Compiler\Syntax\Common\PhpLexer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
@@ -20,7 +19,7 @@ use Phplrt\Lexer\Token\EndOfInputToken;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler
  */
-final readonly class PP2PhpEmbeddingLexer implements LexerInterface
+final readonly class PhpBlockLexer implements LexerInterface
 {
     private const string BRACE_OPEN = '{';
 

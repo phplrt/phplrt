@@ -1,0 +1,50 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Statements Of The PP3 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  What may be written before a statement in this format: a predicate, looking
+ *  ahead at the statement without reading it.
+ *
+ */
+
+/**
+ * A statement to look ahead at, like:
+ *  - &<T_ELSE>
+ *  - !Keyword()
+ *
+ *  The statement is recognized the way any other one is, and whatever it has
+ *  read is given back afterwards: an "&" carries on when it has been
+ *  recognized, a "!" when it has not, and neither of them ever reaches the
+ *  syntax tree.
+ *
+ *  The predicate stands before the quantifier rather than after it, so
+ *  "&Number()*" looks ahead at any number of them at once instead of looking
+ *  ahead any number of times.
+ *
+ *  A statement written with nothing before it is that statement.
+ */
+Prefixed -> {
+    \assert(\is_array($children));
+
+    $sign = $children[0] ?? null;
+    $statement = $children[1] ?? null;
+
+    if ($statement === null) {
+        \assert($sign instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+        return $sign;
+    }
+
+    \assert($sign instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+    return new \Phplrt\Compiler\Node\Statement\Predicate(
+        statement: $statement,
+        isExpected: $sign->value === '&',
+        offset: $sign->offset,
+        length: \max(0, $statement->offset + $statement->length - $sign->offset),
+    );
+}
+  : (<T_AMPERSAND> | <T_EXCLAMATION>)? Suffixed()
+  ;

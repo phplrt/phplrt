@@ -13,38 +13,38 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
     public const int T_WHITESPACE = 0;
     public const int T_COMMENT = 1;
     public const int T_DOC = 2;
-    public const int T_TOKEN = 3;
-    public const int T_SKIP = 4;
-    public const int T_PRAGMA = 5;
-    public const int T_INCLUDE = 6;
-    public const int T_PHP = 7;
-    public const int T_ARROW = 8;
-    public const int T_DOUBLE_COLON = 9;
-    public const int T_EQ = 10;
-    public const int T_HASH = 11;
-    public const int T_SEMICOLON = 12;
-    public const int T_OR = 13;
-    public const int T_PARENTHESIS_OPEN = 14;
-    public const int T_PARENTHESIS_CLOSE = 15;
-    public const int T_ANGLE_OPEN = 16;
-    public const int T_ANGLE_CLOSE = 17;
-    public const int T_QUESTION_MARK = 18;
-    public const int T_PLUS = 19;
-    public const int T_ASTERISK = 20;
-    public const int T_BRACE_OPEN = 21;
-    public const int T_BRACE_CLOSE = 22;
-    public const int T_COMMA = 23;
-    public const int T_INT = 24;
-    public const int T_STRING = 25;
-    public const int T_NAME = 26;
+    public const int T_PRAGMA = 3;
+    public const int T_INCLUDE = 4;
+    public const int T_PHP = 5;
+    public const int T_SEMICOLON = 6;
+    public const int T_OR = 7;
+    public const int T_PARENTHESIS_OPEN = 8;
+    public const int T_PARENTHESIS_CLOSE = 9;
+    public const int T_ANGLE_OPEN = 10;
+    public const int T_ANGLE_CLOSE = 11;
+    public const int T_QUESTION_MARK = 12;
+    public const int T_PLUS = 13;
+    public const int T_ASTERISK = 14;
+    public const int T_BRACE_OPEN = 15;
+    public const int T_BRACE_CLOSE = 16;
+    public const int T_COMMA = 17;
+    public const int T_INT = 18;
+    public const int T_STRING = 19;
+    public const int T_NAME = 20;
+    public const int T_TOKEN = 21;
+    public const int T_SKIP = 22;
+    public const int T_ARROW = 23;
+    public const int T_DOUBLE_COLON = 24;
+    public const int T_EQ = 25;
+    public const int T_HASH = 26;
 
     public function __construct()
     {
-        $state_php = new \Phplrt\Compiler\Syntax\PP2\PP2PhpEmbeddingLexer();
+        $state_php = new \Phplrt\Compiler\Syntax\Common\PhpBlockLexer();
 
         parent::__construct(
             lexer: new \Phplrt\Lexer\Lexer(
-                pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%token\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+(\\S++))?)(*MARK:3))|(?:(?:%skip\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+(\\S++))?)(*MARK:4))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:5))|(?:(?:%include\\h++(\\S++))(*MARK:6))|(?:(?:->\\s*+(?=\\{))(*MARK:7))|(?:(?:->)(*MARK:8))|(?:(?:::(?!=))(*MARK:9))|(?:(?:::=|:|=)(*MARK:10))|(?:(?:\\#)(*MARK:11))|(?:(?:;)(*MARK:12))|(?:(?:\\|)(*MARK:13))|(?:(?:\\()(*MARK:14))|(?:(?:\\))(*MARK:15))|(?:(?:<)(*MARK:16))|(?:(?:>)(*MARK:17))|(?:(?:\\?)(*MARK:18))|(?:(?:\\+)(*MARK:19))|(?:(?:\\*)(*MARK:20))|(?:(?:\\{)(*MARK:21))|(?:(?:\\})(*MARK:22))|(?:(?:,)(*MARK:23))|(?:(?:\\d++)(*MARK:24))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:25))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:26))|(?:(?:[^\\s]++)(*MARK:27)))/Ssum',
+                pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:3))|(?:(?:%include\\h++(\\S++))(*MARK:4))|(?:(?:->\\s*+(?=\\{))(*MARK:5))|(?:(?:;)(*MARK:6))|(?:(?:\\|)(*MARK:7))|(?:(?:\\()(*MARK:8))|(?:(?:\\))(*MARK:9))|(?:(?:<)(*MARK:10))|(?:(?:>)(*MARK:11))|(?:(?:\\?)(*MARK:12))|(?:(?:\\+)(*MARK:13))|(?:(?:\\*)(*MARK:14))|(?:(?:\\{)(*MARK:15))|(?:(?:\\})(*MARK:16))|(?:(?:,)(*MARK:17))|(?:(?:\\d++)(*MARK:18))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:19))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:20))|(?:(?:%token\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+(\\S++))?)(*MARK:21))|(?:(?:%skip\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+(\\S++))?)(*MARK:22))|(?:(?:->)(*MARK:23))|(?:(?:::(?!=))(*MARK:24))|(?:(?:::=|:|=)(*MARK:25))|(?:(?:\\#)(*MARK:26))|(?:(?:[^\\s]++)(*MARK:27)))/Ssum',
                 channels: [
                     'Hidden',
                     'Hidden',
@@ -55,15 +55,9 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                     'T_WHITESPACE',
                     'T_COMMENT',
                     'T_DOC',
-                    'T_TOKEN',
-                    'T_SKIP',
                     'T_PRAGMA',
                     'T_INCLUDE',
                     'T_PHP',
-                    'T_ARROW',
-                    'T_DOUBLE_COLON',
-                    'T_EQ',
-                    'T_HASH',
                     'T_SEMICOLON',
                     'T_OR',
                     'T_PARENTHESIS_OPEN',
@@ -79,111 +73,127 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                     'T_INT',
                     'T_STRING',
                     'T_NAME',
+                    'T_TOKEN',
+                    'T_SKIP',
+                    'T_ARROW',
+                    'T_DOUBLE_COLON',
+                    'T_EQ',
+                    'T_HASH',
                 ],
                 transitions: [
-                    7 => $state_php,
+                    5 => $state_php,
                 ],
                 subgroups: [
                     2 => 1,
-                    4,
-                    4,
                     2,
                     1,
+                    21 => 4,
+                    4,
                 ],
             ),
             grammar: [
                 new \Phplrt\Parser\Grammar\Repetition(1, 0, \INF),
-                new \Phplrt\Parser\Grammar\Alternation([2, 3, 4, 5, 6]),
+                new \Phplrt\Parser\Grammar\Alternation([2, 5, 6, 7]),
+                new \Phplrt\Parser\Grammar\Alternation([3, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TOKEN, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SKIP, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PRAGMA, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INCLUDE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([7, 9, 10, 15, 16, 48]),
-                new \Phplrt\Parser\Grammar\Optional(8),
+                new \Phplrt\Parser\Grammar\Concatenation([8, 10, 11, 16, 17, 49]),
+                new \Phplrt\Parser\Grammar\Optional(9),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_HASH, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NAME, true),
-                new \Phplrt\Parser\Grammar\Optional(11),
-                new \Phplrt\Parser\Grammar\Alternation([12, 13]),
+                new \Phplrt\Parser\Grammar\Optional(12),
+                new \Phplrt\Parser\Grammar\Alternation([13, 14]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PHP, true),
-                new \Phplrt\Parser\Grammar\Concatenation([14, 9]),
+                new \Phplrt\Parser\Grammar\Concatenation([15, 10]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ARROW, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EQ, false),
-                new \Phplrt\Parser\Grammar\Concatenation([17, 45]),
-                new \Phplrt\Parser\Grammar\Repetition(18, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([19, 30]),
-                new \Phplrt\Parser\Grammar\Alternation([20, 23, 26, 28, 29]),
-                new \Phplrt\Parser\Grammar\Concatenation([21, 16, 22]),
+                new \Phplrt\Parser\Grammar\Concatenation([18, 46]),
+                new \Phplrt\Parser\Grammar\Repetition(19, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([20, 31]),
+                new \Phplrt\Parser\Grammar\Alternation([21, 24, 27, 29, 30]),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 17, 23]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_OPEN, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Concatenation([24, 9, 25]),
+                new \Phplrt\Parser\Grammar\Concatenation([25, 10, 26]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_OPEN, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Concatenation([27, 9, 27]),
+                new \Phplrt\Parser\Grammar\Concatenation([28, 10, 28]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DOUBLE_COLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([9, 21, 22]),
+                new \Phplrt\Parser\Grammar\Concatenation([10, 22, 23]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
-                new \Phplrt\Parser\Grammar\Optional(31),
-                new \Phplrt\Parser\Grammar\Alternation([32, 33, 34, 35]),
+                new \Phplrt\Parser\Grammar\Optional(32),
+                new \Phplrt\Parser\Grammar\Alternation([33, 34, 35, 36]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUESTION_MARK, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ASTERISK, true),
-                new \Phplrt\Parser\Grammar\Concatenation([36, 37, 44]),
+                new \Phplrt\Parser\Grammar\Concatenation([37, 38, 45]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_OPEN, false),
-                new \Phplrt\Parser\Grammar\Alternation([38, 41, 42, 43]),
-                new \Phplrt\Parser\Grammar\Concatenation([39, 40, 39]),
+                new \Phplrt\Parser\Grammar\Alternation([39, 42, 43, 44]),
+                new \Phplrt\Parser\Grammar\Concatenation([40, 41, 40]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
-                new \Phplrt\Parser\Grammar\Concatenation([39, 40]),
-                new \Phplrt\Parser\Grammar\Concatenation([40, 39]),
+                new \Phplrt\Parser\Grammar\Concatenation([40, 41]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 40]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Repetition(46, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([47, 17]),
+                new \Phplrt\Parser\Grammar\Repetition(47, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([48, 18]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(49),
+                new \Phplrt\Parser\Grammar\Optional(50),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
             ],
             initial: 0,
             reducers: [
                 2 => self::reduceTokenDeclaration(...),
-                3 => self::reduceSkippedTokenDeclaration(...),
-                4 => self::reducePragmaDeclaration(...),
-                5 => self::reduceIncludeDeclaration(...),
-                6 => self::reduceRuleDeclaration(...),
-                8 => self::reduceKeptMarker(...),
-                12 => self::reduceCodeReducer(...),
-                13 => self::reduceClassReducer(...),
-                16 => self::reduceAlternation(...),
-                17 => self::reduceConcatenation(...),
-                18 => self::reduceSuffixed(...),
-                23 => self::reduceKeptTokenReference(...),
-                26 => self::reduceSkippedTokenReference(...),
-                28 => self::reduceRuleReference(...),
-                29 => self::reduceInlinePattern(...),
-                32 => self::reduceZeroOrOne(...),
-                33 => self::reduceOneOrMore(...),
-                34 => self::reduceZeroOrMore(...),
-                38 => self::reduceRangeFromTo(...),
-                41 => self::reduceRangeFrom(...),
-                42 => self::reduceRangeTo(...),
-                43 => self::reduceRangeExactly(...),
+                5 => self::reducePragmaDeclaration(...),
+                6 => self::reduceIncludeDeclaration(...),
+                7 => self::reduceRuleDeclaration(...),
+                9 => self::reduceKeptMarker(...),
+                13 => self::reduceCodeReducer(...),
+                14 => self::reduceClassReducer(...),
+                17 => self::reduceAlternation(...),
+                18 => self::reduceConcatenation(...),
+                19 => self::reduceSuffixed(...),
+                24 => self::reduceKeptTokenReference(...),
+                27 => self::reduceSkippedTokenReference(...),
+                29 => self::reduceRuleReference(...),
+                30 => self::reduceInlinePattern(...),
+                33 => self::reduceZeroOrOne(...),
+                34 => self::reduceOneOrMore(...),
+                35 => self::reduceZeroOrMore(...),
+                39 => self::reduceRangeFromTo(...),
+                42 => self::reduceRangeFrom(...),
+                43 => self::reduceRangeTo(...),
+                44 => self::reduceRangeExactly(...),
             ],
             startTokens: [
                 [
                     3 => true,
                     true,
+                    20 => true,
                     true,
                     true,
-                    11 => true,
                     26 => true,
                 ],
                 [
                     3 => true,
                     true,
+                    20 => true,
                     true,
                     true,
-                    11 => true,
                     26 => true,
+                ],
+                [
+                    21 => true,
+                    true,
+                ],
+                [
+                    21 => true,
+                ],
+                [
+                    22 => true,
                 ],
                 [
                     3 => true,
@@ -192,74 +202,113 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                     4 => true,
                 ],
                 [
+                    20 => true,
+                    26 => true,
+                ],
+                [
+                    26 => true,
+                ],
+                [
+                    26 => true,
+                ],
+                [
+                    20 => true,
+                ],
+                [
+                    5 => true,
+                    23 => true,
+                ],
+                [
+                    5 => true,
+                    23 => true,
+                ],
+                [
                     5 => true,
                 ],
                 [
-                    6 => true,
+                    23 => true,
                 ],
                 [
-                    11 => true,
-                    26 => true,
+                    23 => true,
                 ],
                 [
-                    11 => true,
+                    25 => true,
                 ],
                 [
-                    11 => true,
-                ],
-                [
-                    26 => true,
-                ],
-                [
-                    7 => true,
+                    8 => true,
+                    10 => true,
+                    19 => true,
                     true,
+                    24 => true,
                 ],
                 [
-                    7 => true,
+                    8 => true,
+                    10 => true,
+                    19 => true,
                     true,
+                    24 => true,
                 ],
                 [
-                    7 => true,
+                    8 => true,
+                    10 => true,
+                    19 => true,
+                    true,
+                    24 => true,
+                ],
+                [
+                    8 => true,
+                    10 => true,
+                    19 => true,
+                    true,
+                    24 => true,
                 ],
                 [
                     8 => true,
                 ],
                 [
                     8 => true,
+                ],
+                [
+                    9 => true,
                 ],
                 [
                     10 => true,
                 ],
                 [
-                    9 => true,
-                    14 => true,
-                    16 => true,
-                    25 => true,
+                    10 => true,
+                ],
+                [
+                    11 => true,
+                ],
+                [
+                    24 => true,
+                ],
+                [
+                    24 => true,
+                ],
+                [
+                    20 => true,
+                ],
+                [
+                    19 => true,
+                ],
+                [
+                    12 => true,
+                    true,
+                    true,
                     true,
                 ],
                 [
-                    9 => true,
-                    14 => true,
-                    16 => true,
-                    25 => true,
+                    12 => true,
+                    true,
+                    true,
                     true,
                 ],
                 [
-                    9 => true,
-                    14 => true,
-                    16 => true,
-                    25 => true,
-                    true,
+                    12 => true,
                 ],
                 [
-                    9 => true,
-                    14 => true,
-                    16 => true,
-                    25 => true,
-                    true,
-                ],
-                [
-                    14 => true,
+                    13 => true,
                 ],
                 [
                     14 => true,
@@ -268,96 +317,52 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                     15 => true,
                 ],
                 [
-                    16 => true,
+                    15 => true,
                 ],
                 [
-                    16 => true,
+                    17 => true,
+                    true,
+                ],
+                [
+                    18 => true,
+                ],
+                [
+                    18 => true,
                 ],
                 [
                     17 => true,
                 ],
                 [
-                    9 => true,
-                ],
-                [
-                    9 => true,
-                ],
-                [
-                    26 => true,
-                ],
-                [
-                    25 => true,
-                ],
-                [
                     18 => true,
-                    true,
-                    true,
-                    true,
                 ],
                 [
-                    18 => true,
-                    true,
-                    true,
-                    true,
+                    17 => true,
                 ],
                 [
                     18 => true,
                 ],
                 [
-                    19 => true,
+                    16 => true,
                 ],
                 [
-                    20 => true,
+                    7 => true,
                 ],
                 [
-                    21 => true,
+                    7 => true,
                 ],
                 [
-                    21 => true,
+                    7 => true,
                 ],
                 [
-                    23 => true,
-                    true,
+                    6 => true,
                 ],
                 [
-                    24 => true,
-                ],
-                [
-                    24 => true,
-                ],
-                [
-                    23 => true,
-                ],
-                [
-                    24 => true,
-                ],
-                [
-                    23 => true,
-                ],
-                [
-                    24 => true,
-                ],
-                [
-                    22 => true,
-                ],
-                [
-                    13 => true,
-                ],
-                [
-                    13 => true,
-                ],
-                [
-                    13 => true,
-                ],
-                [
-                    12 => true,
-                ],
-                [
-                    12 => true,
+                    6 => true,
                 ],
             ],
             matchesEmptyInput: [
                 true,
+                false,
                 false,
                 false,
                 false,
@@ -412,7 +417,8 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                 true,
                 false,
                 true,
-                true,
+                false,
+                false,
                 true,
                 true,
                 true,
@@ -465,27 +471,92 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
 
     private static function reduceTokenDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createTokenDeclaration($ctx, $children);
-    }
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
 
-    private static function reduceSkippedTokenDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
-    {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createSkippedTokenDeclaration($ctx, $children);
+        $name = $children->captures[1] ?? '';
+        $pattern = $children->captures[2] ?? '';
+
+        if ($name === '' || $pattern === '') {
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        }
+
+        $state = $children->captures[0] ?? '';
+        $next = $children->captures[3] ?? '';
+
+        return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
+            name: $name,
+            pattern: $pattern,
+            state: $state === '' ? null : $state,
+            next: $next === '' ? null : $next,
+            isHidden: \str_starts_with($children->value, '%skip'),
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reducePragmaDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createPragmaDeclaration($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        $name = $children->captures[0] ?? '';
+        $value = $children->captures[1] ?? '';
+
+        if ($name === '' || $value === '') {
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        }
+
+        return new \Phplrt\Compiler\Node\Declaration\PragmaDeclaration(
+            name: $name,
+            value: $value,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceIncludeDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createIncludeDeclaration($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        $target = $children->captures[0] ?? '';
+
+        if ($target === '') {
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        }
+
+        return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
+            target: $target,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceRuleDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRuleDeclaration($ctx, $children);
+        \assert(\is_array($children));
+
+        $isKept = ($children[0] ?? null) === true;
+
+        if ($isKept) {
+            \array_shift($children);
+        }
+
+        $name = \array_shift($children);
+        $body = \array_pop($children);
+        $reducer = \array_pop($children);
+
+        \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($name->value !== '', 'The lexer never produces an empty token');
+        \assert($body instanceof \Phplrt\Compiler\Node\Statement\Statement);
+        \assert($reducer === null || $reducer instanceof \Phplrt\Compiler\Node\Reducer\Reducer);
+
+        return new \Phplrt\Compiler\Node\Declaration\RuleDeclaration(
+            name: $name->value,
+            body: $body,
+            reducer: $reducer,
+            isKept: $isKept,
+            offset: $name->offset,
+            length: \max(0, $body->offset + $body->length - $name->offset),
+        );
     }
 
     private static function reduceKeptMarker(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -495,81 +566,307 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
 
     private static function reduceCodeReducer(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createCodeReducer($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
+
+        $read = $children->children;
+        $open = $read[0] ?? null;
+        $close = $read[\count($read) - 1] ?? null;
+
+        $code = $open === null || $close === null
+            ? ''
+            : \substr($ctx->content, $open->end, $close->offset - $open->end);
+
+        $lines = \explode("\n", $code);
+
+        foreach ($lines as $index => $line) {
+            $lines[$index] = $index === 0
+                ? \ltrim($line)
+                : \preg_replace('/^ {1,4}/', '', $line);
+        }
+
+        return new \Phplrt\Compiler\Node\Reducer\CodeReducer(
+            code: \trim(\implode("\n", $lines)),
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceClassReducer(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createClassReducer($ctx, $children);
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        \assert(\is_array($children));
+
+        $token = $children[0] ?? null;
+
+        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($token->value !== '', 'The lexer never produces an empty token');
+
+        return new \Phplrt\Compiler\Node\Reducer\ClassReducer(
+            class: $token->value,
+            offset: $token->offset,
+            length: \max(0, $token->end - $token->offset),
+        );
     }
 
     private static function reduceAlternation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createAlternation($ctx, $children);
+        \assert(\is_array($children));
+
+        $statements = [];
+
+        foreach ($children as $statement) {
+            \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+            $statements[] = $statement;
+        }
+
+        \assert($statements !== [], 'A production recognizes at least one statement');
+
+        if (!isset($statements[1])) {
+            return $statements[0];
+        }
+
+        $last = $statements[\count($statements) - 1];
+
+        return new \Phplrt\Compiler\Node\Statement\Alternation(
+            statements: $statements,
+            offset: $statements[0]->offset,
+            length: \max(0, $last->offset + $last->length - $statements[0]->offset),
+        );
     }
 
     private static function reduceConcatenation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createConcatenation($ctx, $children);
+        \assert(\is_array($children));
+
+        $statements = [];
+
+        foreach ($children as $statement) {
+            \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+            $statements[] = $statement;
+        }
+
+        \assert($statements !== [], 'A production recognizes at least one statement');
+
+        if (!isset($statements[1])) {
+            return $statements[0];
+        }
+
+        $last = $statements[\count($statements) - 1];
+
+        return new \Phplrt\Compiler\Node\Statement\Concatenation(
+            statements: $statements,
+            offset: $statements[0]->offset,
+            length: \max(0, $last->offset + $last->length - $statements[0]->offset),
+        );
     }
 
     private static function reduceSuffixed(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRepetition($ctx, $children);
+        \assert(\is_array($children));
+
+        $statement = $children[0] ?? null;
+        $quantifier = $children[1] ?? null;
+
+        \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+        if (!$quantifier instanceof \Phplrt\Compiler\Node\Statement\Quantifier) {
+            return $statement;
+        }
+
+        return new \Phplrt\Compiler\Node\Statement\Repetition(
+            statement: $statement,
+            quantifier: $quantifier,
+            offset: $statement->offset,
+            length: \max(0, $quantifier->offset + $quantifier->length - $statement->offset),
+        );
     }
 
     private static function reduceKeptTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createKeptTokenReference($ctx, $children);
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        \assert(\is_array($children));
+
+        $token = $children[0] ?? null;
+
+        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($token->value !== '', 'The lexer never produces an empty token');
+
+        return new \Phplrt\Compiler\Node\Statement\TokenReference(
+            name: $token->value,
+            isKept: true,
+            offset: $token->offset,
+            length: \max(0, $token->end - $token->offset),
+        );
     }
 
     private static function reduceSkippedTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createSkippedTokenReference($ctx, $children);
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        \assert(\is_array($children));
+
+        $token = $children[0] ?? null;
+
+        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($token->value !== '', 'The lexer never produces an empty token');
+
+        return new \Phplrt\Compiler\Node\Statement\TokenReference(
+            name: $token->value,
+            isKept: false,
+            offset: $token->offset,
+            length: \max(0, $token->end - $token->offset),
+        );
     }
 
     private static function reduceRuleReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRuleReference($ctx, $children);
+        // The variables below are declared by the compiler
+        $token = $ctx->token;
+
+        \assert(\is_array($children));
+
+        $token = $children[0] ?? null;
+
+        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($token->value !== '', 'The lexer never produces an empty token');
+
+        return new \Phplrt\Compiler\Node\Statement\RuleReference(
+            name: $token->value,
+            offset: $token->offset,
+            length: \max(0, $token->end - $token->offset),
+        );
     }
 
     private static function reduceInlinePattern(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createInlinePattern($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\InlinePattern(
+            pattern: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceZeroOrOne(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createZeroOrOne($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: 0,
+            max: 1,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceOneOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createOneOrMore($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: 1,
+            max: \INF,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceZeroOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createZeroOrMore($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: 0,
+            max: \INF,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 
     private static function reduceRangeFromTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeFromTo($ctx, $children);
+        \assert(\is_array($children));
+
+        $from = $children[0] ?? null;
+        $to = $children[1] ?? null;
+
+        \assert($from instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($to instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+        $min = (int) $from->value;
+        $max = (int) $to->value;
+
+        \assert($min >= 0 && $max >= 0, 'A number is written of digits only');
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: $min,
+            max: $max,
+            offset: $from->offset,
+            length: \max(0, $to->end - $from->offset),
+        );
     }
 
     private static function reduceRangeFrom(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeFrom($ctx, $children);
+        \assert(\is_array($children));
+
+        $from = $children[0] ?? null;
+
+        \assert($from instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+        $min = (int) $from->value;
+
+        \assert($min >= 0, 'A number is written of digits only');
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: $min,
+            max: \INF,
+            offset: $from->offset,
+            length: \max(0, $from->end - $from->offset),
+        );
     }
 
     private static function reduceRangeTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeTo($ctx, $children);
+        \assert(\is_array($children));
+
+        $to = $children[0] ?? null;
+
+        \assert($to instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+        $max = (int) $to->value;
+
+        \assert($max >= 0, 'A number is written of digits only');
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: 0,
+            max: $max,
+            offset: $to->offset,
+            length: \max(0, $to->end - $to->offset),
+        );
     }
 
     private static function reduceRangeExactly(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return \Phplrt\Compiler\Syntax\PP2\PP2NodeFactory::createRangeExactly($ctx, $children);
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        $count = (int) $children->value;
+
+        \assert($count >= 0, 'A number is written of digits only');
+
+        return new \Phplrt\Compiler\Node\Statement\Quantifier(
+            min: $count,
+            max: $count,
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
     }
 }

@@ -1,0 +1,11 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Statements Of The PP2 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  Nothing may be written before a statement in this format, so a statement is
+ *  read exactly as it is.
+ *
+ */
+
+Prefixed : Suffixed() ;

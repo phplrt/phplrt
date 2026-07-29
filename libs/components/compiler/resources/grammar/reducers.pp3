@@ -1,0 +1,55 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Reducers
+ * -----------------------------------------------------------------------------
+ *
+ *  What a rule is turned into once it has been recognized, written as a block
+ *  of PHP code. Both formats spell it exactly the same way.
+ *
+ */
+
+/**
+ * A block of PHP code, like:
+ *  - -> { return new SumNode($children); }
+ *
+ *  The code is read by a lexer of its own, so it arrives here as the tokens
+ *  PHP has been read into rather than as a value: the braces surrounding it
+ *  belong to the grammar rather than to the code, and are dropped by taking
+ *  everything written between them.
+ *
+ *  What is left is taken out of the nesting the grammar has written it in. A
+ *  body is read from the grammar file exactly as it is written there, so the
+ *  nesting of the rule it belongs to is a part of it. The body is written into
+ *  something else afterwards — a generated method, an evaluated callback —
+ *  which nests it on its own, so a single level of nesting is taken away.
+ *
+ *  The line the body starts at is written after the brace opening it rather
+ *  than on a line of its own, so whatever precedes it is not nesting at all.
+ */
+CodeReducer -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
+
+    $read = $children->children;
+    $open = $read[0] ?? null;
+    $close = $read[\count($read) - 1] ?? null;
+
+    $code = $open === null || $close === null
+        ? ''
+        : \substr($ctx->content, $open->end, $close->offset - $open->end);
+
+    $lines = \explode("\n", $code);
+
+    foreach ($lines as $index => $line) {
+        $lines[$index] = $index === 0
+            ? \ltrim($line)
+            : \preg_replace('/^ {1,4}/', '', $line);
+    }
+
+    return new \Phplrt\Compiler\Node\Reducer\CodeReducer(
+        code: \trim(\implode("\n", $lines)),
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_PHP>
+  ;

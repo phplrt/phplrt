@@ -24,11 +24,11 @@ use PHPUnit\Framework\Attributes\TestDox;
 final class SyntaxGrammarTest extends TestCase
 {
     /**
-     * The script bringing a parser back in line with its grammar.
+     * The command bringing a parser back in line with its grammar.
      *
      * @var non-empty-string
      */
-    private const string BUILD_SCRIPT = 'libs/components/compiler/bin/build-syntax.php';
+    private const string BUILD_SCRIPT = 'composer dev:syntax';
 
     /**
      * Every format the compiler reads: the grammar describing it, the file the
@@ -39,14 +39,14 @@ final class SyntaxGrammarTest extends TestCase
     public static function formatsDataProvider(): iterable
     {
         yield 'pp2' => [
-            __DIR__ . '/../resources/grammar/pp2.pp3',
+            __DIR__ . '/../resources/pp2.pp3',
             __DIR__ . '/../src/Syntax/PP2/PP2Parser.php',
             'Phplrt\\Compiler\\Syntax\\PP2',
             'PP2Parser',
         ];
 
         yield 'pp3' => [
-            __DIR__ . '/../resources/grammar/pp3.pp3',
+            __DIR__ . '/../resources/pp3.pp3',
             __DIR__ . '/../src/Syntax/PP3/PP3Parser.php',
             'Phplrt\\Compiler\\Syntax\\PP3',
             'PP3Parser',
@@ -85,7 +85,7 @@ final class SyntaxGrammarTest extends TestCase
     public function testPP3GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP3Parser()
-            ->parse(new File(__DIR__ . '/../resources/grammar/pp3.pp3'));
+            ->parse(new File(__DIR__ . '/../resources/pp3.pp3'));
 
         self::assertNotEmpty([...$declarations]);
     }

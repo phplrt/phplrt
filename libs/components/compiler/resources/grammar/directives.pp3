@@ -1,0 +1,58 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Directives
+ * -----------------------------------------------------------------------------
+ *
+ *  The settings of a grammar and the grammars it is written of. Both formats
+ *  spell them exactly the same way.
+ *
+ */
+
+/**
+ * A setting of the compilation, like:
+ *  - %pragma root Expression
+ *
+ *  The name and the value are captured by the very token the directive is read
+ *  as, and both of them have to be written for the directive to mean anything.
+ */
+PragmaDeclaration -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $name = $children->captures[0] ?? '';
+    $value = $children->captures[1] ?? '';
+
+    if ($name === '' || $value === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+    }
+
+    return new \Phplrt\Compiler\Node\Declaration\PragmaDeclaration(
+        name: $name,
+        value: $value,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_PRAGMA>
+  ;
+
+/**
+ * Another grammar to read, like:
+ *  - %include grammar/lexemes
+ */
+IncludeDeclaration -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $target = $children->captures[0] ?? '';
+
+    if ($target === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+    }
+
+    return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
+        target: $target,
+        offset: $children->offset,
+        length: \max(0, $children->end - $children->offset),
+    );
+}
+  : <T_INCLUDE>
+  ;
