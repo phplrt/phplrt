@@ -20,4 +20,5 @@ phpunit.xml export-ignore
 
 # Common
 /docs export-ignore
-monorepo-builder.yml export-ignore
+monorepo-builder.php export-ignore
+phpbench.json export-ignore
