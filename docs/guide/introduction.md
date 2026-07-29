@@ -11,7 +11,7 @@ things:
 - a **parser**, which checks that those tokens appear in a valid order and
   builds whatever result you want out of them.
 
-## What Kind Of Problems It Solves
+## Why?
 
 Reach for phplrt when you have text with a structure in it, and what you
 actually need is that structure rather than a yes/no answer. In practice that
@@ -41,28 +41,6 @@ If `explode()` or one regex already does the job, use those instead. Phplrt
 starts paying for itself when the structure nests, when you have to tell the
 user *where* exactly they went wrong, or when the grammar is going to keep
 changing for the next year.
-
-## What Goes In, What Comes Out
-
-On the way in there are two things:
-
-1. **A grammar.** The tokens your language is made of, and the rules those
-   tokens combine by. Usually a `.pp3` file, though you can build the very
-   same description in PHP if you would rather keep it in code.
-2. **A source.** The text to read, be it a file, a string or a stream.
-
-On the way out you get whatever you asked for, because phplrt never imposes a
-node class on you. Every rule hands its children to a callback of yours, and
-what that callback returns *is* the result:
-
-- your own AST classes, if you are going to walk the tree afterwards,
-- plain arrays or a single computed value, if you are not, like the calculator
-  below that returns an `int`,
-- nothing at all, if all you need to know is whether the input is valid.
-
-And if the input does not fit the grammar, you get an error that knows which
-token it stopped at, where that token sits in the source, and what could have
-been written there instead.
 
 ## The Shortest Possible Example
 
