@@ -15,6 +15,9 @@
             "email": "nesk@xakep.ru"
         }
     ],
+    "bin": [
+        "bin/phplrt"
+    ],
     "require": {
         "php": "^8.4",
         "laminas/laminas-code": "^4.17",
@@ -25,6 +28,7 @@
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
         "phplrt/source-contracts": "^4.0",
+        "symfony/console": "^7.4|^8.0",
         "twig/twig": "^3.28"
     },
     "autoload": {

@@ -1,6 +1,7 @@
 * text=auto eol=lf
 *.pp eol=lf linguist-language=EBNF
 *.pp2 eol=lf linguist-language=EBNF
+*.pp3 eol=lf linguist-language=EBNF
 
 # GIT
 .editorconfig export-ignore
@@ -16,6 +17,10 @@ phpunit.xml export-ignore
 
 /.github export-ignore
 /tests export-ignore
+
+# The script regenerating the parser of a grammar format belongs to the
+# monorepo the format is developed in rather than to the released package
+/bin export-ignore
 
 # Common
 /docs export-ignore
