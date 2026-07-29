@@ -15,6 +15,7 @@ use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\Tracing\ErrorReport;
+use Phplrt\Parser\Internal\Tracing\GrammarTable;
 use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
@@ -36,66 +37,50 @@ final class RecursiveDescentTracer
      */
     private int $length = 0;
 
+    /**
+     * The tables of the grammar are read on every single rule, so they are
+     * kept here rather than reached for through the table they belong to.
+     *
+     * @var list<RuleInterface>
+     */
+    private readonly array $grammar;
+
+    /**
+     * @var array<int, array<int, true>|null>
+     */
+    private readonly array $lookahead;
+
+    /**
+     * @var array<int, bool>
+     */
+    private readonly array $presentInTree;
+
     private readonly ErrorReport $error;
 
     private function __construct(
-        /**
-         * @var list<RuleInterface>
-         */
-        private readonly array $grammar,
+        GrammarTable $table,
         private readonly BufferInterface $buffer,
-        /**
-         * Empty in case the lookahead is unknown, which admits every rule.
-         *
-         * @var array<int, array<int, true>>
-         */
-        private readonly array $startTokens,
-        /**
-         * @var array<int, bool>
-         */
-        private readonly array $matchesEmptyInput,
-        /**
-         * @var array<int, bool>
-         */
-        private readonly array $presentInTree,
     ) {
-        $this->error = new ErrorReport($buffer, $grammar, $startTokens);
+        $this->grammar = $table->rules;
+        $this->lookahead = $table->lookahead;
+        $this->presentInTree = $table->presentInTree;
+
+        $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
 
     /**
-     * Recognizes the given rule against the input.
-     *
-     * The "matchesEmptyInput" and "presentInTree" tables cover every rule of
-     * the grammar, an unknown one is passed as a table admitting all of them.
-     *
-     * @param list<RuleInterface> $grammar
-     * @param int<0, max> $initial
-     * @param array<int, array<int, true>> $startTokens
-     * @param array<int, bool> $matchesEmptyInput
-     * @param array<int, bool> $presentInTree
+     * Recognizes the grammar against the input.
      */
-    public static function trace(
-        array $grammar,
-        int $initial,
-        BufferInterface $buffer,
-        array $startTokens,
-        array $matchesEmptyInput,
-        array $presentInTree,
-    ): Success|Failure {
-        if ($grammar === []) {
+    public static function trace(GrammarTable $table, BufferInterface $buffer): Success|Failure
+    {
+        if ($table->rules === []) {
             // Fast-finish on empty grammar
             return new Failure($buffer->current);
         }
 
-        $self = new self(
-            grammar: $grammar,
-            buffer: $buffer,
-            startTokens: $startTokens,
-            matchesEmptyInput: $matchesEmptyInput,
-            presentInTree: $presentInTree,
-        );
+        $self = new self($table, $buffer);
 
-        if (!$self->match($initial)) {
+        if (!$self->match($table->initial)) {
             return $self->error->finish();
         }
 
@@ -126,6 +111,7 @@ final class RecursiveDescentTracer
 
     private function match(int $rule): bool
     {
+        $buffer = $this->buffer;
         $definition = $this->grammar[$rule];
 
         // A `Lexeme` is the most common matching rule in the parser. We could
@@ -140,11 +126,9 @@ final class RecursiveDescentTracer
         //      should be inlined. This should, in theory, further speed up
         //      the code (do this and then benchmark it).
         if ($definition instanceof Lexeme) {
-            $buffer = $this->buffer;
             $token = $buffer->current;
-            $id = $definition->tokenId;
 
-            if ($token->id !== $id) {
+            if ($token->id !== $definition->tokenId) {
                 $error = $this->error;
 
                 // A failure behind the reported one changes nothing
@@ -165,10 +149,10 @@ final class RecursiveDescentTracer
                     $this->entries[$length + 1] = $token;
                     $this->entries[$length + 2] = -$rule - 1;
 
-                    $this->length += 3;
+                    $this->length = $length + 3;
                 } else {
                     $this->entries[$length] = $token;
-                    ++$this->length;
+                    $this->length = $length + 1;
                 }
             }
 
@@ -177,15 +161,17 @@ final class RecursiveDescentTracer
             return true;
         }
 
+        $lookahead = $this->lookahead[$rule];
+
         // The rule requires a token it cannot start with, so there is nothing
         // to recognize
-        if (!isset($this->startTokens[$rule][$this->buffer->current->id]) && !$this->matchesEmptyInput[$rule]) {
+        if ($lookahead !== null && !isset($lookahead[$buffer->current->id])) {
             /**
              * Only a failure ahead of the reported one is worth remembering:
              * the rules rejected alongside this one are the ones it contains,
              * so the tokens they may begin with are already among its own.
              */
-            if ($this->buffer->key > $this->error->furthest) {
+            if ($buffer->key > $this->error->furthest) {
                 $this->error->record($rule);
             }
 
@@ -200,6 +186,13 @@ final class RecursiveDescentTracer
             $this->length = $mark + 1;
         }
 
+        /**
+         * Which of the rules the definition is could have been answered once,
+         * before the recognition starts, and read off a table instead. It is
+         * not: an "instanceof" against a known class costs less than the very
+         * array lookup such a table would be read by (measured at ~5% of the
+         * whole recognition).
+         */
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
             $definition instanceof Alternation => $this->matchAlternation($definition),
@@ -208,7 +201,7 @@ final class RecursiveDescentTracer
             $definition instanceof Predicate => $this->matchPredicate($definition),
             default => throw new \LogicException(\sprintf(
                 'Unsupported grammar rule %s',
-                $definition::class,
+                \get_debug_type($definition),
             )),
         };
 
@@ -235,7 +228,9 @@ final class RecursiveDescentTracer
 
         foreach ($rule->ruleIds as $inner) {
             if (!$this->match($inner)) {
-                $buffer->seek($rollback);
+                if ($buffer->key !== $rollback) {
+                    $buffer->seek($rollback);
+                }
 
                 return false;
             }
@@ -254,7 +249,15 @@ final class RecursiveDescentTracer
                 return true;
             }
 
-            $buffer->seek($rollback);
+            /**
+             * Most of the alternatives are rejected by the token they may begin
+             * with, and such a rule reads nothing at all, so the input is
+             * usually already where it would have been rewound to (measured at
+             * ~83% of the rollbacks of the whole recognition).
+             */
+            if ($buffer->key !== $rollback) {
+                $buffer->seek($rollback);
+            }
         }
 
         return false;
@@ -265,7 +268,7 @@ final class RecursiveDescentTracer
         $buffer = $this->buffer;
         $rollback = $buffer->key;
 
-        if (!$this->match($rule->ruleId)) {
+        if (!$this->match($rule->ruleId) && $buffer->key !== $rollback) {
             $buffer->seek($rollback);
         }
 
@@ -284,7 +287,10 @@ final class RecursiveDescentTracer
          * A predicate only looks at what comes next, so both the input and the
          * trace are rolled back, no matter what has been recognized.
          */
-        $buffer->seek($rollback);
+        if ($buffer->key !== $rollback) {
+            $buffer->seek($rollback);
+        }
+
         $this->length = $mark;
 
         return $matched === $rule->isExpected;
@@ -316,7 +322,9 @@ final class RecursiveDescentTracer
         }
 
         if ($matched < $rule->min) {
-            $buffer->seek($rollback);
+            if ($buffer->key !== $rollback) {
+                $buffer->seek($rollback);
+            }
 
             return false;
         }

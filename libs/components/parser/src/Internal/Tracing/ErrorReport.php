@@ -54,12 +54,12 @@ final class ErrorReport
 
     /**
      * @param list<RuleInterface> $grammar
-     * @param array<int, array<int, true>> $startTokens
+     * @param array<int, array<int, true>|null> $lookahead
      */
     public function __construct(
         private readonly BufferInterface $buffer,
         private readonly array $grammar,
-        private readonly array $startTokens,
+        private readonly array $lookahead,
     ) {}
 
     /**
@@ -111,7 +111,7 @@ final class ErrorReport
         $result = [];
 
         foreach ($this->rules as $rule) {
-            $expected = $this->startTokens[$rule] ?? null;
+            $expected = $this->lookahead[$rule] ?? null;
 
             if ($expected !== null) {
                 $result += $expected;
