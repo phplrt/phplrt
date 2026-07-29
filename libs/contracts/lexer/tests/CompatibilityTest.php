@@ -22,7 +22,10 @@ class CompatibilityTest extends TestCase
     public function testLexerCompatibility(): void
     {
         new class () implements LexerInterface {
-            public function lex(mixed $source, int $offset = 0): iterable {}
+            public function lex(mixed $source, int $offset = 0): iterable
+            {
+                return [];
+            }
         };
     }
 
@@ -39,7 +42,10 @@ class CompatibilityTest extends TestCase
             public string $value;
             public int $bytes;
 
-            public function __toString(): string {}
+            public function __toString(): string
+            {
+                return '';
+            }
         };
     }
 
