@@ -228,7 +228,8 @@ final class GeneratorTest extends TestCase
 
         $this->compile('grammar.pp2')
             ->generate()
-            ->save($pathname, $class);
+            ->withClassName($class)
+            ->save($pathname);
 
         $code = (string) \file_get_contents($pathname);
 
