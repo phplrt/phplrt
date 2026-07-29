@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Node;
 
 use Phplrt\Compiler\Node\Declaration\Declaration;
+use Phplrt\Compiler\Node\Declaration\TokenAction;
 use Phplrt\Compiler\Node\Reducer\Reducer;
 use Phplrt\Compiler\Node\Statement\Quantifier;
 use Phplrt\Compiler\Node\Statement\Statement;
@@ -22,7 +23,7 @@ use Phplrt\Compiler\Node\Statement\Statement;
  * element means and never how it is spelled: the spelling belongs to the
  * format that has been read and lives with the parser reading it.
  *
- * @phpstan-sealed Declaration|Quantifier|Reducer|Statement
+ * @phpstan-sealed Declaration|Quantifier|Reducer|Statement|TokenAction
  */
 abstract readonly class Node
 {

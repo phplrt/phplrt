@@ -9,6 +9,6 @@ use Phplrt\Compiler\Node\Node;
 /**
  * A top level element of a grammar file.
  *
- * @phpstan-sealed IncludeDeclaration|PragmaDeclaration|RuleDeclaration|TokenDeclaration
+ * @phpstan-sealed IncludeDeclaration|LexerDeclaration|PragmaDeclaration|RuleDeclaration|TokenDeclaration
  */
 abstract readonly class Declaration extends Node {}

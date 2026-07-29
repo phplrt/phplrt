@@ -37,6 +37,10 @@ final readonly class TokenDeclaration extends Declaration
          * The name of the lexer state the token switches to, or {@see null} in
          * case of the token does not affect the lexer state.
          *
+         * A format naming the state directly is read into this field, while a
+         * format spelling out what the token does records it as an
+         * {@see $action} instead.
+         *
          * @var non-empty-string|null
          */
         public ?string $next = null,
@@ -45,6 +49,14 @@ final readonly class TokenDeclaration extends Declaration
          * the parser, such as the whitespace and the comments
          */
         public bool $isHidden = false,
+        /**
+         * Everything the token does to the reading, in the order it is
+         * written, or an empty list in case of the token does nothing but
+         * being read.
+         *
+         * @var list<TokenAction>
+         */
+        public array $actions = [],
         int $offset = 0,
         int $length = 0,
     ) {
