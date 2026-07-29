@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Internal\Buffer;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Exception\OutOfRangeException;
 
 /**
  * @template-covariant TToken of TokenInterface = TokenInterface
  *
- * @template-extends \SeekableIterator<int<0, max>, TToken>
+ * @internal this is an internal library class, please do not use it in your code
+ * @psalm-internal Phplrt\Parser
  */
-interface BufferInterface extends \SeekableIterator
+interface BufferInterface
 {
     /**
      * The token at the current position.
+     *
+     * @var TToken
      */
     public TokenInterface $current {
         get;
@@ -30,58 +34,16 @@ interface BufferInterface extends \SeekableIterator
     }
 
     /**
-     * Rewind the BufferInterface to the target token element.
+     * Moves the cursor to the given position, which is a position it has
+     * already been at.
      *
-     * @link https://php.net/manual/en/seekableiterator.seek.php
-     *
-     * @see \SeekableIterator::seek()
+     * @throws OutOfRangeException in case of the position is outside the input
      */
     public function seek(int $offset): void;
 
     /**
-     * Return the current token.
-     *
-     * @link https://php.net/manual/en/iterator.current.php
-     *
-     * @see \Iterator::current()
-     */
-    public function current(): TokenInterface;
-
-    /**
-     * Return the ordinal id of the current token element.
-     *
-     * @link https://php.net/manual/en/iterator.key.php
-     *
-     * @see \Iterator::key()
-     *
-     * @return int<0, max>
-     */
-    public function key(): int;
-
-    /**
-     * Checks if current position is valid and iterator not completed.
-     *
-     * @link https://php.net/manual/en/iterator.valid.php
-     *
-     * @see \Iterator::valid()
-     */
-    public function valid(): bool;
-
-    /**
-     * Rewind the BufferInterface to the first token element.
-     *
-     * @link https://php.net/manual/en/iterator.rewind.php
-     *
-     * @see \Iterator::rewind()
-     */
-    public function rewind(): void;
-
-    /**
-     * Move forward to the next token element.
-     *
-     * @link https://php.net/manual/en/iterator.next.php
-     *
-     * @see \Iterator::next()
+     * Moves the cursor to the next token, or leaves it on the terminal one in
+     * case of the input has been read to its end.
      */
     public function next(): void;
 }
