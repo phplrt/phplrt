@@ -7,9 +7,62 @@ syntax, a subset of PHP - anything with rules.
 You describe the language once, and phplrt turns that description into two
 things:
 
-- a **lexer**, which cuts the text into tokens (`42`, `+`, `"hello"`);
+- a **lexer**, which cuts the text into tokens (`42`, `+`, `"hello"`),
 - a **parser**, which checks that those tokens appear in a valid order and
   builds whatever result you want out of them.
+
+## What Kind Of Problems It Solves
+
+Reach for phplrt when you have text with a structure in it, and what you
+actually need is that structure rather than a yes/no answer. In practice that
+means:
+
+- **A small language for your users.** Filter expressions in a search bar
+  (`price < 100 and brand in ("acme", "globex")`), permission rules, pricing
+  formulas, alert conditions. Logic that is far easier to write as one line
+  of text than as a deeply nested PHP array.
+- **A format you designed yourself.** Migrations, fixtures, schema or
+  protocol definitions, a routing table. Anything where JSON and YAML would
+  force your users to spell out the structure instead of the meaning.
+- **A template engine.** Text with islands of code inside it, like
+  `{{ user.name }}` or `<?= ... ?>`. One lexer reads the plain text and hands
+  each island over to another one, which is exactly what nested lexers are
+  for.
+- **A type or annotation syntax.** Docblock types such as
+  `array<int, Foo|null>`, attribute arguments, route patterns with
+  placeholders.
+- **A language somebody else designed.** An SQL dialect, an `.ini` or `.env`
+  variant, an interface definition file, some in-house legacy format that has
+  no package on Packagist.
+- **Tooling on top of a real language.** Linters, code generators and static
+  analysis need positions and a tree they can walk over, not a string.
+
+If `explode()` or one regex already does the job, use those instead. Phplrt
+starts paying for itself when the structure nests, when you have to tell the
+user *where* exactly they went wrong, or when the grammar is going to keep
+changing for the next year.
+
+## What Goes In, What Comes Out
+
+On the way in there are two things:
+
+1. **A grammar.** The tokens your language is made of, and the rules those
+   tokens combine by. Usually a `.pp3` file, though you can build the very
+   same description in PHP if you would rather keep it in code.
+2. **A source.** The text to read, be it a file, a string or a stream.
+
+On the way out you get whatever you asked for, because phplrt never imposes a
+node class on you. Every rule hands its children to a callback of yours, and
+what that callback returns *is* the result:
+
+- your own AST classes, if you are going to walk the tree afterwards,
+- plain arrays or a single computed value, if you are not, like the calculator
+  below that returns an `int`,
+- nothing at all, if all you need to know is whether the input is valid.
+
+And if the input does not fit the grammar, you get an error that knows which
+token it stopped at, where that token sits in the source, and what could have
+been written there instead.
 
 ## The Shortest Possible Example
 
