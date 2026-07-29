@@ -10,7 +10,7 @@ lexer hand the reading over to another.
 ## The Idea
 
 A token can **enter** another lexer. From that point on, the other lexer
-reads — with its own tokens, its own rules — until one of *its* tokens
+reads - with its own tokens, its own rules - until one of *its* tokens
 **exits**. Everything it read is carried by the token that entered it.
 
 ```php
@@ -50,7 +50,7 @@ digits, and the outer one never got a chance to look.
 
 ## TokenEmbedding
 
-A token that entered another lexer is a `TokenEmbedding` — a normal token
+A token that entered another lexer is a `TokenEmbedding` - a normal token
 with children:
 
 ```php
@@ -79,8 +79,8 @@ foreach ($token as $child) { /* ... */ }
 Two things about the values:
 
 ```php
-$token->value; // '"'  — only the token's own text, 1 byte of it
-$token->size;  // 9    — but it spans everything the inner lexer read
+$token->value; // '"'  - only the token's own text, 1 byte of it
+$token->size;  // 9    - but it spans everything the inner lexer read
 ```
 
 `value` is the quote that opened the string, while `size` covers the whole
@@ -103,7 +103,7 @@ Str : <T_QUOTE_OPEN> ;
 ```
 
 `state(x)` is "enter" and `exit()` hands the control back. The reading is
-nested, so it can only ever go one level down and back up — there is no way
+nested, so it can only ever go one level down and back up - there is no way
 to jump straight from one state into another.
 
 A token may do more than one thing, written with commas:
@@ -127,7 +127,7 @@ echo $result->children[0]->value; // 'hello'
 
 The nested lexer does not have to be built by phplrt. Any
 `LexerInterface` will do, which is how you embed a language phplrt cannot
-describe with regular expressions — PHP itself, for instance:
+describe with regular expressions - PHP itself, for instance:
 
 ```php
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -154,8 +154,8 @@ expression building the lexer:
 %lexer php -> { new \App\Lexer\PhpTokenLexer() }
 ```
 
-The body is an expression rather than a block of statements — no `return`, no
-semicolon — and whatever it evaluates to has to be a `LexerInterface`.
+The body is an expression rather than a block of statements - no `return`, no
+semicolon - and whatever it evaluates to has to be a `LexerInterface`.
 
 Such a lexer decides on its own where its fragment ends: it simply stops, and
 control returns to the lexer that called it. It does not need an "exit"
@@ -179,5 +179,5 @@ surroundings:
 - raw or verbatim blocks in a template language.
 
 Do *not* use it for things the grammar can handle. A parenthesized expression
-is not a different language — the tokens inside it are the same tokens. That
+is not a different language - the tokens inside it are the same tokens. That
 belongs in a parser rule, not a lexer state.

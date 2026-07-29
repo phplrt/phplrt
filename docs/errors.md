@@ -68,7 +68,7 @@ $parser->parse(new VirtualFile('user-input.txt', $input));
  --> user-input.txt:2:1
 ```
 
-`VirtualFile` costs nothing — it is a string with a name attached — so use it
+`VirtualFile` costs nothing - it is a string with a name attached - so use it
 even when the input never touched the disk.
 
 ## Catching Everything
@@ -105,8 +105,8 @@ catch (RuntimeExceptionInterface $e) {
 
 ## Errors Of Your Own
 
-Parsing is rarely the last step. The stages after it — resolving names, type
-checking, evaluating — find their own problems, and those deserve the same
+Parsing is rarely the last step. The stages after it - resolving names, type
+checking, evaluating - find their own problems, and those deserve the same
 treatment. `ErrorPrinter` renders any offset in any source:
 
 ```php
@@ -175,7 +175,7 @@ $printer->print($source, $offset, $length)
     ->withLength(4);            // the size of the underlined fragment
 ```
 
-`withLinesAround(0)` is worth knowing about — for a list of many warnings,
+`withLinesAround(0)` is worth knowing about - for a list of many warnings,
 two context lines each is a wall of text.
 
 ### Colors

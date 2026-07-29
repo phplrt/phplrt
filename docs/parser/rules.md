@@ -18,7 +18,7 @@ say. You will usually get them from a
 
 ## Lexeme
 
-Reads a single token. This is where a grammar touches the actual input —
+Reads a single token. This is where a grammar touches the actual input -
 every other rule is written in terms of other rules.
 
 ```php
@@ -34,7 +34,7 @@ Rule : ::T_COMMA:: ;  // read and discard
 ```
 
 `keep: false` is for punctuation. A comma between list items has to be
-*there*, but nobody needs it in the result — dropping it early means you do
+*there*, but nobody needs it in the result - dropping it early means you do
 not have to filter it out later.
 
 Note the token is addressed by **id**, not by name. What it looks like in the
@@ -72,7 +72,7 @@ Rule : Number() | Name() ;
 ```
 
 **The order is part of the meaning.** The first match wins, and the rest are
-never tried — even if one of them would have read more of the input:
+never tried - even if one of them would have read more of the input:
 
 ```pp2
 Rule : "a" | "ab" ;   // never reads "ab"
@@ -98,7 +98,7 @@ Rule : Sign()? ;
 ```
 
 If the inner rule does not match, nothing is read and nothing is added to the
-result — the parse simply continues from the same place.
+result - the parse simply continues from the same place.
 
 ## Repetition
 
@@ -125,13 +125,13 @@ that matches the empty input cannot loop forever.
 ## Predicate
 
 Looks at what comes next **without reading it**. Nothing is consumed and
-nothing lands in the result — the only thing left is whether it matched.
+nothing lands in the result - the only thing left is whether it matched.
 
 ```php
 use Phplrt\Parser\Grammar\Predicate;
 
-new Predicate(ruleId: 1);                    // "&" — must match here
-new Predicate(ruleId: 1, isExpected: false); // "!" — must not match here
+new Predicate(ruleId: 1);                    // "&" - must match here
+new Predicate(ruleId: 1, isExpected: false); // "!" - must not match here
 ```
 
 This is how a rule refuses a position that belongs to somebody else. For
@@ -144,7 +144,7 @@ new Concatenation([
 ]);
 ```
 
-EBNF has nothing like this — a predicate describes *how* something is read
+EBNF has nothing like this - a predicate describes *how* something is read
 rather than *what* the language contains. A grammar file writes it with the
 same two signs:
 
@@ -175,7 +175,7 @@ Rule : Number()? ;           // $children is the Number, or nothing
 Rule : <T_DIGIT> ;           // $children is the token
 ```
 
-That is why a reducer often starts with an `is_array()` check — a rule that
+That is why a reducer often starts with an `is_array()` check - a rule that
 can match one thing *or* several will hand you one thing or several.
 
 More on this in [Results and Reducers](/docs/parser/ast).
@@ -184,9 +184,9 @@ More on this in [Results and Reducers](/docs/parser/ast).
 
 ```
 RuleInterface
-├── TerminalInterface     — Lexeme
-└── ProductionInterface   — Alternation, Optional, Predicate
-    └── SequenceInterface — Concatenation, Repetition
+├── TerminalInterface     - Lexeme
+└── ProductionInterface   - Alternation, Optional, Predicate
+    └── SequenceInterface - Concatenation, Repetition
 ```
 
 A *terminal* is matched against the input. A *production* is matched by means

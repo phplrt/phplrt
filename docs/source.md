@@ -2,8 +2,8 @@
 
 > This package can be installed separately with `composer require phplrt/source`
 
-Everything phplrt reads — a grammar file, an expression typed by a user, a
-template — is wrapped in a *source* object. It is a thin thing: it knows how
+Everything phplrt reads - a grammar file, an expression typed by a user, a
+template - is wrapped in a *source* object. It is a thin thing: it knows how
 to give up its content, and it knows what to call itself when an error points
 at it.
 
@@ -29,7 +29,7 @@ say "syntax error at offset 42". A parser that receives a `File` can say:
 ```
 
 The second is laziness. A `File` does not read the disk until somebody asks
-for its content, and once it has, it remembers — until the file changes on
+for its content, and once it has, it remembers - until the file changes on
 disk, at which point it reads again.
 
 ## The Kinds of Source
@@ -66,7 +66,7 @@ $source = new Source('2 + 2');
 ### VirtualFile
 
 A string that pretends to be a file. Nothing is read from disk, but errors
-can still point at a name — handy for code that came from a database, an
+can still point at a name - handy for code that came from a database, an
 HTTP request, or a test.
 
 ```php
@@ -141,7 +141,7 @@ $source->content; // string
 $source->stream;  // resource
 ```
 
-Both may throw `SourceExceptionInterface` — a file can disappear between the
+Both may throw `SourceExceptionInterface` - a file can disappear between the
 moment you name it and the moment you read it.
 
 ```php
@@ -159,7 +159,7 @@ try {
 ## Bring Your Own
 
 `ReadableInterface` is small on purpose. If your source code lives somewhere
-unusual — a zip archive, a remote service, a database row — implement it
+unusual - a zip archive, a remote service, a database row - implement it
 yourself and every other phplrt component will accept it:
 
 ```php

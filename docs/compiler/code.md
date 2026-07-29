@@ -1,7 +1,7 @@
 # PHP in a Grammar
 
 A grammar on its own only answers "is this valid?". To get a *value* out of a
-parse — a number, an AST node, a configuration array — you attach PHP to a
+parse - a number, an AST node, a configuration array - you attach PHP to a
 rule. That piece of PHP is called a **reducer**, and it runs when the rule
 matches.
 
@@ -15,7 +15,7 @@ Number -> { return (int) $children->value; }
   ;
 ```
 
-Whatever it returns becomes the value of the rule. The code is ordinary PHP —
+Whatever it returns becomes the value of the rule. The code is ordinary PHP -
 loops, conditionals, whatever you need:
 
 ```pp2
@@ -41,7 +41,7 @@ Expression -> {
   ;
 ```
 
-Braces inside strings are safe — the block is read by a real PHP lexer, so
+Braces inside strings are safe - the block is read by a real PHP lexer, so
 `"{"` is a string, not the end of the block.
 
 ## Building A Node
@@ -86,7 +86,7 @@ Inside a code block, these are available:
 | `$rule`     | The id of the rule being reduced                       |
 
 All except `$children` and `$ctx` are shorthands the compiler expands for
-you — `$offset` becomes `$ctx->token->offset`, and so on. They are only
+you - `$offset` becomes `$ctx->token->offset`, and so on. They are only
 declared if you use them, so there is no cost to the ones you do not.
 
 ```pp2
@@ -96,7 +96,7 @@ Number -> { return new \NumberNode($offset, (float) $children->value); }
 ```
 
 Keeping an offset on every node is a habit worth forming. It is what lets a
-later stage — a type checker, an evaluator, a linter — point at the right
+later stage - a type checker, an evaluator, a linter - point at the right
 place in the source when it finds a problem.
 
 ## What `$children` Holds
@@ -163,11 +163,11 @@ private static function reduceNumber(\Phplrt\Parser\Context $ctx, mixed $childre
 Two practical consequences.
 
 **Your code appears verbatim in the generated file.** It is debuggable and
-steppable, and a syntax error in a reducer is a syntax error in that file —
+steppable, and a syntax error in a reducer is a syntax error in that file -
 so run the generator as part of your build, not at deploy time.
 
 **A grammar file has no `use` statements**, so how a short class name resolves
-depends on where the reducer ends up — the global namespace when the grammar
+depends on where the reducer ends up - the global namespace when the grammar
 is read on the fly, the generated file's namespace when it is generated. The
 safe answer is to write class names fully qualified:
 

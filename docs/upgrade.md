@@ -11,7 +11,7 @@ files mostly survive, and that is where the bulk of the work usually lives.
 > Likelihood Of Impact: **High**
 
 Phplrt 4.0 requires PHP 8.4. The API uses property hooks, asymmetric
-visibility and `new` in initializers throughout — which is also why so much
+visibility and `new` in initializers throughout - which is also why so much
 of it looks different.
 
 ### Getters Became Properties
@@ -75,7 +75,7 @@ $builder->addPattern('\s++', 'T_WHITESPACE')
     ->hide();
 ```
 
-Unlike skipping, a hidden token is still produced — so you can look at
+Unlike skipping, a hidden token is still produced - so you can look at
 comments and whitespace when you need them, and custom channels let you keep
 a token out of the grammar without throwing it away.
 
@@ -84,7 +84,7 @@ a token out of the grammar without throwing it away.
 > Likelihood Of Impact: **High**
 
 `Phplrt\Lexer\Lexer` no longer takes a map of names and patterns. It takes a
-single compiled regular expression and a set of tables — which you get from
+single compiled regular expression and a set of tables - which you get from
 `LexerBuilder`.
 
 ```php
@@ -133,7 +133,7 @@ $parser = new Parser(
 ```
 
 Rules are keyed by **integers** rather than by name, and they refer to each
-other by index. In practice you do not write this array by hand — see
+other by index. In practice you do not write this array by hand - see
 [the parser builder](/docs/parser/builder).
 
 ### Checking And Trailing Tokens Became One Method
@@ -199,7 +199,7 @@ class MyBuilder implements BuilderInterface
     }
 }
 
-// 4.x — in the grammar file
+// 4.x - in the grammar file
 Number -> { return new \NumberNode($offset, $children->value); } 
     : <T_DIGIT> ;
 Sum    -> { return new \SumNode($children); } 
@@ -207,7 +207,7 @@ Sum    -> { return new \SumNode($children); }
 ```
 
 ```php
-// 4.x — or through the builder
+// 4.x - or through the builder
 $number->setReducer(static fn(Context $ctx, mixed $children): NumberNode
     => new NumberNode($children)
 );
@@ -223,7 +223,7 @@ Returning `null` still means "leave the children alone".
 
 > Likelihood Of Impact: **Medium**
 
-The rules moved from `Phplrt\Parser\Grammar` (3.2) — same namespace, but they
+The rules moved from `Phplrt\Parser\Grammar` (3.2) - same namespace, but they
 are now `readonly` value objects that reference other rules by **integer id**,
 and `Lexeme` takes a token id instead of a name.
 
@@ -310,7 +310,7 @@ Grammars written in the original Hoa-style `.pp` format are not supported.
 A `.pp` file is still recognized by its extension, so you get a clear error
 rather than a confusing parse failure.
 
-Rewrite the grammar in one of the formats that are read — see
+Rewrite the grammar in one of the formats that are read - see
 [Grammar Syntax](/docs/compiler/grammar).
 
 ### Grammar Files: What To Check
@@ -357,10 +357,10 @@ relied on nesting, return an object instead. See
 | `phplrt/compiler`          | `phplrt/compiler`                           |
 | `phplrt/source`            | `phplrt/source`                             |
 | `phplrt/exception`         | `phplrt/exception`                          |
-| `phplrt/buffer`            | removed — merged into `phplrt/parser`       |
+| `phplrt/buffer`            | removed - merged into `phplrt/parser`       |
 | `phplrt/position`          | removed                                     |
 | `phplrt/visitor`           | removed                                     |
-| `phplrt/ast-contracts`     | removed — 4.x does not define a node shape  |
+| `phplrt/ast-contracts`     | removed - 4.x does not define a node shape  |
 
 ## Upgrading To 3.2 From 3.1
 

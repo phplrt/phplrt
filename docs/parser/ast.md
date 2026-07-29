@@ -6,7 +6,7 @@ something out of it. The first part is the grammar. The second part is
 
 ## What You Get Without Reducers
 
-A grammar with no reducers still returns something — the tokens it kept,
+A grammar with no reducers still returns something - the tokens it kept,
 nested the way the rules were:
 
 ```pp2
@@ -19,7 +19,7 @@ $parser->parse(new Source('2 + 3'));
 ```
 
 That is occasionally enough. Usually you want numbers, or AST nodes, or a
-configuration array — and for that you attach a reducer.
+configuration array - and for that you attach a reducer.
 
 ## Attaching A Reducer
 
@@ -47,7 +47,7 @@ $number->setReducer(static fn(Context $ctx, mixed $children): int
 
 This is the part worth reading twice.
 
-**A rule that recognizes a sequence** — a concatenation or a repetition —
+**A rule that recognizes a sequence** - a concatenation or a repetition -
 gets an **array**:
 
 ```pp2
@@ -74,7 +74,7 @@ Pair : <T_DIGIT> <T_DIGIT> ;
 //               not  [Token(a), [Token(1), Token(2)], Token(b)]
 ```
 
-This is deliberate — it keeps the result flat and predictable — but it means
+This is deliberate - it keeps the result flat and predictable - but it means
 that a rule which *should* produce a group must say so by returning a value
 of its own. A reducer returning an object or a scalar is never flattened:
 
@@ -177,7 +177,7 @@ BinaryNode(-)
 └── NumberNode(3)
 ```
 
-Note `$offset` in the `Number` reducer — that is one of the
+Note `$offset` in the `Number` reducer - that is one of the
 [variables the compiler provides](/docs/compiler/code). Keeping an offset on
 every node is what lets you point at the right place in the source when
 something goes wrong later, during type-checking or evaluation.
@@ -189,7 +189,7 @@ analysis is:
 
 ```php
 static function (Context $ctx, mixed $children): mixed {
-    $ctx->rule;    // int — the id of the rule being reduced
+    $ctx->rule;    // int - the id of the rule being reduced
     $ctx->token;   // the last token this rule read, or null
     $ctx->source;  // the source being parsed
     $ctx->content; // its content, already read
@@ -199,7 +199,7 @@ static function (Context $ctx, mixed $children): mixed {
 ```
 
 In a `.pp3` reducer you rarely touch `$ctx` directly, because the common
-fields have shorter names — `$token`, `$offset`, `$source`. See
+fields have shorter names - `$token`, `$offset`, `$source`. See
 [PHP in a Grammar](/docs/compiler/code).
 
 ## Returning Nothing
@@ -226,10 +226,10 @@ and reduces it bottom-up.
 
 This means:
 
-- a reducer never sees a rule that was tried and rejected — no wasted work,
+- a reducer never sees a rule that was tried and rejected - no wasted work,
   no side effects from a branch that did not win;
 - `analyze()` in `Mode::Fast` never runs reducers at all;
 - a reducer cannot influence parsing. It cannot look ahead, change what is
   matched next, or fail the parse to force a different alternative. If a
-  decision depends on the input, express it in the grammar — that is what
+  decision depends on the input, express it in the grammar - that is what
   [predicates](/docs/parser/rules) are for.

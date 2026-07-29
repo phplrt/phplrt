@@ -25,7 +25,7 @@ $parser->parse(new Source('2 +'));   // Syntax error, unexpected end of input
 `parse()` is the one you want almost always: the grammar describes the whole
 source, anything else is a mistake, and a mistake is an exception.
 
-`analyze()` is for everything else — validating without building, reading a
+`analyze()` is for everything else - validating without building, reading a
 fragment of a larger file, or collecting errors instead of stopping at the
 first. See [Analysing A Source](#analysing-a-source) below.
 
@@ -51,7 +51,7 @@ Both give you the same thing: an object implementing `ParserInterface`.
 ## What A Parser Actually Is
 
 Underneath, a parser is a **flat list of rules** plus a couple of lookup
-tables. Rules refer to each other by index — there are no objects pointing at
+tables. Rules refer to each other by index - there are no objects pointing at
 objects, just integers pointing into an array.
 
 Here is the calculator written out by hand, so you can see the shape of it:
@@ -84,7 +84,7 @@ $parser = new Parser(
 echo $parser->parse(new Source('1 + 2 + 3')); // 6
 ```
 
-This is exactly what the compiler generates for you — it just also computes
+This is exactly what the compiler generates for you - it just also computes
 the lookahead tables, which make it considerably faster.
 
 The rule classes are described in [Grammar Rules](/docs/parser/rules), and
@@ -108,7 +108,7 @@ plain data: it can be optimized, dumped to a file and loaded back.
 **Recursive descent with backtracking.** Rules are tried top-down. When an
 alternative fails, the token stream is rewound to where the rule started and
 the next alternative is tried; a failed concatenation rewinds the same way.
-There is no memoization — this is not a packrat parser — so a grammar that
+There is no memoization - this is not a packrat parser - so a grammar that
 backtracks heavily pays for it. In practice the FIRST sets keep that from
 happening.
 
@@ -123,11 +123,11 @@ if (!isset($startTokens[$rule][$token->id]) && !$matchesEmptyInput[$rule]) {
 
 `startTokens` is computed by the builder for every rule. It turns "try this
 rule and find out" into one array lookup, which is where most of the speed
-comes from — and it is why *not* passing the lookahead tables to `Parser`
+comes from - and it is why *not* passing the lookahead tables to `Parser`
 leaves you with a plain PEG that still works but is slower.
 
 **Deferred tree construction.** Recognition produces a flat list of trace
-entries — a rule id on the way in, the tokens read, a negative rule id on the
+entries - a rule id on the way in, the tokens read, a negative rule id on the
 way out. Nothing is built while the input is being read, and a branch that
 fails simply has its entries truncated. The tree is assembled afterwards, in
 one pass, by running the reducers bottom-up. `analyze()` in `Mode::Fast`
@@ -159,7 +159,7 @@ read any input, and you can always tell which one by reading top to bottom.
 Expression : Expression() ::T_PLUS:: Number() ;
 ```
 
-Write it as a repetition instead — this is the standard translation, and it
+Write it as a repetition instead - this is the standard translation, and it
 is what you want anyway:
 
 ```pp2
@@ -205,7 +205,7 @@ $e->source;        // the source it was reading
 
 Because the parser backtracks, "the token it choked on" needs a definition.
 The reported position is the **furthest** one any rule reached before failing,
-not the position where the last attempt gave up — otherwise every error would
+not the position where the last attempt gave up - otherwise every error would
 point at the start of the outermost rule. This usually lands where you expect,
 but it can surprise you: an alternative that got further into the input before
 failing wins the report, even if a different alternative was the intended one.
@@ -228,7 +228,7 @@ the fragment yours describes, it may be a line someone is still typing, or you
 may want to report what is wrong rather than stop at it.
 
 `analyze()` reads as far as the grammar goes and reports what it made of the
-source. Nothing about the source makes it throw — how far it got is the class
+source. Nothing about the source makes it throw - how far it got is the class
 of the result:
 
 ```php
@@ -239,8 +239,8 @@ use Phplrt\Parser\Analysis\Result\SuccessfulResult;
 $result = $parser->analyze(new Source('2 + 2 } and then some HTML'));
 
 $result instanceof PartialResult; // the grammar stopped before the end
-$result->value;                   // 4 — the same value parse() gives for "2 + 2"
-$result->token->offset;           // 6 — where the fragment ends
+$result->value;                   // 4 - the same value parse() gives for "2 + 2"
+$result->token->offset;           // 6 - where the fragment ends
 ```
 
 | Result             | Means                                     | Carries              |
@@ -249,7 +249,7 @@ $result->token->offset;           // 6 — where the fragment ends
 | `PartialResult`    | the grammar read a fragment and stopped   | `value`, `token`     |
 | `FailureResult`    | the grammar read nothing at all           | `token`              |
 
-All three carry `diagnostics` — a list of what the analysis has to say. Each
+All three carry `diagnostics` - a list of what the analysis has to say. Each
 one holds the **error the source would be rejected with**, so it already knows
 how to print itself along with the fragment it occurred in:
 
@@ -277,8 +277,8 @@ $diagnostic->token;    // the token it is about
 $diagnostic->expected; // ids of the tokens that could have been read instead
 ```
 
-It is the very same object `parse()` throws for the same source — not one
-built to look like it — so an editor and a build never disagree about what is
+It is the very same object `parse()` throws for the same source - not one
+built to look like it - so an editor and a build never disagree about what is
 wrong. Rethrowing it is a valid way to turn an analysis back into a failure:
 
 ```php
@@ -294,7 +294,7 @@ The second argument says how much work to do:
 ```php
 use Phplrt\Parser\Analysis\Mode;
 
-$parser->analyze($source, Mode::Tolerant); // the default — builds the value
+$parser->analyze($source, Mode::Tolerant); // the default - builds the value
 $parser->analyze($source, Mode::SyntaxCheck); // recognizes only, runs no reducer
 ```
 
@@ -305,7 +305,7 @@ of the source is valid rather than just whether all of it is:
 $parser->analyze($source, Mode::Fast) instanceof SuccessfulResult; // true or false
 ```
 
-The mode changes nothing about how much of the source is read — only whether
+The mode changes nothing about how much of the source is read - only whether
 the value is built. In `Mode::Fast` every `value` is `null`.
 
 ### The Rules Are Greedy
@@ -325,7 +325,7 @@ while (!$parser->analyze($input, Mode::Fast) instanceof SuccessfulResult) {
 
 ## Next
 
-- [Grammar Rules](/docs/parser/rules) — the five rule types and what each
+- [Grammar Rules](/docs/parser/rules) - the five rule types and what each
   one does.
-- [Building a Grammar](/docs/parser/builder) — describing rules in PHP.
-- [Results and Reducers](/docs/parser/ast) — turning a parse into an AST.
+- [Building a Grammar](/docs/parser/builder) - describing rules in PHP.
+- [Results and Reducers](/docs/parser/ast) - turning a parse into an AST.

@@ -51,7 +51,7 @@ whatever you like; by convention tokens are `SCREAMING_CASE` with a `T_`
 prefix, which makes them obvious in a rule.
 
 `%skip` declares a token the parser will never see. Use it for whitespace
-and comments — they still get recognized, so offsets stay correct, but they
+and comments - they still get recognized, so offsets stay correct, but they
 do not clutter the grammar:
 
 ```pp2
@@ -79,7 +79,7 @@ Same story with keywords: declare `if` before your identifier pattern, or
 
 **A declaration is one line.** It is read by a lexer of its own, which starts
 at `%token` and stops at the line break, and it expects exactly three things:
-a name, the expression recognizing the token, and — optionally — an arrow with
+a name, the expression recognizing the token, and - optionally - an arrow with
 what the token [does](#token-actions).
 
 ```
@@ -88,7 +88,7 @@ what the token [does](#token-actions).
         state  name     expr  actions
 ```
 
-**A pattern cannot contain a literal space** — whitespace is what separates
+**A pattern cannot contain a literal space** - whitespace is what separates
 the parts of the declaration. Write it as `\x20` or `\s`:
 
 ```pp2
@@ -122,7 +122,7 @@ read. There are three actions, and each is written as a call:
 ### channel(x)
 
 A [channel](/docs/lexer/tokens) keeps a token out of the grammar without
-throwing it away — documentation comments are the usual reason:
+throwing it away - documentation comments are the usual reason:
 
 ```pp2
 %token T_DOC_COMMENT  /\*\*.*?\*/  -> channel(docblocks)
@@ -140,7 +140,7 @@ channel, so these two lines mean the same thing:
 ### state(x) and exit()
 
 A token may hand the reading over to a lexer of its own, which is how a
-fragment written in different lexical rules is read — a string literal, a
+fragment written in different lexical rules is read - a string literal, a
 comment, an embedded language:
 
 ```pp2
@@ -162,7 +162,7 @@ Actions are separated by commas, and the order does not matter:
 ```
 
 A token is read once and therefore goes to exactly one place, so writing two
-actions that both move the reading — `state(x), exit()` — is an error.
+actions that both move the reading - `state(x), exit()` - is an error.
 
 ## Tokens Belonging To Every State
 
@@ -183,7 +183,7 @@ Both the initial state and `string` now skip whitespace.
 Three things worth knowing:
 
 - the token is added to **every** state, including ones declared later or in
-  a file included afterwards — the states are all known only once the whole
+  a file included afterwards - the states are all known only once the whole
   grammar has been read;
 - inside a state it is tried **after** the tokens that state declares itself,
   so a state with a catch-all pattern still wins;
@@ -192,7 +192,7 @@ Three things worth knowing:
 
 ## Lexers Written By Hand
 
-Some fragments cannot be described by regular expressions at all — heredocs,
+Some fragments cannot be described by regular expressions at all - heredocs,
 indentation-sensitive blocks, another language entirely. `%lexer` names a
 state and gives the expression building the lexer that reads it:
 
@@ -202,7 +202,7 @@ state and gives the expression building the lexer that reads it:
 %lexer php -> { new \App\Lexer\PhpTokenLexer() }
 ```
 
-The body is an **expression**, not a block of statements — whatever it
+The body is an **expression**, not a block of statements - whatever it
 evaluates to has to be a `LexerInterface`. Note there is no `return` and no
 semicolon.
 
@@ -250,7 +250,7 @@ Group : ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE:: ;
 
 ### Other Rules
 
-Parentheses after the name — that is what tells a rule reference from a token:
+Parentheses after the name - that is what tells a rule reference from a token:
 
 ```pp2
 Sum : Number() ::T_PLUS:: Number() ;
@@ -280,14 +280,14 @@ so `"+"`, `"("` and `"**"` mean exactly what they look like. Slashes are for
 when you need a choice, a character class or a quantifier.
 
 The same token written in several rules is declared **once**, and such a token
-is always discarded — it is punctuation by definition:
+is always discarded - it is punctuation by definition:
 
 ```pp2
 Sum     : <T_NUMBER> "+" <T_NUMBER> ;
 Unary   : "+" <T_NUMBER> ;              // the very same token
 ```
 
-Escaping is only ever needed for the delimiter itself — `\"` inside quotes,
+Escaping is only ever needed for the delimiter itself - `\"` inside quotes,
 `\/` inside slashes.
 
 Handy for one-off punctuation; for anything that appears more than twice,
@@ -339,7 +339,7 @@ Modifiers : Modifier()* ;
 ### Predicates
 
 A predicate looks at what comes next **without reading it**. Nothing is
-consumed and nothing lands in the tree — the only thing that happens is that
+consumed and nothing lands in the tree - the only thing that happens is that
 the rule either goes on or gives up.
 
 | Written | Means                                     |
@@ -354,7 +354,7 @@ that is not a function call:
 Variable : <T_NAME> !::T_PARENTHESIS_OPEN:: ;
 ```
 
-`foo` matches. `foo(` does not — and, importantly, the `(` is still there
+`foo` matches. `foo(` does not - and, importantly, the `(` is still there
 afterwards for whatever rule does want it.
 
 The other direction is committing to a branch without reading it twice:
@@ -390,7 +390,7 @@ By default, it starts at the first rule in the file. Say otherwise with
 %pragma root Expression
 ```
 
-Worth setting explicitly once a grammar is split across files — the "first
+Worth setting explicitly once a grammar is split across files - the "first
 rule" then depends on include order, which is a fragile thing to depend on.
 
 ## Settings
@@ -442,7 +442,7 @@ and the setting is named after the moment it runs at:
 ```
 
 The class is created with no arguments and must implement
-`LexerCompilerPassInterface` or `ParserCompilerPassInterface` — a class that
+`LexerCompilerPassInterface` or `ParserCompilerPassInterface` - a class that
 does not exist, or implements the wrong one, is reported at the line it is
 written on.
 
@@ -482,7 +482,7 @@ Number -> { return (int) $children->value; }
   ;
 ```
 
-A block of code is the only form a reducer takes — build the node inside it:
+A block of code is the only form a reducer takes - build the node inside it:
 
 ```pp2
 Number -> { return new \App\Ast\NumberNode($offset, $children->value); }
@@ -535,7 +535,7 @@ Value
 List : "[" (Value() ("," Value())*)? "]" ;
 ```
 
-Note `T_TRUE` before `T_NAME` — otherwise `true` is read as a name. And note
+Note `T_TRUE` before `T_NAME` - otherwise `true` is read as a name. And note
 that the punctuation is never declared: `"="`, `"["`, `","` and `"]"` each
 declare their token where they are read, and none of them needs escaping
 because a value is not an expression.

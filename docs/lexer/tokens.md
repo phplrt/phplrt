@@ -5,11 +5,11 @@ carries five pieces of information.
 
 ```php
 foreach ($lexer->lex(new Source('23 + 42')) as $token) {
-    $token->id;      // 0       — which definition matched
-    $token->name;    // T_DIGIT — its human-readable name, or null
-    $token->value;   // "23"    — the exact text that matched
-    $token->offset;  // 0       — where it starts, in bytes
-    $token->size;    // 2       — how long it is, in bytes
+    $token->id;      // 0       - which definition matched
+    $token->name;    // T_DIGIT - its human-readable name, or null
+    $token->value;   // "23"    - the exact text that matched
+    $token->offset;  // 0       - where it starts, in bytes
+    $token->size;    // 2       - how long it is, in bytes
     $token->channel; // Channel::Default
 }
 ```
@@ -101,7 +101,7 @@ $builder->addPattern('\s++')->show();  // back to Default
 ### Custom Channels
 
 Hiding a token throws it away. Sometimes you want to *keep* it, just not in
-the grammar — documentation comments are the usual example. Give it a channel
+the grammar - documentation comments are the usual example. Give it a channel
 of its own:
 
 ```php
@@ -121,7 +121,7 @@ T_DIGIT on Default
 ```
 
 The parser skips everything that is not on `Default`, so `T_COMMENT` never
-reaches your grammar — but it is right there in the token stream if a
+reaches your grammar - but it is right there in the token stream if a
 documentation generator wants it.
 
 ### Choosing What The Parser Sees
@@ -197,7 +197,7 @@ $string->captures; // ["hi"]
 $float->captures;  // ["3", "14"]
 ```
 
-Captures are numbered per token, starting at zero — the first group of *this*
+Captures are numbered per token, starting at zero - the first group of *this*
 token is `captures[0]`, no matter how many groups the tokens above it have.
 
 This saves you from parsing the value twice:

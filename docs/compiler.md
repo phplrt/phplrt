@@ -3,7 +3,7 @@
 > This package is for development only:
 > `composer require phplrt/compiler --dev`
 
-The compiler reads a grammar file — the tokens, the rules, the reducers —
+The compiler reads a grammar file - the tokens, the rules, the reducers -
 and gives you back a working parser. It is the friendly front end to
 everything the [lexer builder](/docs/lexer) and
 [parser builder](/docs/parser/builder) can do.
@@ -25,7 +25,7 @@ echo $parser->parse(new Source('2 + 2'));
 `load()` reads the grammar (and everything it `%include`s), and `getParser()`
 compiles it. That is the whole thing for a script or a prototype.
 
-You can load several grammars into one compiler — they all end up in the same
+You can load several grammars into one compiler - they all end up in the same
 lexer and parser:
 
 ```php
@@ -64,7 +64,7 @@ The format is decided by the file extension:
 
 | Extension | Format                                                                                    |
 |-----------|-------------------------------------------------------------------------------------------|
-| `.pp`     | The legacy [Hoa](https://github.com/hoaproject/Compiler) format — **no longer supported** |
+| `.pp`     | The legacy [Hoa](https://github.com/hoaproject/Compiler) format - **no longer supported** |
 | `.pp2`    | The older format, described in [Legacy Grammar](/docs/compiler/legacy-grammar)            |
 | `.pp3`    | The current format, described in [Grammar](/docs/compiler/grammar)                        |
 
@@ -102,7 +102,7 @@ declarations land exactly where to include is written:
 A few useful details:
 
 - the path is **relative to the file to include is written in**;
-- the extension may be omitted — every known format is tried in turn;
+- the extension may be omitted - every known format is tried in turn;
 - a grammar reached from several places is read **once**, so a shared
   `lexemes.pp3` can be included by every file that needs it.
 
@@ -139,7 +139,7 @@ $compiler->parser->addCompilerPass(new MyValidationPass());
 $parser = $compiler->getParser();
 ```
 
-`build()` gives you the compiled description instead of a ready parser —
+`build()` gives you the compiled description instead of a ready parser -
 which is what the generator works from:
 
 ```php
@@ -176,9 +176,9 @@ The kinds you are likely to meet:
 
 ## Next
 
-- [Grammar Syntax](/docs/compiler/grammar) — everything a `.pp3` file can say.
-- [Legacy Grammar Syntax](/docs/compiler/legacy-grammar) — everything a `.pp2`
+- [Grammar Syntax](/docs/compiler/grammar) - everything a `.pp3` file can say.
+- [Legacy Grammar Syntax](/docs/compiler/legacy-grammar) - everything a `.pp2`
   file can say.
-- [PHP in a Grammar](/docs/compiler/code) — reducers and the variables they get.
-- [Code Generation](/docs/compiler/generation) — namespaces, class names, and
+- [PHP in a Grammar](/docs/compiler/code) - reducers and the variables they get.
+- [Code Generation](/docs/compiler/generation) - namespaces, class names, and
   what the output looks like.

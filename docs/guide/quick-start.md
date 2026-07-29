@@ -27,7 +27,7 @@ Before anything can be parsed, the text has to be cut into pieces. Create
 ```
 
 Each line is a name and a regular expression. `%skip` is the same as `%token`,
-except those tokens never reach the parser — which is exactly what you want
+except those tokens never reach the parser - which is exactly what you want
 for whitespace and comments.
 
 The order matters: the lexer tries the patterns from top to bottom and takes
@@ -42,7 +42,7 @@ Number : <T_NUMBER> ;
 ```
 
 `<T_NUMBER>` means "read a `T_NUMBER` token and keep it". There is also
-`::T_NUMBER::`, which reads the token and throws it away — use it for
+`::T_NUMBER::`, which reads the token and throws it away - use it for
 punctuation you do not care about, like commas and brackets.
 
 Rules can refer to each other with `RuleName()`:
@@ -57,7 +57,7 @@ Primary
 ```
 
 `|` means "or". The alternatives are tried in order, and the first one that
-matches wins — so put the more specific ones first.
+matches wins - so put the more specific ones first.
 
 To get operator precedence right, use the classic trick: multiplication binds
 tighter than addition, so addition is written *in terms of* multiplication.
@@ -72,7 +72,7 @@ Term       : Primary() ((<T_MUL>  | <T_DIV>)   Primary())* ;
 
 ## Step 3: Say What To Build
 
-At this point the grammar is complete — it can already tell `2 + 2` from
+At this point the grammar is complete - it can already tell `2 + 2` from
 `2 +`. But parsing alone just gives you a pile of tokens. To get a *value*,
 attach a **reducer**: a block of PHP that runs when the rule matches.
 
@@ -202,7 +202,7 @@ echo $parser->parse(new Source('10 / 4'));      // 2.5
 
 Notice the two kinds of "source": `File` reads from disk, `Source` wraps a
 string you already have. The grammar is a source, and so is the text being
-parsed — they are the same kind of object.
+parsed - they are the same kind of object.
 
 ## Step 5: Errors
 
@@ -238,12 +238,12 @@ $parser->analyze(new Source('2 +'), Mode::SyntaxCheck) instanceof SuccessfulResu
 ```
 
 It also tells you *how much* of the input is valid and what stands in the way,
-which is what you want for an editor or a prompt — see
+which is what you want for an editor or a prompt - see
 [Analysing A Source](/docs/parser#analysing-a-source).
 
 ## Step 6: Compile It Once
 
-Reading `grammar.pp3` on every request is wasteful — the grammar does not
+Reading `grammar.pp3` on every request is wasteful - the grammar does not
 change between requests. Generate a PHP file instead and commit it:
 
 ```php
@@ -276,7 +276,7 @@ readonly class CalculatorParser extends \Phplrt\Parser\Parser
 }
 ```
 
-Which you use like any other class — no compiler, no grammar file:
+Which you use like any other class - no compiler, no grammar file:
 
 ```php
 $parser = new App\Calculator\CalculatorParser();
@@ -292,7 +292,7 @@ are done.
 So far the calculator only knows what is written in the expression. Real
 languages need more: a variable scope, a function registry, a logger, a cache.
 
-The generated parser is an ordinary class, so **extend it** — and the grammar
+The generated parser is an ordinary class, so **extend it** - and the grammar
 can reach whatever you add, through `$this`.
 
 Add a rule for variables:
@@ -408,14 +408,14 @@ Three things to keep in mind:
           - src/Parser/*Parser.php
   ```
 
-  The reducers themselves are still checked — as part of the grammar, in code
-  review — and the subclass, where your logic actually lives, is analysed
+  The reducers themselves are still checked - as part of the grammar, in code
+  review - and the subclass, where your logic actually lives, is analysed
   normally.
 
 ## Where To Go Next
 
-- [Grammar Syntax](/docs/compiler/grammar) — the full `.pp3` reference.
-- [Reducers](/docs/compiler/code) — building a real AST instead of numbers.
-- [Lexer](/docs/lexer) — channels, captures and nested lexers.
-- [Code Generation](/docs/compiler/generation) — namespaces, imports, and
+- [Grammar Syntax](/docs/compiler/grammar) - the full `.pp3` reference.
+- [Reducers](/docs/compiler/code) - building a real AST instead of numbers.
+- [Lexer](/docs/lexer) - channels, captures and nested lexers.
+- [Code Generation](/docs/compiler/generation) - namespaces, imports, and
   what the generated file looks like.

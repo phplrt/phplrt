@@ -7,7 +7,7 @@
 
 The lexer is the first half of reading source code: it turns a stream of
 characters into a stream of **tokens**. `23 + 42` becomes "a number, a plus,
-a number" — and the parser never has to look at a single character again.
+a number" - and the parser never has to look at a single character again.
 
 ## A First Lexer
 
@@ -41,8 +41,8 @@ end of input
 
 Two ways to describe a token:
 
-- `addPattern('\d++')` — a **regular expression**;
-- `addValue('+')` — a **literal string**, escaped for you. `addValue('+')` and
+- `addPattern('\d++')` - a **regular expression**;
+- `addValue('+')` - a **literal string**, escaped for you. `addValue('+')` and
   `addPattern('\+')` are the same thing, but the first one is harder to get
   wrong.
 
@@ -52,7 +52,7 @@ source has been read to the end.
 ## Order Matters
 
 The lexer tries the patterns from top to bottom and takes the **first** one
-that matches — not the longest. So this does not do what it looks like:
+that matches - not the longest. So this does not do what it looks like:
 
 ```php
 $builder->addValue('*', 'T_STAR');
@@ -67,7 +67,7 @@ $builder->addValue('**', 'T_POW');   // ✔
 $builder->addValue('*', 'T_STAR');
 ```
 
-The same applies to keywords and identifiers — declare `if` before
+The same applies to keywords and identifiers - declare `if` before
 `[a-z]+`, or `if` will always be read as an identifier.
 
 ## Hiding Whitespace
@@ -86,7 +86,7 @@ $builder->addPattern('//[^\n]*+')
 Note that the token above has no name. A hidden token is not referred to by
 anything, so naming it is optional.
 
-`hide()` is shorthand for putting the token on the `Hidden` channel — see
+`hide()` is shorthand for putting the token on the `Hidden` channel - see
 [Tokens and Channels](/docs/lexer/tokens) for the general case.
 
 ## Regex Modifiers
@@ -111,11 +111,11 @@ and where it was:
 
 ```php
 foreach ($lexer->lex(new Source('23 + 42')) as $token) {
-    $token->id;      // int    — 0, the position of its definition
-    $token->name;    // string — "T_DIGIT"
-    $token->value;   // string — "23"
-    $token->offset;  // int    — 0, in bytes
-    $token->size;    // int    — 2, in bytes
+    $token->id;      // int    - 0, the position of its definition
+    $token->name;    // string - "T_DIGIT"
+    $token->value;   // string - "23"
+    $token->offset;  // int    - 0, in bytes
+    $token->size;    // int    - 2, in bytes
     $token->channel; // Channel::Default
 }
 ```
@@ -160,7 +160,7 @@ error, and it does so with a message pointing at the exact spot.
 
 ## Reusing The Result
 
-`build()` gives you a `LexerBuilderResult` — the compiled description — and
+`build()` gives you a `LexerBuilderResult` - the compiled description - and
 `toLexer()` turns that into a runnable lexer:
 
 ```php
@@ -173,7 +173,7 @@ $result->channels; // [2 => 'Hidden', ...]
 $lexer = $result->toLexer();
 ```
 
-Building is not free — it validates every pattern, drops unreachable tokens
+Building is not free - it validates every pattern, drops unreachable tokens
 and merges everything into one big regular expression. Do it once and keep
 the lexer around, or better still,
 [generate the code](/docs/compiler/generation) and skip building entirely.
@@ -188,7 +188,7 @@ matched is recorded with
 /\G(?|(?:(?:\d++)(*MARK:0))|(?:(?:\s++)(*MARK:1))|(?:(?:[^\s]++)(*MARK:2)))/Ssum
 ```
 
-One pass over the input, one regex, no per-token loop — this is where the
+One pass over the input, one regex, no per-token loop - this is where the
 lexer's speed comes from. The last branch is the catch-all that produces
 `Unknown` tokens.
 
@@ -222,7 +222,7 @@ Everything above has a shorter spelling in a `.pp3` file:
 %skip  T_WHITESPACE  \s++
 ```
 
-A token nothing refers to by name does not have to be declared at all — a rule
+A token nothing refers to by name does not have to be declared at all - a rule
 declares it where it reads it, and the two spellings are the two methods above:
 
 ```pp2
@@ -238,13 +238,13 @@ grammar carries the way it wants to be compiled:
 %pragma lexer.check      \App\Grammar\MyValidationPass
 ```
 
-That is usually where you want to be — see [Compiler](/docs/compiler). The
+That is usually where you want to be - see [Compiler](/docs/compiler). The
 builder API is for the cases where the token list is not known in advance:
 generated from a config file, a database, a plugin system.
 
 ## Next
 
-- [Tokens and Channels](/docs/lexer/tokens) — the token API, channels and
+- [Tokens and Channels](/docs/lexer/tokens) - the token API, channels and
   captures.
-- [Nested Lexers](/docs/lexer/embedding) — string interpolation, PHP inside
+- [Nested Lexers](/docs/lexer/embedding) - string interpolation, PHP inside
   HTML and other "a different language starts here" situations.

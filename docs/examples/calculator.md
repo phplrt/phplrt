@@ -1,7 +1,7 @@
 # Calculator
 
 An expression evaluator with operator precedence, brackets and unary minus.
-The result is a number, not a tree — the reducers do the arithmetic as the
+The result is a number, not a tree - the reducers do the arithmetic as the
 rules are reduced.
 
 ```php

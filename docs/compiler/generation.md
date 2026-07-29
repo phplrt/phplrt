@@ -1,6 +1,6 @@
 # Code Generation
 
-Reading a grammar file takes time. Not much — but it is time spent on every
+Reading a grammar file takes time. Not much - but it is time spent on every
 single request, doing exactly the same work, to produce exactly the same
 parser. Generate the parser once instead, commit it, and the compiler never
 runs in production again.
@@ -26,7 +26,7 @@ echo $parser->parse(new Source('2 + 2')); // 4
 ```
 
 That is it. The generated file needs `phplrt/lexer` and `phplrt/parser`, and
-nothing else — `phplrt/compiler` can go in `require-dev`.
+nothing else - `phplrt/compiler` can go in `require-dev`.
 
 ## What Comes Out
 
@@ -123,7 +123,7 @@ if ($token->id === SumParser::T_DIGIT) {
 ```
 
 **Reducers become methods**, named after their rule. Your code is right
-there — steppable in a debugger, visible in a stack trace, and checked by
+there - steppable in a debugger, visible in a stack trace, and checked by
 static analysis like any other file.
 
 **The whole lexer is one regular expression.** No token list is walked at
@@ -136,7 +136,7 @@ start it, which is one array lookup instead of a doomed descent.
 
 ## Shaping The Output
 
-`generate()` returns an immutable object — each method returns a new one, so
+`generate()` returns an immutable object - each method returns a new one, so
 order does not matter:
 
 ```php
@@ -175,7 +175,7 @@ return new readonly class extends \Phplrt\Parser\Parser { /* ... */ };
 $parser = require __DIR__ . '/parser.php';
 ```
 
-Use the named form for anything autoloaded — it is a normal class, and
+Use the named form for anything autoloaded - it is a normal class, and
 composer will find it. The anonymous form is handy for a one-off script, or
 when you do not want the parser in the global class namespace at all.
 
@@ -194,7 +194,7 @@ $code = (string) new Compiler()
 // write it into a phar, whatever you need
 ```
 
-A handy trick for CI — fail the build if the committed parser is stale:
+A handy trick for CI - fail the build if the committed parser is stale:
 
 ```php
 $expected = (string) $output;
@@ -250,13 +250,13 @@ $parser = new Compiler()
 ## phplrt Does This To Itself
 
 The `.pp3` format is described by a grammar written in `.pp3`, and the parser
-reading your grammar files is generated from it — the same `generate()` call
+reading your grammar files is generated from it - the same `generate()` call
 you have just seen, committed to the repository.
 
 It has to be that way: reading a grammar file needs a parser, so the parser of
 a format cannot be built from the grammar describing it at runtime. The grammar
-lives in `resources/pp3.pp3` — split with `%include` into lexemes, statements
-and quantifiers — the parser it compiles into lives in
+lives in `resources/pp3.pp3` - split with `%include` into lexemes, statements
+and quantifiers - the parser it compiles into lives in
 `src/Syntax/PP3/PP3Parser.php`, and a test compares the two so they cannot
 drift apart.
 
@@ -277,8 +277,8 @@ public function generate(
 ): string;
 ```
 
-Return a string, and everything else — `withNamespaceName()`, `save()`, creating
-directories — keeps working as before.
+Return a string, and everything else - `withNamespaceName()`, `save()`, creating
+directories - keeps working as before.
 
 Here is a generator that writes the token list down as JSON, for a
 highlighter that needs to know the words of a language but not its grammar:
@@ -388,16 +388,16 @@ $result->lexer->pattern;     // the compiled regex
 $result->lexer->transitions; // which tokens enter a nested lexer
 $result->lexer->lexers;      // the nested lexers themselves
 
-$result->parser->grammar;    // list<RuleInterface> — the rules, by id
+$result->parser->grammar;    // list<RuleInterface> - the rules, by id
 $result->parser->initial;    // where parsing starts
 $result->parser->reducers;   // array<int, ReducerInterface>
-$result->parser->constants;  // ['Sum' => 0, ...] — named rules
+$result->parser->constants;  // ['Sum' => 0, ...] - named rules
 $result->parser->startTokens;      // the lookahead table
 $result->parser->matchesEmptyInput;
 $result->parser->presentInTree;
 ```
 
-`OutputContext` carries what the caller asked for — `$context->namespace`,
+`OutputContext` carries what the caller asked for - `$context->namespace`,
 `$context->class`, `$context->imports`. Use what makes sense for your format
 and ignore the rest.
 
@@ -421,6 +421,6 @@ if ($result->lexer->lexers !== []) {
 If you only want to change how the *PHP* looks, you do not need a generator
 of your own. `PhpOutputGenerator` renders [Twig](https://twig.symfony.com/)
 templates from the compiler's `resources/php/` directory, and they are split
-per fragment — the file layout, the parser body, the grammar table, the
-reducer methods, the lexer and its states — so a change is usually confined
+per fragment - the file layout, the parser body, the grammar table, the
+reducer methods, the lexer and its states - so a change is usually confined
 to one small template.

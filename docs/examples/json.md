@@ -1,6 +1,6 @@
 # JSON
 
-A JSON parser that produces plain PHP values — the result matches
+A JSON parser that produces plain PHP values - the result matches
 `json_decode($input, true)` exactly.
 
 ```php
@@ -118,7 +118,7 @@ $data = $parser->parse(new Source($json))->value;
 ```
 
 Two details worth stealing for your own grammars. `Member` has no reducer, so
-its two values are merged into the object's list — which is exactly why the
+its two values are merged into the object's list - which is exactly why the
 object reads them in pairs. And `(Value() (::T_COMMA:: Value())*)?` is the
 standard shape for a possibly-empty comma-separated list; writing
 `(Value() ::T_COMMA::)*` instead would demand a trailing comma.

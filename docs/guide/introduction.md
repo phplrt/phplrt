@@ -2,7 +2,7 @@
 
 Phplrt (PHP Language Recognition Tool) is a set of libraries for reading
 source code: your own configuration format, a template language, a query
-syntax, a subset of PHP — anything with rules.
+syntax, a subset of PHP - anything with rules.
 
 You describe the language once, and phplrt turns that description into two
 things:
@@ -49,7 +49,7 @@ is worth knowing which is which.
 The **compiler** (`phplrt/compiler`) reads grammar files. It is a
 [compiler-compiler](https://en.wikipedia.org/wiki/Compiler-compiler): it does
 not read *your users'* code, it reads *your grammar* and produces a parser.
-You use it while developing, and — ideally — you run it once and commit the
+You use it while developing, and - ideally - you run it once and commit the
 result.
 
 The **runtime** (`phplrt/runtime`, i.e. the lexer, the parser and the source
@@ -61,7 +61,7 @@ grammar.pp3  ──[ compiler ]──▶  Parser.php  ──[ runtime ]──▶
    (dev)                        (committed)                   (production)
 ```
 
-You can skip the middle step and compile the grammar on every run — the
+You can skip the middle step and compile the grammar on every run - the
 example above does exactly that. It is convenient while you are still
 changing the grammar every five minutes, and slow once you are not.
 
@@ -85,7 +85,7 @@ composer require phplrt/source
 ### Lexer
 
 The lexer turns characters into tokens. It is regex-driven, supports hidden
-tokens (whitespace, comments) and can hand a fragment over to another lexer —
+tokens (whitespace, comments) and can hand a fragment over to another lexer -
 which is how you read a string literal, or PHP inside HTML.
 
 ```bash
@@ -101,7 +101,7 @@ a [PEG](https://en.wikipedia.org/wiki/Parsing_expression_grammar) by
 backtracking recursive descent over a table of rules, predicts with FIRST
 sets so that hopeless branches are skipped by a single lookup, and builds the
 result only once the whole input has been recognized. In practice: the
-alternatives are ordered — the first one that matches wins — and there is
+alternatives are ordered - the first one that matches wins - and there is
 never any ambiguity.
 
 ```bash
@@ -155,7 +155,7 @@ composer require phplrt/exception
 
 ## Where To Go Next
 
-- [Quick Start](/docs/guide/quick-start) — build a small language end to end.
-- [Grammar Syntax](/docs/compiler/grammar) — everything a `.pp3` file can say.
-- [Lexer](/docs/lexer) — tokens, channels and nested lexers.
-- [Parser](/docs/parser) — rules, reducers and the result they build.
+- [Quick Start](/docs/guide/quick-start) - build a small language end to end.
+- [Grammar Syntax](/docs/compiler/grammar) - everything a `.pp3` file can say.
+- [Lexer](/docs/lexer) - tokens, channels and nested lexers.
+- [Parser](/docs/parser) - rules, reducers and the result they build.

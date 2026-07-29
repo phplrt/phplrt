@@ -1,6 +1,6 @@
 # Legacy Grammar Syntax
 
-This page describes the `.pp2` format — the one phplrt 3.x read. It is still
+This page describes the `.pp2` format - the one phplrt 3.x read. It is still
 read exactly as it was, so a grammar written years ago compiles today without
 being touched.
 
@@ -37,7 +37,7 @@ A name and a regular expression, separated by whitespace:
 %skip  T_WHITESPACE  \s++
 ```
 
-`%skip` declares a token the parser never sees — whitespace and comments still
+`%skip` declares a token the parser never sees - whitespace and comments still
 get recognized, so offsets stay correct, but they do not clutter the grammar.
 
 **Order matters.** The lexer takes the first pattern that matches, not the
@@ -48,7 +48,7 @@ longest one, so a longer literal goes above a shorter one:
 %token T_STAR  \*
 ```
 
-**A pattern cannot contain a literal space** — whitespace separates the parts
+**A pattern cannot contain a literal space** - whitespace separates the parts
 of the declaration. Write `\x20` or `\s` instead.
 
 ### States
@@ -64,7 +64,7 @@ A token may name the state the reading continues in, and a token declared as
 
 Reading is nested rather than flat: naming a state from the initial one hands
 the reading over to it, and naming `default` from inside gives the control
-back. Everything the inner lexer read is carried by the token that entered it —
+back. Everything the inner lexer read is carried by the token that entered it -
 see [Nested Lexers](/docs/lexer/embedding).
 
 Because it is nested, a token cannot jump from one named state into another:
@@ -106,7 +106,7 @@ Root  : Pair() <T_B> ;
 ```
 
 The marker keeps the name of the rule on the **compiled parser**, so the rule
-can still be pointed at once the parser has been built — which is what a
+can still be pointed at once the parser has been built - which is what a
 grammar being extended at runtime needs. Without it, a rule the optimizer folds
 into the one above leaves no trace:
 
@@ -136,7 +136,7 @@ Number -> { return (int) $children->value; }
   ;
 ```
 
-The variables a body may use are the same in both formats — see
+The variables a body may use are the same in both formats - see
 [PHP in a Grammar](/docs/compiler/code).
 
 ### A Class Name
@@ -160,7 +160,7 @@ So the class has to have a constructor taking those two, in that order. The
 name is not resolved while the grammar is read: a class that does not exist is
 only noticed where the parser runs.
 
-> The class reducer was removed in `.pp3` — write the block of code and build
+> The class reducer was removed in `.pp3` - write the block of code and build
 > whatever you like inside it.
 
 ## What Goes In A Rule Body
@@ -176,7 +176,7 @@ Rule : ::T_COMMA:: ;  // read it and throw it away
 
 ### Other Rules
 
-Parentheses after the name — that is what tells a rule reference from a token:
+Parentheses after the name - that is what tells a rule reference from a token:
 
 ```pp2
 Sum : Number() ::T_PLUS:: Number() ;
@@ -246,7 +246,7 @@ That is the only setting this format has. Anything else is an error:
 error[UnsupportedPragmaException]: Unrecognized pragma "lexer.pcre.flag"
 ```
 
-Everything else — PCRE modifiers, compiler passes — is configured in PHP
+Everything else - PCRE modifiers, compiler passes - is configured in PHP
 through [the lexer builder](/docs/lexer) and
 [the parser builder](/docs/parser/builder).
 
@@ -304,6 +304,6 @@ List
   ;
 ```
 
-Note `T_TRUE` before `T_NAME` — otherwise `true` is read as a name. And note
+Note `T_TRUE` before `T_NAME` - otherwise `true` is read as a name. And note
 that tokens may be declared after the rules that use them; only the order of
 the tokens *relative to each other* matters.

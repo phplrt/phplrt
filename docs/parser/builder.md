@@ -6,7 +6,7 @@
 Writing the [rule array](/docs/parser/rules) by hand works, but you have to
 keep track of indices yourself, and one inserted rule renumbers everything.
 The builder does that for you: you describe rules as objects, and it turns
-them into the flat array — validating and optimizing along the way.
+them into the flat array - validating and optimizing along the way.
 
 This is also what the [grammar compiler](/docs/compiler) uses internally. A
 `.pp3` file is easier to read, so reach for the builder when the grammar is
@@ -64,7 +64,7 @@ $parser->parse(new Source('1 + 2 + 3'));
 ```
 
 Every `add*()` method returns the rule it created, so you can nest calls or
-pull them out into variables — whichever reads better.
+pull them out into variables - whichever reads better.
 
 ## The Rules
 
@@ -92,14 +92,14 @@ $grammar->addRepetition($a);
 $grammar->addRepetition($a, min: 1);
 $grammar->addRepetition($a, min: 2, max: 5);
 
-// &a and !a — look ahead without reading
+// &a and !a - look ahead without reading
 $grammar->addPredicate($a);
 $grammar->addPredicate($a, isExpected: false);
 ```
 
 Referring to a token by **definition** is the safest: rename it later and the
 grammar still works. By **name** is useful when the token is declared
-elsewhere — the reference is resolved when the grammar is built, so the order
+elsewhere - the reference is resolved when the grammar is built, so the order
 of declaration does not matter.
 
 ## Naming Rules and Referring To Them
@@ -110,7 +110,7 @@ at before it exists:
 ```php
 $grammar->addConcatenation([
     $grammar->addTokenReference('T_IF'),
-    $grammar->addRuleReference('Expression'), // not defined yet — fine
+    $grammar->addRuleReference('Expression'), // not defined yet - fine
 ], name: 'IfStatement');
 
 $grammar->addAlternation([...], name: 'Expression');
@@ -125,7 +125,7 @@ Rule Expression = Missing refers to the rule named "Missing",
 which has not been defined
 ```
 
-Names are for building only. Once the parser is compiled, rules are numbers —
+Names are for building only. Once the parser is compiled, rules are numbers -
 except for the ones with a reducer, whose names survive so the generated
 methods can be called after them.
 
@@ -154,7 +154,7 @@ $number->setReducer(new PhpCodeReducer(
 ));
 ```
 
-`PhpCodeReducer` works both ways — it runs in memory *and* it can be dumped
+`PhpCodeReducer` works both ways - it runs in memory *and* it can be dumped
 into the generated parser. `CallableReducer` (which you get implicitly when
 passing a closure) only runs in memory.
 
@@ -175,11 +175,11 @@ In a `.pp3` file this is `%pragma root Expression`.
 and several of them exist purely to tell you that a grammar is wrong before
 you ship it:
 
-- **references are resolved** — every `RuleReference` is replaced by the rule
+- **references are resolved** - every `RuleReference` is replaced by the rule
   it names;
-- **unreachable rules are dropped** — a rule nothing refers to is not
+- **unreachable rules are dropped** - a rule nothing refers to is not
   compiled, and does not have to be correct;
-- **token references are checked** — a rule pointing at a token the lexer does
+- **token references are checked** - a rule pointing at a token the lexer does
   not have is an error;
 - **left recursion is rejected**:
 
@@ -226,7 +226,7 @@ use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
 $grammar->removeCompilerPass(NestedConcatenationParserCompilerPass::class);
 ```
 
-There are analysis passes too — they do not change the grammar, they describe
+There are analysis passes too - they do not change the grammar, they describe
 it (this is where the lookahead tables come from):
 
 ```php
@@ -244,7 +244,7 @@ See [Settings](/docs/compiler/grammar).
 
 ## The Result
 
-`build()` returns a `ParserBuilderResult` — everything a parser needs,
+`build()` returns a `ParserBuilderResult` - everything a parser needs,
 still as data:
 
 ```php
