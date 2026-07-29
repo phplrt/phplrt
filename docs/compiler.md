@@ -45,8 +45,9 @@ requests. So: do it once, write the result to a file, and commit the file.
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Language')
-        ->save(__DIR__ . '/Parser.php', 'LanguageParser');
+        ->withNamespaceName('App\Language')
+        ->withClassName('LanguageParser')
+        ->save(__DIR__ . '/Parser.php');
 ```
 
 Now production never sees the compiler at all:

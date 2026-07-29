@@ -247,7 +247,8 @@ new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
         ->withNamespaceName('App\Calculator')
-        ->save(__DIR__ . '/CalculatorParser.php', 'CalculatorParser');
+        ->withClassName('CalculatorParser')
+        ->save(__DIR__ . '/CalculatorParser.php');
 ```
 
 You get an ordinary class:

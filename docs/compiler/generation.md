@@ -15,7 +15,8 @@ new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
         ->withNamespaceName('App\Calculator')
-        ->save(__DIR__ . '/SumParser.php', 'SumParser');
+        ->withClassName('SumParser')
+        ->save(__DIR__ . '/SumParser.php');
 ```
 
 ```php
@@ -142,20 +143,15 @@ order does not matter:
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Parser')                    // namespace App\Parser;
-        ->withClassImport('App\Ast\NumberNode')          // use App\Ast\NumberNode;
-        ->withClassImport('App\Ast\Node', as: 'BaseNode') // use App\Ast\Node as BaseNode;
-        ->withClassName('LanguageParser')
+        ->withNamespaceName('App\Parser')                  // namespace App\Parser;
+        ->withClassImport('App\Ast\NumberNode')            // use App\Ast\NumberNode;
+        ->withClassImport('App\Ast\Node', as: 'BaseNode')  // use App\Ast\Node as BaseNode;
+        ->withClassName('LanguageParser')                  // class LanguageParser
         ->save(__DIR__ . '/LanguageParser.php');
 ```
 
-`save()` takes the class name as a second argument, if that reads better:
-
-```php
-->save(__DIR__ . '/LanguageParser.php', 'LanguageParser');
-```
-
-Missing directories are created for you.
+`save()` is the only method that does anything: it writes the code down and
+creates the missing directories on the way.
 
 ## Named Class or Anonymous?
 
@@ -191,7 +187,7 @@ The output is `Stringable`, so you can do what you like with it:
 $code = (string) new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Parser')
+        ->withNamespaceName('App\Parser')
         ->withClassName('LanguageParser');
 
 // run it through php-cs-fixer, diff it against the committed version,
@@ -281,7 +277,7 @@ public function generate(
 ): string;
 ```
 
-Return a string, and everything else — `withNamespace()`, `save()`, creating
+Return a string, and everything else — `withNamespaceName()`, `save()`, creating
 directories — keeps working as before.
 
 Here is a generator that writes the token list down as JSON, for a

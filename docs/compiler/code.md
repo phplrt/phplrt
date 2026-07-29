@@ -183,7 +183,7 @@ the imports on the generated file instead:
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Parser')
+        ->withNamespaceName('App\Parser')
         ->withClassImport('App\Ast\NumberNode')
         ->save(__DIR__ . '/Parser.php');
 ```

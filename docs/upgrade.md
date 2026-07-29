@@ -258,8 +258,9 @@ the reducers as real methods:
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Parser')
-        ->save(__DIR__ . '/LanguageParser.php', 'LanguageParser');
+        ->withNamespaceName('App\Parser')
+        ->withClassName('LanguageParser')
+        ->save(__DIR__ . '/LanguageParser.php');
 ```
 
 See [Code Generation](/docs/compiler/generation).
