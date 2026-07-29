@@ -3,7 +3,7 @@
     "type": "library",
     "description": "The phplrt component for assembling a parser",
     "license": "MIT",
-    "keywords": ["regex", "parser", "LL(k)", "LL1", "compiler", "build"],
+    "keywords": ["regex", "parser", "PEG", "LPeg", "compiler", "build"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",

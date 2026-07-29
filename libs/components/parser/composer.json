@@ -3,7 +3,7 @@
     "type": "library",
     "description": "The phplrt parser library",
     "license": "MIT",
-    "keywords": ["parser", "llk", "ll1", "lr", "slr", "language", "php"],
+    "keywords": ["parser", "peg", "lpeg", "lookahead", "tracing", "language", "php"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
