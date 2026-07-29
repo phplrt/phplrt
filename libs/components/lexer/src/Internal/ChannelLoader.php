@@ -9,10 +9,15 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\UserDefinedChannel;
 
 /**
+ * Turns the channel names of a lexer configuration into channel instances.
+ *
+ * The tokens sharing a channel name share its instance, so a channel is the
+ * very same object no matter which of them it is reached through.
+ *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  */
-final readonly class ChannelLoader
+final class ChannelLoader
 {
     /**
      * Gets the lexer configuration and initializes the mapping of tokens to channels.

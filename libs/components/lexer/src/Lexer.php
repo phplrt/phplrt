@@ -8,11 +8,12 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\UserDefinedChannel;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Exception\LexerSourceException;
-use Phplrt\Lexer\Internal\ChannelLoader;
 use Phplrt\Lexer\Internal\Tokenizer;
+use Phplrt\Lexer\Internal\TokenPrototypeLoader;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
@@ -45,7 +46,6 @@ readonly class Lexer implements LexerInterface
         /**
          * Generated a PCRE2-compatible regex pattern
          *
-         * For example,
          * ```php
          * pattern: '/\\G(?|(?:(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)")(*MARK:0))|(?:(?:.+?)(*MARK:1)))/Ssum',
          * ```
@@ -57,9 +57,8 @@ readonly class Lexer implements LexerInterface
          * The list contains the token ID in the array's key and the
          * channel name in the array's value. All reserved channels will be
          * converted to built-in ({@see Channel}), all others to the
-         * {@see CustomChannel} instance
+         * {@see UserDefinedChannel} instance
          *
-         * For example,
          * ```php
          * [
          *     0 => 'Hidden',
@@ -93,7 +92,6 @@ readonly class Lexer implements LexerInterface
          *       so neither the identifiers nor the names of two lexers can
          *       ever be confused with each other.
          *
-         * For example,
          * ```php
          * [
          *     // token #0 is read along with the string it opens
@@ -114,7 +112,6 @@ readonly class Lexer implements LexerInterface
          * A token mentioned here is read with its {@see Token::$captures}
          * filled, while the one that is not, captures nothing.
          *
-         * For example,
          * ```php
          * [
          *     0 => 2, // the definition of token #0 has two subgroups
@@ -126,8 +123,9 @@ readonly class Lexer implements LexerInterface
     ) {
         $this->tokenizer = new Tokenizer(
             pattern: $pattern,
-            channels: ChannelLoader::load($channels),
-            names: $names,
+            prototypes: TokenPrototypeLoader::load($channels, $names),
+            // A transition ending the reading carries no lexer, so the
+            // transitions are turned into a set that can be looked up
             breaks: \array_fill_keys(\array_keys($transitions), true),
             subgroups: $subgroups,
         );
