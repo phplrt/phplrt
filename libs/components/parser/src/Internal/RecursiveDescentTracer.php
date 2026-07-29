@@ -37,10 +37,10 @@ final class RecursiveDescentTracer
      */
     private int $length = 0;
 
+    // These three are read on literally every rule, so we copy them out of the
+    // GrammarTable once instead of hopping through it every time.
+
     /**
-     * The tables of the grammar are read on every single rule, so they are
-     * kept here rather than reached for through the table they belong to.
-     *
      * @var list<RuleInterface>
      */
     private readonly array $grammar;
@@ -68,9 +68,6 @@ final class RecursiveDescentTracer
         $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
 
-    /**
-     * Recognizes the grammar against the input.
-     */
     public static function trace(GrammarTable $table, BufferInterface $buffer): Success|Failure
     {
         if ($table->rules === []) {
@@ -186,13 +183,10 @@ final class RecursiveDescentTracer
             $this->length = $mark + 1;
         }
 
-        /**
-         * Which of the rules the definition is could have been answered once,
-         * before the recognition starts, and read off a table instead. It is
-         * not: an "instanceof" against a known class costs less than the very
-         * array lookup such a table would be read by (measured at ~5% of the
-         * whole recognition).
-         */
+        // We could answer "which rule is this?" once, before parsing, and just
+        // read the answer from a table here. Don't bother: an `instanceof`
+        // against a known class turns out to be cheaper than the array lookup
+        // such a table would cost, and doing it that way measured ~5% slower.
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
             $definition instanceof Alternation => $this->matchAlternation($definition),
@@ -249,12 +243,10 @@ final class RecursiveDescentTracer
                 return true;
             }
 
-            /**
-             * Most of the alternatives are rejected by the token they may begin
-             * with, and such a rule reads nothing at all, so the input is
-             * usually already where it would have been rewound to (measured at
-             * ~83% of the rollbacks of the whole recognition).
-             */
+            // Most alternatives are rejected by their start token and so read
+            // nothing at all, which means the buffer is already where we would
+            // rewind it to. That is about 3/4 of all rollbacks during a parse,
+            // and asking first is cheaper than making the call.
             if ($buffer->key !== $rollback) {
                 $buffer->seek($rollback);
             }

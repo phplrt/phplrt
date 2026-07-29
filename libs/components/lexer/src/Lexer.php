@@ -125,7 +125,7 @@ readonly class Lexer implements LexerInterface
             pattern: $pattern,
             prototypes: TokenPrototypeLoader::load($channels, $names),
             // A transition that ends the reading carries no lexer, so we can't
-            // just hand the transitions over and "isset()" them there — the
+            // just hand the transitions over and "isset()" them there. The
             // tokenizer needs the plain set of IDs it has to stop after.
             breaks: \array_fill_keys(\array_keys($transitions), true),
             subgroups: $subgroups,

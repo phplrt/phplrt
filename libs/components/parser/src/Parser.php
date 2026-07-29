@@ -34,16 +34,8 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  */
 readonly class Parser implements ParserInterface
 {
-    /**
-     * Everything the recognition needs to know about the grammar, calculated
-     * once.
-     */
     private GrammarTable $table;
 
-    /**
-     * Everything the reduction needs to know about the grammar, calculated
-     * once.
-     */
     private ReducerTable $reducers;
 
     /**

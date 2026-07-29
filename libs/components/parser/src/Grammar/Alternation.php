@@ -10,7 +10,7 @@ namespace Phplrt\Parser\Grammar;
  * The rules are tried in the order they are written, and the first one that
  * matches wins: the rest are not tried at all, no matter how much more of the
  * input they would have read. A rule that has not matched leaves nothing
- * behind — the input is rewound before the next one is tried.
+ * behind. The input is rewound before the next one is tried.
  *
  * This is what keeps the reading unambiguous: a source is always read in
  * exactly one way, and the order of the alternatives is a part of what the

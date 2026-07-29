@@ -10,7 +10,7 @@ namespace Phplrt\Parser\Grammar;
  * The rule is recognized against the input the very same way as any other, but
  * whatever it has recognized is thrown away afterwards: neither the input nor
  * the result moves forward, so the only thing left is the answer. This is what
- * lets a rule say "not here" — an alternative may refuse a position that
+ * lets a rule say "not here". An alternative may refuse a position that
  * belongs to somebody else without spending a single token on finding out.
  *
  * For example, a rule refusing the position an opening parenthesis follows,

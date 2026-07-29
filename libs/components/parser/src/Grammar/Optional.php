@@ -7,7 +7,7 @@ namespace Phplrt\Parser\Grammar;
 /**
  * Recognizes the rule it refers to, if the input matches it.
  *
- * The rule is recognized either way — whether the inner one has matched only
+ * The rule is recognized either way. Whether the inner one has matched only
  * decides how much of the input has been read. An inner rule that has not
  * matched leaves nothing behind, and the reading goes on from where the
  * optional rule has been entered.

@@ -26,7 +26,7 @@ final class Success extends Result
          */
         public array $entries,
         /**
-         * The number of meaningful entries; anything beyond it must be ignored.
+         * The number of meaningful entries. Anything beyond it must be ignored.
          *
          * @var int<0, max>
          */

@@ -26,8 +26,8 @@ final readonly class ChannelFilter
     ];
 
     /**
-     * The excluded channels, indexed by their identity, so that a token is
-     * looked up rather than searched for.
+     * The excluded channels keyed by name, so that every token is a lookup
+     * rather than a search through a list.
      *
      * @var array<non-empty-string, true>
      */
@@ -57,8 +57,8 @@ final readonly class ChannelFilter
     {
         $excluded = $this->excluded;
 
-        // Nothing is skipped, so the tokens are given away the way they have
-        // been read
+        // There is nothing to skip, so don't walk over the tokens just to copy
+        // them one by one. Hand over what the lexer has already built.
         if ($excluded === [] && \is_array($tokens)) {
             return \array_is_list($tokens) ? $tokens : \array_values($tokens);
         }
