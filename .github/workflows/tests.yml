@@ -33,7 +33,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v2
-          extensions: mbstring
+          extensions: mbstring,intl
           ini-values: "memory_limit=-1"
       - name: Get Composer Cache Directory
         id: composer-cache
