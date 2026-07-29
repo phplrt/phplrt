@@ -829,60 +829,51 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
 
     private static function reduceKeptTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // The variables below are declared by the compiler
-        $token = $ctx->token;
-
         \assert(\is_array($children));
 
-        $token = $children[0] ?? null;
+        $name = $children[0] ?? null;
 
-        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-        \assert($token->value !== '', 'The lexer never produces an empty token');
+        \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($name->value !== '', 'The lexer never produces an empty token');
 
         return new \Phplrt\Compiler\Node\Statement\TokenReference(
-            name: $token->value,
+            name: $name->value,
             isKept: true,
-            offset: $token->offset,
-            length: \max(0, $token->end - $token->offset),
+            offset: $name->offset,
+            length: \max(0, $name->end - $name->offset),
         );
     }
 
     private static function reduceSkippedTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // The variables below are declared by the compiler
-        $token = $ctx->token;
-
         \assert(\is_array($children));
 
-        $token = $children[0] ?? null;
+        $name = $children[0] ?? null;
 
-        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-        \assert($token->value !== '', 'The lexer never produces an empty token');
+        \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($name->value !== '', 'The lexer never produces an empty token');
 
         return new \Phplrt\Compiler\Node\Statement\TokenReference(
-            name: $token->value,
+            name: $name->value,
             isKept: false,
-            offset: $token->offset,
-            length: \max(0, $token->end - $token->offset),
+            offset: $name->offset,
+            length: \max(0, $name->end - $name->offset),
         );
     }
 
     private static function reduceRuleReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // The variables below are declared by the compiler
-        $token = $ctx->token;
-
         \assert(\is_array($children));
 
-        $token = $children[0] ?? null;
+        $name = $children[0] ?? null;
 
-        \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-        \assert($token->value !== '', 'The lexer never produces an empty token');
+        \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($name->value !== '', 'The lexer never produces an empty token');
 
         return new \Phplrt\Compiler\Node\Statement\RuleReference(
-            name: $token->value,
-            offset: $token->offset,
-            length: \max(0, $token->end - $token->offset),
+            name: $name->value,
+            offset: $name->offset,
+            length: \max(0, $name->end - $name->offset),
         );
     }
 

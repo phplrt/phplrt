@@ -117,15 +117,15 @@ Reducer
 ClassReducer -> {
     \assert(\is_array($children));
 
-    $token = $children[0] ?? null;
+    $class = $children[0] ?? null;
 
-    \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-    \assert($token->value !== '', 'The lexer never produces an empty token');
+    \assert($class instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($class->value !== '', 'The lexer never produces an empty token');
 
     return new \Phplrt\Compiler\Node\Reducer\ClassReducer(
-        class: $token->value,
-        offset: $token->offset,
-        length: \max(0, $token->end - $token->offset),
+        class: $class->value,
+        offset: $class->offset,
+        length: \max(0, $class->end - $class->offset),
     );
 }
   : ::T_ARROW:: <T_NAME>

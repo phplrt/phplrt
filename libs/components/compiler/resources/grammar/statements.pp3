@@ -139,16 +139,16 @@ Group : ::T_PARENTHESIS_OPEN:: Alternation() ::T_PARENTHESIS_CLOSE:: ;
 KeptTokenReference -> {
     \assert(\is_array($children));
 
-    $token = $children[0] ?? null;
+    $name = $children[0] ?? null;
 
-    \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-    \assert($token->value !== '', 'The lexer never produces an empty token');
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
 
     return new \Phplrt\Compiler\Node\Statement\TokenReference(
-        name: $token->value,
+        name: $name->value,
         isKept: true,
-        offset: $token->offset,
-        length: \max(0, $token->end - $token->offset),
+        offset: $name->offset,
+        length: \max(0, $name->end - $name->offset),
     );
 }
   : ::T_ANGLE_OPEN:: <T_NAME> ::T_ANGLE_CLOSE::
@@ -161,16 +161,16 @@ KeptTokenReference -> {
 SkippedTokenReference -> {
     \assert(\is_array($children));
 
-    $token = $children[0] ?? null;
+    $name = $children[0] ?? null;
 
-    \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-    \assert($token->value !== '', 'The lexer never produces an empty token');
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
 
     return new \Phplrt\Compiler\Node\Statement\TokenReference(
-        name: $token->value,
+        name: $name->value,
         isKept: false,
-        offset: $token->offset,
-        length: \max(0, $token->end - $token->offset),
+        offset: $name->offset,
+        length: \max(0, $name->end - $name->offset),
     );
 }
   : ::T_DOUBLE_COLON:: <T_NAME> ::T_DOUBLE_COLON::
@@ -186,15 +186,15 @@ SkippedTokenReference -> {
 RuleReference -> {
     \assert(\is_array($children));
 
-    $token = $children[0] ?? null;
+    $name = $children[0] ?? null;
 
-    \assert($token instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-    \assert($token->value !== '', 'The lexer never produces an empty token');
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
 
     return new \Phplrt\Compiler\Node\Statement\RuleReference(
-        name: $token->value,
-        offset: $token->offset,
-        length: \max(0, $token->end - $token->offset),
+        name: $name->value,
+        offset: $name->offset,
+        length: \max(0, $name->end - $name->offset),
     );
 }
   : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::

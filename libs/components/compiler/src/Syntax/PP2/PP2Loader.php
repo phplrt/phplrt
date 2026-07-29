@@ -26,6 +26,8 @@ use Phplrt\Compiler\Node\Statement\Repetition;
 use Phplrt\Compiler\Node\Statement\RuleReference;
 use Phplrt\Compiler\Node\Statement\Statement;
 use Phplrt\Compiler\Node\Statement\TokenReference;
+use Phplrt\Contracts\Parser\Exception\ParserExceptionInterface;
+use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
@@ -126,6 +128,10 @@ class PP2Loader implements SyntaxLoaderInterface
 
     /**
      * @return list<Declaration>
+     * @throws ParserExceptionInterface in case of the parser reading the
+     *         grammar cannot be built
+     * @throws RuntimeExceptionInterface in case of the grammar cannot be
+     *         recognized
      */
     private function parse(ReadableInterface $source): array
     {
