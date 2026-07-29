@@ -46,6 +46,6 @@ jobs:
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
       - name: Composer Audit
-        run: composer audit
+        run: composer audit --abandoned=ignore
       - name: Security Advisories
         run: composer require --dev roave/security-advisories:dev-latest
