@@ -31,6 +31,13 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
  */
 final readonly class PP3ParserBuilder
 {
+    /**
+     * The number of characters a single level of nesting is written with.
+     *
+     * @var int<1, max>
+     */
+    private const int NESTING_SIZE = 4;
+
     public static function create(): ParserBuilder
     {
         $parser = new ParserBuilder();
@@ -399,7 +406,32 @@ final readonly class PP3ParserBuilder
             ? ''
             : \substr($context->content, $open->end, $close->offset - $open->end);
 
-        return new CodeReducer(\trim($code), $token->offset, self::calculateLength($token));
+        return new CodeReducer(self::dedent($code), $token->offset, self::calculateLength($token));
+    }
+
+    /**
+     * Takes the body out of the nesting the grammar has written it in.
+     *
+     * A body is read from the grammar file exactly as it is written there, so
+     * the nesting of the rule it belongs to is a part of it. The body is
+     * written into something else afterwards — a generated method, an
+     * evaluated callback — which nests it on its own, so a single level of
+     * nesting is taken away.
+     *
+     * The line the body starts at is written after the brace opening it rather
+     * than on a line of its own, so whatever precedes it is not nesting at all.
+     */
+    private static function dedent(string $code): string
+    {
+        $lines = \explode("\n", $code);
+
+        foreach ($lines as $index => $line) {
+            $lines[$index] = $index === 0
+                ? \ltrim($line)
+                : \preg_replace('/^ {1,' . self::NESTING_SIZE . '}/', '', $line);
+        }
+
+        return \trim(\implode("\n", $lines));
     }
 
     private static function createClassReducer(Context $context, mixed $children): ClassReducer

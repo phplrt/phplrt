@@ -241,11 +241,11 @@ final class PP2GrammarTest extends TestCase
         self::assertInstanceOf(CodeReducer::class, $rule->reducer);
         self::assertSame(<<<'PHP'
             if ($children === []) {
-                    return null;
-                }
+                return null;
+            }
 
-                // A brace "}" written inside a comment
-                return \implode('}', $children);
+            // A brace "}" written inside a comment
+            return \implode('}', $children);
             PHP, $rule->reducer->code);
     }
 

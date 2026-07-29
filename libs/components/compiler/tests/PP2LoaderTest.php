@@ -188,6 +188,33 @@ final class PP2LoaderTest extends TestCase
         self::assertSame('return 42;', $reducer->code);
     }
 
+    #[TestDox('A reducer is taken out of the nesting the grammar has written it in')]
+    public function testCodeReducerIsDedented(): void
+    {
+        $this->load(<<<'PP2'
+            A -> {
+                if ($children === null) {
+                    return null;
+                }
+
+                return 42;
+            }
+              : <T_A>
+              ;
+            PP2);
+
+        $reducer = $this->parser->initial?->reducer;
+
+        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
+        self::assertSame(<<<'PHP'
+            if ($children === null) {
+                return null;
+            }
+
+            return 42;
+            PHP, $reducer->code);
+    }
+
     #[TestDox('A reducer is given the variables it is written of')]
     public function testReducerVariablesAreDeclared(): void
     {
