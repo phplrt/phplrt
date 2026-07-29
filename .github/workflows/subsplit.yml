@@ -22,6 +22,10 @@ jobs:
           # Components
           - local_path: 'libs/components/lexer'
             split_repository: 'lexer'
+          - local_path: 'libs/components/compiler'
+            split_repository: 'compiler'
+          - local_path: 'libs/components/exception'
+            split_repository: 'exception'
           - local_path: 'libs/components/lexer-builder'
             split_repository: 'lexer-builder'
           - local_path: 'libs/components/parser'
