@@ -15,9 +15,7 @@ use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 
 final class Compiler
@@ -116,9 +114,6 @@ final class Compiler
 
     /**
      * Writes the grammar that has been read down as source code.
-     *
-     * @throws LexerCompilerException in case of the tokens cannot be read
-     * @throws ParserCompilerException in case of the grammar cannot be built
      */
     public function generate(OutputGeneratorInterface $generator = new PhpOutputGenerator()): GeneratedOutput
     {
