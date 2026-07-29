@@ -17,9 +17,7 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-spl": "*",
         "ext-pcre": "*",
-        "ext-json": "*",
         "phplrt/lexer-contracts": "^4.0",
         "phplrt/source-contracts": "^4.0"
     },
