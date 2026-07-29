@@ -11,8 +11,8 @@ use Phplrt\Contracts\Lexer\UserDefinedChannel;
 /**
  * Turns the channel names of a lexer configuration into channel instances.
  *
- * The tokens sharing a channel name share its instance, so a channel is the
- * very same object no matter which of them it is reached through.
+ * Tokens on the same channel share one instance of it, so the same channel is
+ * always the same object no matter which token you reach it through.
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer

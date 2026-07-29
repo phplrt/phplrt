@@ -31,7 +31,7 @@ final readonly class Tokenizer
     private const int ERROR_FRAGMENT_LENGTH = 64;
 
     /**
-     * What a token the configuration does not mention looks like.
+     * Stands in for the tokens the configuration says nothing about.
      */
     private Token $fallback;
 
@@ -41,8 +41,7 @@ final readonly class Tokenizer
          */
         private string $pattern,
         /**
-         * What every token this lexer recognizes looks like before it has been
-         * read, indexed by the token IDs.
+         * A ready-made token per token ID, cloned and filled in while reading.
          *
          * @var array<int, Token>
          */
@@ -50,9 +49,9 @@ final readonly class Tokenizer
         /**
          * A set of token IDs the analysis must stop after.
          *
-         * The set is separate from the transitions it is built of, because a
-         * transition ending the reading carries no lexer at all, so the
-         * transitions alone cannot be looked up.
+         * This is a separate set rather than the transitions it was built from,
+         * because a transition that ends the reading carries no lexer, so
+         * "isset()" over the transitions themselves would miss it.
          *
          * @var array<int, true>
          */
@@ -129,9 +128,8 @@ final readonly class Tokenizer
              * Clone optimization: speeds up the creation of a new object:
              * faster than instantiation.
              *
-             * Everything the token is known by beforehand is already written
-             * down in its prototype, so the reading only adds what it has
-             * found in the source.
+             * The prototype already carries the name and the channel, so only
+             * what was actually found in the source is written below.
              */
             $token = clone ($prototypes[$id] ?? $fallback);
 

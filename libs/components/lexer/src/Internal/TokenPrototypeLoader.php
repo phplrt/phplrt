@@ -9,12 +9,12 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Lexer\Token\Token;
 
 /**
- * Prepares what every token the lexer recognizes looks like.
+ * Prepares a sample of every token the lexer can recognize.
  *
- * Everything a token is known by before the source is read (its identifier, its
- * name and the channel it belongs to) is the same for every occurrence of it,
- * so it is written down once and the reading only adds what it has found in
- * the source.
+ * An identifier, a name and a channel are the same for every occurrence of a
+ * token, so instead of looking all three up per token while reading, we build
+ * one ready-made token per identifier here and later just clone it and fill in
+ * what was actually found in the source.
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
@@ -22,9 +22,6 @@ use Phplrt\Lexer\Token\Token;
 final class TokenPrototypeLoader
 {
     /**
-     * Gets the lexer configuration and prepares a token of every identifier it
-     * mentions.
-     *
      * @param array<int, non-empty-string> $channels a map of token ID and its
      *        channel name
      * @param array<int, non-empty-string> $names a map of token ID and its
@@ -40,8 +37,8 @@ final class TokenPrototypeLoader
             $result[$id] = self::createPrototype($id, $name, $instances[$id] ?? Channel::DEFAULT);
         }
 
-        // A token the lexer has been given a channel but no name for is
-        // recognized just as well, so it is prepared too
+        // A token may be given a channel but no name at all, and it's still a
+        // token the lexer reads, so it needs a prototype too.
         foreach ($instances as $id => $channel) {
             $result[$id] ??= self::createPrototype($id, null, $channel);
         }
@@ -50,8 +47,8 @@ final class TokenPrototypeLoader
     }
 
     /**
-     * Prepares the token every identifier the configuration does not mention
-     * looks like: nameless and belonging to the default channel.
+     * What a token the configuration says nothing about looks like: no name and
+     * the default channel.
      */
     public static function createFallbackPrototype(): Token
     {
