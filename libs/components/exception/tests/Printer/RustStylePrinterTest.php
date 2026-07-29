@@ -63,7 +63,7 @@ final class RustStylePrinterTest extends TestCase
 
         self::assertIsInt($offset);
 
-        $lines = [new CapturedSourceLine(1, 0, $value, $offset + 1, $offset + \strlen('Вася') + 1)];
+        $lines = [new CapturedSourceLine(1, 0, $value, $offset + 1, \strlen('Вася'))];
 
         self::assertSame(<<<'OUT'
             1 | Hello Вася
@@ -79,7 +79,7 @@ final class RustStylePrinterTest extends TestCase
         self::assertSame(<<<'OUT'
             1 | line 1
               |    ^
-            OUT, $printer->print([new CapturedSourceLine(1, 0, 'line 1', 4, 4)]));
+            OUT, $printer->print([new CapturedSourceLine(1, 0, 'line 1', 4, 0)]));
     }
 
     #[TestDox('Every line of a multi-line fragment is underlined')]
@@ -107,7 +107,7 @@ final class RustStylePrinterTest extends TestCase
 
         $value = \str_repeat('a', 9) . 'ERROR' . \str_repeat('b', 3);
 
-        $result = $printer->print([new CapturedSourceLine(1, 0, $value, 10, 15)]);
+        $result = $printer->print([new CapturedSourceLine(1, 0, $value, 10, 5)]);
 
         self::assertSame(<<<'OUT'
             1 | aaaaaaaaaER…
@@ -133,7 +133,7 @@ final class RustStylePrinterTest extends TestCase
               |    ^^^^^^^^
               | …ERRORccc
               |  ^^^^^
-            OUT, $printer->print([new CapturedSourceLine(1, 0, $value, 4, 17)]));
+            OUT, $printer->print([new CapturedSourceLine(1, 0, $value, 4, 13)]));
     }
 
     #[TestDox('The width leaving no room for the markers does not break the output')]
@@ -148,7 +148,7 @@ final class RustStylePrinterTest extends TestCase
               | ^^
               |  1
               | ^^
-            OUT, $printer->print([new CapturedSourceLine(1, 0, 'line 1', 1, 7)]));
+            OUT, $printer->print([new CapturedSourceLine(1, 0, 'line 1', 1, 6)]));
     }
 
     #[TestDox('The lines without a captured fragment are printed as is')]
@@ -207,7 +207,7 @@ final class RustStylePrinterTest extends TestCase
             1 | line 1
               |    ^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 4, 7)],
+            [new CapturedSourceLine(1, 0, 'line 1', 4, 3)],
             new ErrorInfo(message: 'Unexpected token'),
         ));
     }
@@ -224,7 +224,7 @@ final class RustStylePrinterTest extends TestCase
             42 | line 1
                |    ^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(42, 0, 'line 1', 4, 7)],
+            [new CapturedSourceLine(42, 0, 'line 1', 4, 3)],
             new ErrorInfo(
                 message: 'Unexpected token',
                 pathname: '/app/example.php',
@@ -249,7 +249,7 @@ final class RustStylePrinterTest extends TestCase
             1 | Привет Вася
               |        ^^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, $value, $offset + 1, $offset + \strlen('Вася') + 1)],
+            [new CapturedSourceLine(1, 0, $value, $offset + 1, \strlen('Вася'))],
             new ErrorInfo(pathname: '/app/example.php'),
         ));
     }
@@ -267,7 +267,7 @@ final class RustStylePrinterTest extends TestCase
             1 | line 1
               | ^^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 4)],
             new ErrorInfo(
                 message: 'Message that is too long to be printed',
                 pathname: '/a/very/very/very/very/deep/app.php',
@@ -289,7 +289,7 @@ final class RustStylePrinterTest extends TestCase
             1 | line 1
               | ^^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 4)],
             new ErrorInfo(message: 'Some unpronounceableword is here'),
         ));
     }
@@ -305,7 +305,7 @@ final class RustStylePrinterTest extends TestCase
             1 | line 1
               | ^^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 4)],
             new ErrorInfo(
                 message: 'Something went wrong',
                 class: 'Phplrt\Parser\Exception\UnexpectedTokenException',
@@ -335,7 +335,7 @@ final class RustStylePrinterTest extends TestCase
             1 | line 1
               | ^^^^
             OUT, $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 1, 5)],
+            [new CapturedSourceLine(1, 0, 'line 1', 1, 4)],
             new ErrorInfo(message: 'Unused variable', level: Level::Warning),
         ));
     }
@@ -379,7 +379,7 @@ final class RustStylePrinterTest extends TestCase
     private static function printExample(RustStylePrinter $printer): string
     {
         return $printer->print(
-            [new CapturedSourceLine(1, 0, 'line 1', 3, 5)],
+            [new CapturedSourceLine(1, 0, 'line 1', 3, 2)],
             new ErrorInfo(message: 'Oops'),
         );
     }
@@ -424,7 +424,7 @@ final class RustStylePrinterTest extends TestCase
             . \sprintf("\e[94m1 | \e[0mli\e[%smne\e[0m 1\n", $sequence)
             . \sprintf("\e[94m  | \e[0m  \e[%sm^^\e[0m", $sequence),
             $printer->print(
-                [new CapturedSourceLine(1, 0, 'line 1', 3, 5)],
+                [new CapturedSourceLine(1, 0, 'line 1', 3, 2)],
                 new ErrorInfo(message: 'Oops', level: $level),
             ),
         );

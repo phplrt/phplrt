@@ -33,27 +33,27 @@ final class ErrorPrinterTest extends TestCase
             OUT, (string) new ErrorPrinter()->print(new Source(self::SOURCE), 18, 4));
     }
 
-    #[TestDox('The position the fragment ends at describes it the same way as its size')]
-    public function testEndOffsetDescribesTheLength(): void
+    #[TestDox('The size told after the fragment has been printed describes it the same way')]
+    public function testLengthDescribesTheFragment(): void
     {
         $printer = new ErrorPrinter();
         $source = new Source(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18, 4),
-            (string) $printer->print($source, 18)->withEndOffset(22),
+            (string) $printer->print($source, 18)->withLength(4),
         );
     }
 
-    #[TestDox('A fragment ending before it starts is empty')]
-    public function testEndOffsetBeforeTheBeginning(): void
+    #[TestDox('A fragment of a negative size is empty')]
+    public function testNegativeLengthIsEmpty(): void
     {
         $printer = new ErrorPrinter();
         $source = new Source(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18),
-            (string) $printer->print($source, 18)->withEndOffset(0),
+            (string) $printer->print($source, 18)->withLength(-1),
         );
     }
 

@@ -22,12 +22,12 @@ abstract class ParserRuntimeException extends ParserException implements
         public readonly TokenInterface $token,
         string $message,
         /**
-         * The position the error ends at, or {@see null} in case of the error
-         * ends where the token does.
+         * The size of the fragment the error occurred in, or {@see null} in
+         * case of the error is as large as the token itself.
          *
          * @var int<0, max>|null
          */
-        public readonly ?int $end = null,
+        public readonly ?int $length = null,
         int $code = 0,
         ?\Throwable $previous = null,
     ) {
@@ -52,15 +52,13 @@ abstract class ParserRuntimeException extends ParserException implements
             }
 
             $token = $current->token;
-            $end = $token->offset + $token->size;
 
-            if ($current instanceof ParserRuntimeExceptionInterface) {
-                $end = $current->end ?? $end;
-            }
+            $length = $current instanceof ParserRuntimeExceptionInterface
+                ? $current->length ?? $token->size
+                : $token->size;
 
             yield new ErrorPrinter()
-                ->print($current->source, $token->offset)
-                ->withEndOffset($end)
+                ->print($current->source, $token->offset, $length)
                 ->withMessage($current->getMessage())
                 ->withClass($current::class);
         } while (($current = $current->getPrevious()) !== null);

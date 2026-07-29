@@ -238,7 +238,7 @@ final class PP3LoaderTest extends TestCase
             $this->load($source);
         } catch (UnsupportedTokenActionException $e) {
             self::assertSame(\strpos($source, 'skip()'), $e->offset);
-            self::assertSame(\strlen($source), $e->end);
+            self::assertSame(\strlen('skip()'), $e->length);
 
             return;
         }

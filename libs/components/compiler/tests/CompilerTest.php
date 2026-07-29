@@ -73,7 +73,7 @@ final class CompilerTest extends TestCase
         } catch (IncludeException $e) {
             self::assertSame('An error occurred while loading "nested/broken" grammar', $e->getMessage());
             self::assertSame(0, $e->offset);
-            self::assertSame(22, $e->end);
+            self::assertSame(22, $e->length);
             self::assertInstanceOf(UnsupportedPragmaException::class, $e->getPrevious());
 
             return;

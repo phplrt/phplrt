@@ -140,7 +140,7 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame(0, $actual[1]->offset);
         self::assertSame('', $actual[1]->value);
         self::assertSame(1, $actual[1]->startColumn);
-        self::assertSame(1, $actual[1]->endColumn);
+        self::assertSame(0, $actual[1]->width);
     }
 
     #[TestDox('The trailing delimiter of the source produces an empty last line')]
@@ -225,7 +225,7 @@ final class SourceLineReaderTest extends TestCase
 
             foreach ($actual as $line) {
                 if ($line instanceof CapturedSourceLine) {
-                    self::assertSame($line->startColumn, $line->endColumn);
+                    self::assertSame(0, $line->width);
                 }
             }
         }
@@ -239,7 +239,7 @@ final class SourceLineReaderTest extends TestCase
         foreach (self::readString($source, 2, 8, 0) as $line) {
             self::assertInstanceOf(CapturedSourceLine::class, $line);
 
-            $captured = \substr($line->value, $line->startColumn - 1, $line->endColumn - $line->startColumn);
+            $captured = \substr($line->value, $line->startColumn - 1, $line->width);
 
             self::assertSame($line->number === 1 ? 'ne 1' : 'lin', $captured);
         }
@@ -276,7 +276,7 @@ final class SourceLineReaderTest extends TestCase
 
         self::assertSame(1, $captured->number);
         self::assertSame(7, $captured->startColumn);
-        self::assertSame(7, $captured->endColumn);
+        self::assertSame(0, $captured->width);
     }
 
     #[TestDox('A negative offset is reduced to the beginning of the source')]

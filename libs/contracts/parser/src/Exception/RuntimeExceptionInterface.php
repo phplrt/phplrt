@@ -28,15 +28,16 @@ interface RuntimeExceptionInterface extends ParserExceptionInterface
     }
 
     /**
-     * The final offset at which the parser error occurred.
+     * The size of the source fragment the parser error occurred in, in bytes.
      *
-     * If the offset is not specified ({@see null}), the position right after
-     * the token ({@see TokenInterface::$offset} + {@see TokenInterface::$size})
+     * A parser fails on a token and may span as far as the rule it has failed
+     * on, which is what this tells apart from the token itself. If the size is
+     * not specified ({@see null}), that of the token ({@see TokenInterface::$size})
      * can be used instead.
      *
      * @var int<0, max>|null
      */
-    public ?int $end {
+    public ?int $length {
         get;
     }
 }

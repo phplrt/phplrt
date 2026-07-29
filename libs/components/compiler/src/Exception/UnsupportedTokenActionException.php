@@ -68,7 +68,7 @@ final class UnsupportedTokenActionException extends UnsupportedSyntaxException
             source: $source,
             offset: $action->offset,
             message: $message,
-            end: $action->offset + $action->length,
+            length: $action->length,
             previous: $previous,
         );
     }

@@ -123,14 +123,14 @@ final readonly class ErrorInfoResult implements \Stringable
     }
 
     /**
-     * The position the fragment ends at, which is the size of the fragment
-     * counted from the position it starts at.
+     * The size of the fragment the error occurred in, in bytes.
      *
-     * @param int<0, max> $offset
+     * A fragment of a negative size is the same as no fragment at all, so the
+     * error points at the position it starts at.
      */
-    public function withEndOffset(int $offset): self
+    public function withLength(int $length): self
     {
-        return $this->with(length: \max(0, $offset - $this->offset));
+        return $this->with(length: \max(0, $length));
     }
 
     /**

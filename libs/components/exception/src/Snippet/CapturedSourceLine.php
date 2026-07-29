@@ -24,11 +24,16 @@ final readonly class CapturedSourceLine extends SourceLine
          */
         public int $startColumn,
         /**
-         * The 1-based column following the last captured character of the line.
+         * The number of columns captured on the line, counted from
+         * {@see $startColumn}.
          *
-         * @var int<1, max>
+         * A line the fragment only passes through captures no column of its
+         * own, which is how a fragment spanning several lines is told from one
+         * pointing at a position.
+         *
+         * @var int<0, max>
          */
-        public int $endColumn,
+        public int $width,
     ) {
         parent::__construct($number, $offset, $value);
     }

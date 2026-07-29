@@ -59,13 +59,17 @@ final readonly class SourceLineReader
             $anchor = $content->findAfter(self::DELIMITER_ANCHOR, $start);
             $value = $this->readLine($content, $start, $anchor);
 
+            $startColumn = $this->calculateColumn($offset, $start, $value);
+
             $result[$current] = $captured
                 ? new CapturedSourceLine(
                     $current,
                     $start,
                     $value,
-                    $this->calculateColumn($offset, $start, $value),
-                    $this->calculateColumn($end, $start, $value),
+                    $startColumn,
+                    // The fragment may well begin on an earlier line, in which
+                    // case it captures this one from its very first column
+                    \max(0, $this->calculateColumn($end, $start, $value) - $startColumn),
                 )
                 : new SourceLine($current, $start, $value);
 

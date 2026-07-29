@@ -42,7 +42,7 @@ final readonly class LineWrapper
                 $result[] = new LinePart(
                     $this->text->slice($value, $offset, \max(0, $rest)),
                     $offset,
-                    $length,
+                    \max(0, $rest),
                     $indent,
                     false,
                 );
@@ -55,7 +55,7 @@ final readonly class LineWrapper
             $result[] = new LinePart(
                 $this->text->slice($value, $offset, $take),
                 $offset,
-                $offset + $take,
+                $take,
                 $indent,
                 $marker > 0,
             );

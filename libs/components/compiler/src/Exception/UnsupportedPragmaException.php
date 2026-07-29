@@ -23,7 +23,7 @@ final class UnsupportedPragmaException extends UnsupportedSyntaxException
             source: $source,
             offset: $declaration->offset,
             message: $message,
-            end: $declaration->offset + $declaration->length,
+            length: $declaration->length,
             previous: $previous,
         );
     }

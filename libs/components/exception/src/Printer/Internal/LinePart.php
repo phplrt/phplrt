@@ -24,11 +24,11 @@ final readonly class LinePart
          */
         public int $from,
         /**
-         * The offset following the last character of the part inside the line.
+         * The number of characters of the line contained in the part.
          *
          * @var int<0, max>
          */
-        public int $to,
+        public int $size,
         /**
          * The number of columns preceding the characters of the part.
          *
@@ -50,6 +50,6 @@ final readonly class LinePart
     public function contains(int $offset): bool
     {
         return $offset >= $this->from
-            && ($offset < $this->to || !$this->continued);
+            && ($offset < $this->from + $this->size || !$this->continued);
     }
 }

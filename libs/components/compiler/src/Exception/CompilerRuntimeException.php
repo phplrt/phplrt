@@ -32,12 +32,13 @@ abstract class CompilerRuntimeException extends CompilerException
         public readonly int $offset,
         string $message,
         /**
-         * The position the error ends at, or {@see null} in case of the error
-         * ends where it starts.
+         * The size of the grammar fragment the error occurred in, or
+         * {@see null} in case of the error points at a position rather than
+         * at a fragment.
          *
          * @var int<0, max>|null
          */
-        public readonly ?int $end = null,
+        public readonly ?int $length = null,
         int $code = 0,
         ?\Throwable $previous = null,
     ) {
@@ -66,7 +67,7 @@ abstract class CompilerRuntimeException extends CompilerException
 
         do {
             if ($current instanceof self) {
-                yield self::describe($current, $current->source, $current->offset, $current->end ?? $current->offset);
+                yield self::describe($current, $current->source, $current->offset, $current->length ?? 0);
 
                 continue;
             }
@@ -74,12 +75,7 @@ abstract class CompilerRuntimeException extends CompilerException
             if ($current instanceof ParserRuntimeExceptionInterface) {
                 $token = $current->token;
 
-                yield self::describe(
-                    $current,
-                    $current->source,
-                    $token->offset,
-                    $current->end ?? $token->offset + $token->size,
-                );
+                yield self::describe($current, $current->source, $token->offset, $current->length ?? $token->size);
 
                 continue;
             }
@@ -87,24 +83,23 @@ abstract class CompilerRuntimeException extends CompilerException
             if ($current instanceof LexerRuntimeExceptionInterface) {
                 $token = $current->token;
 
-                yield self::describe($current, $current->source, $token->offset, $token->offset + $token->size);
+                yield self::describe($current, $current->source, $token->offset, $token->size);
             }
         } while (($current = $current->getPrevious()) !== null);
     }
 
     /**
      * @param int<0, max> $offset
-     * @param int<0, max> $end
+     * @param int<0, max> $length
      */
     private static function describe(
         \Throwable $error,
         ReadableInterface $source,
         int $offset,
-        int $end,
+        int $length,
     ): ErrorInfoResult {
         return new ErrorPrinter()
-            ->print($source, $offset)
-            ->withEndOffset($end)
+            ->print($source, $offset, $length)
             ->withMessage($error->getMessage())
             ->withClass($error::class);
     }

@@ -48,8 +48,7 @@ abstract class LexerRuntimeException extends LexerException implements
             $token = $current->token;
 
             yield new ErrorPrinter()
-                ->print($current->source, $token->offset)
-                ->withEndOffset($token->offset + $token->size)
+                ->print($current->source, $token->offset, $token->size)
                 ->withMessage($current->getMessage())
                 ->withClass($current::class);
         } while (($current = $current->getPrevious()) !== null);

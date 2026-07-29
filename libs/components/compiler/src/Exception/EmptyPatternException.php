@@ -27,7 +27,7 @@ final class EmptyPatternException extends CompilerRuntimeException
             source: $source,
             offset: $statement->offset,
             message: $message,
-            end: $statement->offset + $statement->length,
+            length: $statement->length,
             previous: $previous,
         );
     }

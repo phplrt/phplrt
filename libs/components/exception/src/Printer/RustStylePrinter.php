@@ -117,8 +117,10 @@ final readonly class RustStylePrinter implements PrinterInterface
         $result = [];
 
         foreach ($parts as $key => $part) {
-            $begin = \max(0, \min($from, $part->to) - $part->from);
-            $end = \max(0, \min($to, $part->to) - $part->from);
+            $until = $part->from + $part->size;
+
+            $begin = \max(0, \min($from, $until) - $part->from);
+            $end = \max(0, \min($to, $until) - $part->from);
 
             $result[] = $this->printRow(
                 $key === 0 ? (string) $line->number : '',
@@ -413,7 +415,7 @@ final readonly class RustStylePrinter implements PrinterInterface
 
         return [
             $this->calculateOffset($line->value, $line->startColumn),
-            $this->calculateOffset($line->value, $line->endColumn),
+            $this->calculateOffset($line->value, $line->startColumn + $line->width),
         ];
     }
 

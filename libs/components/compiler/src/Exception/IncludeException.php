@@ -27,7 +27,7 @@ final class IncludeException extends CompilerRuntimeException
             source: $source,
             offset: $reference->offset,
             message: $message,
-            end: $reference->offset + $reference->length,
+            length: $reference->length,
             previous: $previous,
         );
     }
