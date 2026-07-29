@@ -194,12 +194,21 @@ $grammar->addCompilerPass(new MyValidationPass(), ParserBuilder::PASS_PRIORITY_C
 
 The priorities, in the order they run:
 
-| Priority                        | What belongs there                        |
-|---------------------------------|-------------------------------------------|
-| `PASS_PRIORITY_NORMALIZE`       | Bring the grammar to a canonical shape     |
-| `PASS_PRIORITY_CHECK`           | Reject a grammar that cannot be compiled   |
-| `PASS_PRIORITY_OPTIMIZE`        | Rewrite it, keeping the meaning            |
-| `PASS_PRIORITY_CHECK_AFTER_OPTIMIZE` | Catch an optimization that broke it   |
+| Priority                             | What belongs there                         |
+|--------------------------------------|--------------------------------------------|
+| `PASS_PRIORITY_NORMALIZE`            | Bring the grammar to a canonical shape     |
+| `PASS_PRIORITY_CHECK`                | Reject a grammar that cannot be compiled   |
+| `PASS_PRIORITY_OPTIMIZE`             | Rewrite it, keeping the meaning            |
+| `PASS_PRIORITY_CHECK_AFTER_OPTIMIZE` | Catch an optimization that broke it        |
+
+A built-in pass can be dropped by name, which is how you opt out of an
+optimization that does not suit your grammar:
+
+```php
+use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
+
+$grammar->removeCompilerPass(NestedConcatenationParserCompilerPass::class);
+```
 
 There are analysis passes too — they do not change the grammar, they describe
 it (this is where the lookahead tables come from):
@@ -207,6 +216,15 @@ it (this is where the lookahead tables come from):
 ```php
 $grammar->addAnalysisPass(new MyMetadataPass());
 ```
+
+A `.pp3` grammar can do all of this itself, without any PHP around it:
+
+```pp2
+%pragma parser.check    \App\Grammar\MyValidationPass
+%pragma parser.disable  \Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass
+```
+
+See [Settings](/docs/compiler/grammar).
 
 ## The Result
 

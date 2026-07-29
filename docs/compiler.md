@@ -64,8 +64,14 @@ The format is decided by the file extension:
 | Extension | Format                                                                                    |
 |-----------|-------------------------------------------------------------------------------------------|
 | `.pp`     | The legacy [Hoa](https://github.com/hoaproject/Compiler) format — **no longer supported** |
-| `.pp2`    | The format described in [Grammar](/docs/compiler/grammar)                                 |
-| `.pp3`    | The same, and where new syntax will land                                                  |
+| `.pp2`    | The phplrt 3.x format, still read as it was                                               |
+| `.pp3`    | The current format, described in [Grammar](/docs/compiler/grammar)                        |
+
+`.pp3` is `.pp2` with the ambiguity taken out. A rule is separated by a colon
+and nothing else; the `#` marker and the `-> ClassName` reducer are gone; and
+a token says what it does by naming the action — `state(x)`, `exit()`,
+`channel(x)` — instead of naming the state it lands in. Grammars written for
+`.pp2` keep working under that extension.
 
 A grammar that did not come from a file (a `Source`, a string) is read as the
 newest format, since there is no extension to go by:
@@ -85,7 +91,7 @@ are not supported
 ## Splitting A Grammar Up
 
 Real grammars get long. `%include` pulls in another file, and the
-declarations land exactly where the include is written:
+declarations land exactly where to include is written:
 
 ```pp2
 %include grammar/lexemes

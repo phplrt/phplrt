@@ -86,17 +86,118 @@ the parts of the declaration. Write it as `\x20` or `\s`:
 %token T_TEXT  [a-z\s]++    // ✔
 ```
 
+## Token Actions
+
+A declaration may end with `->` and say what the token *does* besides being
+read. There are three actions, and each is written as a call:
+
+| Action       | What the token does                                       |
+|--------------|-----------------------------------------------------------|
+| `channel(x)` | Emits the token to the channel `x`                         |
+| `state(x)`   | Hands the reading over to the lexer of the state `x`       |
+| `exit()`     | Gives the control back to the lexer that entered this one  |
+
+### channel(x)
+
+A [channel](/docs/lexer/tokens) keeps a token out of the grammar without
+throwing it away — documentation comments are the usual reason:
+
+```pp2
+%token T_DOC_COMMENT  /\*\*.*?\*/  -> channel(docblocks)
+```
+
+The parser never sees it, but it is right there in the token stream for
+anything that wants it. `%skip` is shorthand for the built-in `Hidden`
+channel, so these two lines mean the same thing:
+
+```pp2
+%skip  T_WHITESPACE  \s++
+%token T_WHITESPACE  \s++  -> channel(Hidden)
+```
+
+### state(x) and exit()
+
+A token may hand the reading over to a lexer of its own, which is how a
+fragment written in different lexical rules is read — a string literal, a
+comment, an embedded language:
+
+```pp2
+%token        T_QUOTE_OPEN  "       -> state(string)
+%token string:T_TEXT        [^"]++
+%token string:T_QUOTE_CLOSE "       -> exit()
+```
+
+A token declared as `state:NAME` belongs to that state's lexer. Everything
+that lexer reads is carried by the token that entered it, so `T_TEXT` never
+reaches the outer stream. See [Nested Lexers](/docs/lexer/embedding).
+
+### Several At Once
+
+Actions are separated by commas, and the order does not matter:
+
+```pp2
+%token T_QUOTE_OPEN  "  -> state(string), channel(strings)
+```
+
+A token is read once and therefore goes to exactly one place, so writing two
+actions that both move the reading — `state(x), exit()` — is an error.
+
+## Tokens Belonging To Every State
+
+Whitespace and comments are usually the same wherever they appear, and
+repeating them in every state is how a grammar drifts out of sync with itself.
+Write `*:` instead of a state name and the token is added to all of them:
+
+```pp2
+%skip  *:T_WHITESPACE  \s++
+
+%token T_QUOTE_OPEN  "  -> state(string)
+%token string:T_TEXT  [^"]++
+%token string:T_QUOTE_CLOSE  "  -> exit()
+```
+
+Both the initial state and `string` now skip whitespace.
+
+Three things worth knowing:
+
+- the token is added to **every** state, including ones declared later or in
+  a file included afterwards — the states are all known only once the whole
+  grammar has been read;
+- inside a state it is tried **after** the tokens that state declares itself,
+  so a state with a catch-all pattern still wins;
+- a [lexer written by hand](#lexers-written-by-hand) is left alone: what it
+  recognizes is decided by that lexer, not by a declaration.
+
+## Lexers Written By Hand
+
+Some fragments cannot be described by regular expressions at all — heredocs,
+indentation-sensitive blocks, another language entirely. `%lexer` names a
+state and gives the expression building the lexer that reads it:
+
+```pp2
+%token T_PHP_OPEN  <\?php  -> state(php)
+
+%lexer php -> { new \App\Lexer\PhpTokenLexer() }
+```
+
+The body is an **expression**, not a block of statements — whatever it
+evaluates to has to be a `LexerInterface`. Note there is no `return` and no
+semicolon.
+
+Such a lexer decides on its own where its fragment ends: it stops, and control
+returns to the lexer that called it, so it needs no token doing `exit()`. See
+[Nested Lexers](/docs/lexer/embedding).
+
 ## Declaring Rules
 
-A rule is a name, a separator, a body, and an optional semicolon:
+A rule is a name, a colon, a body, and an optional semicolon:
 
 ```pp2
 Sum : <T_DIGIT> ::T_PLUS:: <T_DIGIT> ;
 ```
 
-The separator can be `:`, `=` or `::=` — they are identical, and the choice
-exists only so grammars from other tools can be pasted in. Pick one and stay
-with it.
+The colon is the only separator there is. Grammars from other tools often use
+`=` or `::=`; those have to be changed.
 
 By convention rules are `PascalCase`, which tells them apart from tokens at a
 glance.
@@ -213,7 +314,65 @@ By default it starts at the first rule in the file. Say otherwise with
 Worth setting explicitly once a grammar is split across files — the "first
 rule" then depends on include order, which is a fragile thing to depend on.
 
-`root` is currently the only pragma; anything else is an error.
+## Settings
+
+`%pragma` configures the compilation from the grammar itself, so a grammar
+that needs a particular setting carries it instead of relying on the code that
+compiles it.
+
+| Setting                       | What it does                                    |
+|-------------------------------|-------------------------------------------------|
+| `root <Rule>`                 | Where parsing starts                             |
+| `lexer.pcre.flag <M>`         | Compiles the lexer's pattern with a PCRE modifier |
+| `lexer.pcre.disable <M>`      | Compiles it without one                          |
+| `lexer.pass <Class>`          | Registers a lexer pass, normalizing              |
+| `lexer.check <Class>`         | Registers a lexer pass, checking                 |
+| `lexer.optimize <Class>`      | Registers a lexer pass, optimizing               |
+| `lexer.complete <Class>`      | Registers a lexer pass, checking after optimizing |
+| `lexer.disable <Class>`       | Drops a lexer pass, whenever it was registered   |
+| `parser.pass|check|optimize|complete <Class>` | The same, for the parser          |
+| `parser.disable <Class>`      | Drops a parser pass                              |
+
+Anything else is an error.
+
+### PCRE Modifiers
+
+The lexer compiles its tokens into one pattern, and these say which modifiers
+that pattern carries. A modifier is named either the way PCRE spells it or the
+way phplrt calls it:
+
+```pp2
+%pragma lexer.pcre.flag     Caseless   // ...or "i"
+%pragma lexer.pcre.disable  Utf8       // ...or "u"
+```
+
+By default the pattern is compiled with `S`, `u`, `s` and `m`. See
+[RegexModifier](/docs/lexer) for what each of them means.
+
+### Compiler Passes
+
+A pass rewrites or checks the lexer or the grammar while it is being built,
+and the setting is named after the moment it runs at:
+
+```pp2
+%pragma parser.check     \App\Grammar\NoLeftFactoringPass
+%pragma lexer.optimize   \App\Grammar\MergeKeywordsPass
+```
+
+The class is created with no arguments and must implement
+`LexerCompilerPassInterface` or `ParserCompilerPassInterface` — a class that
+does not exist, or implements the wrong one, is reported at the line it is
+written on.
+
+A built-in pass can be dropped by name, which is how a grammar opts out of an
+optimization it does not want:
+
+```pp2
+%pragma parser.disable \Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass
+```
+
+[Building a Grammar](/docs/parser/builder) describes what the passes are and
+when each priority runs.
 
 ## Including Other Files
 
@@ -241,44 +400,15 @@ Number -> { return (int) $children->value; }
   ;
 ```
 
-or a class, whose constructor receives the context and the children:
+A block of code is the only form a reducer takes — build the node inside it:
 
 ```pp2
-Number -> \App\Ast\NumberNode
+Number -> { return new \App\Ast\NumberNode($offset, $children->value); }
   : <T_DIGIT>
   ;
 ```
 
 This has a page of its own: [PHP in a Grammar](/docs/compiler/code).
-
-## The `#` Marker
-
-A rule name may be prefixed with `#`:
-
-```pp2
-#Sum : <T_DIGIT> ::T_PLUS:: <T_DIGIT> ;
-```
-
-It comes from earlier versions of phplrt, where names survived compilation:
-the marker kept the rule's name on the compiled parser so that a grammar
-could be **modified after it was built** — the parser doubled as a
-combinator, and an extension could reach a rule by name and replace or wrap
-it at runtime.
-
-Version 4.x compiles a grammar down to a flat table of numbered rules. Names
-are a build-time thing now, kept only where a reducer needs one for its
-generated method, so there is nothing left for the marker to address.
-
-It is still accepted, and it now means "give this rule a reducer that hands
-its children through" — which keeps the rule from being folded into its
-parent by the optimizer. If you care about the result, write the reducer
-you actually want:
-
-```pp2
-Sum -> { return new \App\Ast\SumNode($children); }
-  : <T_DIGIT> ::T_PLUS:: <T_DIGIT>
-  ;
-```
 
 ## Naming Conventions
 

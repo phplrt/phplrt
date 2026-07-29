@@ -5,8 +5,6 @@ parse — a number, an AST node, a configuration array — you attach PHP to a
 rule. That piece of PHP is called a **reducer**, and it runs when the rule
 matches.
 
-There are two ways to write one.
-
 ## A Block of Code
 
 Put it between `->` and the rule body:
@@ -46,46 +44,32 @@ Expression -> {
 Braces inside strings are safe — the block is read by a real PHP lexer, so
 `"{"` is a string, not the end of the block.
 
-## A Class
+## Building A Node
 
-If the reducer only builds a node, name the class instead:
+A block of code is the only form a reducer takes, so a rule that maps onto a
+node class builds it there:
 
 ```pp2
-Number -> \App\Ast\NumberNode
+Number -> { return new \App\Ast\NumberNode($offset, (int) $children->value); }
   : <T_DIGIT>
   ;
 ```
-
-which is shorthand for:
-
-```pp2
-Number -> { return new \App\Ast\NumberNode($ctx, $children); }
-  : <T_DIGIT>
-  ;
-```
-
-So the constructor takes the context and the children:
 
 ```php
 namespace App\Ast;
 
-use Phplrt\Parser\Context;
-
 final class NumberNode
 {
-    public readonly int $value;
-    public readonly int $offset;
-
-    public function __construct(Context $ctx, mixed $children)
-    {
-        $this->value = (int) $children->value;
-        $this->offset = $ctx->token->offset;
-    }
+    public function __construct(
+        public readonly int $offset,
+        public readonly int $value,
+    ) {}
 }
 ```
 
-Convenient when every rule maps to a node class, and the mapping is boring.
-Reach for a code block when it is not.
+Passing the node exactly what it needs is a little more typing than handing
+the whole context over, and it keeps the node a plain value object that knows
+nothing about the parser.
 
 ## The Variables
 

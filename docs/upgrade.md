@@ -280,7 +280,13 @@ Rename your grammars to `.pp3` (or `.pp2`) and check the following:
   unification, error levels — are gone; the corresponding behaviour is either
   the default or configured in PHP.
 - **Rule bodies are unchanged**: `<T_X>`, `::T_X::`, `Rule()`, `|`, `?`, `*`,
-  `+`, `{n,m}`, `#Rule` and `-> { ... }` all still work.
+  `+`, `{n,m}` and `-> { ... }` all still work.
+- **`.pp3` drops what `.pp2` allowed twice.** A rule is separated by a colon
+  only (`=` and `::=` are gone), the `#` marker is gone, and a reducer is
+  always a block of code (`-> ClassName` is gone). A token says what it does
+  by naming the action — `-> state(x)`, `-> exit()`, `-> channel(x)` — rather
+  than naming the state it lands in. Keep the `.pp2` extension and none of
+  this applies.
 - **Reducer variables changed slightly.** `$file` is gone (use `$source`);
   `$state` is gone (use `$rule`, which is an int); `$content` is new.
 

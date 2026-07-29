@@ -222,6 +222,14 @@ Everything above has a shorter spelling in a `.pp3` file:
 %skip  T_WHITESPACE  \s++
 ```
 
+The modifiers and the compiler passes are settings of the grammar there, so a
+grammar carries the way it wants to be compiled:
+
+```pp2
+%pragma lexer.pcre.flag  Caseless
+%pragma lexer.check      \App\Grammar\MyValidationPass
+```
+
 That is usually where you want to be — see [Compiler](/docs/compiler). The
 builder API is for the cases where the token list is not known in advance:
 generated from a config file, a database, a plugin system.

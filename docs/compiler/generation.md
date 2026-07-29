@@ -14,7 +14,7 @@ use Phplrt\Source\File;
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Calculator')
+        ->withNamespaceName('App\Calculator')
         ->save(__DIR__ . '/SumParser.php', 'SumParser');
 ```
 
@@ -250,6 +250,21 @@ $parser = new Compiler()
     ->load(new File($argv[1]))
     ->getParser();
 ```
+
+## phplrt Does This To Itself
+
+The `.pp3` format is described by a grammar written in `.pp3`, and the parser
+reading your grammar files is generated from it — the same `generate()` call
+you have just seen, committed to the repository.
+
+It has to be that way: reading a grammar file needs a parser, so the parser of
+a format cannot be built from the grammar describing it at runtime. The grammar
+lives in `resources/grammar/pp3.pp3`, the parser it compiles into lives in
+`src/Syntax/PP3/PP3Parser.php`, and a test compares the two so they cannot
+drift apart.
+
+The nice side effect is what you get too: a parser that is *built* costs a few
+milliseconds to construct, and a parser that is *generated* costs a `new`.
 
 ## Writing Your Own Generator
 

@@ -89,23 +89,30 @@ from the value.
 
 ## In A Grammar File
 
-The same thing in `.pp3` is written with states. A token declaration can name
-the state it switches to after `->`, and a token declared as `state:NAME`
-belongs to that state:
+The same thing in `.pp3` is written with states. A token declaration says what
+it does after `->`, and a token declared as `state:NAME` belongs to that
+state's lexer:
 
 ```pp2
-%token        T_QUOTE_OPEN  "      -> string
+%token        T_QUOTE_OPEN  "      -> state(string)
 %token string:T_TEXT        [^"]++
-%token string:T_QUOTE_CLOSE "      -> default
+%token string:T_QUOTE_CLOSE "      -> exit()
 %skip         T_WHITESPACE  \s++
 
 Str : <T_QUOTE_OPEN> ;
 ```
 
-Switching from `default` into a named state is "enter"; switching from a
-named state back to `default` is "exit". Jumping straight from one named
-state to another is not expressible — the reading is nested, so it can only
-go one level down and back up.
+`state(x)` is "enter" and `exit()` hands the control back. The reading is
+nested, so it can only ever go one level down and back up — there is no way
+to jump straight from one state into another.
+
+A token may do more than one thing, written with commas:
+
+```pp2
+%token T_QUOTE_OPEN  "  -> state(string), channel(strings)
+```
+
+See [Token Actions](/docs/compiler/grammar) for the full list.
 
 Parsing `"hello"` gives you a `TokenEmbedding`:
 
@@ -138,9 +145,25 @@ $builder->addPattern('<\?php', 'T_PHP_OPEN')
 $builder->addEmbeddedLexer('php', new PhpTokenLexer());
 ```
 
+In a grammar file that is `%lexer`, which names the state and gives the
+expression building the lexer:
+
+```pp2
+%token T_PHP_OPEN  <\?php  -> state(php)
+
+%lexer php -> { new \App\Lexer\PhpTokenLexer() }
+```
+
+The body is an expression rather than a block of statements — no `return`, no
+semicolon — and whatever it evaluates to has to be a `LexerInterface`.
+
 Such a lexer decides on its own where its fragment ends: it simply stops, and
 control returns to the lexer that called it. It does not need an "exit"
 token, and its own terminal token is not carried over.
+
+It is also the one kind of state that
+[shared tokens](/docs/compiler/grammar) skip: a `%skip *:T_WHITESPACE` says
+nothing about a lexer that decides for itself what it reads.
 
 This is also the escape hatch for anything a regular expression cannot do:
 heredocs, indentation-sensitive blocks, nested comments.

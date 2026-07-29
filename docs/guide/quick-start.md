@@ -246,7 +246,7 @@ use Phplrt\Source\File;
 new Compiler()
     ->load(new File(__DIR__ . '/grammar.pp3'))
     ->generate()
-        ->withNamespace('App\Calculator')
+        ->withNamespaceName('App\Calculator')
         ->save(__DIR__ . '/CalculatorParser.php', 'CalculatorParser');
 ```
 
