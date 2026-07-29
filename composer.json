@@ -37,7 +37,7 @@
             "Phplrt\\Lexer\\Builder\\": "libs/components/lexer-builder/src",
             "Phplrt\\Parser\\": "libs/components/parser/src",
             "Phplrt\\Parser\\Builder\\": "libs/components/parser-builder/src",
-            "Phplrt\\Source\\": "libs/components/source/src",
+            "Phplrt\\Source\\": "libs/components/source/src"
         }
     },
     "require-dev": {
