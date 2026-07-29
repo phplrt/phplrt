@@ -195,6 +195,10 @@ discarded:
 Phone : <T_DIGIT>{3} "\-" <T_DIGIT>{4} ;
 ```
 
+> The quotes were given a different meaning in `.pp3`, where they spell the
+> text to read as it is written and an expression is written between slashes
+> instead.
+
 ### Choice
 
 ```pp2

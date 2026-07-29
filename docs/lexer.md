@@ -222,6 +222,14 @@ Everything above has a shorter spelling in a `.pp3` file:
 %skip  T_WHITESPACE  \s++
 ```
 
+A token nothing refers to by name does not have to be declared at all — a rule
+declares it where it reads it, and the two spellings are the two methods above:
+
+```pp2
+Sum  : <T_DIGIT> "+" <T_DIGIT> ;          // addValue('+')
+Expr : <T_DIGIT> /and|or/ <T_DIGIT> ;     // addPattern('and|or')
+```
+
 The modifiers and the compiler passes are settings of the grammar there, so a
 grammar carries the way it wants to be compiled:
 

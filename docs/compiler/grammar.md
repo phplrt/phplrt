@@ -77,6 +77,17 @@ Put the longer one first:
 Same story with keywords: declare `if` before your identifier pattern, or
 `if` will be read as an identifier.
 
+**A declaration is one line.** It is read by a lexer of its own, which starts
+at `%token` and stops at the line break, and it expects exactly three things:
+a name, the expression recognizing the token, and — optionally — an arrow with
+what the token [does](#token-actions).
+
+```
+%token  string:T_QUOTE  "  -> state(strings), channel(quotes)
+        ▲      ▲        ▲     ▲
+        state  name     expr  actions
+```
+
 **A pattern cannot contain a literal space** — whitespace is what separates
 the parts of the declaration. Write it as `\x20` or `\s`:
 
@@ -84,6 +95,17 @@ the parts of the declaration. Write it as `\x20` or `\s`:
 %token T_TEXT  [a-z ]++     // ✘ breaks
 %token T_TEXT  [a-z\x20]++  // ✔
 %token T_TEXT  [a-z\s]++    // ✔
+```
+
+Anything else on the line is an error, which is how a `.pp2` habit gets
+noticed:
+
+```
+error[UnexpectedTokenException]: Syntax error, unexpected "->" (T_PATTERN)
+ --> /app/grammar.pp3:1:20
+  |
+1 | %token T_QUOTE  "  -> string
+  |                    ^^
 ```
 
 ## Token Actions
@@ -237,27 +259,42 @@ Sum : Number() ::T_PLUS:: Number() ;
 The rule may be declared anywhere, including in a file that has not been read
 yet. References are resolved after everything is loaded.
 
-### Inline Patterns
+### Inline Tokens
 
-A string literal declares a token right there, without naming it:
+A rule may declare a token right where it reads it, without naming it. There
+are two spellings, and the difference is whether what you write is text or an
+expression:
 
-```pp2
-Phone : <T_DIGIT>{3} "\-" <T_DIGIT>{4} ;
-```
-
-The same string written in several rules reuses one token, and such a token is
-always discarded — it is punctuation by definition.
-
-**It is a regular expression, not a literal string**, so it needs the same
-escaping as `%token`:
+| Written | Means                                             |
+|---------|---------------------------------------------------|
+| `"..."` | the **text** to read, exactly as it is written     |
+| `/.../` | the **regular expression** recognizing the token   |
 
 ```pp2
-Rule : "\+" ;   // a plus sign
-Rule : "+" ;    // ✘ a broken regex
+Sum  : <T_NUMBER> "+" <T_NUMBER> ;          // a plus sign
+Expr : <T_NUMBER> /and|or|xor/ <T_NUMBER> ; // one of three words
 ```
+
+Quotes are the one you want for punctuation: nothing inside them is special,
+so `"+"`, `"("` and `"**"` mean exactly what they look like. Slashes are for
+when you need a choice, a character class or a quantifier.
+
+The same token written in several rules is declared **once**, and such a token
+is always discarded — it is punctuation by definition:
+
+```pp2
+Sum     : <T_NUMBER> "+" <T_NUMBER> ;
+Unary   : "+" <T_NUMBER> ;              // the very same token
+```
+
+Escaping is only ever needed for the delimiter itself — `\"` inside quotes,
+`\/` inside slashes.
 
 Handy for one-off punctuation; for anything that appears more than twice,
 declare a real token so the error messages can name it.
+
+> A slash also opens a comment, so `//` and `/*` are read as one. Write `/\//`
+> for a lone slash.
 
 ### Choice
 
@@ -483,7 +520,7 @@ Expression : ... ;       // rules:  PascalCase
 // name = value
 Config : Pair()* ;
 
-Pair : <T_NAME> ::T_EQ:: Value() ;
+Pair : <T_NAME> "=" Value() ;
 
 Value
   : <T_NUMBER>
@@ -495,18 +532,10 @@ Value
   ;
 
 // [a, b, c]
-List
-  : ::T_BRACKET_OPEN::
-      (Value() (::T_COMMA:: Value())*)?
-    ::T_BRACKET_CLOSE::
-  ;
-
-%token T_EQ             =
-%token T_COMMA          ,
-%token T_BRACKET_OPEN   \[
-%token T_BRACKET_CLOSE  \]
+List : "[" (Value() ("," Value())*)? "]" ;
 ```
 
 Note `T_TRUE` before `T_NAME` — otherwise `true` is read as a name. And note
-that tokens may be declared after the rules that use them; only the order of
-the tokens *relative to each other* matters.
+that the punctuation is never declared: `"="`, `"["`, `","` and `"]"` each
+declare their token where they are read, and none of them needs escaping
+because a value is not an expression.
