@@ -3,8 +3,8 @@
  *  Statements Of The PP3 Format
  * -----------------------------------------------------------------------------
  *
- *  What may be written before a statement in this format — a predicate — and
- *  the two ways a rule declares a token on the spot.
+ *  What may be written before a statement in this format (a predicate) and the
+ *  two ways a rule declares a token on the spot.
  *
  */
 
