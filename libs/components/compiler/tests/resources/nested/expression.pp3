@@ -1,0 +1,9 @@
+%include ../lexemes
+
+Expression -> { return \array_sum($children); }
+  : Number() (::T_PLUS:: Number())*
+  ;
+
+Number -> { return (int) $children->value; }
+  : <T_NUMBER>
+  ;

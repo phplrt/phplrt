@@ -1,0 +1,59 @@
+{
+    "name": "phplrt/lexer",
+    "type": "library",
+    "description": "The phplrt lexer library that can be used for scanners implementation using PCRE",
+    "license": "MIT",
+    "keywords": ["regex", "lexer", "token", "stream", "parsing", "scanner", "tokenizer"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/lexer"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-pcre": "*",
+        "phplrt/lexer-contracts": "^4.0",
+        "phplrt/source-contracts": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Lexer\\": "src"
+        }
+    },
+    "require-dev": {
+        "ext-mbstring": "*",
+        "phplrt/exception": "^4.0",
+        "phplrt/lexer-builder": "^4.0",
+        "phplrt/source": "^4.0",
+        "phpunit/phpunit": "^12.5|^13.0",
+        "phpstan/phpstan": "^2.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Lexer\\Tests\\": "tests"
+        }
+    },
+    "suggest": {
+        "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in"
+    },
+    "provide": {
+        "phplrt/lexer-contracts-implementation": "^4.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

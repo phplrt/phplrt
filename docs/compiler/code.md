@@ -1,89 +1,196 @@
-# Code Delegation
+# PHP in a Grammar
 
-You can tell the compiler which php class to include the desired grammar rule using 
-keyword `->` after name of rule definition. In this case, each processed rule will 
-create an instance of target class (or code).
+A grammar on its own only answers "is this valid?". To get a *value* out of a
+parse - a number, an AST node, a configuration array - you attach PHP to a
+rule. That piece of PHP is called a **reducer**, and it runs when the rule
+matches.
 
-## Delegate
+## A Block of Code
 
-For example every "`Digit`" rule must be represented as an 
-instance of `ExampleAstNode` class, and all children (the result of execution)
-will be passed to the constructor arguments.
+Put it between `->` and the rule body:
 
 ```pp2
-#Digit -> ExampleAstNode
-  : <T_DIGIT> 
+Number -> { return (int) $children->value; }
+  : <T_DIGIT>
   ;
 ```
 
-In this case, the rule class can look like this:
+Whatever it returns becomes the value of the rule. The code is ordinary PHP -
+loops, conditionals, whatever you need:
+
+```pp2
+Expression -> {
+    if (!\is_array($children)) {
+        return $children;
+    }
+
+    $result = \array_shift($children);
+
+    while ($children !== []) {
+        $operator = \array_shift($children);
+        $right = \array_shift($children);
+
+        $result = $operator->value === '+' 
+            ? $result + $right 
+            : $result - $right;
+    }
+
+    return $result;
+}
+  : Term() ((<T_PLUS> | <T_MINUS>) Term())*
+  ;
+```
+
+Braces inside strings are safe - the block is read by a real PHP lexer, so
+`"{"` is a string, not the end of the block.
+
+## Building A Node
+
+A block of code is the only form a reducer takes, so a rule that maps onto a
+node class builds it there:
+
+```pp2
+Number -> { return new \App\Ast\NumberNode($offset, (int) $children->value); }
+  : <T_DIGIT>
+  ;
+```
 
 ```php
-<?php
+namespace App\Ast;
 
-use Phplrt\Contracts\Ast\NodeInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-
-class ExampleAstNode implements NodeInterface
+final class NumberNode
 {
-    private int $digit;
-
-    public function __construct($state, TokenInterface $digit, int $offset) 
-    {
-        $this->digit = (int)$digit->getValue();
-    }
-
-    /**
-     * The required method of NodeInterface, which should return 
-     * children AST nodes.
-     * 
-     * In this case, the node is empty, so the iterator returns nothing.
-     * 
-     * @return \Traversable|NodeInterface[]
-     */
-    public function getIterator(): \Traversable
-    {
-        return new \EmptyIterator();
-    }
+    public function __construct(
+        public readonly int $offset,
+        public readonly int $value,
+    ) {}
 }
 ```
 
-## PHP Code
+Passing the node exactly what it needs is a little more typing than handing
+the whole context over, and it keeps the node a plain value object that knows
+nothing about the parser.
 
-Alternatively, you can use a real PHP code inside block `{ ... }` 
-constructions. The result (meaning of expression `return XXX`) can be 
-an any PHP value except `null`.
+## The Variables
+
+Inside a code block, these are available:
+
+| Variable    | What it is                                             |
+|-------------|--------------------------------------------------------|
+| `$children` | What the rule matched. **This is the important one.**  |
+| `$ctx`      | The full `Context` object                              |
+| `$token`    | The last token the rule read, or `null`                |
+| `$offset`   | Where that token starts, in bytes                      |
+| `$source`   | The source being parsed                                |
+| `$content`  | Its contents, already read                             |
+| `$rule`     | The id of the rule being reduced                       |
+
+All except `$children` and `$ctx` are shorthands the compiler expands for
+you - `$offset` becomes `$ctx->token->offset`, and so on. They are only
+declared if you use them, so there is no cost to the ones you do not.
 
 ```pp2
-#Digit -> {
-    var_dump($children);
-
-    return new ExampleAstNode($children->getName());
-}
-  : <T_DIGIT> 
+Number -> { return new \NumberNode($offset, (float) $children->value); }
+  : <T_NUMBER>
   ;
 ```
 
-Note the use of the `$children` variable. The following variables are 
-available inside each block:
+Keeping an offset on every node is a habit worth forming. It is what lets a
+later stage - a type checker, an evaluator, a linter - point at the right
+place in the source when it finds a problem.
 
-- `$ctx` - Contains an object (an instance of `Phplrt\Parser\ContextInterface`) 
-    of the current context of program execution.
-    
-- `$children` - Contains the result of executing child rules (except `null` value).
+## What `$children` Holds
 
-- `$file` - The source/file object (instance of `Phplrt\Contracts\Source\ReadableInterface`) 
-    that is currently being processed by the parser.
-    
-- `$source` - Same with `$file`.
+**A sequence** (a concatenation or a repetition) gives you an **array**:
 
-- `$offset` - The current offset (in bytes) relative to the beginning of the 
-    file that the parser is currently processing.
-    
-- `$token` - The current token (instance of `Phplrt\Contracts\Lexer\TokenInterface`) 
-    that is currently being processed by the parser.
-    
-- `$state` - The current parser's state.
+```pp2
+Pair : <T_DIGIT> <T_DIGIT> ;   // $children = [Token, Token]
+List : <T_DIGIT>+ ;            // $children = [Token, Token, ...]
+```
 
-- `$rule` - The rule (instance of `Phplrt\Contracts\Grammar\RuleInterface`) 
-    that is currently being processed by the parser.
+**Anything else** gives you a single value:
+
+```pp2
+Number : <T_DIGIT> ;           // $children = Token
+Choice : Number() | Name() ;   // $children = whatever matched
+```
+
+A rule that can match one thing *or* several will hand you one thing or
+several, which is why reducers so often start with:
+
+```pp2
+Rule -> {
+    if (!\is_array($children)) {
+        return $children;
+    }
+
+    // ...
+}
+```
+
+The [Results and Reducers](/docs/parser/ast) page goes into how nested values
+are combined.
+
+## Returning Nothing
+
+Return `null` and the children pass through untouched, as if the reducer were
+not there:
+
+```pp2
+Debug -> {
+    \error_log('reached rule ' . $rule . ' at ' . $offset);
+
+    return null; // leave the result alone
+}
+  : <T_NAME>
+  ;
+```
+
+An empty block (`-> {}`) is the same as writing no reducer at all.
+
+## In Generated Code
+
+When you [generate a parser](/docs/compiler/generation), reducers become real
+methods, named after the rule they belong to:
+
+```php
+private static function reduceNumber(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+{
+    return (float) $children->value;
+}
+```
+
+Two practical consequences.
+
+**Your code appears verbatim in the generated file.** It is debuggable and
+steppable, and a syntax error in a reducer is a syntax error in that file -
+so run the generator as part of your build, not at deploy time.
+
+**A grammar file has no `use` statements**, so how a short class name resolves
+depends on where the reducer ends up - the global namespace when the grammar
+is read on the fly, the generated file's namespace when it is generated. The
+safe answer is to write class names fully qualified:
+
+```pp2
+// ✔ works either way
+Number -> { return new \App\Ast\NumberNode($offset, $children->value); }
+```
+
+If the fully qualified names make a big grammar unreadable, you can declare
+the imports on the generated file instead:
+
+```php
+new Compiler()
+    ->load(new File(__DIR__ . '/grammar.pp3'))
+    ->generate()
+        ->withNamespaceName('App\Parser')
+        ->withClassImport('App\Ast\NumberNode')
+        ->save(__DIR__ . '/Parser.php');
+```
+
+```pp2
+Number -> { return new NumberNode($offset, $children->value); }
+```
+
+The trade-off: that grammar now only works when generated. Pick one approach
+per project rather than mixing them.

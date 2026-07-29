@@ -1,0 +1,51 @@
+{
+    "name": "phplrt/parser-builder",
+    "type": "library",
+    "description": "The phplrt component for assembling a parser",
+    "license": "MIT",
+    "keywords": ["regex", "parser", "PEG", "LPeg", "compiler", "build"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/parser-builder"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "phplrt/exception": "^4.0",
+        "phplrt/lexer": "^4.0",
+        "phplrt/lexer-builder": "^4.0",
+        "phplrt/parser": "^4.0",
+        "phplrt/source-contracts": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Parser\\Builder\\": "src"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.5|^13.0",
+        "phpstan/phpstan": "^2.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Parser\\Builder\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

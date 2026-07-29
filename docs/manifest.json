@@ -6,30 +6,39 @@
     },
     "Guide": {
         "Introduction": "guide/introduction",
-        "Creating Project": "guide/creating-project"
+        "Quick Start": "guide/quick-start"
+    },
+    "Source": {
+        "Usage": "source"
     },
     "Lexer": {
         "Usage": "lexer",
-        "Extension": "lexer/extension",
-        "Multistate": "lexer/multistate",
-        "Drivers": "lexer/drivers"
+        "Tokens and Channels": "lexer/tokens",
+        "Nested Lexers": "lexer/embedding"
     },
     "Parser": {
         "Usage": "parser",
-        "Abstract Syntax Tree": "parser/ast",
         "Grammar Rules": "parser/rules",
-        "Builder": "parser/builder"
+        "Building a Grammar": "parser/builder",
+        "Results and Reducers": "parser/ast"
     },
     "Compiler": {
         "Usage": "compiler",
-        "Grammar": "compiler/grammar",
-        "PHP Injections": "compiler/code"
+        "PP3 Grammar Syntax": "compiler/grammar",
+        "PP2 Grammar Syntax (Legacy)": "compiler/legacy-grammar",
+        "PHP in a Grammar": "compiler/code",
+        "Code Generation": "compiler/generation"
+    },
+    "Errors": {
+        "Error Reporting": "errors"
     },
     "Examples": {
         "Simple Math Expression": "examples/simple-math",
         "Advanced Math Expression": "examples/advanced-math",
-        "PhpDoc Types (psalm/phpstan)": "examples/phpdoc-types",
+        "Calculator": "examples/calculator",
+        "JSON": "examples/json",
         "JSON5": "examples/json5",
+        "PhpDoc Types (psalm/phpstan)": "examples/phpdoc-types",
         "Go! AOP Pointcuts": "examples/go-aop"
     }
 }

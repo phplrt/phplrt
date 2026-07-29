@@ -1,0 +1,17 @@
+pattern: {{ value(lexer.pattern) }},
+{% if lexer.channels is not empty %}
+channels: {{ value(lexer.channels) }},
+{% endif %}
+{% if lexer.names is not empty %}
+names: {{ value(lexer.names) }},
+{% endif %}
+{% if lexer.transitions is not empty %}
+transitions: [
+{% for id, target in lexer.transitions %}
+    {{ id }} => {{ target is null ? 'null' : variable(path ~ target) }},
+{% endfor %}
+],
+{% endif %}
+{% if lexer.subgroups is not empty %}
+subgroups: {{ value(lexer.subgroups) }},
+{% endif %}

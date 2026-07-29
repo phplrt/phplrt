@@ -1,0 +1,201 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Statements
+ * -----------------------------------------------------------------------------
+ *
+ *  What a rule of the parser recognizes: the alternatives it is written of,
+ *  each of them a sequence of statements. Both formats spell this exactly the
+ *  same way, apart from what may be written before a statement: a format
+ *  defines "Prefixed" on its own.
+ *
+ */
+
+/**
+ * One of several things to recognize, like:
+ *  - Number() | Name()
+ *
+ *  An alternative of a single statement is that statement: the choice a rule
+ *  is written of is only a choice once there is something to choose from.
+ */
+Alternation -> {
+    \assert(\is_array($children));
+
+    $statements = [];
+
+    foreach ($children as $statement) {
+        \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+        $statements[] = $statement;
+    }
+
+    \assert($statements !== [], 'A production recognizes at least one statement');
+
+    if (!isset($statements[1])) {
+        return $statements[0];
+    }
+
+    $last = $statements[\count($statements) - 1];
+
+    return new \Phplrt\Compiler\Node\Statement\Alternation(
+        statements: $statements,
+        offset: $statements[0]->offset,
+        length: \max(0, $last->offset + $last->length - $statements[0]->offset),
+    );
+}
+  : Concatenation() AlternationTail()*
+  ;
+
+AlternationTail : ::T_OR:: Concatenation() ;
+
+/**
+ * Several things to recognize one after another, like:
+ *  - Number() ::T_PLUS:: Number()
+ *
+ *  A sequence of a single statement is that statement, for the very same
+ *  reason an alternative of one is.
+ */
+Concatenation -> {
+    \assert(\is_array($children));
+
+    $statements = [];
+
+    foreach ($children as $statement) {
+        \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+        $statements[] = $statement;
+    }
+
+    \assert($statements !== [], 'A production recognizes at least one statement');
+
+    if (!isset($statements[1])) {
+        return $statements[0];
+    }
+
+    $last = $statements[\count($statements) - 1];
+
+    return new \Phplrt\Compiler\Node\Statement\Concatenation(
+        statements: $statements,
+        offset: $statements[0]->offset,
+        length: \max(0, $last->offset + $last->length - $statements[0]->offset),
+    );
+}
+  : Prefixed()+
+  ;
+
+/**
+ * A statement along with the number of times it may repeat, like:
+ *  - Number()*
+ *
+ *  A statement written with no quantifier repeats exactly once, which is what
+ *  the statement itself already means.
+ */
+Suffixed -> {
+    \assert(\is_array($children));
+
+    $statement = $children[0] ?? null;
+    $quantifier = $children[1] ?? null;
+
+    \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+    if (!$quantifier instanceof \Phplrt\Compiler\Node\Statement\Quantifier) {
+        return $statement;
+    }
+
+    return new \Phplrt\Compiler\Node\Statement\Repetition(
+        statement: $statement,
+        quantifier: $quantifier,
+        offset: $statement->offset,
+        length: \max(0, $quantifier->offset + $quantifier->length - $statement->offset),
+    );
+}
+  : Primary() Quantifier()?
+  ;
+
+/**
+ * A token a rule declares on the spot is spelled differently by each format,
+ * so "Inline" is what a format defines on its own.
+ */
+Primary
+  : Group()
+  | KeptTokenReference()
+  | SkippedTokenReference()
+  | RuleReference()
+  | Inline()
+  ;
+
+/**
+ * A statement written apart from the ones surrounding it, like:
+ *  - ( Number() | Name() )
+ *
+ *  The brackets say nothing of their own: they only decide what belongs to
+ *  what, which the statement written between them already records.
+ */
+Group : ::T_PARENTHESIS_OPEN:: Alternation() ::T_PARENTHESIS_CLOSE:: ;
+
+/**
+ * A token whose value is kept in the syntax tree, like:
+ *  - <T_NAME>
+ */
+KeptTokenReference -> {
+    \assert(\is_array($children));
+
+    $name = $children[0] ?? null;
+
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
+
+    return new \Phplrt\Compiler\Node\Statement\TokenReference(
+        name: $name->value,
+        isKept: true,
+        offset: $name->offset,
+        length: $name->size,
+    );
+}
+  : ::T_ANGLE_OPEN:: <T_NAME> ::T_ANGLE_CLOSE::
+  ;
+
+/**
+ * A token that is read and thrown away, like:
+ *  - ::T_COMMA::
+ */
+SkippedTokenReference -> {
+    \assert(\is_array($children));
+
+    $name = $children[0] ?? null;
+
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
+
+    return new \Phplrt\Compiler\Node\Statement\TokenReference(
+        name: $name->value,
+        isKept: false,
+        offset: $name->offset,
+        length: $name->size,
+    );
+}
+  : ::T_DOUBLE_COLON:: <T_NAME> ::T_DOUBLE_COLON::
+  ;
+
+/**
+ * Another rule to recognize, like:
+ *  - Number()
+ *
+ *  The rule is pointed at by name: it may well be declared in a grammar that
+ *  has not been read yet.
+ */
+RuleReference -> {
+    \assert(\is_array($children));
+
+    $name = $children[0] ?? null;
+
+    \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($name->value !== '', 'The lexer never produces an empty token');
+
+    return new \Phplrt\Compiler\Node\Statement\RuleReference(
+        name: $name->value,
+        offset: $name->offset,
+        length: $name->size,
+    );
+}
+  : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::
+  ;

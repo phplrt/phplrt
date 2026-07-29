@@ -1,0 +1,43 @@
+
+TemplateArguments -> {
+    return new Type\Template\TemplateArgumentListNode($children);
+}
+  : ::T_ANGLE_BRACKET_OPEN::
+      TemplateArgument() (
+        ::T_COMMA:: TemplateArgument()
+      )* ::T_COMMA::?
+    ::T_ANGLE_BRACKET_CLOSE::
+  ;
+
+TemplateArgument -> {
+    $hint = $attributes = null;
+
+    if (\reset($children) instanceof Type\Attribute\AttributeGroupListNode) {
+        $attributes = \array_shift($children);
+    }
+
+    $type = \array_pop($children);
+
+    if (\reset($children) !== false) {
+        $hint = \reset($children);
+    }
+
+    return new Type\Template\TemplateArgumentNode(
+        $type,
+        $hint,
+        $attributes,
+    );
+}
+  : AttributeGroupsList()? (
+      TemplateHintedArgument()
+      | TemplateSimpleArgument()
+    )
+  ;
+
+TemplateSimpleArgument
+  : Type()
+  ;
+
+TemplateHintedArgument
+  : IdentifierWithExtraSpace() Type()
+  ;

@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Parser\Internal\Tracing\Result;
+
+use Phplrt\Contracts\Lexer\TokenInterface;
+
+/**
+ * A successful recognition result: the parse tree.
+ *
+ * @internal this is an internal library class, please do not use it in your code
+ * @psalm-internal Phplrt\Parser\Internal\Tracing
+ */
+final class Success extends Result
+{
+    public function __construct(
+        /**
+         * The recognized rules in the order they have been applied.
+         *
+         * A token stands for itself, a positive number is the identifier of the
+         * rule the analysis enters and a negative one is the identifier of the
+         * rule it leaves, decreased by one.
+         *
+         * @var array<int<0, max>, int|TokenInterface>
+         */
+        public array $entries,
+        /**
+         * The number of meaningful entries. Anything beyond it must be ignored.
+         *
+         * @var int<0, max>
+         */
+        public int $length,
+        /**
+         * The token the recognition stopped at.
+         *
+         * The whole input is recognized only in case this is the terminal
+         * token, so anything else is the beginning of the fragment the grammar
+         * says nothing about.
+         */
+        public TokenInterface $stoppedAt,
+        /**
+         * The furthest the recognition has reached, which is not where it has
+         * stopped, or {@see null} in case of the input has been recognized in
+         * full.
+         */
+        public ?Failure $furthest = null,
+    ) {}
+}

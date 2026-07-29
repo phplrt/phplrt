@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Lexer\Tests;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
+use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
+use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
  * Note: Changing the behavior of these tests is allowed ONLY when updating
@@ -13,24 +18,50 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  */
 class CompatibilityTest extends TestCase
 {
+    #[DoesNotPerformAssertions]
     public function testLexerCompatibility(): void
     {
-        self::expectNotToPerformAssertions();
-
         new class () implements LexerInterface {
-            public function lex(mixed $source): iterable {}
+            public function lex(mixed $source, int $offset = 0): iterable
+            {
+                return [];
+            }
         };
     }
 
+    #[DoesNotPerformAssertions]
     public function testTokenCompatibility(): void
     {
-        self::expectNotToPerformAssertions();
-
         new class () implements TokenInterface {
-            public function getName(): string {}
-            public function getOffset(): int {}
-            public function getValue(): string {}
-            public function getBytes(): int {}
+            public int $id;
+            public ?string $name;
+            public ChannelInterface $channel;
+            public ReadableInterface $source;
+            public int $offset;
+            public int $size;
+            public string $value;
+            public int $bytes;
+
+            public function __toString(): string
+            {
+                return '';
+            }
+        };
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testLexerExceptionCompatibility(): void
+    {
+        new class extends \Exception implements LexerExceptionInterface {};
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testLexerRuntimeExceptionCompatibility(): void
+    {
+        new class extends \Exception implements RuntimeExceptionInterface
+        {
+            public ReadableInterface $source;
+            public TokenInterface $token;
         };
     }
 }

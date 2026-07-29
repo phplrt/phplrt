@@ -26,7 +26,24 @@ promptly addressed.
 
 ## Coding Style
 
-phplrt follows the PSR-12 coding standard and the PSR-4 autoloading standard.
+phplrt follows the [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/)
+and the PSR-4 autoloading standard. The rules are enforced by
+[php-cs-fixer](https://cs.symfony.com/), so you do not have to apply them by
+hand:
+
+```bash
+composer phpcs:check   # check the code style
+composer phpcs:fix     # fix what can be fixed
+```
+
+The rest of the toolchain, all runnable from the repository root:
+
+```bash
+composer test:unit     # run the test suite
+composer linter:check  # static analysis
+```
+
+New behaviour needs a test; a bug fix needs a test that fails without it.
 
 ## Code of Conduct
 

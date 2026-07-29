@@ -19,44 +19,36 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          # Kernel Libraries
-          - local_path: 'compiler'
-            split_repository: 'compiler'
-          - local_path: 'buffer'
-            split_repository: 'buffer'
-          - local_path: 'exception'
-            split_repository: 'exception'
-          - local_path: 'lexer'
+          # Components
+          - local_path: 'libs/components/lexer'
             split_repository: 'lexer'
-          - local_path: 'parser'
+          - local_path: 'libs/components/compiler'
+            split_repository: 'compiler'
+          - local_path: 'libs/components/exception'
+            split_repository: 'exception'
+          - local_path: 'libs/components/lexer-builder'
+            split_repository: 'lexer-builder'
+          - local_path: 'libs/components/parser'
             split_repository: 'parser'
-          - local_path: 'position'
-            split_repository: 'position'
-          - local_path: 'source'
+          - local_path: 'libs/components/parser-builder'
+            split_repository: 'parser-builder'
+          - local_path: 'libs/components/source'
             split_repository: 'source'
-          - local_path: 'visitor'
-            split_repository: 'visitor'
           # Contracts
-          - local_path: 'contracts/ast'
-            split_repository: 'ast-contracts'
-          - local_path: 'contracts/exception'
-            split_repository: 'exception-contracts'
-          - local_path: 'contracts/lexer'
+          - local_path: 'libs/contracts/lexer'
             split_repository: 'lexer-contracts'
-          - local_path: 'contracts/parser'
+          - local_path: 'libs/contracts/parser'
             split_repository: 'parser-contracts'
-          - local_path: 'contracts/position'
-            split_repository: 'position-contracts'
-          - local_path: 'contracts/source'
+          - local_path: 'libs/contracts/source'
             split_repository: 'source-contracts'
           # Metadata
-          - local_path: 'meta/runtime'
+          - local_path: 'libs/meta/runtime'
             split_repository: 'runtime'
           # Documentation
-          - local_path: '../docs'
+          - local_path: 'docs'
             split_repository: 'docs'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # no tag
       - if: "!startsWith(github.ref, 'refs/tags/')"
@@ -66,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           branch: "master"
-          package_directory: 'libs/${{ matrix.package.local_path }}'
+          package_directory: '${{ matrix.package.local_path }}'
           repository_organization: 'phplrt'
           repository_name: '${{ matrix.package.split_repository }}'
           user_name: "SerafimArts"
@@ -81,7 +73,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
           branch: "master"
-          package_directory: 'libs/${{ matrix.package.local_path }}'
+          package_directory: '${{ matrix.package.local_path }}'
           repository_organization: 'phplrt'
           repository_name: '${{ matrix.package.split_repository }}'
           user_name: "SerafimArts"

@@ -1,0 +1,4 @@
+{% for id, definition in parser.reducers %}
+
+{{ method(definition, id, methods[id]) }}
+{% endfor %}

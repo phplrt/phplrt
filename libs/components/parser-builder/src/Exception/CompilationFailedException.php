@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Parser\Builder\Exception;
+
+use Phplrt\Parser\Builder\Definition\Definition;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
+
+class CompilationFailedException extends ParserCompilerException
+{
+    public function __construct(
+        public Definition $definition,
+        string $message,
+        int $code = 0,
+        ?\Throwable $previous = null,
+    ) {
+        parent::__construct($message, $definition->context, $code, $previous);
+    }
+
+    public static function becauseRuleIsEmpty(RuleDefinition $rule): self
+    {
+        $template = 'Rule %s must refer to at least one rule';
+
+        return new self($rule, \sprintf($template, $rule));
+    }
+
+    public static function becauseTokenIsUnknown(RuleDefinition $rule): self
+    {
+        $template = 'Rule %s refers to the token, which is not recognized by the lexer';
+
+        return new self($rule, \sprintf($template, $rule));
+    }
+}

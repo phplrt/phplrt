@@ -7,9 +7,11 @@ namespace Phplrt\Contracts\Source;
 interface FileInterface extends ReadableInterface
 {
     /**
-     * Returns the physical path to the source file.
+     * Gets the physical path to the source file.
      *
-     * @return non-empty-string
+     * @var non-empty-string
      */
-    public function getPathname(): string;
+    public string $pathname {
+        get;
+    }
 }

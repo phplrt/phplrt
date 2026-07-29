@@ -1,8 +1,16 @@
-.idea/
-vendor/
-composer.phar
-composer.lock
-.phpunit.result.cache
+# IDE
+/.idea
+/.cursor
+
+# Composer
+/composer.phar
+/composer.lock
+/vendor
+/libs.old
+
+# Testing
+/bench.php
+
+# Common
 .DS_Store
 Thumbs.db
-/test.php

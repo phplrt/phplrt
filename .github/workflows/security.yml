@@ -1,10 +1,8 @@
-name: security
+name: Security
 
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -17,17 +15,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.3' ]
+        php: [ '8.5' ]
         os: [ ubuntu-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+      - name: Set Git To Use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2
-          coverage: none
+      - name: Validate Composer
+        run: composer validate
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -38,10 +40,12 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Install Dependencies
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Execute Security Audit
-        run: composer audit
+      - name: Composer Audit
+        run: composer audit --abandoned=ignore
+      - name: Security Advisories
+        run: composer require --dev roave/security-advisories:dev-latest

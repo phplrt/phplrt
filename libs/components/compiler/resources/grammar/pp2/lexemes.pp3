@@ -1,0 +1,32 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes Of The PP2 Format
+ * -----------------------------------------------------------------------------
+ *
+ *  What this format spells in a way of its own: a token names the state it
+ *  switches to, a reducer may be written as a class name, a rule is separated
+ *  from what it recognizes by any of three spellings, and a rule may be marked
+ *  as kept with a "#".
+ *
+ */
+
+/**
+ * The declaration of a token: the state it belongs to, its name, its pattern
+ * and the state it switches to.
+ *
+ * A declaration is read as a single token whose subgroups capture its parts, so
+ * which value is which is decided by its position rather than by its content.
+ */
+%token T_TOKEN            %token\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+(\S++))?
+%token T_SKIP             %skip\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+(\S++))?
+
+// A reducer written as code is told from a reducer written as a class name by
+// the brace, so the arrow alone always opens the latter
+%token T_ARROW            ->
+
+// The "::=" separator is spelled with the same colons a skipped token reference
+// is surrounded by
+%token T_DOUBLE_COLON     ::(?!=)
+%token T_EQ               ::=|:|=
+
+%token T_HASH             #

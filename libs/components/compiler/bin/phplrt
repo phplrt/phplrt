@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Phplrt\Compiler\Command\GrammarCheckCommand;
+use Phplrt\Compiler\Command\GrammarCompileCommand;
+use Symfony\Component\Console\Application;
+
+require __DIR__ . '/bootstrap.php';
+
+$app = new Application(PHPLRT_NAME, PHPLRT_VERSION);
+$app->addCommand(new GrammarCompileCommand());
+$app->addCommand(new GrammarCheckCommand());
+
+exit($app->run());

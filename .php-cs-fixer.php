@@ -1,30 +1,44 @@
 <?php
 
-$files = PhpCsFixer\Finder::create()
-    ->in([
-        __DIR__ . '/libs/contracts/ast/src',
-        __DIR__ . '/libs/contracts/exception/src',
-        __DIR__ . '/libs/contracts/lexer/src',
-        __DIR__ . '/libs/contracts/parser/src',
-        __DIR__ . '/libs/contracts/position/src',
-        __DIR__ . '/libs/contracts/source/src',
-        __DIR__ . '/libs/buffer/src',
-        __DIR__ . '/libs/compiler/src',
-        __DIR__ . '/libs/exception/src',
-        __DIR__ . '/libs/lexer/src',
-        __DIR__ . '/libs/parser/src',
-        __DIR__ . '/libs/position/src',
-        __DIR__ . '/libs/source/src',
-        __DIR__ . '/libs/visitor/src',
-    ])
-    ->exclude([
-        __DIR__ . '/libs/compiler/src/Grammar',
-    ]);
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
-return (new PhpCsFixer\Config())
+const DIR_INCLUDE = [
+    // Components
+    __DIR__ . '/libs/components/compiler/src',
+    __DIR__ . '/libs/components/exception/src',
+    __DIR__ . '/libs/components/lexer/src',
+    __DIR__ . '/libs/components/lexer-builder/src',
+    __DIR__ . '/libs/components/parser/src',
+    __DIR__ . '/libs/components/parser-builder/src',
+    __DIR__ . '/libs/components/source/src',
+    // Contracts
+    __DIR__ . '/libs/contracts/lexer/src',
+    __DIR__ . '/libs/contracts/parser/src',
+    __DIR__ . '/libs/contracts/source/src',
+];
+
+const DIR_EXCLUDE = [];
+
+const FILE_EXCLUDE = [];
+
+$files = Finder::create()
+    ->in(DIR_INCLUDE)
+    ->exclude(DIR_EXCLUDE)
+    ->filter(static fn(SplFileInfo $file): bool => !in_array(
+        needle: realpath($file->getPathname()),
+        haystack: array_map(realpath(...), FILE_EXCLUDE),
+        strict: true
+    ))
+;
+
+return new Config()
+    ->setUnsupportedPhpVersionAllowed(true)
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
-        '@PER-CS2.0' => true,
-        '@PER-CS2.0:risky' => true,
+        '@PER-CS3x0' => true,
+        '@PER-CS3x0:risky' => true,
         'strict_param' => true,
         'align_multiline_comment' => true,
         'array_syntax' => [
@@ -50,7 +64,9 @@ return (new PhpCsFixer\Config())
         'clean_namespace' => true,
         'declare_parentheses' => true,
         'echo_tag_syntax' => true,
-        'empty_loop_body' => ['style' => 'braces'],
+        'empty_loop_body' => [
+            'style' => 'semicolon',
+        ],
         'empty_loop_condition' => true,
         'fully_qualified_strict_types' => true,
         'general_phpdoc_tag_rename' => [
@@ -78,7 +94,6 @@ return (new PhpCsFixer\Config())
         'no_blank_lines_after_phpdoc' => true,
         'no_empty_comment' => true,
         'no_empty_phpdoc' => true,
-        'no_empty_statement' => true,
         'no_extra_blank_lines' => [
             'tokens' => [
                 'attribute',
@@ -161,7 +176,6 @@ return (new PhpCsFixer\Config())
                 'api',
                 'internal',
                 'psalm-internal',
-                'template',
                 'template-extends',
                 'extends',
                 'template-implements',
@@ -193,20 +207,39 @@ return (new PhpCsFixer\Config())
                     'property-read',
                     'property-write',
                 ],
-                ['internal', 'psalm-internal', 'phpstan-internal'],
+                [
+                    'internal',
+                    'psalm-internal',
+                    'phpstan-internal',
+                ],
                 [
                     'template',
+                    'template-covariant',
+                    'template-contravariant',
+                    // function annotations
+                    'psalm-taint-sink',
+                    'param',
+                    'phpstan-param',
+                    'psalm-param',
+                    'phpstan-return',
+                    'psalm-return',
+                    'return',
+                    'throws'
+                ],
+                [
                     'template-extends',
                     'extends',
                     'template-implements',
                     'implements',
+                ],
+                [
                     'psalm-require-implements',
                     'phpstan-require-implements',
+                    'require-implements',
                     'psalm-require-extends',
                     'phpstan-require-extends',
+                    'require-extends',
                 ],
-                ['psalm-taint-sink', 'param'],
-                ['return', 'throws'],
                 ['psalm-suppress'],
             ],
         ],
@@ -246,14 +279,14 @@ return (new PhpCsFixer\Config())
             'stick_comment_to_next_continuous_control_statement' => true,
         ],
         'switch_continue_to_break' => true,
-        // PHP 7.4 doesn't support this rule.
-        'trailing_comma_in_multiline' => false,
+        'trailing_comma_in_multiline' => true,
         'trim_array_spaces' => true,
         'type_declaration_spaces' => true,
         'types_spaces' => true,
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
         'yoda_style' => false,
+        'new_expression_parentheses' => true,
     ])
-    ->setCacheFile(__DIR__ . '/vendor/.php-cs-fixer.cache')
+    ->setCacheFile(__DIR__ . '/vendor/.cache.php-cs-fixer')
     ->setFinder($files);

@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         colors="true"
          backupGlobals="true"
          bootstrap="vendor/autoload.php"
-         colors="true"
-         processIsolation="false"
-         stopOnFailure="false"
+         cacheDirectory="vendor/.cache.phpunit"
 >
-  <php>
-    <ini name="error_reporting" value="-1"/>
-    <ini name="memory_limit" value="-1"/>
-  </php>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="memory_limit" value="-1"/>
+        <env name="NO_COLOR" value="1"/>
+    </php>
 
-  <testsuites>
-    <testsuite name="unit">
-      <directory>libs/*/tests/Unit</directory>
-      <directory>libs/contracts/*/tests</directory>
-    </testsuite>
-    <testsuite name="functional">
-      <directory>libs/*/tests/Functional</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="components">
+            <directory>libs/components/*/tests</directory>
+        </testsuite>
+        <testsuite name="contracts">
+            <directory>libs/contracts/*/tests</directory>
+        </testsuite>
+    </testsuites>
 
-  <coverage/>
+    <coverage/>
 
-  <source>
-    <include>
-      <directory suffix=".php">libs/*/src</directory>
-      <directory suffix=".php">libs/contracts/*/src</directory>
-    </include>
-  </source>
+    <source>
+        <include>
+            <directory suffix=".php">libs/**/src</directory>
+        </include>
+    </source>
 </phpunit>

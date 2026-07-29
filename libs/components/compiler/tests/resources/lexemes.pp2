@@ -1,0 +1,3 @@
+%token  T_NUMBER        \d++
+%token  T_PLUS          \+
+%skip   T_WHITESPACE    \s++

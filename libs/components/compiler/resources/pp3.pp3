@@ -1,0 +1,37 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  The PP3 Grammar Format, Written In PP3
+ * -----------------------------------------------------------------------------
+ *
+ *  This is the format the compiler reads today, described in the very format it
+ *  describes.
+ *
+ *  Reading a grammar file needs a parser, so the parser of a format cannot be
+ *  built from the grammar describing it while it runs: it is generated into
+ *  "src/Syntax/PP3/PP3Parser.php" ahead of time and is committed along with
+ *  this file. Run "composer dev:syntax" after changing anything here.
+ *
+ *  Everything a rule is turned into is written in the rule itself, and every
+ *  class it names is named in full: the very same body is written into the
+ *  generated parser and is evaluated as it is alike, and only one of the two
+ *  places knows what this file imports.
+ *
+ */
+
+%include grammar/lexemes            // The tokens both formats read alike
+%include grammar/pp3/lexemes        // The tokens of this format
+
+%include grammar/directives         // %pragma, %include
+%include grammar/pp3/declarations   // %token, %lexer, a rule of the parser
+%include grammar/reducers           // -> { ... }
+%include grammar/statements         // What a rule recognizes
+%include grammar/pp3/statements     // &Number(), !Number()
+%include grammar/quantifiers        // How many times a statement repeats
+
+%pragma root Grammar
+
+/**
+ * A grammar file is a list of declarations, each of them written either as a
+ * "%" directive or as a rule of the parser.
+ */
+Grammar : Declaration()* ;

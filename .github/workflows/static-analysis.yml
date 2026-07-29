@@ -1,4 +1,4 @@
-name: static-analysis
+name: Static Analysis
 
 on:
   push:
@@ -9,28 +9,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-
-  # ----------------------------------------------------------------------------
-  #   Static Analysis
-  # ----------------------------------------------------------------------------
-
-  linter:
+  phpstan:
     name: Linter
     runs-on: ${{ matrix.os }}
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.3' ]
+        php: [ '8.5' ]
         os: [ ubuntu-latest ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+      - name: Set Git To Use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2
+      - name: Validate Composer
+        run: composer validate
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -41,51 +41,10 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Install Dependencies
-        uses: nick-invision/retry@v3
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Execute Static Analysis
+      - name: Static Analysis
         run: composer linter:check -- --error-format=github
-
-  # ----------------------------------------------------------------------------
-  #   Rector
-  # ----------------------------------------------------------------------------
-
-  rector:
-    name: Rector
-    runs-on: ${{ matrix.os }}
-    continue-on-error: true # ALLOW FAIL
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
-    strategy:
-      fail-fast: false
-      matrix:
-        php: [ '8.3' ]
-        os: [ ubuntu-latest ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: composer:v2
-          coverage: none
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Restore Composer Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
-      - name: Install Dependencies
-        uses: nick-invision/retry@v3
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Check Rector
-        run: composer rector:check

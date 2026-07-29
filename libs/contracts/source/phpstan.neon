@@ -1,12 +1,6 @@
-includes:
-  - phar://phpstan.phar/conf/bleedingEdge.neon
 parameters:
-  level: 1
-  strictRules:
-    allRules: true
+  level: max
   fileExtensions:
     - php
   paths:
     - src
-  tmpDir: vendor/.cache.phpstan
-  reportUnmatchedIgnoredErrors: false

@@ -1,0 +1,15 @@
+lexer: {{ include('lexer.php.twig', {lexer: lexer, name: null, path: ''})|trim }},
+grammar: {{ include('parser/grammar.php.twig')|trim }},
+initial: {{ parser.initial }},
+{% if parser.reducers is not empty %}
+reducers: {{ include('parser/reducers.php.twig')|trim }},
+{% endif %}
+{% if parser.startTokens is not empty %}
+startTokens: {{ value(parser.startTokens) }},
+{% endif %}
+{% if parser.matchesEmptyInput is not empty %}
+matchesEmptyInput: {{ value(parser.matchesEmptyInput) }},
+{% endif %}
+{% if parser.presentInTree is not empty %}
+presentInTree: {{ value(parser.presentInTree) }},
+{% endif %}

@@ -1,0 +1,5 @@
+[
+{% for id, definition in parser.reducers %}
+    {{ id }} => {{ callback(definition, id, methods[id]) }},
+{% endfor %}
+]

@@ -1,0 +1,1 @@
+%token T_ANY .
