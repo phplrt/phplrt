@@ -137,7 +137,17 @@ final class GrammarCompileCommand extends Command
             return [];
         }
 
-        return $imports;
+        $result = [];
+
+        foreach ($imports as $import) {
+            if (!\is_string($import) || $import === '') {
+                continue;
+            }
+
+            $result[] = $import;
+        }
+
+        return $result;
     }
 
     public function __invoke(InputInterface $input, OutputInterface $output): int
