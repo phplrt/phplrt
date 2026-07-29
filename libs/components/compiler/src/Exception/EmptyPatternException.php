@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Exception;
 
 use Phplrt\Compiler\Node\Statement\InlinePattern;
+use Phplrt\Compiler\Node\Statement\InlineValue;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -17,7 +18,7 @@ final class EmptyPatternException extends CompilerRuntimeException
 {
     public static function becausePatternIsEmpty(
         ReadableInterface $source,
-        InlinePattern $statement,
+        InlinePattern|InlineValue $statement,
         ?\Throwable $previous = null,
     ): self {
         $message = 'A token recognizing nothing cannot be declared';

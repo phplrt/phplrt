@@ -16,6 +16,7 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\UserDefinedChannel;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\PhpCodeEmbeddedLexer;
+use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
@@ -285,6 +286,89 @@ final class PP3LoaderTest extends TestCase
         $this->expectException(UnexpectedTokenException::class);
 
         $this->load("%token T_QUOTE \" -> string\n%token string:T_TEXT [^\"]++");
+    }
+
+    #[TestDox('An expression beginning with an arrow is still read as an expression')]
+    public function testPatternBeginningWithAnArrow(): void
+    {
+        $this->load('%token T_PHP ->\\s*+(?=\\{) -> state(php)');
+
+        [$php] = \array_values($this->lexer->tokens);
+
+        self::assertInstanceOf(RegexTokenDefinition::class, $php);
+        self::assertSame('->\\s*+(?=\\{)', $php->regex);
+        self::assertSame(TransitionType::Enter, $php->transition?->type);
+    }
+
+    #[TestDox('An expression spelled like a name is still read as an expression')]
+    public function testPatternSpelledLikeAName(): void
+    {
+        $this->load("%token T_TRUE true -> channel(literals)\n%token T_FALSE false");
+
+        [$true, $false] = \array_values($this->lexer->tokens);
+
+        self::assertInstanceOf(RegexTokenDefinition::class, $true);
+        self::assertSame('true', $true->regex);
+        self::assertInstanceOf(RegexTokenDefinition::class, $false);
+        self::assertSame('false', $false->regex);
+    }
+
+    #[TestDox('A part of a declaration written twice is reported')]
+    public function testDeclarationWrittenTwiceIsReported(): void
+    {
+        $this->expectException(UnexpectedTokenException::class);
+
+        $this->load('%token T_A a b');
+    }
+
+    #[TestDox('A statement written of a value declares the token reading exactly it')]
+    public function testInlineValue(): void
+    {
+        $result = $this->build(<<<'PP3'
+            %token T_NUMBER \d++
+
+            Sum -> { return (int) $children[0]->value + (int) $children[1]->value; }
+              : <T_NUMBER> "+" <T_NUMBER>
+              ;
+            PP3);
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        // The value is read as it is written, so the "+" of a regular
+        // expression is only a plus sign here
+        self::assertSame(3, $parser->parse(new Source('1+2')));
+    }
+
+    #[TestDox('A statement written of an expression declares the token recognizing it')]
+    public function testInlinePattern(): void
+    {
+        $result = $this->build(<<<'PP3'
+            %skip  T_WHITESPACE \s++
+            %token T_NUMBER     \d++
+
+            Expr -> { return \count($children); }
+              : <T_NUMBER> /and|or|xor/ <T_NUMBER>
+              ;
+            PP3);
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        self::assertSame(2, $parser->parse(new Source('1 and 2')));
+        self::assertSame(2, $parser->parse(new Source('1 xor 2')));
+    }
+
+    #[TestDox('The same value written in several rules declares a single token')]
+    public function testInlineValueIsDeclaredOnce(): void
+    {
+        $this->load(<<<'PP3'
+            %token T_NUMBER \d++
+
+            A : <T_NUMBER> "+" <T_NUMBER> ;
+            B : "+" <T_NUMBER> ;
+            PP3);
+
+        // The named token and the single one both rules have declared
+        self::assertCount(2, $this->lexer->tokens);
     }
 
     #[TestDox('A token declared for every state is added to each of them')]

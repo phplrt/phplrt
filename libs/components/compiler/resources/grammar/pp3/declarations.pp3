@@ -21,65 +21,98 @@ Declaration
  *  - %token string:T_QUOTE " -> state(string), channel(strings)
  *  - %skip *:T_WHITESPACE \s++
  *
- *  A declaration is read as a single token whose subgroups capture its parts,
- *  so which value is which is decided by its position: the state it belongs to,
- *  its name, its pattern and everything it does to the reading.
+ *  The declaration is read by a lexer of its own, so it arrives here as the
+ *  parts it is written of rather than as a single value: the state the token
+ *  belongs to, its name, the expression recognizing it and everything it does
+ *  to the reading. Each of them is a token, so each of them is pointed at by
+ *  the place it is written at.
  *
  *  A token that is read but never reaches the parser is declared with "%skip"
  *  instead of "%token", and nothing else about it differs.
  *
- *  The actions are captured as a single value, so they are told apart here, and
- *  every one of them is pointed at by the place it is written at: the arrow is
- *  what the actions of a declaration begin after, and nothing but an action may
- *  be written past it.
+ *  Everything the token does is read as a single part, because a lexer reading
+ *  one action at a time could not tell an action from an expression spelled
+ *  like one. They are told apart here.
  */
 TokenDeclaration -> {
-    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+    \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
 
-    $name = $children->captures[1] ?? '';
-    $pattern = $children->captures[2] ?? '';
-
-    if ($name === '' || $pattern === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
-    }
-
-    $state = $children->captures[0] ?? '';
+    $state = null;
+    $name = null;
+    $pattern = null;
     $actions = [];
 
-    if (($children->captures[3] ?? '') !== '') {
-        $arrow = \strrpos($children->value, '->');
+    foreach ($children->children as $part) {
+        // A declaration is written of each part at most once, so anything
+        // written twice is pointed at where it is written
+        switch ($part->name) {
+            case 'T_STATE':
+                if ($state !== null) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                }
 
-        // A declaration carrying an action is always written of an arrow, so
-        // the declaration itself is only pointed at in theory
-        $start = $arrow === false ? 0 : $arrow;
+                $state = \substr($part->value, 0, -1);
 
-        \preg_match_all(
-            pattern: '/([a-zA-Z_][a-zA-Z0-9_]*+)\h*+\(\h*+([a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)/',
-            subject: \substr($children->value, $start),
-            matches: $matches,
-            flags: \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE,
-        );
+                break;
 
-        foreach ($matches as $match) {
-            [$action, $at] = $match[0];
+            case 'T_NAME':
+                if ($name !== null) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                }
 
-            $word = $match[1][0];
-            $argument = $match[2][0] ?? '';
+                $name = $part->value;
 
-            $actions[] = new \Phplrt\Compiler\Node\Declaration\TokenAction(
-                name: $word,
-                argument: $argument === '' ? null : $argument,
-                offset: \max(0, $children->offset + $start + $at),
-                length: \strlen($action),
-            );
+                break;
+
+            case 'T_PATTERN':
+                if ($pattern !== null) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                }
+
+                $pattern = $part->value;
+
+                break;
+
+            case 'T_ACTIONS':
+                if ($actions !== []) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                }
+
+                \preg_match_all(
+                    pattern: '/([a-zA-Z_][a-zA-Z0-9_]*+)\h*+\(\h*+([a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)/',
+                    subject: $part->value,
+                    matches: $matches,
+                    flags: \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE,
+                );
+
+                foreach ($matches as $match) {
+                    [$action, $at] = $match[0];
+
+                    $argument = $match[2][0] ?? '';
+
+                    $actions[] = new \Phplrt\Compiler\Node\Declaration\TokenAction(
+                        name: $match[1][0],
+                        argument: $argument === '' ? null : $argument,
+                        offset: \max(0, $part->offset + $at),
+                        length: \strlen($action),
+                    );
+                }
+
+                break;
         }
+    }
+
+    // A declaration written of anything but a name and an expression describes
+    // no token at all
+    if ($name === null || $name === '' || $pattern === null || $pattern === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
     }
 
     return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
         name: $name,
         pattern: $pattern,
         state: $state === '' ? null : $state,
-        isHidden: \str_starts_with($children->value, '%skip'),
+        isHidden: $children->value === '%skip',
         actions: $actions,
         offset: $children->offset,
         length: \max(0, $children->end - $children->offset),

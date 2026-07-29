@@ -9,6 +9,6 @@ use Phplrt\Compiler\Node\Node;
 /**
  * A part of what a rule of the parser recognizes.
  *
- * @phpstan-sealed Alternation|Concatenation|InlinePattern|Predicate|Repetition|RuleReference|TokenReference
+ * @phpstan-sealed Alternation|Concatenation|InlinePattern|InlineValue|Predicate|Repetition|RuleReference|TokenReference
  */
 abstract readonly class Statement extends Node {}

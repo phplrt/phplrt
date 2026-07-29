@@ -20,6 +20,7 @@ use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Node\Statement\Alternation;
 use Phplrt\Compiler\Node\Statement\Concatenation;
 use Phplrt\Compiler\Node\Statement\InlinePattern;
+use Phplrt\Compiler\Node\Statement\InlineValue;
 use Phplrt\Compiler\Node\Statement\Predicate;
 use Phplrt\Compiler\Node\Statement\Repetition;
 use Phplrt\Compiler\Node\Statement\RuleReference;
@@ -29,6 +30,7 @@ use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
+use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
@@ -464,6 +466,7 @@ class PP2Loader implements SyntaxLoaderInterface
             $statement instanceof TokenReference => $parser->addTokenReference($statement->name)
                 ->setKept($statement->isKept),
             $statement instanceof InlinePattern => $this->createInlinePattern($statement, $source, $parser, $lexer),
+            $statement instanceof InlineValue => $this->createInlineValue($statement, $source, $parser, $lexer),
         };
     }
 
@@ -534,6 +537,56 @@ class PP2Loader implements SyntaxLoaderInterface
          */
         return $parser->addTokenReference($token)
             ->skip();
+    }
+
+    /**
+     * Reads the token a rule declares by the text it recognizes.
+     *
+     * @throws CompilerRuntimeException
+     */
+    private function createInlineValue(
+        InlineValue $statement,
+        ReadableInterface $source,
+        ParserBuilder $parser,
+        LexerBuilder $lexer,
+    ): RuleDefinition {
+        $value = $statement->value;
+
+        if ($value === '') {
+            throw EmptyPatternException::becausePatternIsEmpty($source, $statement);
+        }
+
+        $token = $this->findInlineValue($lexer, $value);
+
+        if ($token === null) {
+            $token = $lexer->addValue($value);
+            $token->setSource($source, $statement->offset, $statement->length);
+        }
+
+        /**
+         * Such a token stands for the punctuation a rule reads but says
+         * nothing about, so it is never kept in the tree.
+         */
+        return $parser->addTokenReference($token)
+            ->skip();
+    }
+
+    /**
+     * Returns the token another rule has already declared by the very same
+     * text, so that the same punctuation is read by a single token.
+     */
+    private function findInlineValue(LexerBuilder $lexer, string $value): ?ValueTokenDefinition
+    {
+        foreach ($lexer->tokens as $token) {
+            if ($token instanceof ValueTokenDefinition
+                && $token->name === null
+                && $token->value === $value
+            ) {
+                return $token;
+            }
+        }
+
+        return null;
     }
 
     /**

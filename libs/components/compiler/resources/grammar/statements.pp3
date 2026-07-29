@@ -111,12 +111,16 @@ Suffixed -> {
   : Primary() Quantifier()?
   ;
 
+/**
+ * A token a rule declares on the spot is spelled differently by each format,
+ * so "Inline" is what a format defines on its own.
+ */
 Primary
   : Group()
   | KeptTokenReference()
   | SkippedTokenReference()
   | RuleReference()
-  | InlinePattern()
+  | Inline()
   ;
 
 /**
@@ -194,24 +198,4 @@ RuleReference -> {
     );
 }
   : <T_NAME> ::T_PARENTHESIS_OPEN:: ::T_PARENTHESIS_CLOSE::
-  ;
-
-/**
- * A token declared by the statement reading it, like:
- *  - "\+"
- *
- *  The quotes surrounding the pattern belong to the grammar rather than to the
- *  pattern itself, and a quote of the pattern is written escaped for the very
- *  same reason.
- */
-InlinePattern -> {
-    \assert($children instanceof \Phplrt\Lexer\Token\Token);
-
-    return new \Phplrt\Compiler\Node\Statement\InlinePattern(
-        pattern: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
-        offset: $children->offset,
-        length: \max(0, $children->end - $children->offset),
-    );
-}
-  : <T_STRING>
   ;

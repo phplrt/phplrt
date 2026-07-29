@@ -3,23 +3,19 @@
  *  Lexemes Of The PP3 Format
  * -----------------------------------------------------------------------------
  *
- *  What this format spells in a way of its own: a token says what it does by
- *  naming the action instead of naming the state it ends up in, a token may be
- *  declared for every state at once, a lexer may be written by hand, and a rule
- *  is separated from what it recognizes by a colon and nothing else.
+ *  What this format spells in a way of its own: the declaration of a token, the
+ *  separator of a rule, the predicates, and the token a rule declares by the
+ *  expression recognizing it.
  *
  */
 
 /**
- * The declaration of a token: the state it belongs to, its name, its pattern
- * and everything it does to the reading.
- *
- * The actions are captured the way they are written rather than one by one: a
- * subgroup captures a single value, while a token may do any number of things,
- * so telling them apart is left to the one reading the declaration.
+ * A token is declared on a line of its own and is read by a lexer of its own:
+ * the parts of a declaration are spelled in ways that only make sense next to
+ * each other, and none of them means anything anywhere else.
  */
-%token T_TOKEN            %token\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
-%token T_SKIP             %skip\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\h++(\S++)(?:\h++->\h*+([a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+))?
+%token T_TOKEN            %token(?=\h)  -> state(declaration)
+%token T_SKIP             %skip(?=\h)   -> state(declaration)
 
 // The code building a lexer is read by a lexer of its own, so the declaration
 // itself ends at the name of the state it reads
@@ -34,3 +30,43 @@
 // ahead for anything but it
 %token T_AMPERSAND        &
 %token T_EXCLAMATION      !
+
+/**
+ * A token a rule declares by the expression recognizing it. The comments are
+ * declared before it, so a slash still opens a comment where it always did.
+ */
+%token T_REGEX            /([^/\\]*+(?:\\.[^/\\]*+)*+)/
+
+/**
+ * -----------------------------------------------------------------------------
+ *  The Declaration Of A Token
+ * -----------------------------------------------------------------------------
+ *
+ *  Everything written after "%token" and "%skip", up to the end of the line:
+ *  the state the token belongs to, its name, the expression recognizing it and
+ *  everything it does to the reading.
+ *
+ *  The expression is written as it is, so it may be spelled exactly like any
+ *  other part of the declaration. Which part is which is therefore decided by
+ *  the place it is written at rather than by what it looks like:
+ *
+ *   - the actions are the only part written as an arrow followed by a call, so
+ *     they are recognized before anything else;
+ *   - the name is the only word followed by more of the declaration, so an
+ *     expression spelled like a word is not mistaken for it;
+ *   - whatever is left is the expression.
+ *
+ */
+
+%skip  declaration:T_HORIZONTAL_SPACE  \h++
+
+%token declaration:T_ACTIONS   ->\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+
+
+%token declaration:T_STATE     (?:[a-zA-Z_][a-zA-Z0-9_]*+|\*):
+
+%token declaration:T_NAME      [a-zA-Z_][a-zA-Z0-9_]*+(?=\h++(?!->\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\()(?![\r\n])(?!$))
+
+%token declaration:T_PATTERN   \S++
+
+// The declaration ends where the line does
+%token declaration:T_END       \R  -> exit()

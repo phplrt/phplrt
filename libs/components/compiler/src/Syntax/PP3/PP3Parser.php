@@ -38,19 +38,38 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
     public const int T_COLON = 25;
     public const int T_AMPERSAND = 26;
     public const int T_EXCLAMATION = 27;
+    public const int T_REGEX = 28;
 
     public function __construct()
     {
         $state_php = new \Phplrt\Compiler\Syntax\Common\PhpBlockLexer();
+        $state_declaration = new \Phplrt\Lexer\Lexer(
+            pattern: '/\\G(?|(?:(?:\\h++)(*MARK:0))|(?:(?:->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\)(?:\\h*+,\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\))*+)(*MARK:1))|(?:(?:(?:[a-zA-Z_][a-zA-Z0-9_]*+|\\*):)(*MARK:2))|(?:(?:[a-zA-Z_][a-zA-Z0-9_]*+(?=\\h++(?!->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\()(?![\\r\\n])(?!$)))(*MARK:3))|(?:(?:\\S++)(*MARK:4))|(?:(?:\\R)(*MARK:5))|(?:(?:[^\\s]++)(*MARK:6)))/Ssum',
+            channels: [
+                'Hidden',
+                6 => 'Unknown',
+            ],
+            names: [
+                'T_HORIZONTAL_SPACE',
+                'T_ACTIONS',
+                'T_STATE',
+                'T_NAME',
+                'T_PATTERN',
+                'T_END',
+            ],
+            transitions: [
+                5 => null,
+            ],
+        );
 
         parent::__construct(
             lexer: new \Phplrt\Lexer\Lexer(
-                pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:3))|(?:(?:%include\\h++(\\S++))(*MARK:4))|(?:(?:->\\s*+(?=\\{))(*MARK:5))|(?:(?:;)(*MARK:6))|(?:(?:\\|)(*MARK:7))|(?:(?:\\()(*MARK:8))|(?:(?:\\))(*MARK:9))|(?:(?:<)(*MARK:10))|(?:(?:>)(*MARK:11))|(?:(?:\\?)(*MARK:12))|(?:(?:\\+)(*MARK:13))|(?:(?:\\*)(*MARK:14))|(?:(?:\\{)(*MARK:15))|(?:(?:\\})(*MARK:16))|(?:(?:,)(*MARK:17))|(?:(?:\\d++)(*MARK:18))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:19))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:20))|(?:(?:%token\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+([a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\)(?:\\h*+,\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\))*+))?)(*MARK:21))|(?:(?:%skip\\h++(?:([a-zA-Z_][a-zA-Z0-9_]*+|\\*):)?([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(\\S++)(?:\\h++->\\h*+([a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\)(?:\\h*+,\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\))*+))?)(*MARK:22))|(?:(?:%lexer\\h++([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:23))|(?:(?:::)(*MARK:24))|(?:(?::)(*MARK:25))|(?:(?:&)(*MARK:26))|(?:(?:!)(*MARK:27))|(?:(?:[^\\s]++)(*MARK:28)))/Ssum',
+                pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:3))|(?:(?:%include\\h++(\\S++))(*MARK:4))|(?:(?:->\\s*+(?=\\{))(*MARK:5))|(?:(?:;)(*MARK:6))|(?:(?:\\|)(*MARK:7))|(?:(?:\\()(*MARK:8))|(?:(?:\\))(*MARK:9))|(?:(?:<)(*MARK:10))|(?:(?:>)(*MARK:11))|(?:(?:\\?)(*MARK:12))|(?:(?:\\+)(*MARK:13))|(?:(?:\\*)(*MARK:14))|(?:(?:\\{)(*MARK:15))|(?:(?:\\})(*MARK:16))|(?:(?:,)(*MARK:17))|(?:(?:\\d++)(*MARK:18))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:19))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:20))|(?:(?:%token(?=\\h))(*MARK:21))|(?:(?:%skip(?=\\h))(*MARK:22))|(?:(?:%lexer\\h++([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:23))|(?:(?:::)(*MARK:24))|(?:(?::)(*MARK:25))|(?:(?:&)(*MARK:26))|(?:(?:!)(*MARK:27))|(?:(?:\\/([^\\/\\\\]*+(?:\\\\.[^\\/\\\\]*+)*+)\\/)(*MARK:28))|(?:(?:[^\\s]++)(*MARK:29)))/Ssum',
                 channels: [
                     'Hidden',
                     'Hidden',
                     'Hidden',
-                    28 => 'Unknown',
+                    29 => 'Unknown',
                 ],
                 names: [
                     'T_WHITESPACE',
@@ -81,17 +100,19 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     'T_COLON',
                     'T_AMPERSAND',
                     'T_EXCLAMATION',
+                    'T_REGEX',
                 ],
                 transitions: [
                     5 => $state_php,
+                    21 => $state_declaration,
+                    22 => $state_declaration,
                 ],
                 subgroups: [
                     2 => 1,
                     2,
                     1,
-                    21 => 4,
-                    4,
-                    1,
+                    23 => 1,
+                    28 => 1,
                 ],
             ),
             grammar: [
@@ -105,18 +126,18 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 new \Phplrt\Parser\Grammar\Concatenation([8, 9]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LEXER, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PHP, true),
-                new \Phplrt\Parser\Grammar\Concatenation([11, 12, 13, 14, 51]),
+                new \Phplrt\Parser\Grammar\Concatenation([11, 12, 13, 14, 53]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NAME, true),
                 new \Phplrt\Parser\Grammar\Optional(9),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([15, 48]),
+                new \Phplrt\Parser\Grammar\Concatenation([15, 50]),
                 new \Phplrt\Parser\Grammar\Repetition(16, 1, \INF),
                 new \Phplrt\Parser\Grammar\Concatenation([17, 21]),
                 new \Phplrt\Parser\Grammar\Optional(18),
                 new \Phplrt\Parser\Grammar\Alternation([19, 20]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_AMPERSAND, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCLAMATION, true),
-                new \Phplrt\Parser\Grammar\Concatenation([22, 33]),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 35]),
                 new \Phplrt\Parser\Grammar\Alternation([23, 26, 29, 31, 32]),
                 new \Phplrt\Parser\Grammar\Concatenation([24, 14, 25]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_OPEN, false),
@@ -127,26 +148,28 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 new \Phplrt\Parser\Grammar\Concatenation([30, 11, 30]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DOUBLE_COLON, false),
                 new \Phplrt\Parser\Grammar\Concatenation([11, 24, 25]),
+                new \Phplrt\Parser\Grammar\Alternation([33, 34]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
-                new \Phplrt\Parser\Grammar\Optional(34),
-                new \Phplrt\Parser\Grammar\Alternation([35, 36, 37, 38]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_REGEX, true),
+                new \Phplrt\Parser\Grammar\Optional(36),
+                new \Phplrt\Parser\Grammar\Alternation([37, 38, 39, 40]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUESTION_MARK, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ASTERISK, true),
-                new \Phplrt\Parser\Grammar\Concatenation([39, 40, 47]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 42, 49]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_OPEN, false),
-                new \Phplrt\Parser\Grammar\Alternation([41, 44, 45, 46]),
-                new \Phplrt\Parser\Grammar\Concatenation([42, 43, 42]),
+                new \Phplrt\Parser\Grammar\Alternation([43, 46, 47, 48]),
+                new \Phplrt\Parser\Grammar\Concatenation([44, 45, 44]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
-                new \Phplrt\Parser\Grammar\Concatenation([42, 43]),
-                new \Phplrt\Parser\Grammar\Concatenation([43, 42]),
+                new \Phplrt\Parser\Grammar\Concatenation([44, 45]),
+                new \Phplrt\Parser\Grammar\Concatenation([45, 44]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Repetition(49, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([50, 15]),
+                new \Phplrt\Parser\Grammar\Repetition(51, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([52, 15]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(52),
+                new \Phplrt\Parser\Grammar\Optional(54),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
             ],
             initial: 0,
@@ -164,14 +187,15 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 26 => self::reduceKeptTokenReference(...),
                 29 => self::reduceSkippedTokenReference(...),
                 31 => self::reduceRuleReference(...),
-                32 => self::reduceInlinePattern(...),
-                35 => self::reduceZeroOrOne(...),
-                36 => self::reduceOneOrMore(...),
-                37 => self::reduceZeroOrMore(...),
-                41 => self::reduceRangeFromTo(...),
-                44 => self::reduceRangeFrom(...),
-                45 => self::reduceRangeTo(...),
-                46 => self::reduceRangeExactly(...),
+                33 => self::reduceInlineValue(...),
+                34 => self::reduceInlinePattern(...),
+                37 => self::reduceZeroOrOne(...),
+                38 => self::reduceOneOrMore(...),
+                39 => self::reduceZeroOrMore(...),
+                43 => self::reduceRangeFromTo(...),
+                46 => self::reduceRangeFrom(...),
+                47 => self::reduceRangeTo(...),
+                48 => self::reduceRangeExactly(...),
             ],
             startTokens: [
                 [
@@ -235,14 +259,6 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     24 => true,
                     26 => true,
                     true,
-                ],
-                [
-                    8 => true,
-                    10 => true,
-                    19 => true,
-                    true,
-                    24 => true,
-                    26 => true,
                     true,
                 ],
                 [
@@ -252,6 +268,17 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     true,
                     24 => true,
                     26 => true,
+                    true,
+                    true,
+                ],
+                [
+                    8 => true,
+                    10 => true,
+                    19 => true,
+                    true,
+                    24 => true,
+                    26 => true,
+                    true,
                     true,
                 ],
                 [
@@ -274,6 +301,7 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     19 => true,
                     true,
                     24 => true,
+                    28 => true,
                 ],
                 [
                     8 => true,
@@ -281,6 +309,7 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     19 => true,
                     true,
                     24 => true,
+                    28 => true,
                 ],
                 [
                     8 => true,
@@ -311,6 +340,13 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 ],
                 [
                     19 => true,
+                    28 => true,
+                ],
+                [
+                    19 => true,
+                ],
+                [
+                    28 => true,
                 ],
                 [
                     12 => true,
@@ -414,6 +450,8 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 false,
                 false,
                 false,
+                false,
+                false,
                 true,
                 false,
                 false,
@@ -468,6 +506,8 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 true,
                 false,
                 true,
+                false,
+                true,
                 true,
                 false,
                 false,
@@ -495,52 +535,84 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
 
     private static function reduceTokenDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+        \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
 
-        $name = $children->captures[1] ?? '';
-        $pattern = $children->captures[2] ?? '';
-
-        if ($name === '' || $pattern === '') {
-            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
-        }
-
-        $state = $children->captures[0] ?? '';
+        $state = null;
+        $name = null;
+        $pattern = null;
         $actions = [];
 
-        if (($children->captures[3] ?? '') !== '') {
-            $arrow = \strrpos($children->value, '->');
+        foreach ($children->children as $part) {
+            // A declaration is written of each part at most once, so anything
+            // written twice is pointed at where it is written
+            switch ($part->name) {
+                case 'T_STATE':
+                    if ($state !== null) {
+                        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    }
 
-            // A declaration carrying an action is always written of an arrow, so
-            // the declaration itself is only pointed at in theory
-            $start = $arrow === false ? 0 : $arrow;
+                    $state = \substr($part->value, 0, -1);
 
-            \preg_match_all(
-                pattern: '/([a-zA-Z_][a-zA-Z0-9_]*+)\h*+\(\h*+([a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)/',
-                subject: \substr($children->value, $start),
-                matches: $matches,
-                flags: \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE,
-            );
+                    break;
 
-            foreach ($matches as $match) {
-                [$action, $at] = $match[0];
+                case 'T_NAME':
+                    if ($name !== null) {
+                        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    }
 
-                $word = $match[1][0];
-                $argument = $match[2][0] ?? '';
+                    $name = $part->value;
 
-                $actions[] = new \Phplrt\Compiler\Node\Declaration\TokenAction(
-                    name: $word,
-                    argument: $argument === '' ? null : $argument,
-                    offset: \max(0, $children->offset + $start + $at),
-                    length: \strlen($action),
-                );
+                    break;
+
+                case 'T_PATTERN':
+                    if ($pattern !== null) {
+                        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    }
+
+                    $pattern = $part->value;
+
+                    break;
+
+                case 'T_ACTIONS':
+                    if ($actions !== []) {
+                        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    }
+
+                    \preg_match_all(
+                        pattern: '/([a-zA-Z_][a-zA-Z0-9_]*+)\h*+\(\h*+([a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)/',
+                        subject: $part->value,
+                        matches: $matches,
+                        flags: \PREG_SET_ORDER | \PREG_OFFSET_CAPTURE,
+                    );
+
+                    foreach ($matches as $match) {
+                        [$action, $at] = $match[0];
+
+                        $argument = $match[2][0] ?? '';
+
+                        $actions[] = new \Phplrt\Compiler\Node\Declaration\TokenAction(
+                            name: $match[1][0],
+                            argument: $argument === '' ? null : $argument,
+                            offset: \max(0, $part->offset + $at),
+                            length: \strlen($action),
+                        );
+                    }
+
+                    break;
             }
+        }
+
+        // A declaration written of anything but a name and an expression describes
+        // no token at all
+        if ($name === null || $name === '' || $pattern === null || $pattern === '') {
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
         }
 
         return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
             name: $name,
             pattern: $pattern,
             state: $state === '' ? null : $state,
-            isHidden: \str_starts_with($children->value, '%skip'),
+            isHidden: $children->value === '%skip',
             actions: $actions,
             offset: $children->offset,
             length: \max(0, $children->end - $children->offset),
@@ -814,12 +886,23 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
         );
     }
 
+    private static function reduceInlineValue(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\InlineValue(
+            value: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
+            offset: $children->offset,
+            length: \max(0, $children->end - $children->offset),
+        );
+    }
+
     private static function reduceInlinePattern(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
 
         return new \Phplrt\Compiler\Node\Statement\InlinePattern(
-            pattern: \str_replace('\\"', '"', \substr($children->value, 1, -1)),
+            pattern: \str_replace('\\/', '/', \substr($children->value, 1, -1)),
             offset: $children->offset,
             length: \max(0, $children->end - $children->offset),
         );
