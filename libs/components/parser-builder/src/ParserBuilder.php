@@ -359,6 +359,36 @@ final class ParserBuilder
     }
 
     /**
+     * Removes every pass of the given class, whatever priority it has been
+     * registered with.
+     *
+     * A pass is named rather than given, because the one to remove has been
+     * registered by somebody else: the passes the builder starts with are
+     * built by the builder itself.
+     *
+     * @api
+     *
+     * @param class-string<ParserCompilerPassInterface> $class
+     * @return $this
+     */
+    public function removeCompilerPass(string $class): self
+    {
+        foreach ($this->compilerPasses as $priority => $passes) {
+            $remaining = [];
+
+            foreach ($passes as $pass) {
+                if (!$pass instanceof $class) {
+                    $remaining[] = $pass;
+                }
+            }
+
+            $this->compilerPasses[$priority] = $remaining;
+        }
+
+        return $this;
+    }
+
+    /**
      * Registers the pass describing the assembled grammar.
      *
      * The analysis passes read the very same grammar and write the metadata of
