@@ -109,9 +109,11 @@ $parser = new Compiler()
 
 echo $parser->parse(new Source('2 + 2'));        // 4
 echo $parser->parse(new Source('10 - 4 + 1.5')); // 7.5
-
-$parser->check(new Source('2 +'));               // false
 ```
+
+There is also `analyze()`, which reports what it made of a source instead of
+throwing — for validating without building, or for reading a source the
+grammar is not meant to describe in full.
 
 ### Errors
 
