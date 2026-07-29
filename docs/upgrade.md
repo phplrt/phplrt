@@ -136,6 +136,47 @@ Rules are keyed by **integers** rather than by name, and they refer to each
 other by index. In practice you do not write this array by hand — see
 [the parser builder](/docs/parser/builder).
 
+### Checking And Trailing Tokens Became One Method
+
+> Likelihood Of Impact: **Medium**
+
+3.x answered "is this valid?" with `check()`, and read a source the grammar
+does not describe in full through a setting, picking up where it stopped from
+the parser afterwards. Both are `analyze()` now, and it returns what it found
+rather than keeping it:
+
+```php
+// 3.x
+$parser->check($source); // true or false
+
+$parser = new Parser(..., [Parser::CONFIG_ALLOW_TRAILING_TOKENS => true]);
+$parser->parse($source);
+
+$context = $parser->getLastExecutionContext();
+$context->buffer->current(); // where the parser stopped
+
+// 4.x
+use Phplrt\Parser\Analysis\Mode;
+use Phplrt\Parser\Analysis\Result\SuccessfulResult;
+
+$parser->analyze($source, Mode::SyntaxCheck) instanceof SuccessfulResult; // true or false
+
+$result = $parser->analyze($source);
+
+$result->value;       // what the fragment reduced to
+$result->token;       // where the parser stopped
+$result->diagnostics; // and what stands in the way
+```
+
+Two things changed beyond the names. Nothing is kept on the parser between
+calls, so a parser is safe to share and to call from several places at once.
+And where the reading stopped is now told for every source, not only for the
+ones that fail: a valid source is a `SuccessfulResult`, a source the grammar
+reads in part is a `PartialResult`, and one it cannot read at all is a
+`FailureResult`.
+
+See [Analysing A Source](/docs/parser#analysing-a-source).
+
 ### BuilderInterface Became Per-Rule Reducers
 
 > Likelihood Of Impact: **High**

@@ -11,21 +11,23 @@ grammar allows, and builds whatever you asked it to build.
 That is the whole runtime API:
 
 ```php
-$parser->parse($source); // returns your result, or throws on a syntax error
-$parser->check($source); // returns true or false, builds nothing
+$parser->parse($source);   // returns your result, or throws on a syntax error
+$parser->analyze($source); // reports what it made of the source, never throws
 ```
 
 ```php
 use Phplrt\Source\Source;
 
-$parser->parse(new Source('2 + 2'));  // 4
-$parser->check(new Source('2 + 2'));  // true
-$parser->check(new Source('2 +'));    // false
+$parser->parse(new Source('2 + 2')); // 4
+$parser->parse(new Source('2 +'));   // Syntax error, unexpected end of input
 ```
 
-`check()` is the cheap one — it stops as soon as it knows the answer and
-never runs a single reducer. Use it for validation, linting, or deciding
-which of several grammars a file belongs to.
+`parse()` is the one you want almost always: the grammar describes the whole
+source, anything else is a mistake, and a mistake is an exception.
+
+`analyze()` is for everything else — validating without building, reading a
+fragment of a larger file, or collecting errors instead of stopping at the
+first. See [Analysing A Source](#analysing-a-source) below.
 
 ## Where Parsers Come From
 
@@ -128,8 +130,8 @@ leaves you with a plain PEG that still works but is slower.
 entries — a rule id on the way in, the tokens read, a negative rule id on the
 way out. Nothing is built while the input is being read, and a branch that
 fails simply has its entries truncated. The tree is assembled afterwards, in
-one pass, by running the reducers bottom-up. `check()` skips that pass
-entirely.
+one pass, by running the reducers bottom-up. `analyze()` in `Mode::Fast`
+skips that pass entirely.
 
 Two consequences are worth knowing before you write a grammar.
 
@@ -219,7 +221,107 @@ an error, not a stopping point:
 $parser->parse(new Source('2 2')); // Syntax error, unexpected "2" (T_NUMBER)
 ```
 
-If you want to read a prefix and stop, say so in the grammar.
+## Analysing A Source
+
+Sometimes that is the wrong rule. The source may hold another language after
+the fragment yours describes, it may be a line someone is still typing, or you
+may want to report what is wrong rather than stop at it.
+
+`analyze()` reads as far as the grammar goes and reports what it made of the
+source. Nothing about the source makes it throw — how far it got is the class
+of the result:
+
+```php
+use Phplrt\Parser\Analysis\Result\FailureResult;
+use Phplrt\Parser\Analysis\Result\PartialResult;
+use Phplrt\Parser\Analysis\Result\SuccessfulResult;
+
+$result = $parser->analyze(new Source('2 + 2 } and then some HTML'));
+
+$result instanceof PartialResult; // the grammar stopped before the end
+$result->value;                   // 4 — the same value parse() gives for "2 + 2"
+$result->token->offset;           // 6 — where the fragment ends
+```
+
+| Result             | Means                                     | Carries              |
+|--------------------|-------------------------------------------|----------------------|
+| `SuccessfulResult` | the grammar read the source in full       | `value`              |
+| `PartialResult`    | the grammar read a fragment and stopped   | `value`, `token`     |
+| `FailureResult`    | the grammar read nothing at all           | `token`              |
+
+All three carry `diagnostics` — a list of what the analysis has to say. Each
+one holds the **error the source would be rejected with**, so it already knows
+how to print itself along with the fragment it occurred in:
+
+```php
+foreach ($result->diagnostics as $diagnostic) {
+    echo $diagnostic->error;
+}
+```
+
+```
+error[UnexpectedTokenException]: Syntax error, unexpected "3" (T_NUMBER)
+ --> expr.txt:2:1
+  |
+1 | 1 + 2
+2 | 3 + } 4
+  | ^
+3 |
+```
+
+The parts are reachable without unwrapping it:
+
+```php
+$diagnostic->message;  // Syntax error, unexpected "3" (T_NUMBER)
+$diagnostic->token;    // the token it is about
+$diagnostic->expected; // ids of the tokens that could have been read instead
+```
+
+It is the very same object `parse()` throws for the same source — not one
+built to look like it — so an editor and a build never disagree about what is
+wrong. Rethrowing it is a valid way to turn an analysis back into a failure:
+
+```php
+if (!$result instanceof SuccessfulResult) {
+    throw $result->diagnostics[0]->error;
+}
+```
+
+### Two Modes
+
+The second argument says how much work to do:
+
+```php
+use Phplrt\Parser\Analysis\Mode;
+
+$parser->analyze($source, Mode::Tolerant); // the default — builds the value
+$parser->analyze($source, Mode::SyntaxCheck); // recognizes only, runs no reducer
+```
+
+`Mode::Fast` is what `check()` used to be, except that it tells you *how much*
+of the source is valid rather than just whether all of it is:
+
+```php
+$parser->analyze($source, Mode::Fast) instanceof SuccessfulResult; // true or false
+```
+
+The mode changes nothing about how much of the source is read — only whether
+the value is built. In `Mode::Fast` every `value` is `null`.
+
+### The Rules Are Greedy
+
+You get the longest fragment, and a partial iteration is given back whole.
+With the calculator grammar above, `2 + 2 +` stops **at** the trailing `+`
+rather than after it, because the `+` opens an iteration the grammar cannot
+finish. That is what tells "not finished yet" from "written wrong", which is
+what a prompt needs:
+
+```php
+// Keep reading lines while the input is not a complete expression
+while (!$parser->analyze($input, Mode::Fast) instanceof SuccessfulResult) {
+    $input = new Source($input->content . "\n" . readline('... '));
+}
+```
 
 ## Next
 

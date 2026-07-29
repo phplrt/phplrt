@@ -228,7 +228,7 @@ This means:
 
 - a reducer never sees a rule that was tried and rejected — no wasted work,
   no side effects from a branch that did not win;
-- `check()` never runs reducers at all;
+- `analyze()` in `Mode::Fast` never runs reducers at all;
 - a reducer cannot influence parsing. It cannot look ahead, change what is
   matched next, or fail the parse to force a different alternative. If a
   decision depends on the input, express it in the grammar — that is what

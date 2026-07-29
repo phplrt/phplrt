@@ -227,12 +227,19 @@ error[UnexpectedTokenException]: Syntax error, unexpected "3" (T_NUMBER)
 ```
 
 If you only want to know whether the input is valid, without building
-anything, use `check()`:
+anything, use `analyze()`:
 
 ```php
-$parser->check(new Source('2 + 2')); // true
-$parser->check(new Source('2 +'));   // false
+use Phplrt\Parser\Analysis\Mode;
+use Phplrt\Parser\Analysis\Result\SuccessfulResult;
+
+$parser->analyze(new Source('2 + 2'), Mode::SyntaxCheck) instanceof SuccessfulResult; // true
+$parser->analyze(new Source('2 +'), Mode::SyntaxCheck) instanceof SuccessfulResult;   // false
 ```
+
+It also tells you *how much* of the input is valid and what stands in the way,
+which is what you want for an editor or a prompt — see
+[Analysing A Source](/docs/parser#analysing-a-source).
 
 ## Step 6: Compile It Once
 
