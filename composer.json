@@ -19,26 +19,29 @@
     ],
     "require": {
         "php": "^8.4",
+        "ext-json": "*",
         "ext-pcre": "*",
         "laminas/laminas-code": "^4.17",
         "symfony/console": "^7.4|^8.0",
+        "symfony/deprecation-contracts": "^2.5|^3.0",
         "twig/twig": "^3.28"
     },
     "autoload": {
         "psr-4": {
             "Phplrt\\Compiler\\": "libs/components/compiler/src",
+            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
+            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
+            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src",
             "Phplrt\\Exception\\": "libs/components/exception/src",
             "Phplrt\\Lexer\\": "libs/components/lexer/src",
             "Phplrt\\Lexer\\Builder\\": "libs/components/lexer-builder/src",
             "Phplrt\\Parser\\": "libs/components/parser/src",
             "Phplrt\\Parser\\Builder\\": "libs/components/parser-builder/src",
             "Phplrt\\Source\\": "libs/components/source/src",
-            "Phplrt\\Contracts\\Lexer\\": "libs/contracts/lexer/src",
-            "Phplrt\\Contracts\\Parser\\": "libs/contracts/parser/src",
-            "Phplrt\\Contracts\\Source\\": "libs/contracts/source/src"
         }
     },
     "require-dev": {
+        "ext-intl": "*",
         "ext-mbstring": "*",
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpbench/phpbench": "^1.7",
@@ -47,36 +50,36 @@
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "symplify/monorepo-builder": "^12.7.1",
+        "symplify/monorepo-builder": "^12.7",
         "type-lang/types": "^2.0@beta"
     },
     "autoload-dev": {
         "psr-4": {
             "Phplrt\\Compiler\\Tests\\": "libs/components/compiler/tests",
-            "Phplrt\\Exception\\Tests\\": "libs/components/exception/tests",
-            "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
-            "Phplrt\\Lexer\\Builder\\Tests\\": "libs/components/lexer-builder/tests",
-            "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
-            "Phplrt\\Parser\\Builder\\Tests\\": "libs/components/parser-builder/tests",
-            "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
             "Phplrt\\Contracts\\Lexer\\Tests\\": "libs/contracts/lexer/tests",
             "Phplrt\\Contracts\\Parser\\Tests\\": "libs/contracts/parser/tests",
             "Phplrt\\Contracts\\Source\\Tests\\": "libs/contracts/source/tests",
+            "Phplrt\\Exception\\Tests\\": "libs/components/exception/tests",
+            "Phplrt\\Lexer\\Builder\\Tests\\": "libs/components/lexer-builder/tests",
+            "Phplrt\\Lexer\\Tests\\": "libs/components/lexer/tests",
+            "Phplrt\\Parser\\Builder\\Tests\\": "libs/components/parser-builder/tests",
+            "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
+            "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
             "Phplrt\\Tests\\": "tests"
         }
     },
     "replace": {
         "phplrt/compiler": "*",
         "phplrt/exception": "*",
-        "phplrt/parser": "*",
-        "phplrt/parser-contracts": "*",
-        "phplrt/parser-builder": "*",
         "phplrt/lexer": "*",
         "phplrt/lexer-builder": "*",
         "phplrt/lexer-contracts": "*",
+        "phplrt/parser": "*",
+        "phplrt/parser-builder": "*",
+        "phplrt/parser-contracts": "*",
+        "phplrt/runtime": "*",
         "phplrt/source": "*",
-        "phplrt/source-contracts": "*",
-        "phplrt/runtime": "*"
+        "phplrt/source-contracts": "*"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0",

@@ -27,11 +27,11 @@
         }
     },
     "require-dev": {
+        "ext-mbstring": "*",
         "phplrt/lexer-builder": "^4.0",
         "phplrt/source": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
-        "phpstan/phpstan": "^2.1.38",
-        "phpstan/phpstan-strict-rules": "^2.0"
+        "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {
         "psr-4": {
