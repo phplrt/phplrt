@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal;
+namespace Phplrt\Parser\Internal\Reduction;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 /**
- * Reduces the traces of a single source into the abstract syntax tree.
+ * Builds the traces of a single source into the value the grammar describes.
  *
- * @phpstan-import-type ReducerType from TraceReducer
+ * @phpstan-import-type ReducerType from ReducerTable
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  */
-final readonly class ContextualTraceReducer
+final readonly class TraceReducer
 {
     private Context $context;
 
