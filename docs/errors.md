@@ -172,7 +172,7 @@ $printer->print($source, $offset, $length)
     ->withLevel(Level::Warning)
     ->withPathname('other.txt') // override the file name
     ->withLinesAround(0)        // no context lines, just the one that matters
-    ->withEndOffset($end);      // underline up to here instead of a length
+    ->withLength(4);            // the size of the underlined fragment
 ```
 
 `withLinesAround(0)` is worth knowing about — for a list of many warnings,
