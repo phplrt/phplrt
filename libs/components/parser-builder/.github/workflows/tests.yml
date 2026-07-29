@@ -15,18 +15,16 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Set Git To Use LF
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ffi
-          tools: pecl
           ini-values: "memory_limit=-1"
       - name: Validate Composer
         run: composer validate
@@ -40,7 +38,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Install Dependencies
-        uses: nick-invision/retry@v2
+        uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
