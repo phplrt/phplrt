@@ -93,9 +93,9 @@ read. There are three actions, and each is written as a call:
 
 | Action       | What the token does                                       |
 |--------------|-----------------------------------------------------------|
-| `channel(x)` | Emits the token to the channel `x`                         |
-| `state(x)`   | Hands the reading over to the lexer of the state `x`       |
-| `exit()`     | Gives the control back to the lexer that entered this one  |
+| `channel(x)` | Emits the token to the channel `x`                        |
+| `state(x)`   | Hands the reading over to the lexer of the state `x`      |
+| `exit()`     | Gives the control back to the lexer that entered this one |
 
 ### channel(x)
 
@@ -196,11 +196,8 @@ A rule is a name, a colon, a body, and an optional semicolon:
 Sum : <T_DIGIT> ::T_PLUS:: <T_DIGIT> ;
 ```
 
-The colon is the only separator there is. Grammars from other tools often use
-`=` or `::=`; those have to be changed.
-
-By convention rules are `PascalCase`, which tells them apart from tokens at a
-glance.
+The colon is the only separator there is. By convention rules are
+`PascalCase`, which tells them apart from tokens at a glance.
 
 Long rules read better spread out:
 
@@ -302,9 +299,54 @@ Digits    : <T_DIGIT>{3} ;
 Modifiers : Modifier()* ;
 ```
 
+### Predicates
+
+A predicate looks at what comes next **without reading it**. Nothing is
+consumed and nothing lands in the tree — the only thing that happens is that
+the rule either goes on or gives up.
+
+| Written | Means                                     |
+|---------|-------------------------------------------|
+| `&e`    | go on only if `e` matches here            |
+| `!e`    | go on only if `e` does **not** match here |
+
+The classic use is refusing a position that belongs to somebody else. A name
+that is not a function call:
+
+```pp2
+Variable : <T_NAME> !::T_PARENTHESIS_OPEN:: ;
+```
+
+`foo` matches. `foo(` does not — and, importantly, the `(` is still there
+afterwards for whatever rule does want it.
+
+The other direction is committing to a branch without reading it twice:
+
+```pp2
+// Only try the expensive rule when the line really starts with "fn"
+Closure : &::T_FN:: FunctionLiteral() ;
+```
+
+A predicate is written **before** the quantifier, so it looks ahead at the
+whole thing at once:
+
+```pp2
+Rule : &<T_DIGIT>+ Number() ;   // look ahead at one or more digits
+```
+
+Two things to keep in mind:
+
+- a predicate contributes nothing to `$children`, so adding one does not shift
+  the positions the reducer reads;
+- it costs a real attempt at matching. `!Expression()` will parse a whole
+  expression and throw it away, so prefer looking ahead at a token.
+
+This is the one thing in a rule body that describes *how* something is read
+rather than *what* the language contains, which is why EBNF has no equivalent.
+
 ## Where Parsing Starts
 
-By default it starts at the first rule in the file. Say otherwise with
+By default, it starts at the first rule in the file. Say otherwise with
 `%pragma root`:
 
 ```pp2
@@ -320,18 +362,21 @@ rule" then depends on include order, which is a fragile thing to depend on.
 that needs a particular setting carries it instead of relying on the code that
 compiles it.
 
-| Setting                       | What it does                                    |
-|-------------------------------|-------------------------------------------------|
-| `root <Rule>`                 | Where parsing starts                             |
-| `lexer.pcre.flag <M>`         | Compiles the lexer's pattern with a PCRE modifier |
-| `lexer.pcre.disable <M>`      | Compiles it without one                          |
-| `lexer.pass <Class>`          | Registers a lexer pass, normalizing              |
-| `lexer.check <Class>`         | Registers a lexer pass, checking                 |
-| `lexer.optimize <Class>`      | Registers a lexer pass, optimizing               |
-| `lexer.complete <Class>`      | Registers a lexer pass, checking after optimizing |
-| `lexer.disable <Class>`       | Drops a lexer pass, whenever it was registered   |
-| `parser.pass|check|optimize|complete <Class>` | The same, for the parser          |
-| `parser.disable <Class>`      | Drops a parser pass                              |
+| Setting                   | What it does                                       |
+|---------------------------|----------------------------------------------------|
+| `root <Rule>`             | Where parsing starts                               |
+| `lexer.pcre.flag <M>`     | Compiles the lexer's pattern with a PCRE modifier  |
+| `lexer.pcre.disable <M>`  | Compiles it without one                            |
+| `lexer.pass <Class>`      | Registers a lexer pass, normalizing                |
+| `lexer.check <Class>`     | Registers a lexer pass, checking                   |
+| `lexer.optimize <Class>`  | Registers a lexer pass, optimizing                 |
+| `lexer.complete <Class>`  | Registers a lexer pass, checking after optimizing  |
+| `lexer.disable <Class>`   | Drops a lexer pass, whenever it was registered     |
+| `parser.pass <Class>`     | Registers a parser pass, normalizing               |
+| `parser.check <Class>`    | Registers a parser pass, checking                  |
+| `parser.optimize <Class>` | Registers a parser pass, optimizing                |
+| `parser.complete <Class>` | Registers a parser pass, checking after optimizing |
+| `parser.disable <Class>`  | Drops a parser pass                                |
 
 Anything else is an error.
 
@@ -346,7 +391,7 @@ way phplrt calls it:
 %pragma lexer.pcre.disable  Utf8       // ...or "u"
 ```
 
-By default the pattern is compiled with `S`, `u`, `s` and `m`. See
+By default, the pattern is compiled with `S`, `u`, `s` and `m`. See
 [RegexModifier](/docs/lexer) for what each of them means.
 
 ### Compiler Passes
@@ -381,7 +426,7 @@ when each priority runs.
 %include grammar/expressions.pp3
 ```
 
-- the path is relative to **the file the include is written in**;
+- the path is relative to **the file to include is written in**;
 - the extension may be omitted;
 - a file included from several places is read **once**, so a shared
   `lexemes.pp3` can be included by everything that needs it.

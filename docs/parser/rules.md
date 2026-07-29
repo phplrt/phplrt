@@ -144,9 +144,16 @@ new Concatenation([
 ]);
 ```
 
-EBNF has nothing like this, and neither does the `.pp3` syntax — a predicate
-describes *how* something is read rather than *what* the language contains.
-Build it with [the parser builder](/docs/parser/builder) or by hand.
+EBNF has nothing like this — a predicate describes *how* something is read
+rather than *what* the language contains. A grammar file writes it with the
+same two signs:
+
+```pp2
+Variable : <T_NAME> !::T_PARENTHESIS_OPEN:: ;
+Closure  : &::T_FN:: FunctionLiteral() ;
+```
+
+See [Predicates](/docs/compiler/grammar).
 
 ## Sequences and Single Values
 

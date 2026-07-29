@@ -43,7 +43,7 @@ Here is the full list:
 | `phplrt/exception`       | Renders errors with a snippet of the code around them                 |
 | `phplrt/lexer-builder`   | Describes a lexer in PHP and compiles it                              |
 | `phplrt/parser-builder`  | Describes a grammar in PHP and compiles it                            |
-| `phplrt/compiler`        | Reads `*.pp`, `*.pp2` or `*.pp3` grammar files and generates PHP code |
+| `phplrt/compiler`        | Reads `*.pp2` or `*.pp3` grammar files and generates PHP code |
 
 And the contracts, if you only want to type-hint against interfaces:
 

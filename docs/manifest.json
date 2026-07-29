@@ -24,7 +24,8 @@
     },
     "Compiler": {
         "Usage": "compiler",
-        "Grammar Syntax": "compiler/grammar",
+        "PP3 Grammar Syntax": "compiler/grammar",
+        "PP2 Grammar Syntax (Legacy)": "compiler/legacy-grammar",
         "PHP in a Grammar": "compiler/code",
         "Code Generation": "compiler/generation"
     },

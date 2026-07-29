@@ -259,7 +259,8 @@ you have just seen, committed to the repository.
 
 It has to be that way: reading a grammar file needs a parser, so the parser of
 a format cannot be built from the grammar describing it at runtime. The grammar
-lives in `resources/grammar/pp3.pp3`, the parser it compiles into lives in
+lives in `resources/pp3.pp3` — split with `%include` into lexemes, statements
+and quantifiers — the parser it compiles into lives in
 `src/Syntax/PP3/PP3Parser.php`, and a test compares the two so they cannot
 drift apart.
 

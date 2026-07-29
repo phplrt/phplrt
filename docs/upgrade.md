@@ -272,27 +272,23 @@ Grammars written in the original Hoa-style `.pp` format are not supported.
 A `.pp` file is still recognized by its extension, so you get a clear error
 rather than a confusing parse failure.
 
-Rename your grammars to `.pp3` (or `.pp2`) and check the following:
-
-- **Token declarations are unchanged**: `%token`, `%skip`, `%pragma`,
-  `%include` all mean the same thing.
-- **`%pragma` is now `root` only.** Other pragmas — lexer settings,
-  unification, error levels — are gone; the corresponding behaviour is either
-  the default or configured in PHP.
-- **Rule bodies are unchanged**: `<T_X>`, `::T_X::`, `Rule()`, `|`, `?`, `*`,
-  `+`, `{n,m}` and `-> { ... }` all still work.
-- **`.pp3` drops what `.pp2` allowed twice.** A rule is separated by a colon
-  only (`=` and `::=` are gone), the `#` marker is gone, and a reducer is
-  always a block of code (`-> ClassName` is gone). A token says what it does
-  by naming the action — `-> state(x)`, `-> exit()`, `-> channel(x)` — rather
-  than naming the state it lands in. Keep the `.pp2` extension and none of
-  this applies.
-- **Reducer variables changed slightly.** `$file` is gone (use `$source`);
-  `$state` is gone (use `$rule`, which is an int); `$content` is new.
+Rewrite the grammar in one of the formats that are read — see
+[Grammar Syntax](/docs/compiler/grammar).
 
 ### Grammar Files: What To Check
 
-Most `.pp2` grammars from 3.x compile unchanged. The things that bite:
+> Likelihood Of Impact: **Medium**
+
+A grammar file keeps its extension and keeps being read the way it was, so most
+of them compile unchanged. What no longer works:
+
+**The old pragmas are no longer supported.** Unification and the error levels
+are gone; the corresponding behaviour is either the default now or is
+configured in PHP. Which settings a grammar may carry is listed under
+[Settings](/docs/compiler/grammar).
+
+**`$file` and `$state` are no longer declared in a reducer.** Use `$source` and
+`$rule`, which is an `int`. See [PHP in a Grammar](/docs/compiler/code).
 
 **Left recursion is now rejected at build time.** It never worked at runtime
 either, but 3.x would let you compile it. Rewrite as a repetition:

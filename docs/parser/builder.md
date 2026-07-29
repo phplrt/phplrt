@@ -22,31 +22,43 @@ use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\Source;
 
+// --------------------------------------------
+//  Lexer Builder
+// --------------------------------------------
 $lexer = new LexerBuilder();
 $digit = $lexer->addPattern('\d++', 'T_DIGIT');
 $plus  = $lexer->addValue('+', 'T_PLUS');
-$lexer->addPattern('\s++')->hide();
+$lexer->addPattern('\s++')
+    ->hide();
 
+
+// --------------------------------------------
+//  Parser Builder
+// --------------------------------------------
 $grammar = new ParserBuilder();
 
 // Sum : <T_DIGIT> (::T_PLUS:: <T_DIGIT>)*
-$number = $grammar->addTokenReference($digit);
 $sum = $grammar->addConcatenation([
-    $number,
+    $number = $grammar->addTokenReference($digit),
     $grammar->addRepetition(
         $grammar->addConcatenation([
-            $grammar->addTokenReference($plus)->skip(),
+            $grammar->addTokenReference($plus)
+                ->skip(),
             $number,
         ]),
     ),
 ]);
 
+// Parsing should start with "$sum"
 $grammar->setInitialRule($sum);
 
-// Build the lexer first — the grammar needs to know the token ids
+// Building process
 $compiledLexer = $lexer->build();
-$parser = $grammar->build($compiledLexer)
-    ->toParser($compiledLexer->toLexer());
+$compiledParser = $grammar->build($compiledLexer);
+
+$parser = $compiledParser->toParser(
+    $compiledLexer->toLexer(),
+);
 
 $parser->parse(new Source('1 + 2 + 3'));
 ```
@@ -63,7 +75,8 @@ $grammar->addTokenReference('T_DIGIT');
 $grammar->addTokenReference(0);
 
 // ...and one that is read but thrown away
-$grammar->addTokenReference('T_COMMA')->skip();
+$grammar->addTokenReference('T_COMMA')
+    ->skip();
 
 // a b c
 $grammar->addConcatenation([$a, $b, $c]);
@@ -125,7 +138,8 @@ use Phplrt\Parser\Context;
 
 $number = $grammar->addTokenReference('T_DIGIT', 'Number')
     ->setReducer(static fn(Context $ctx, mixed $children): int
-        => (int) $children->value);
+        => (int) $children->value,
+    );
 ```
 
 Any callable works. But note: a closure cannot be written into a generated
@@ -135,7 +149,9 @@ reducer as PHP source instead:
 ```php
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 
-$number->setReducer(new PhpCodeReducer('return (int) $children->value;'));
+$number->setReducer(new PhpCodeReducer(
+    'return (int) $children->value;'
+));
 ```
 
 `PhpCodeReducer` works both ways — it runs in memory *and* it can be dumped
@@ -167,7 +183,7 @@ you ship it:
   not have is an error;
 - **left recursion is rejected**:
 
-```
+```pp2
 Rule Expression = (...) | <name is "T_NUMBER"> is left recursive:
 Expression -> (...) -> Expression
 ```

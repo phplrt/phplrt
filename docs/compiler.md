@@ -64,14 +64,11 @@ The format is decided by the file extension:
 | Extension | Format                                                                                    |
 |-----------|-------------------------------------------------------------------------------------------|
 | `.pp`     | The legacy [Hoa](https://github.com/hoaproject/Compiler) format — **no longer supported** |
-| `.pp2`    | The phplrt 3.x format, still read as it was                                               |
+| `.pp2`    | The older format, described in [Legacy Grammar](/docs/compiler/legacy-grammar)            |
 | `.pp3`    | The current format, described in [Grammar](/docs/compiler/grammar)                        |
 
-`.pp3` is `.pp2` with the ambiguity taken out. A rule is separated by a colon
-and nothing else; the `#` marker and the `-> ClassName` reducer are gone; and
-a token says what it does by naming the action — `state(x)`, `exit()`,
-`channel(x)` — instead of naming the state it lands in. Grammars written for
-`.pp2` keep working under that extension.
+Write `.pp3` for anything new. A `.pp2` file keeps being read the way it always
+was, so an existing grammar needs no attention.
 
 A grammar that did not come from a file (a `Source`, a string) is read as the
 newest format, since there is no extension to go by:
@@ -179,6 +176,8 @@ The kinds you are likely to meet:
 ## Next
 
 - [Grammar Syntax](/docs/compiler/grammar) — everything a `.pp3` file can say.
+- [Legacy Grammar Syntax](/docs/compiler/legacy-grammar) — everything a `.pp2`
+  file can say.
 - [PHP in a Grammar](/docs/compiler/code) — reducers and the variables they get.
 - [Code Generation](/docs/compiler/generation) — namespaces, class names, and
   what the output looks like.
