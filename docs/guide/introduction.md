@@ -13,7 +13,7 @@ things:
 
 ## The Shortest Possible Example
 
-Here is a calculator that adds numbers. The grammar is four lines:
+Here is a calculator that adds numbers. The grammar is several lines:
 
 ```php
 use Phplrt\Compiler\Compiler;
