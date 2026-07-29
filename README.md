@@ -112,7 +112,7 @@ echo $parser->parse(new Source('10 - 4 + 1.5')); // 7.5
 ```
 
 There is also `analyze()`, which reports what it made of a source instead of
-throwing — for validating without building, or for reading a source the
+throwing - for validating without building, or for reading a source the
 grammar is not meant to describe in full.
 
 ### Errors
@@ -149,7 +149,7 @@ rather than a requirement, so add it if you install them by hand.
 
 Reading a grammar file costs time, and the grammar does not change between
 requests. Once it is ready and tested, compile it into a PHP file and commit
-that file — after which the `phplrt/compiler` dependency is no longer needed
+that file - after which the `phplrt/compiler` dependency is no longer needed
 (see https://phplrt.org/docs/installation#which-packages-do-i-actually-ship).
 
 ```bash
@@ -194,7 +194,7 @@ readonly class CalculatorParser extends \Phplrt\Parser\Parser
 }
 ```
 
-Use it like any other class — no compiler, no grammar file, no build step at
+Use it like any other class - no compiler, no grammar file, no build step at
 runtime:
 
 ```php
