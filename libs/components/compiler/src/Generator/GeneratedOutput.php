@@ -35,9 +35,9 @@ final readonly class GeneratedOutput implements \Stringable
     /**
      * Returns the output belonging to the given namespace.
      *
-     * @param non-empty-string $namespace
+     * @param non-empty-string|null $namespace
      */
-    public function withNamespace(string $namespace): self
+    public function withNamespaceName(?string $namespace): self
     {
         return new self($this->result, $this->generator, new OutputContext(
             namespace: $namespace,
@@ -52,9 +52,9 @@ final readonly class GeneratedOutput implements \Stringable
      * A parser that is named is declared rather than returned, so the file it
      * is written into is read the way any other class file is.
      *
-     * @param non-empty-string $class
+     * @param non-empty-string|null $class
      */
-    public function withClassName(string $class): self
+    public function withClassName(?string $class): self
     {
         return new self($this->result, $this->generator, new OutputContext(
             namespace: $this->context->namespace,
@@ -84,24 +84,18 @@ final readonly class GeneratedOutput implements \Stringable
      * Writes the code into the given file.
      *
      * @param non-empty-string $pathname
-     * @param non-empty-string|null $class the name the parser is declared
-     *        under, or {@see null} in case of the parser is returned by the
-     *        file instead of being declared
-     * @return self the output that has been written into the file
      * @throws GeneratorException in case of the code cannot be written down or
      *         the file cannot be written
      */
-    public function save(string $pathname, ?string $class = null): self
+    public function save(string $pathname): self
     {
-        $output = $class === null ? $this : $this->withClassName($class);
-
         self::createDirectory(\dirname($pathname));
 
-        if (\file_put_contents($pathname, $output->__toString()) === false) {
+        if (\file_put_contents($pathname, (string) $this) === false) {
             throw OutputFileException::becauseFileIsNotWritten($pathname);
         }
 
-        return $output;
+        return $this;
     }
 
     /**
