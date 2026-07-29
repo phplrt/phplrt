@@ -11,12 +11,12 @@ use Phplrt\Compiler\Generator\PhpOutputGenerator;
 use Phplrt\Compiler\Loader\ReferenceLoader;
 use Phplrt\Compiler\Loader\SyntaxLoaderRegistry;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Parser;
 
 final class Compiler
 {
@@ -120,7 +120,11 @@ final class Compiler
         return new GeneratedOutput($this->build(), $generator);
     }
 
-    public function getParser(): ParserInterface
+    /**
+     * The parser is returned as the implementation rather than as the contract,
+     * so that what it can do beyond reading a source in full is reachable.
+     */
+    public function getParser(): Parser
     {
         $result = $this->build();
 
