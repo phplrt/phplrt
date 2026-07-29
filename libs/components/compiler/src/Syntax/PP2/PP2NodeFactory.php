@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Compiler\Syntax\PP3;
+namespace Phplrt\Compiler\Syntax\PP2;
 
 use Phplrt\Compiler\Node\Declaration\IncludeDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
@@ -22,14 +22,20 @@ use Phplrt\Compiler\Node\Statement\TokenReference;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
-use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Context;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 
 /**
- * Reads a PP3 grammar file into the declarations it is written of.
+ * Builds the declarations a PP2 grammar file is written of.
+ *
+ * The grammar of the format says what a file is made of, while every node it is
+ * read into is built here: a grammar file is written of what it describes rather
+ * than of the way the description is put together.
+ *
+ * @internal this is an internal library class, please do not use it in your code
+ * @psalm-internal Phplrt\Compiler
  */
-final readonly class PP3ParserBuilder
+final readonly class PP2NodeFactory
 {
     /**
      * The number of characters a single level of nesting is written with.
@@ -38,245 +44,28 @@ final readonly class PP3ParserBuilder
      */
     private const int NESTING_SIZE = 4;
 
-    public static function create(): ParserBuilder
-    {
-        $parser = new ParserBuilder();
-
-        self::addDeclarationRules($parser);
-        self::addStatementRules($parser);
-        self::addQuantifierRules($parser);
-
-        return $parser;
-    }
-
-    /**
-     * A grammar file is a list of declarations, each of them written either as
-     * a "%" directive or as a rule of the parser.
-     */
-    private static function addDeclarationRules(ParserBuilder $parser): void
-    {
-        $parser->setInitialRule($parser->addRepetition(
-            rule: $parser->addRuleReference('Declaration'),
-            name: 'Grammar',
-        ));
-
-        $parser->addAlternation([
-            $parser->addRuleReference('TokenDeclaration'),
-            $parser->addRuleReference('SkippedTokenDeclaration'),
-            $parser->addRuleReference('PragmaDeclaration'),
-            $parser->addRuleReference('IncludeDeclaration'),
-            $parser->addRuleReference('RuleDeclaration'),
-        ], 'Declaration');
-
-        // %token string:T_QUOTE " -> default
-        $parser->addTokenReference('T_TOKEN', 'TokenDeclaration')
-            ->setReducer(self::createTokenDeclaration(...));
-
-        // %skip T_WHITESPACE \s++
-        $parser->addTokenReference('T_SKIP', 'SkippedTokenDeclaration')
-            ->setReducer(self::createSkippedTokenDeclaration(...));
-
-        // %pragma root Expression
-        $parser->addTokenReference('T_PRAGMA', 'PragmaDeclaration')
-            ->setReducer(self::createPragmaDeclaration(...));
-
-        // %include grammar/lexemes
-        $parser->addTokenReference('T_INCLUDE', 'IncludeDeclaration')
-            ->setReducer(self::createIncludeDeclaration(...));
-
-        // #Sum -> { return new SumNode($children); } : Number() ;
-        $parser->addConcatenation([
-            $parser->addOptional($parser->addRuleReference('KeptMarker')),
-            $parser->addTokenReference('T_NAME'),
-            $parser->addOptional($parser->addRuleReference('Reducer')),
-            $parser->addTokenReference('T_EQ')->skip(),
-            $parser->addRuleReference('Alternation'),
-            $parser->addOptional($parser->addTokenReference('T_SEMICOLON')->skip()),
-        ], 'RuleDeclaration')
-            ->setReducer(self::createRuleDeclaration(...));
-
-        $parser->addTokenReference('T_HASH', 'KeptMarker')
-            ->setReducer(static fn(): bool => true);
-
-        $parser->addAlternation([
-            $parser->addRuleReference('CodeReducer'),
-            $parser->addRuleReference('ClassReducer'),
-        ], 'Reducer');
-
-        $parser->addTokenReference('T_PHP', 'CodeReducer')
-            ->setReducer(self::createCodeReducer(...));
-
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_ARROW')->skip(),
-            $parser->addTokenReference('T_NAME'),
-        ], 'ClassReducer')
-            ->setReducer(self::createClassReducer(...));
-    }
-
-    /**
-     * What a rule of the parser recognizes: the alternatives it is written of,
-     * each of them a sequence of statements.
-     */
-    private static function addStatementRules(ParserBuilder $parser): void
-    {
-        // Number() | Name()
-        $parser->addConcatenation([
-            $parser->addRuleReference('Concatenation'),
-            $parser->addRepetition($parser->addRuleReference('AlternationTail')),
-        ], 'Alternation')
-            ->setReducer(self::createAlternation(...));
-
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_OR')->skip(),
-            $parser->addRuleReference('Concatenation'),
-        ], 'AlternationTail');
-
-        // Number() ::T_PLUS:: Number()
-        $parser->addRepetition(
-            rule: $parser->addRuleReference('Suffixed'),
-            min: 1,
-            name: 'Concatenation',
-        )
-            ->setReducer(self::createConcatenation(...));
-
-        // Number()*
-        $parser->addConcatenation([
-            $parser->addRuleReference('Primary'),
-            $parser->addOptional($parser->addRuleReference('Quantifier')),
-        ], 'Suffixed')
-            ->setReducer(self::createRepetition(...));
-
-        $parser->addAlternation([
-            $parser->addRuleReference('Group'),
-            $parser->addRuleReference('KeptTokenReference'),
-            $parser->addRuleReference('SkippedTokenReference'),
-            $parser->addRuleReference('RuleReference'),
-            $parser->addRuleReference('InlinePattern'),
-        ], 'Primary');
-
-        // ( Number() | Name() )
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_PARENTHESIS_OPEN')->skip(),
-            $parser->addRuleReference('Alternation'),
-            $parser->addTokenReference('T_PARENTHESIS_CLOSE')->skip(),
-        ], 'Group');
-
-        // <T_NAME>
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_ANGLE_OPEN')->skip(),
-            $parser->addTokenReference('T_NAME'),
-            $parser->addTokenReference('T_ANGLE_CLOSE')->skip(),
-        ], 'KeptTokenReference')
-            ->setReducer(self::createKeptTokenReference(...));
-
-        // ::T_NAME::
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_DOUBLE_COLON')->skip(),
-            $parser->addTokenReference('T_NAME'),
-            $parser->addTokenReference('T_DOUBLE_COLON')->skip(),
-        ], 'SkippedTokenReference')
-            ->setReducer(self::createSkippedTokenReference(...));
-
-        // Number()
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_NAME'),
-            $parser->addTokenReference('T_PARENTHESIS_OPEN')->skip(),
-            $parser->addTokenReference('T_PARENTHESIS_CLOSE')->skip(),
-        ], 'RuleReference')
-            ->setReducer(self::createRuleReference(...));
-
-        // "\+"
-        $parser->addTokenReference('T_STRING', 'InlinePattern')
-            ->setReducer(self::createInlinePattern(...));
-    }
-
-    /**
-     * How many times a statement may repeat.
-     */
-    private static function addQuantifierRules(ParserBuilder $parser): void
-    {
-        $parser->addAlternation([
-            $parser->addRuleReference('ZeroOrOne'),
-            $parser->addRuleReference('OneOrMore'),
-            $parser->addRuleReference('ZeroOrMore'),
-            $parser->addRuleReference('Range'),
-        ], 'Quantifier');
-
-        // ?
-        $parser->addTokenReference('T_QUESTION_MARK', 'ZeroOrOne')
-            ->setReducer(self::createZeroOrOne(...));
-
-        // +
-        $parser->addTokenReference('T_PLUS', 'OneOrMore')
-            ->setReducer(self::createOneOrMore(...));
-
-        // *
-        $parser->addTokenReference('T_ASTERISK', 'ZeroOrMore')
-            ->setReducer(self::createZeroOrMore(...));
-
-        // {2,5}
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_BRACE_OPEN')->skip(),
-            $parser->addRuleReference('RangeBody'),
-            $parser->addTokenReference('T_BRACE_CLOSE')->skip(),
-        ], 'Range');
-
-        $parser->addAlternation([
-            $parser->addRuleReference('RangeFromTo'),
-            $parser->addRuleReference('RangeFrom'),
-            $parser->addRuleReference('RangeTo'),
-            $parser->addRuleReference('RangeExactly'),
-        ], 'RangeBody');
-
-        // {2,5}
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_INT'),
-            $parser->addTokenReference('T_COMMA')->skip(),
-            $parser->addTokenReference('T_INT'),
-        ], 'RangeFromTo')
-            ->setReducer(self::createRangeFromTo(...));
-
-        // {2,}
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_INT'),
-            $parser->addTokenReference('T_COMMA')->skip(),
-        ], 'RangeFrom')
-            ->setReducer(self::createRangeFrom(...));
-
-        // {,5}
-        $parser->addConcatenation([
-            $parser->addTokenReference('T_COMMA')->skip(),
-            $parser->addTokenReference('T_INT'),
-        ], 'RangeTo')
-            ->setReducer(self::createRangeTo(...));
-
-        // {5}
-        $parser->addTokenReference('T_INT', 'RangeExactly')
-            ->setReducer(self::createRangeExactly(...));
-    }
-
-    private static function createZeroOrOne(Context $context, mixed $children): Quantifier
+    public static function createZeroOrOne(Context $context, mixed $children): Quantifier
     {
         $token = self::readTerminal($children);
 
         return new Quantifier(0, 1, $token->offset, self::calculateLength($token));
     }
 
-    private static function createOneOrMore(Context $context, mixed $children): Quantifier
+    public static function createOneOrMore(Context $context, mixed $children): Quantifier
     {
         $token = self::readTerminal($children);
 
         return new Quantifier(1, \INF, $token->offset, self::calculateLength($token));
     }
 
-    private static function createZeroOrMore(Context $context, mixed $children): Quantifier
+    public static function createZeroOrMore(Context $context, mixed $children): Quantifier
     {
         $token = self::readTerminal($children);
 
         return new Quantifier(0, \INF, $token->offset, self::calculateLength($token));
     }
 
-    private static function createRangeFromTo(Context $context, mixed $children): Quantifier
+    public static function createRangeFromTo(Context $context, mixed $children): Quantifier
     {
         $from = self::readToken($children, 0);
         $to = self::readToken($children, 1);
@@ -289,21 +78,21 @@ final readonly class PP3ParserBuilder
         );
     }
 
-    private static function createRangeFrom(Context $context, mixed $children): Quantifier
+    public static function createRangeFrom(Context $context, mixed $children): Quantifier
     {
         $from = self::readToken($children, 0);
 
         return new Quantifier(self::readNumber($from), \INF, $from->offset, self::calculateLength($from));
     }
 
-    private static function createRangeTo(Context $context, mixed $children): Quantifier
+    public static function createRangeTo(Context $context, mixed $children): Quantifier
     {
         $to = self::readToken($children, 0);
 
         return new Quantifier(0, self::readNumber($to), $to->offset, self::calculateLength($to));
     }
 
-    private static function createRangeExactly(Context $context, mixed $children): Quantifier
+    public static function createRangeExactly(Context $context, mixed $children): Quantifier
     {
         $token = self::readTerminal($children);
         $count = self::readNumber($token);
@@ -311,12 +100,12 @@ final readonly class PP3ParserBuilder
         return new Quantifier($count, $count, $token->offset, self::calculateLength($token));
     }
 
-    private static function createTokenDeclaration(Context $context, mixed $children): TokenDeclaration
+    public static function createTokenDeclaration(Context $context, mixed $children): TokenDeclaration
     {
         return self::readTokenDeclaration($context, $children, false);
     }
 
-    private static function createSkippedTokenDeclaration(Context $context, mixed $children): TokenDeclaration
+    public static function createSkippedTokenDeclaration(Context $context, mixed $children): TokenDeclaration
     {
         return self::readTokenDeclaration($context, $children, true);
     }
@@ -339,7 +128,7 @@ final readonly class PP3ParserBuilder
         );
     }
 
-    private static function createPragmaDeclaration(Context $context, mixed $children): PragmaDeclaration
+    public static function createPragmaDeclaration(Context $context, mixed $children): PragmaDeclaration
     {
         $declaration = self::readTerminal($children);
 
@@ -351,7 +140,7 @@ final readonly class PP3ParserBuilder
         );
     }
 
-    private static function createIncludeDeclaration(Context $context, mixed $children): IncludeDeclaration
+    public static function createIncludeDeclaration(Context $context, mixed $children): IncludeDeclaration
     {
         $declaration = self::readTerminal($children);
 
@@ -362,7 +151,7 @@ final readonly class PP3ParserBuilder
         );
     }
 
-    private static function createRuleDeclaration(Context $context, mixed $children): RuleDeclaration
+    public static function createRuleDeclaration(Context $context, mixed $children): RuleDeclaration
     {
         \assert(\is_array($children), 'A rule declaration is a list of values');
 
@@ -392,7 +181,7 @@ final readonly class PP3ParserBuilder
         );
     }
 
-    private static function createCodeReducer(Context $context, mixed $children): CodeReducer
+    public static function createCodeReducer(Context $context, mixed $children): CodeReducer
     {
         $token = self::readEmbedding($children);
         $read = $token->children;
@@ -434,14 +223,14 @@ final readonly class PP3ParserBuilder
         return \trim(\implode("\n", $lines));
     }
 
-    private static function createClassReducer(Context $context, mixed $children): ClassReducer
+    public static function createClassReducer(Context $context, mixed $children): ClassReducer
     {
         $token = self::readToken($children, 0);
 
         return new ClassReducer(self::readValue($token), $token->offset, self::calculateLength($token));
     }
 
-    private static function createAlternation(Context $context, mixed $children): Statement
+    public static function createAlternation(Context $context, mixed $children): Statement
     {
         $statements = self::readStatements($children);
 
@@ -452,7 +241,7 @@ final readonly class PP3ParserBuilder
         return new Alternation($statements, $statements[0]->offset, self::calculateStatementsLength($statements));
     }
 
-    private static function createConcatenation(Context $context, mixed $children): Statement
+    public static function createConcatenation(Context $context, mixed $children): Statement
     {
         $statements = self::readStatements($children);
 
@@ -463,7 +252,7 @@ final readonly class PP3ParserBuilder
         return new Concatenation($statements, $statements[0]->offset, self::calculateStatementsLength($statements));
     }
 
-    private static function createRepetition(Context $context, mixed $children): Statement
+    public static function createRepetition(Context $context, mixed $children): Statement
     {
         \assert(\is_array($children), 'A suffixed statement is a list of values');
 
@@ -482,28 +271,28 @@ final readonly class PP3ParserBuilder
         ));
     }
 
-    private static function createKeptTokenReference(Context $context, mixed $children): TokenReference
+    public static function createKeptTokenReference(Context $context, mixed $children): TokenReference
     {
         $token = self::readToken($children, 0);
 
         return new TokenReference(self::readValue($token), true, $token->offset, self::calculateLength($token));
     }
 
-    private static function createSkippedTokenReference(Context $context, mixed $children): TokenReference
+    public static function createSkippedTokenReference(Context $context, mixed $children): TokenReference
     {
         $token = self::readToken($children, 0);
 
         return new TokenReference(self::readValue($token), false, $token->offset, self::calculateLength($token));
     }
 
-    private static function createRuleReference(Context $context, mixed $children): RuleReference
+    public static function createRuleReference(Context $context, mixed $children): RuleReference
     {
         $token = self::readToken($children, 0);
 
         return new RuleReference(self::readValue($token), $token->offset, self::calculateLength($token));
     }
 
-    private static function createInlinePattern(Context $context, mixed $children): InlinePattern
+    public static function createInlinePattern(Context $context, mixed $children): InlinePattern
     {
         $token = self::readTerminal($children);
 

@@ -89,8 +89,6 @@ class PP2Loader implements SyntaxLoaderInterface
     /**
      * Reading a grammar file needs a parser of its own, which is built once
      * and reused by every grammar this loader reads.
-     *
-     * @var ParserInterface<array<Declaration>>|null
      */
     private ?ParserInterface $runtime = null;
 
@@ -112,9 +110,11 @@ class PP2Loader implements SyntaxLoaderInterface
     }
 
     /**
-     * Describes the parser reading the grammar files of this format.
+     * Returns the parser reading the grammar files of this format.
      *
-     * @return ParserInterface<array<Declaration>>
+     * The parser is generated from the grammar describing the format and is
+     * committed along with it, so reading a grammar file costs nothing but the
+     * reading itself.
      */
     protected function createParser(): ParserInterface
     {
@@ -122,17 +122,29 @@ class PP2Loader implements SyntaxLoaderInterface
     }
 
     /**
-     * @return array<Declaration>
+     * @return list<Declaration>
      */
     private function parse(ReadableInterface $source): array
     {
-        return ($this->runtime ??= $this->createParser())->parse($source);
+        $declarations = ($this->runtime ??= $this->createParser())->parse($source);
+
+        \assert(\is_iterable($declarations), 'A grammar file is read into a list of declarations');
+
+        $result = [];
+
+        foreach ($declarations as $declaration) {
+            \assert($declaration instanceof Declaration, 'A grammar file is written of declarations');
+
+            $result[] = $declaration;
+        }
+
+        return $result;
     }
 
     /**
      * @throws CompilerRuntimeException
      */
-    private function loadDeclaration(
+    protected function loadDeclaration(
         Declaration $declaration,
         ReadableInterface $source,
         ParserBuilder $parser,
@@ -145,7 +157,7 @@ class PP2Loader implements SyntaxLoaderInterface
         }
 
         if ($declaration instanceof PragmaDeclaration) {
-            $this->loadPragma($declaration, $source, $parser);
+            $this->loadPragma($declaration, $source, $parser, $lexer);
 
             return;
         }
@@ -158,7 +170,7 @@ class PP2Loader implements SyntaxLoaderInterface
     /**
      * @throws CompilerRuntimeException
      */
-    private function loadToken(
+    protected function loadToken(
         TokenDeclaration $declaration,
         ReadableInterface $source,
         LexerBuilder $lexer,
@@ -172,6 +184,24 @@ class PP2Loader implements SyntaxLoaderInterface
         $definition->setHidden($declaration->isHidden);
         $definition->setSource($source, $declaration->offset, $declaration->length);
 
+        $this->loadAction($definition, $declaration, $state, $source);
+    }
+
+    /**
+     * Reads what the declaration says the token does to the reading.
+     *
+     * A format spells this out in a way of its own, so what a declaration
+     * means is decided here rather than by the parser that has read it.
+     *
+     * @param non-empty-string $state the state the token belongs to
+     * @throws CompilerRuntimeException
+     */
+    protected function loadAction(
+        TokenDefinition $definition,
+        TokenDeclaration $declaration,
+        string $state,
+        ReadableInterface $source,
+    ): void {
         $this->loadTransition($definition, $declaration, $state, $source);
     }
 
@@ -187,7 +217,7 @@ class PP2Loader implements SyntaxLoaderInterface
      * @param non-empty-string $state
      * @throws UnsupportedTransitionException
      */
-    private function loadTransition(
+    final protected function loadTransition(
         TokenDefinition $definition,
         TokenDeclaration $declaration,
         string $state,
@@ -220,17 +250,29 @@ class PP2Loader implements SyntaxLoaderInterface
     }
 
     /**
-     * @throws UnsupportedPragmaException
+     * @throws CompilerRuntimeException
      */
-    private function loadPragma(
+    protected function loadPragma(
         PragmaDeclaration $declaration,
         ReadableInterface $source,
         ParserBuilder $parser,
+        LexerBuilder $lexer,
     ): void {
         if ($declaration->name !== static::PRAGMA_ROOT) {
             throw UnsupportedPragmaException::becausePragmaIsNotSupported($source, $declaration);
         }
 
+        $this->loadRootPragma($declaration, $source, $parser);
+    }
+
+    /**
+     * Marks the rule the analysis starts at.
+     */
+    final protected function loadRootPragma(
+        PragmaDeclaration $declaration,
+        ReadableInterface $source,
+        ParserBuilder $parser,
+    ): void {
         /**
          * The rule the grammar starts at may well be declared in a grammar
          * that has not been read yet, so it is pointed at by name.
