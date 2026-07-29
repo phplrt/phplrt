@@ -25,7 +25,7 @@ final class ArrayBuffer implements BufferInterface
     private readonly array $tokens;
 
     /**
-     * The position of the terminal token, which is where the cursor stops.
+     * The position of the terminal token, i.e. where the cursor stops.
      *
      * @var int<0, max>
      */

@@ -34,16 +34,15 @@ interface BufferInterface
     }
 
     /**
-     * Moves the cursor to the given position, which is a position it has
-     * already been at.
+     * Rewinds the cursor back to a position it has already been at.
      *
      * @throws OutOfRangeException in case of the position is outside the input
      */
     public function seek(int $offset): void;
 
     /**
-     * Moves the cursor to the next token, or leaves it on the terminal one in
-     * case of the input has been read to its end.
+     * Moves the cursor to the next token. Once the input has been read to its
+     * end the cursor just stays on the terminal token.
      */
     public function next(): void;
 }
