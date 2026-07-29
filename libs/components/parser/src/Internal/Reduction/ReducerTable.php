@@ -10,11 +10,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Grammar\SequenceInterface;
 
 /**
- * Everything about a grammar that is known before the reduction starts.
+ * Everything the reduction needs to know about a grammar, calculated once.
  *
- * What a rule is built into does not depend on the source it has been
- * recognized in, so it is prepared once and shared by the reduction of every
- * source that follows.
+ * What a rule gets built into doesn't depend on the source it was recognized in,
+ * so it's prepared once here and then shared by every source that follows.
  *
  * @phpstan-type ReducerType callable(Context, mixed): mixed
  *
@@ -70,10 +69,8 @@ final readonly class ReducerTable
     }
 
     /**
-     * Returns the reduction of the traces of the given source.
-     *
-     * @param string $content the source code that has been read out of the
-     *        source object
+     * @param string $content the source code that has already been read out of
+     *        the source object
      */
     public function createReducer(ReadableInterface $source, string $content): TraceReducer
     {

@@ -9,7 +9,7 @@ use Phplrt\Parser\Context;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 /**
- * Builds the traces of a single source into the value the grammar describes.
+ * Builds the traces of a single source into whatever the grammar describes.
  *
  * @phpstan-import-type ReducerType from ReducerTable
  *
