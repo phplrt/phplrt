@@ -7,6 +7,18 @@
 This repository is a collection of formal grammar examples written for 
 [phplrt v4](https://github.com/phplrt/phplrt).
 
+> [!IMPORTANT]
+> These grammars are **examples**, not reference implementations. Each is
+> checked against the samples shipped next to it, which is a long way from
+> covering the language it describes: a grammar may read something the language
+> forbids, refuse something the language allows, or lag behind the version it
+> was written from.
+>
+> Do not treat one as a specification, and do not rely on one in production
+> without reading it first. We keep improving them, and
+> [issues](https://github.com/phplrt/phplrt/issues) and pull requests pointing
+> at a case that is read wrongly are welcome.
+
 The root directory name is the all-lowercase name of the language or file format
 parsed by the grammar. For example, `json`, `json5`, `graphql`, `c`, etc.
 
