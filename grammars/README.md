@@ -13,6 +13,18 @@ parsed by the grammar. For example, `json`, `json5`, `graphql`, `c`, etc.
 The `tests/` directory contains a set of tests to validate the grammar for
 correctness.
 
+### PHP Specific
+
+- [Doctrine Query Language](./dql)
+- [Go! AOP Pointcut](./goaop)
+- [PHPDoc (Advanced)](./phpdoc)
+- [PHPDoc (PHPStan)](./phpstan)
+- [PHPDoc (PSR-5)](./psr5)
+
+### Common
+
+- [JSON](./json)
+
 Please note that some code examples are taken from the
 [ANTLR v4 repository](https://github.com/antlr/grammars-v4) and adapted for
 phplrt v4. The repository does not contain a license, but ANTLR is distributed
