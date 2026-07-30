@@ -6,6 +6,12 @@
     "license": "MIT",
     "keywords": ["pp3", "grammar", "example", "source", "peg"],
     "homepage": "https://github.com/phplrt",
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/grammars"
@@ -18,16 +24,15 @@
             "Phplrt\\Example\\": "src"
         }
     },
-    "authors": [
-        {
-            "name": "Kirill Nesmeyanov",
-            "email": "nesk@xakep.ru"
-        }
-    ],
     "require-dev": {
         "phplrt/compiler": "^4.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "phpstan/phpstan": "^2.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Example\\Tests\\": "tests"
+        }
     },
     "extra": {
         "branch-alias": {
