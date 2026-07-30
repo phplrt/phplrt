@@ -13,9 +13,9 @@
 
 %skip  T_WHITESPACE           \s++
 
-%token T_TRUE                 (?i)true(?![a-zA-Z0-9_])
-%token T_FALSE                (?i)false(?![a-zA-Z0-9_])
-%token T_NULL                 (?i)null(?![a-zA-Z0-9_])
+%token T_TRUE                 (?i)true\b
+%token T_FALSE                (?i)false\b
+%token T_NULL                 (?i)null\b
 %token T_NOT                  (?i)not\b
 %token T_AND                  (?i)and\b
 %token T_OR                   (?i)or\b
