@@ -1,0 +1,47 @@
+// Every method of every class of the "Demo" namespace and below
+execution(public Demo\**->*(*))
+
+// A single method of a single class
+|| execution(public Demo\Example\Service->handle(*))
+
+// A method of any class implementing the interface
+|| execution(public Demo\Contract\LoggerInterface+->log(*))
+
+// Several access modifiers at once, with a behaviour modifier
+|| execution(public|protected !final Demo\Example\*->on*(*))
+
+// A static method
+|| execution(protected Demo\Example\Factory::create(*))
+
+// A plain function, without any class around it
+|| execution(array_map())
+
+// Reading or writing a property
+|| access(public Demo\Example\Entity->id)
+|| access(protected Demo\**->*)
+
+// Everything the annotation is put on
+|| @execution(Demo\Annotation\Loggable)
+|| @access(Demo\Annotation\Traceable)
+|| @within(Demo\Annotation\Aspect)
+
+// Everything a class is written of
+|| within(Demo\Example\Service)
+|| within(Demo\Contract\LoggerInterface+)
+
+// The moment an instance is created
+|| initialization(Demo\Example\Service)
+|| staticInitialization(Demo\Example\*)
+
+// A call made from inside another call
+|| cflowbelow(execution(public Demo\Example\Service->handle(*)))
+
+// A method matched at runtime rather than at weaving time
+|| dynamic(protected Demo\Example\Service->handle(*))
+
+// A method inherited from a parent
+|| matchInherited()
+
+// A pointcut declared elsewhere
+|| $this->loggingPointcut
+|| Demo\Aspect\LoggingAspect->loggingPointcut
