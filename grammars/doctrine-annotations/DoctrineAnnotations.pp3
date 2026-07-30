@@ -1,0 +1,141 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Doctrine Annotations
+ * -----------------------------------------------------------------------------
+ *
+ * The annotations read out of a doc comment by "doctrine/annotations": a name,
+ * the arguments it is called with, and the values those are written of.
+ *
+ * @see https://github.com/doctrine/annotations/blob/2.0.x/lib/Doctrine/Common/Annotations/DocParser.php
+ */
+
+%pragma root Annotations
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ *
+ *  An annotation is written inside a doc comment, so the asterisk beginning
+ *  each of its lines is read and dropped along with the whitespace.
+ */
+
+%skip  T_WHITESPACE            \s++
+%skip  T_DOC_DELIMITER         /\*\*|\*/|\*
+
+%token T_AT                    @
+%token T_NAMESPACE_SEPARATOR   \\
+
+%token T_PARENTHESIS_OPEN      \(
+%token T_PARENTHESIS_CLOSE     \)
+%token T_BRACE_OPEN            \{
+%token T_BRACE_CLOSE           \}
+%token T_COMMA                 ,
+%token T_EQUAL                 =
+%token T_DOUBLE_COLON          ::
+%token T_COLON                 :
+
+// A quote written inside a string is written twice
+%token T_STRING                "(?:[^"]|"")*+"
+
+%token T_FLOAT                 [+\-]?(?:[0-9]*+\.[0-9]++(?:[eE][+\-]?[0-9]++)?|[0-9]++[eE][+\-]?[0-9]++)
+%token T_INTEGER               [+\-]?[0-9]++
+
+%token T_TRUE                  (?i)true(?![a-zA-Z0-9_])
+%token T_FALSE                 (?i)false(?![a-zA-Z0-9_])
+%token T_NULL                  (?i)null(?![a-zA-Z0-9_])
+
+%token T_IDENTIFIER            [a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*+
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Annotation
+ * -----------------------------------------------------------------------------
+ */
+
+Annotations
+  : Annotation()+
+  ;
+
+// @ORM\Column(type="string", nullable=true)
+Annotation
+  : ::T_AT:: Name() Arguments()?
+  ;
+
+Name
+  : ::T_NAMESPACE_SEPARATOR::? NamePart() (::T_NAMESPACE_SEPARATOR:: NamePart())*
+  ;
+
+// A word naming the language itself names a part of an annotation as well
+NamePart
+  : <T_IDENTIFIER>
+  | <T_TRUE>
+  | <T_FALSE>
+  | <T_NULL>
+  ;
+
+Arguments
+  : ::T_PARENTHESIS_OPEN::
+      (Value() (::T_COMMA:: Value())* ::T_COMMA::?)?
+    ::T_PARENTHESIS_CLOSE::
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Values
+ * -----------------------------------------------------------------------------
+ */
+
+Value
+  : FieldAssignment()
+  | PlainValue()
+  ;
+
+// nullable=true
+FieldAssignment
+  : NamePart() ::T_EQUAL:: PlainValue()
+  ;
+
+PlainValue
+  : Collection()
+  | Annotation()
+  | Constant()
+  ;
+
+// {"a", "b"}, {"a" = 1}, {1: "a"}
+Collection
+  : ::T_BRACE_OPEN::
+      (Entry() (::T_COMMA:: Entry())* ::T_COMMA::?)?
+    ::T_BRACE_CLOSE::
+  ;
+
+Entry
+  : KeyValuePair()
+  | Value()
+  ;
+
+KeyValuePair
+  : Key() (::T_EQUAL:: | ::T_COLON::) PlainValue()
+  ;
+
+Key
+  : <T_STRING>
+  | <T_INTEGER>
+  | Constant()
+  ;
+
+Constant
+  : ClassConstant()
+  | <T_STRING>
+  | <T_FLOAT>
+  | <T_INTEGER>
+  | <T_TRUE>
+  | <T_FALSE>
+  | <T_NULL>
+  | Name()
+  ;
+
+// Demo\Entity\Status::ACTIVE
+ClassConstant
+  : Name() ::T_DOUBLE_COLON:: <T_IDENTIFIER>
+  ;

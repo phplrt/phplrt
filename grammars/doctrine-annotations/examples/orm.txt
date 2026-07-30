@@ -1,0 +1,12 @@
+/**
+ * @ORM\Entity(repositoryClass="Demo\Repository\UserRepository")
+ * @ORM\Table(
+ *     name="users",
+ *     indexes={
+ *         @ORM\Index(name="idx_email", columns={"email"}),
+ *         @ORM\Index(name="idx_name", columns={"first_name", "last_name"})
+ *     },
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="uniq_email", columns={"email"})}
+ * )
+ * @ORM\HasLifecycleCallbacks
+ */
