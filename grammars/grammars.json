@@ -8,7 +8,7 @@
         ]
     },
     {
-        "name": "PHPDoc Types",
+        "name": "PHPDoc Types (TypeLang)",
         "entry": "./phpdoc/phpdoc.pp2",
         "example": [
             "./phpdoc/examples/logical.phpdoc",
@@ -20,7 +20,19 @@
         ]
     },
     {
-        "name": "PSR-5 Type Expression",
+        "name": "PHPDoc Types (PHPStan)",
+        "entry": "./phpstan/PHPStan.pp3",
+        "example": [
+            "./phpstan/examples/logical.phpstan",
+            "./phpstan/examples/constants.phpstan",
+            "./phpstan/examples/generic.phpstan",
+            "./phpstan/examples/shape.phpstan",
+            "./phpstan/examples/callable.phpstan",
+            "./phpstan/examples/conditional.phpstan"
+        ]
+    },
+    {
+        "name": "PHPDoc Types (PSR-5)",
         "entry": "./psr5/PSR-5.pp3",
         "example": [
             "./psr5/examples/keywords.psr5",
