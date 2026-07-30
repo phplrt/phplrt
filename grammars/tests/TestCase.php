@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Example\Tests;
 
+use Phplrt\Compiler\Compiler;
+use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Parser\Parser;
 use Phplrt\Source\File;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -18,6 +23,8 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     protected const string ROOT_DIRECTORY = __DIR__ . '/..';
+
+    protected const string PARSERS_DIRECTORY = __DIR__ . '/temp';
 
     protected const string GRAMMARS_INDEX_PATHNAME = self::ROOT_DIRECTORY . '/grammars.json';
 
@@ -46,16 +53,59 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @return iterable<non-empty-string, array{FileInterface, list<FileInterface>}>
+     * @param non-empty-string $name
+     * @return non-empty-string
+     * @throws RuntimeExceptionInterface
+     * @throws SourceExceptionInterface
+     */
+    private static function compile(FileInterface $grammar, string $name): string
+    {
+        $pathname = self::PARSERS_DIRECTORY . '/' . $name . '.php';
+
+        if (\is_file($pathname)) {
+            return $pathname;
+        }
+
+        new Compiler()
+            ->load($grammar)
+            ->generate()
+            ->save($pathname);
+
+        return $pathname;
+    }
+
+    /**
+     * @return iterable<non-empty-string, array{FileInterface}>
      * @throws \JsonException
      */
     public static function grammarDataProvider(): iterable
     {
         foreach (self::read() as $index) {
-            yield $index['name'] => [
-                self::createSource($index['entry']),
-                \array_map(self::createSource(...), $index['example']),
-            ];
+            yield $index['name'] => [self::createSource($index['entry'])];
+        }
+    }
+
+    /**
+     * @return iterable<non-empty-string, array{Parser, FileInterface}>
+     * @throws RuntimeExceptionInterface
+     * @throws SourceExceptionInterface
+     * @throws \JsonException
+     */
+    public static function exampleDataProvider(): iterable
+    {
+        foreach (self::read() as $index) {
+            $syntaxName = $index['name'];
+
+            /** @var Parser $parser */
+            $parser = require self::compile(self::createSource($index['entry']), $syntaxName);
+
+            foreach ($index['example'] as $exampleRelativePathname) {
+                $source = self::createSource($exampleRelativePathname);
+
+                $filename = \pathinfo($source->pathname, \PATHINFO_FILENAME);
+
+                yield $syntaxName . ': ' . $filename => [$parser, $source];
+            }
         }
     }
 }

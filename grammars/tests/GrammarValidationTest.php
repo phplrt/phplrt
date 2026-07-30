@@ -8,22 +8,32 @@ use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Parser\Analysis\Mode;
+use Phplrt\Parser\Analysis\Result\SuccessfulResult;
+use Phplrt\Parser\Parser;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class GrammarValidationTest extends TestCase
 {
     /**
-     * @param list<FileInterface> $_
      * @throws RuntimeExceptionInterface
      * @throws SourceExceptionInterface
      */
     #[DataProvider('grammarDataProvider')]
-    public function testValidation(FileInterface $grammar, array $_): void
+    public function testGrammarValidation(FileInterface $grammar): void
     {
         $this->expectNotToPerformAssertions();
 
         new Compiler()
             ->load($grammar)
             ->build();
+    }
+
+    #[DataProvider('exampleDataProvider')]
+    public function testSyntaxValidation(Parser $parser, FileInterface $example): void
+    {
+        $result = $parser->analyze($example, Mode::SyntaxCheck);
+
+        self::assertInstanceOf(SuccessfulResult::class, $result);
     }
 }
