@@ -1,0 +1,70 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Arithmetic
+ * -----------------------------------------------------------------------------
+ *
+ * The expression a calculator reads: numbers, constants, the four operators
+ * and the functions called on them.
+ *
+ * @see https://github.com/hoaproject/Math/blob/master/Arithmetic.pp
+ */
+
+%pragma root Expression
+
+%skip  T_WHITESPACE           \s++
+
+%token T_NUMBER               (?:0|[1-9][0-9]*+)(?:\.[0-9]++)?(?:[eE][+\-]?[0-9]++)?
+%token T_PARENTHESIS_OPEN     \(
+%token T_PARENTHESIS_CLOSE    \)
+%token T_COMMA                ,
+%token T_PLUS                 \+
+%token T_MINUS                -|−
+%token T_TIMES                \*|×
+%token T_DIVIDE               /|÷
+
+// A name written of capitals alone names a constant: PI, E
+%token T_CONSTANT             [A-Z_]++[A-Z0-9_]*+(?![a-z])
+%token T_IDENTIFIER           \w++
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Expression
+ * -----------------------------------------------------------------------------
+ *
+ *  One rule per precedence, from the loosest binding one down to the tightest:
+ *  - a + b, a - b
+ *  - a * b, a / b
+ *  - -a
+ *  - 1, PI, f(x), ( ... )
+ */
+
+Expression
+  : Sum()
+  ;
+
+Sum
+  : Product() ((<T_PLUS> | <T_MINUS>) Product())*
+  ;
+
+Product
+  : Unary() ((<T_TIMES> | <T_DIVIDE>) Unary())*
+  ;
+
+Unary
+  : (<T_PLUS> | <T_MINUS>)? Primary()
+  ;
+
+Primary
+  : ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE::
+  | FunctionCall()
+  | <T_NUMBER>
+  | <T_CONSTANT>
+  | <T_IDENTIFIER>
+  ;
+
+// avg(1, 2, 3)
+FunctionCall
+  : <T_IDENTIFIER> ::T_PARENTHESIS_OPEN::
+      (Expression() (::T_COMMA:: Expression())*)?
+    ::T_PARENTHESIS_CLOSE::
+  ;
