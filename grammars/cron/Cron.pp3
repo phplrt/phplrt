@@ -14,10 +14,10 @@
 %skip  T_WHITESPACE   \h++
 
 // @yearly, @monthly, @weekly, @daily, @hourly, @reboot
-%token T_NICKNAME     @(?i)(?:annually|yearly|monthly|weekly|daily|midnight|hourly|reboot)(?![a-zA-Z0-9_])
+%token T_NICKNAME     @(?i)(?:annually|yearly|monthly|weekly|daily|midnight|hourly|reboot)\b
 
 // JAN..DEC, MON..SUN
-%token T_NAME         (?i)(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|mon|tue|wed|thu|fri|sat|sun)(?![a-zA-Z0-9_])
+%token T_NAME         (?i)(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|mon|tue|wed|thu|fri|sat|sun)\b
 
 /**
  * The last day, the weekday nearest a day and the n-th weekday of a month are
@@ -25,8 +25,8 @@
  * token: "L", "5L", "15W", "5#3".
  */
 %token T_NTH          [0-9]++#[0-9]++
-%token T_LAST         [0-9]*+(?i)L(?![a-zA-Z0-9_])
-%token T_NEAREST      [0-9]++(?i)W(?![a-zA-Z0-9_])
+%token T_LAST         [0-9]*+(?i)L\b
+%token T_NEAREST      [0-9]++(?i)W\b
 
 %token T_NUMBER       [0-9]++
 %token T_ASTERISK     \*
