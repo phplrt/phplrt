@@ -1,0 +1,10 @@
+(* An arithmetic expression, written with all three brackets *)
+
+<expression> ::= <term> { ("+" | "-") <term> }
+<term>       ::= <factor> { ("*" | "/") <factor> }
+<factor>     ::= [ "-" ] <primary>
+<primary>    ::= <number> | <name> | "(" <expression> ")"
+<number>     ::= <digit> { <digit> } [ "." <digit> { <digit> } ]
+<name>       ::= <letter> { <letter> | <digit> | "_" }
+<digit>      ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<letter>     ::= "a" | "b" | "c" | "x" | "y" | "z"
