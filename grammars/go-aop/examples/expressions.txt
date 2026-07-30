@@ -1,0 +1,15 @@
+// Everything a class is written of, except what is annotated
+(
+    within(Demo\Example\**)
+    && !@within(Demo\Annotation\Ignored)
+)
+
+// Either of the two, as long as the call comes from a service
+|| (
+       execution(public Demo\Example\*->find*(*))
+    || execution(public Demo\Example\*->load*(*))
+)
+&& cflowbelow(execution(public Demo\Example\Service->handle(*)))
+
+// Whatever a pointcut declared elsewhere matches
+|| ($this->loggingPointcut && !within(Demo\Example\Logger))
