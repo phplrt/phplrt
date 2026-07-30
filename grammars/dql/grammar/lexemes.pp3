@@ -3,14 +3,11 @@
  *  Lexemes Of The Doctrine Query Language
  * -----------------------------------------------------------------------------
  *
- *  A token is matched in the order it is declared, so the keywords are declared
- *  before the identifier: every keyword is therefore reserved and cannot name
- *  an entity, a field or an alias.
+ *  Every keyword of the language, written in any case, and everything else a
+ *  query is written of: the literals, the parameters bound to it, the
+ *  operators and the names.
  *
- *  Each keyword ends where a word ends, so a keyword is never read out of the
- *  beginning of a longer word: "INSTANCE" is not read as "IN".
- *
- *  A keyword is written in any case, the way the language reads it.
+ *  A keyword is reserved and does not name an entity, a field or an alias.
  */
 
 %skip   T_WHITESPACE                    \s++
@@ -136,9 +133,6 @@
  * -----------------------------------------------------------------------------
  *  Operators And Punctuation
  * -----------------------------------------------------------------------------
- *
- *  An operator written of two characters is declared before the one written of
- *  the first of them, so "<=" is not read as "<" followed by "=".
  */
 
 %token  T_LTE                           <=
@@ -166,7 +160,7 @@
  *  Identifier
  * -----------------------------------------------------------------------------
  *
- *  Declared last, so a word spelled like a keyword is read as the keyword.
+ *  The name of an entity, a field or an alias.
  */
 
 %token  T_IDENTIFIER                    [a-zA-Z_][a-zA-Z0-9_]*+

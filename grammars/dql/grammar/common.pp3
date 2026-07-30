@@ -9,12 +9,10 @@ Identifier
   ;
 
 /**
- * A word written past a separator, like the "Order" of "Demo\Entity\Order" or
- * the "order" of "u.order".
- *
- * Nothing but a name is ever written there, so a keyword names a class or a
- * field the same way any other word does. Anywhere else a keyword stays
- * reserved: an entity or an alias named after one is read as the keyword.
+ * A word written past a separator, where a keyword names a class or a field
+ * the same way any other word does, like:
+ *  - the "Order" of "Demo\Entity\Order"
+ *  - the "order" of "u.order"
  */
 NamePart
   : <T_IDENTIFIER>
