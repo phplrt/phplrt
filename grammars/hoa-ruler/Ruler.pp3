@@ -1,0 +1,110 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Hoa Ruler
+ * -----------------------------------------------------------------------------
+ *
+ * A rule language: a condition written of the values it compares, the
+ * operators joining them and the functions it calls.
+ *
+ * @see https://github.com/hoaproject/Ruler/blob/master/Grammar.pp
+ */
+
+%pragma root Expression
+
+%skip  T_WHITESPACE           \s++
+
+%token T_TRUE                 (?i)true(?![a-zA-Z0-9_])
+%token T_FALSE                (?i)false(?![a-zA-Z0-9_])
+%token T_NULL                 (?i)null(?![a-zA-Z0-9_])
+%token T_NOT                  (?i)not\b
+%token T_AND                  (?i)and\b
+%token T_OR                   (?i)or\b
+%token T_XOR                  (?i)xor\b
+
+// A quote written inside a string is escaped with a backslash
+%token T_STRING               "(?:[^"\\]|\\.)*+"|'(?:[^'\\]|\\.)*+'
+
+%token T_FLOAT                [0-9]++\.[0-9]++
+%token T_INTEGER              [0-9]++
+
+%token T_PARENTHESIS_OPEN     \(
+%token T_PARENTHESIS_CLOSE    \)
+%token T_BRACKET_OPEN         \[
+%token T_BRACKET_CLOSE        \]
+%token T_COMMA                ,
+%token T_DOT                  \.
+
+// Anything but the characters written around it, an operator included
+%token T_IDENTIFIER           [^\s()\[\],.]++
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Expression
+ * -----------------------------------------------------------------------------
+ *
+ *  One rule per precedence, from the loosest binding one down to the tightest:
+ *  - a or b, a xor b
+ *  - a and b
+ *  - a = b, a in b - the operator is written as a name of its own
+ */
+
+Expression
+  : Disjunction()
+  ;
+
+Disjunction
+  : Conjunction() ((::T_OR:: | ::T_XOR::) Disjunction())?
+  ;
+
+Conjunction
+  : Operation() (::T_AND:: Conjunction())?
+  ;
+
+Operation
+  : Operand() (<T_IDENTIFIER> Disjunction())?
+  ;
+
+Operand
+  : ::T_PARENTHESIS_OPEN:: Disjunction() ::T_PARENTHESIS_CLOSE::
+  | Value()
+  ;
+
+Value
+  : ::T_NOT:: Disjunction()
+  | <T_TRUE>
+  | <T_FALSE>
+  | <T_NULL>
+  | <T_FLOAT>
+  | <T_INTEGER>
+  | <T_STRING>
+  | ArrayDeclaration()
+  | Chain()
+  ;
+
+// ["a", "b"]
+ArrayDeclaration
+  : ::T_BRACKET_OPEN:: Value() (::T_COMMA:: Value())* ::T_BRACKET_CLOSE::
+  ;
+
+// user.group[0].name(), points
+Chain
+  : (FunctionCall() | Variable()) (ArrayAccess() | ObjectAccess())*
+  ;
+
+Variable
+  : <T_IDENTIFIER>
+  ;
+
+ArrayAccess
+  : ::T_BRACKET_OPEN:: Value() ::T_BRACKET_CLOSE::
+  ;
+
+ObjectAccess
+  : ::T_DOT:: (FunctionCall() | <T_IDENTIFIER>)
+  ;
+
+FunctionCall
+  : <T_IDENTIFIER> ::T_PARENTHESIS_OPEN::
+      (Disjunction() (::T_COMMA:: Disjunction())*)?
+    ::T_PARENTHESIS_CLOSE::
+  ;

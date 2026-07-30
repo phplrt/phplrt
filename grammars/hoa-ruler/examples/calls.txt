@@ -1,0 +1,1 @@
+count(user.roles) > 0 xor is_active(user, now())
