@@ -6,7 +6,6 @@ namespace Phplrt\Example\Tests;
 
 use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Parser\Parser;
@@ -37,6 +36,19 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * @param non-empty-string $name
+     * @return non-empty-string
+     */
+    private static function createFileName(string $name): string
+    {
+        $result = \trim(\preg_replace('/[^a-zA-Z0-9]++/', '-', $name) ?? '', '-');
+
+        return $result === ''
+            ? \hash($name, 'xxh32')
+            : $result;
+    }
+
+    /**
      * @return LanguageRawIndexType
      * @throws \JsonException
      */
@@ -60,11 +72,7 @@ abstract class TestCase extends BaseTestCase
      */
     private static function compile(FileInterface $grammar, string $name): string
     {
-        $pathname = self::PARSERS_DIRECTORY . '/' . $name . '.php';
-
-        if (\is_file($pathname)) {
-            return $pathname;
-        }
+        $pathname = self::PARSERS_DIRECTORY . '/' . self::createFileName($name) . '.php';
 
         new Compiler()
             ->load($grammar)
