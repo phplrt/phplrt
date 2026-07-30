@@ -1,0 +1,1 @@
+{name: user.name, 'roles': user.roles, (key): 1..10}

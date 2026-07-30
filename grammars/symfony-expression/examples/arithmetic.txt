@@ -1,0 +1,1 @@
+product.price * 1.2 + shipping.cost - discount ** 2 % 5

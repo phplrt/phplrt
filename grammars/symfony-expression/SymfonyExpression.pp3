@@ -1,0 +1,258 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Symfony Expression Language
+ * -----------------------------------------------------------------------------
+ *
+ * The expression a Symfony application evaluates at runtime: security rules,
+ * routing conditions, service arguments and validation constraints.
+ *
+ * @see https://github.com/symfony/expression-language/blob/7.2/Parser.php
+ */
+
+%pragma root Expression
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ */
+
+%skip  T_WHITESPACE          \s++
+%skip  T_COMMENT             /\*.*?\*/
+
+// A backslash escapes the quote past it
+%token T_STRING              "(?:[^"\\]|\\.)*+"|'(?:[^'\\]|\\.)*+'
+
+// 1, 1.5, .5, 1_000, 1e-3
+%token T_NUMBER              (?:\.[0-9]++(?:_[0-9]++)*+|[0-9]++(?:_[0-9]++)*+(?:\.(?!\.)(?:[0-9]++(?:_[0-9]++)*+)?)?)(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)?
+
+/**
+ * An operator written as a word is surrounded by whitespace or a parenthesis,
+ * so a name beginning with one is not read as the operator.
+ */
+%token T_NOT_IN              (?<=^|[\s(])not\h++in(?=[\s(])
+%token T_STARTS_WITH         (?<=^|[\s(])starts\h++with(?=[\s(])
+%token T_ENDS_WITH           (?<=^|[\s(])ends\h++with(?=[\s(])
+%token T_CONTAINS            (?<=^|[\s(])contains(?=[\s(])
+%token T_MATCHES             (?<=^|[\s(])matches(?=[\s(])
+%token T_NOT                 (?<=^|[\s(])not(?=[\s(])
+%token T_XOR                 (?<=^|[\s(])xor(?=[\s(])
+%token T_AND_WORD            (?<=^|[\s(])and(?=[\s(])
+%token T_OR_WORD             (?<=^|[\s(])or(?=[\s(])
+%token T_IN                  (?<=^|[\s(])in(?=[\s(])
+
+/**
+ * An operator written of several characters is declared before the one written
+ * of its first, so "===" is not read as "==" followed by "=".
+ */
+%token T_IDENTICAL           ===
+%token T_NOT_IDENTICAL       !==
+%token T_EQUAL               ==
+%token T_NOT_EQUAL           !=
+%token T_GREATER_OR_EQUAL    >=
+%token T_LESS_OR_EQUAL       <=
+%token T_POWER               \*\*
+%token T_SHIFT_LEFT          <<
+%token T_SHIFT_RIGHT         >>
+%token T_RANGE               \.\.
+%token T_AND                 &&
+%token T_OR                  \|\|
+%token T_NULL_COALESCE       \?\?
+
+%token T_GREATER             >
+%token T_LESS                <
+%token T_EXCLAMATION         !
+%token T_PLUS                \+
+%token T_MINUS               -
+%token T_TIMES               \*
+%token T_DIVIDE              /
+%token T_MODULO              %
+%token T_TILDE               ~
+%token T_BITWISE_OR          \|
+%token T_BITWISE_XOR         \^
+%token T_BITWISE_AND         &
+
+%token T_PARENTHESIS_OPEN    \(
+%token T_PARENTHESIS_CLOSE   \)
+%token T_BRACKET_OPEN        \[
+%token T_BRACKET_CLOSE       \]
+%token T_BRACE_OPEN          \{
+%token T_BRACE_CLOSE         \}
+%token T_QUESTION_MARK       \?
+%token T_COLON               :
+%token T_COMMA               ,
+%token T_DOT                 \.
+
+%token T_NAME                [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Expression
+ * -----------------------------------------------------------------------------
+ *
+ *  One rule per precedence, from the loosest binding one down to the tightest,
+ *  in the order the language declares them:
+ *
+ *   ?? and ?:, or, xor, and, |, ^, &, the comparisons, .. and the shifts,
+ *   "+" and "-", "~", not, "*" "/" "%", "**", the signs, the accesses.
+ */
+
+Expression
+  : Conditional()
+  ;
+
+// a ?? b, a ? b : c, a ?: b
+Conditional
+  : Disjunction() (::T_NULL_COALESCE:: Disjunction())*
+    ( ::T_QUESTION_MARK:: Expression() ::T_COLON:: Expression()
+    | ::T_QUESTION_MARK:: ::T_COLON:: Expression()
+    | ::T_QUESTION_MARK:: Expression()
+    )*
+  ;
+
+Disjunction
+  : ExclusiveDisjunction() ((<T_OR_WORD> | <T_OR>) ExclusiveDisjunction())*
+  ;
+
+ExclusiveDisjunction
+  : Conjunction() (<T_XOR> Conjunction())*
+  ;
+
+Conjunction
+  : BitwiseOr() ((<T_AND_WORD> | <T_AND>) BitwiseOr())*
+  ;
+
+BitwiseOr
+  : BitwiseXor() (<T_BITWISE_OR> BitwiseXor())*
+  ;
+
+BitwiseXor
+  : BitwiseAnd() (<T_BITWISE_XOR> BitwiseAnd())*
+  ;
+
+BitwiseAnd
+  : Comparison() (<T_BITWISE_AND> Comparison())*
+  ;
+
+Comparison
+  : Range() (ComparisonOperator() Range())*
+  ;
+
+ComparisonOperator
+  : <T_IDENTICAL>
+  | <T_NOT_IDENTICAL>
+  | <T_EQUAL>
+  | <T_NOT_EQUAL>
+  | <T_GREATER_OR_EQUAL>
+  | <T_LESS_OR_EQUAL>
+  | <T_GREATER>
+  | <T_LESS>
+  | <T_NOT_IN>
+  | <T_IN>
+  | <T_CONTAINS>
+  | <T_STARTS_WITH>
+  | <T_ENDS_WITH>
+  | <T_MATCHES>
+  ;
+
+// 1..10, a << 2, a >> 2
+Range
+  : Sum() ((<T_RANGE> | <T_SHIFT_LEFT> | <T_SHIFT_RIGHT>) Sum())*
+  ;
+
+Sum
+  : Concatenation() ((<T_PLUS> | <T_MINUS>) Concatenation())*
+  ;
+
+// 'a' ~ 'b'
+Concatenation
+  : Negation() (<T_TILDE> Negation())*
+  ;
+
+// "not" binds looser than "*", unlike the signs
+Negation
+  : (<T_NOT> | <T_EXCLAMATION>) Negation()
+  | Product()
+  ;
+
+Product
+  : Power() ((<T_TIMES> | <T_DIVIDE> | <T_MODULO>) Power())*
+  ;
+
+// The tightest binding operator, and the only one binding to the right
+Power
+  : Unary() (<T_POWER> Power())?
+  ;
+
+Unary
+  : (<T_MINUS> | <T_PLUS> | <T_TILDE>) Unary()
+  | Postfix()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Access And Primary
+ * -----------------------------------------------------------------------------
+ */
+
+// a.b, a.b(1), a['b'], a?.b
+Postfix
+  : Primary() (PropertyAccess() | Subscript())*
+  ;
+
+PropertyAccess
+  : ::T_DOT:: Name() Arguments()?
+  ;
+
+Subscript
+  : ::T_BRACKET_OPEN:: Expression() ::T_BRACKET_CLOSE::
+  ;
+
+Primary
+  : ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE::
+  | ArrayLiteral()
+  | HashLiteral()
+  | FunctionCall()
+  | <T_STRING>
+  | <T_NUMBER>
+  | Name()
+  ;
+
+FunctionCall
+  : Name() Arguments()
+  ;
+
+Arguments
+  : ::T_PARENTHESIS_OPEN::
+      (Expression() (::T_COMMA:: Expression())*)?
+    ::T_PARENTHESIS_CLOSE::
+  ;
+
+// [1, 2, 3]
+ArrayLiteral
+  : ::T_BRACKET_OPEN::
+      (Expression() (::T_COMMA:: Expression())* ::T_COMMA::?)?
+    ::T_BRACKET_CLOSE::
+  ;
+
+// {a: 1, 'b': 2, (c): 3}
+HashLiteral
+  : ::T_BRACE_OPEN::
+      (HashEntry() (::T_COMMA:: HashEntry())* ::T_COMMA::?)?
+    ::T_BRACE_CLOSE::
+  ;
+
+HashEntry
+  : HashKey() ::T_COLON:: Expression()
+  ;
+
+HashKey
+  : <T_STRING>
+  | <T_NUMBER>
+  | ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE::
+  | Name()
+  ;
+
+Name
+  : <T_NAME>
+  ;

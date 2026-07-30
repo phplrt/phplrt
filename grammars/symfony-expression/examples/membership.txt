@@ -1,0 +1,1 @@
+user.role in ['admin', 'editor'] or user.id not in [1, 2, 3]
