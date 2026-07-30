@@ -31,7 +31,7 @@ correctness.
 
 - [Composer Version Constraint](./composer)
 - [Doctrine Annotations](./doctrine-annotations)
-- [Doctrine Query Language](./dql)
+- [DQL (Doctrine Query Language)](./dql)
 - [PP Grammar (Hoa)](./pp)
 - [PP2 Grammar (phplrt)](./pp2)
 - [PP3 Grammar (phplrt)](./pp3)
