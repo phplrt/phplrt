@@ -1,0 +1,10 @@
+[
+    {
+        "name": "JSON",
+        "entry": "./json/JSON.pp3",
+        "example": [
+            "./json/examples/example1.json",
+            "./json/examples/numbers.json"
+        ]
+    }
+]

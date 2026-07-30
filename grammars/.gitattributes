@@ -1,22 +1,22 @@
 * text=auto eol=lf
 *.pp eol=lf linguist-language=EBNF
 *.pp2 eol=lf linguist-language=EBNF
-*.pp3 eol=lf linguist-language=EBNF
 
 # GIT
 .editorconfig export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
 
-# Common
-/.github export-ignore
-/docs export-ignore
-/examples export-ignore
-/tests export-ignore
-
 # Tools
 .php-cs-fixer.php export-ignore
-monorepo-builder.php export-ignore
-phpbench.json export-ignore
 phpstan.neon export-ignore
+
+# Tests + CI
 phpunit.xml export-ignore
+
+/.github export-ignore
+/tests export-ignore
+
+# Common
+/docs export-ignore
+monorepo-builder.yml export-ignore

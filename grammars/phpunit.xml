@@ -14,14 +14,8 @@
     </php>
 
     <testsuites>
-        <testsuite name="components">
-            <directory>libs/components/*/tests</directory>
-        </testsuite>
-        <testsuite name="contracts">
-            <directory>libs/contracts/*/tests</directory>
-        </testsuite>
-        <testsuite name="examples">
-            <directory>grammars/tests</directory>
+        <testsuite name="library">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
@@ -29,8 +23,7 @@
 
     <source>
         <include>
-            <directory suffix=".php">libs/**/src</directory>
-            <directory suffix=".php">grammars/src</directory>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
 </phpunit>

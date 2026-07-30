@@ -47,6 +47,9 @@ jobs:
           # Documentation
           - local_path: 'docs'
             split_repository: 'docs'
+          # Examples
+          - local_path: 'grammars'
+            split_repository: 'grammars'
     steps:
       - uses: actions/checkout@v7
 

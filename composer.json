@@ -8,6 +8,9 @@
         "issues": "https://github.com/phplrt/phplrt/issues",
         "source": "https://github.com/phplrt/phplrt"
     },
+    "repositories": [
+        {"type": "path", "url": "./grammars"}
+    ],
     "authors": [
         {
             "name": "Kirill Nesmeyanov",
@@ -44,14 +47,12 @@
         "ext-intl": "*",
         "ext-mbstring": "*",
         "friendsofphp/php-cs-fixer": "^3.95",
-        "phpbench/phpbench": "^1.7",
-        "phpstan/phpdoc-parser": "^2.3",
+        "phplrt/grammars": "^4.0",
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.5|^13.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "symplify/monorepo-builder": "^12.7",
-        "type-lang/types": "^2.0@beta"
+        "symplify/monorepo-builder": "^12.7"
     },
     "autoload-dev": {
         "psr-4": {
@@ -65,7 +66,7 @@
             "Phplrt\\Parser\\Builder\\Tests\\": "libs/components/parser-builder/tests",
             "Phplrt\\Parser\\Tests\\": "libs/components/parser/tests",
             "Phplrt\\Source\\Tests\\": "libs/components/source/tests",
-            "Phplrt\\Tests\\": "tests"
+            "Phplrt\\Example\\Tests\\": "grammars/tests"
         }
     },
     "replace": {
