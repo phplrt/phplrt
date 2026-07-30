@@ -15,12 +15,12 @@
 %skip  T_COMMENT           //[^\r\n]*+|#[^\r\n]*+
 %skip  T_DOC               /\*.*?\*/
 
-%token T_STRICT            (?i)strict(?![a-zA-Z0-9_])
-%token T_GRAPH             (?i)graph(?![a-zA-Z0-9_])
-%token T_DIGRAPH           (?i)digraph(?![a-zA-Z0-9_])
-%token T_SUBGRAPH          (?i)subgraph(?![a-zA-Z0-9_])
-%token T_NODE              (?i)node(?![a-zA-Z0-9_])
-%token T_EDGE              (?i)edge(?![a-zA-Z0-9_])
+%token T_STRICT            (?i)strict\b
+%token T_GRAPH             (?i)graph\b
+%token T_DIGRAPH           (?i)digraph\b
+%token T_SUBGRAPH          (?i)subgraph\b
+%token T_NODE              (?i)node\b
+%token T_EDGE              (?i)edge\b
 
 // A string is written across several lines by escaping the line break
 %token T_STRING            "(?:[^"\\]|\\[\s\S])*+"
