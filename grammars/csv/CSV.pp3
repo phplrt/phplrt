@@ -1,0 +1,31 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Comma-Separated Values
+ * -----------------------------------------------------------------------------
+ *
+ * A line break separates the rows and a comma separates the fields, so neither
+ * is trivia and nothing is skipped: every character of the file is data.
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc4180
+ */
+
+%pragma root File
+
+// A quote written inside a quoted field is written twice
+%token T_STRING  "(?:""|[^"])*+"
+%token T_TEXT    [^,\r\n"]++
+%token T_COMMA   ,
+%token T_EOL     \r?+\n
+
+File
+  : Row()+
+  ;
+
+Row
+  : Field()? (::T_COMMA:: Field()?)* ::T_EOL::
+  ;
+
+Field
+  : <T_STRING>
+  | <T_TEXT>
+  ;
