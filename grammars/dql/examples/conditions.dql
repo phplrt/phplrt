@@ -1,0 +1,18 @@
+SELECT u
+FROM Demo\Entity\User u
+WHERE u.age BETWEEN 18 AND :max
+    AND u.name LIKE :pattern ESCAPE '!'
+    AND u.email NOT LIKE '%@example.com'
+    AND u.status IN (1, 2, ?1)
+    AND u.role NOT IN ('guest', 'banned')
+    AND (u.deletedAt IS NULL OR u.restoredAt IS NOT NULL)
+    AND u.comments IS NOT EMPTY
+    AND u.roles IS EMPTY
+    AND :group MEMBER OF u.groups
+    AND u INSTANCE OF Demo\Entity\Admin
+    AND u NOT INSTANCE OF (Demo\Entity\Guest, :type)
+    AND NOT u.locked = TRUE
+    AND u.rating >= 4.5
+    AND u.deletedAt <> u.createdAt
+    AND u.version != 0
+ORDER BY u.id

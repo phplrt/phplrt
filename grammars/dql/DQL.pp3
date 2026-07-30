@@ -1,0 +1,25 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Doctrine Query Language
+ * -----------------------------------------------------------------------------
+ *
+ * The language the Doctrine ORM reads its queries in: an object query language
+ * reading entities and their fields rather than tables and their columns.
+ *
+ * @see https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/dql-doctrine-query-language.html
+ */
+
+%include grammar/lexemes        // Token Definitions
+%include grammar/common         // Names, Paths, Literals And Parameters
+%include grammar/statements     // SELECT, UPDATE, DELETE And Their Clauses
+%include grammar/conditions     // WHERE ... AND ... OR ...
+%include grammar/expressions    // Values, Arithmetic And CASE
+%include grammar/functions      // CONCAT(...), SIZE(...), etc.
+
+%pragma root QueryLanguage
+
+QueryLanguage
+  : SelectStatement()
+  | UpdateStatement()
+  | DeleteStatement()
+  ;

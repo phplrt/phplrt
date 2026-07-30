@@ -1,0 +1,14 @@
+SELECT u, (SELECT COUNT(c.id) FROM Demo\Entity\Comment c WHERE c.author = u) AS comments
+FROM Demo\Entity\User u
+WHERE u.rating > (SELECT AVG(x.rating) FROM Demo\Entity\User x)
+    AND u.id IN (
+        SELECT DISTINCT o.author
+        FROM Demo\Entity\Order o
+        WHERE o.total > 100
+        GROUP BY o.author
+        HAVING SUM(o.total) > 1000
+    )
+    AND u.rank >= ALL (SELECT r.rank FROM Demo\Entity\Rank r)
+    AND EXISTS (SELECT 1 FROM Demo\Entity\Ban b WHERE b.user = u)
+    AND NOT EXISTS (SELECT 1 FROM Demo\Entity\Lock l WHERE l.user = u)
+ORDER BY comments DESC

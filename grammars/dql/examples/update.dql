@@ -1,0 +1,8 @@
+UPDATE Demo\Entity\User u
+SET u.name = TRIM(:name),
+    u.rank = u.rank + 1,
+    u.deletedAt = NULL,
+    u.locked = FALSE,
+    u.nickname = COALESCE(u.nickname, u.name)
+WHERE u.id = ?1
+    AND u.createdAt < CURRENT_DATE

@@ -1,0 +1,6 @@
+SELECT o, o.order, o.group.size, o.end
+FROM Demo\Entity\Order o
+    JOIN o.group g
+WHERE o.order.index = :index
+    AND o.set MEMBER OF g.all
+ORDER BY o.order.by DESC

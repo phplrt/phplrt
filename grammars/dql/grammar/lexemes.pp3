@@ -1,0 +1,172 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes Of The Doctrine Query Language
+ * -----------------------------------------------------------------------------
+ *
+ *  A token is matched in the order it is declared, so the keywords are declared
+ *  before the identifier: every keyword is therefore reserved and cannot name
+ *  an entity, a field or an alias.
+ *
+ *  Each keyword ends where a word ends, so a keyword is never read out of the
+ *  beginning of a longer word: "INSTANCE" is not read as "IN".
+ *
+ *  A keyword is written in any case, the way the language reads it.
+ */
+
+%skip   T_WHITESPACE                    \s++
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Literals And Parameters
+ * -----------------------------------------------------------------------------
+ *
+ *  A quote inside a string is written twice, the way SQL writes it.
+ */
+
+%token  T_STRING                        '(?:[^']|'')*+'
+%token  T_FLOAT                         [0-9]++\.[0-9]++(?:[eE][+-]?[0-9]++)?
+%token  T_INTEGER                       [0-9]++
+
+%token  T_POSITIONAL_PARAMETER          \?[0-9]++
+%token  T_NAMED_PARAMETER               :[a-zA-Z_][a-zA-Z0-9_]*+
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Statements And Clauses
+ * -----------------------------------------------------------------------------
+ */
+
+%token  T_SELECT                        (?i)select(?![a-zA-Z0-9_])
+%token  T_UPDATE                        (?i)update(?![a-zA-Z0-9_])
+%token  T_DELETE                        (?i)delete(?![a-zA-Z0-9_])
+%token  T_FROM                          (?i)from(?![a-zA-Z0-9_])
+%token  T_SET                           (?i)set(?![a-zA-Z0-9_])
+%token  T_WHERE                         (?i)where(?![a-zA-Z0-9_])
+%token  T_GROUP                         (?i)group(?![a-zA-Z0-9_])
+%token  T_HAVING                        (?i)having(?![a-zA-Z0-9_])
+%token  T_ORDER                         (?i)order(?![a-zA-Z0-9_])
+%token  T_BY                            (?i)by(?![a-zA-Z0-9_])
+%token  T_ASC                           (?i)asc(?![a-zA-Z0-9_])
+%token  T_DESC                          (?i)desc(?![a-zA-Z0-9_])
+
+%token  T_JOIN                          (?i)join(?![a-zA-Z0-9_])
+%token  T_LEFT                          (?i)left(?![a-zA-Z0-9_])
+%token  T_INNER                         (?i)inner(?![a-zA-Z0-9_])
+%token  T_OUTER                         (?i)outer(?![a-zA-Z0-9_])
+%token  T_WITH                          (?i)with(?![a-zA-Z0-9_])
+%token  T_INDEX                         (?i)index(?![a-zA-Z0-9_])
+
+%token  T_AS                            (?i)as(?![a-zA-Z0-9_])
+%token  T_DISTINCT                      (?i)distinct(?![a-zA-Z0-9_])
+%token  T_HIDDEN                        (?i)hidden(?![a-zA-Z0-9_])
+%token  T_PARTIAL                       (?i)partial(?![a-zA-Z0-9_])
+%token  T_NEW                           (?i)new(?![a-zA-Z0-9_])
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Conditions
+ * -----------------------------------------------------------------------------
+ */
+
+%token  T_AND                           (?i)and(?![a-zA-Z0-9_])
+%token  T_OR                            (?i)or(?![a-zA-Z0-9_])
+%token  T_NOT                           (?i)not(?![a-zA-Z0-9_])
+%token  T_BETWEEN                       (?i)between(?![a-zA-Z0-9_])
+%token  T_LIKE                          (?i)like(?![a-zA-Z0-9_])
+%token  T_ESCAPE                        (?i)escape(?![a-zA-Z0-9_])
+%token  T_IN                            (?i)in(?![a-zA-Z0-9_])
+%token  T_IS                            (?i)is(?![a-zA-Z0-9_])
+%token  T_EMPTY                         (?i)empty(?![a-zA-Z0-9_])
+%token  T_MEMBER                        (?i)member(?![a-zA-Z0-9_])
+%token  T_OF                            (?i)of(?![a-zA-Z0-9_])
+%token  T_EXISTS                        (?i)exists(?![a-zA-Z0-9_])
+%token  T_INSTANCE                      (?i)instance(?![a-zA-Z0-9_])
+%token  T_ALL                           (?i)all(?![a-zA-Z0-9_])
+%token  T_ANY                           (?i)any(?![a-zA-Z0-9_])
+%token  T_SOME                          (?i)some(?![a-zA-Z0-9_])
+
+%token  T_CASE                          (?i)case(?![a-zA-Z0-9_])
+%token  T_WHEN                          (?i)when(?![a-zA-Z0-9_])
+%token  T_THEN                          (?i)then(?![a-zA-Z0-9_])
+%token  T_ELSE                          (?i)else(?![a-zA-Z0-9_])
+%token  T_END                           (?i)end(?![a-zA-Z0-9_])
+%token  T_COALESCE                      (?i)coalesce(?![a-zA-Z0-9_])
+%token  T_NULLIF                        (?i)nullif(?![a-zA-Z0-9_])
+
+%token  T_TRUE                          (?i)true(?![a-zA-Z0-9_])
+%token  T_FALSE                         (?i)false(?![a-zA-Z0-9_])
+%token  T_NULL                          (?i)null(?![a-zA-Z0-9_])
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Functions
+ * -----------------------------------------------------------------------------
+ *
+ *  The functions reading their arguments alike are read by a token of their
+ *  own rather than one token per function: the name a function is called by is
+ *  kept as the value of the token.
+ */
+
+// AVG(x), COUNT(x), MAX(x), MIN(x), SUM(x)
+%token  T_AGGREGATE_FUNCTION            (?i)(?:avg|count|max|min|sum)(?![a-zA-Z0-9_])
+
+// CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP
+%token  T_CURRENT_DATETIME_FUNCTION     (?i)current_(?:timestamp|date|time)(?![a-zA-Z0-9_])
+
+// DATE_ADD(date, count, unit), DATE_SUB(date, count, unit)
+%token  T_DATE_MODIFY_FUNCTION          (?i)date_(?:add|sub)(?![a-zA-Z0-9_])
+
+// ABS(x), LENGTH(x), LOWER(x), SQRT(x), UPPER(x)
+%token  T_UNARY_FUNCTION                (?i)(?:abs|length|lower|sqrt|upper)(?![a-zA-Z0-9_])
+
+// BIT_AND(a, b), BIT_OR(a, b), DATE_DIFF(a, b), MOD(a, b)
+%token  T_BINARY_FUNCTION               (?i)(?:bit_and|bit_or|date_diff|mod)(?![a-zA-Z0-9_])
+
+%token  T_SIZE                          (?i)size(?![a-zA-Z0-9_])
+%token  T_LOCATE                        (?i)locate(?![a-zA-Z0-9_])
+%token  T_CONCAT                        (?i)concat(?![a-zA-Z0-9_])
+%token  T_SUBSTRING                     (?i)substring(?![a-zA-Z0-9_])
+%token  T_TRIM                          (?i)trim(?![a-zA-Z0-9_])
+%token  T_IDENTITY                      (?i)identity(?![a-zA-Z0-9_])
+%token  T_LEADING                       (?i)leading(?![a-zA-Z0-9_])
+%token  T_TRAILING                      (?i)trailing(?![a-zA-Z0-9_])
+%token  T_BOTH                          (?i)both(?![a-zA-Z0-9_])
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Operators And Punctuation
+ * -----------------------------------------------------------------------------
+ *
+ *  An operator written of two characters is declared before the one written of
+ *  the first of them, so "<=" is not read as "<" followed by "=".
+ */
+
+%token  T_LTE                           <=
+%token  T_GTE                           >=
+%token  T_NEQ                           <>|!=
+%token  T_EQ                            =
+%token  T_LT                            <
+%token  T_GT                            >
+
+%token  T_PLUS                          \+
+%token  T_MINUS                         \-
+%token  T_ASTERISK                      \*
+%token  T_SLASH                         /
+
+%token  T_PARENTHESIS_OPEN              \(
+%token  T_PARENTHESIS_CLOSE             \)
+%token  T_BRACE_OPEN                    \{
+%token  T_BRACE_CLOSE                   \}
+%token  T_COMMA                         ,
+%token  T_DOT                           \.
+%token  T_NS_SEPARATOR                  \\
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Identifier
+ * -----------------------------------------------------------------------------
+ *
+ *  Declared last, so a word spelled like a keyword is read as the keyword.
+ */
+
+%token  T_IDENTIFIER                    [a-zA-Z_][a-zA-Z0-9_]*+

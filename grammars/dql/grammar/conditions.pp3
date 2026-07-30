@@ -1,0 +1,131 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Conditional Expressions
+ * -----------------------------------------------------------------------------
+ *
+ *  The operators are written one rule per precedence, from the loosest binding
+ *  one down to the tightest, because a rule reading itself from the left reads
+ *  forever.
+ */
+
+ConditionalExpression
+  : ConditionalTerm() (::T_OR:: ConditionalTerm())*
+  ;
+
+ConditionalTerm
+  : ConditionalFactor() (::T_AND:: ConditionalFactor())*
+  ;
+
+ConditionalFactor
+  : <T_NOT>? ConditionalPrimary()
+  ;
+
+/**
+ * A condition surrounded by a pair of parentheses is read after a condition
+ * written of a single expression, because an arithmetic expression is
+ * surrounded by a pair of parentheses too.
+ */
+ConditionalPrimary
+  : SimpleConditionalExpression()
+  | ::T_PARENTHESIS_OPEN:: ConditionalExpression() ::T_PARENTHESIS_CLOSE::
+  ;
+
+/**
+ * Each of these is told apart by the keyword written past the expression it
+ * begins with, so the comparison, which is written of an operator instead, is
+ * read last.
+ */
+SimpleConditionalExpression
+  : ExistsExpression()
+  | InstanceOfExpression()
+  | EmptyCollectionComparisonExpression()
+  | NullComparisonExpression()
+  | CollectionMemberExpression()
+  | BetweenExpression()
+  | LikeExpression()
+  | InExpression()
+  | ComparisonExpression()
+  ;
+
+ExistsExpression
+  : <T_NOT>? ::T_EXISTS:: SubselectExpression()
+  ;
+
+/**
+ * The class an entity is an instance of, like:
+ *  - u INSTANCE OF Demo\Entity\Admin
+ *  - u NOT INSTANCE OF (Demo\Entity\Admin, :type)
+ */
+InstanceOfExpression
+  : Identifier() <T_NOT>? ::T_INSTANCE:: ::T_OF::?
+    ( ::T_PARENTHESIS_OPEN::
+        InstanceOfParameter() (::T_COMMA:: InstanceOfParameter())*
+      ::T_PARENTHESIS_CLOSE::
+    | InstanceOfParameter()
+    )
+  ;
+
+InstanceOfParameter
+  : InputParameter()
+  | AbstractSchemaName()
+  ;
+
+EmptyCollectionComparisonExpression
+  : PathExpression() ::T_IS:: <T_NOT>? ::T_EMPTY::
+  ;
+
+NullComparisonExpression
+  : (InputParameter() | ScalarExpression()) ::T_IS:: <T_NOT>? ::T_NULL::
+  ;
+
+CollectionMemberExpression
+  : EntityExpression() <T_NOT>? ::T_MEMBER:: ::T_OF::? PathExpression()
+  ;
+
+EntityExpression
+  : PathExpression()
+  | InputParameter()
+  | Identifier()
+  ;
+
+BetweenExpression
+  : ArithmeticExpression() <T_NOT>? ::T_BETWEEN::
+    ArithmeticExpression() ::T_AND:: ArithmeticExpression()
+  ;
+
+LikeExpression
+  : StringExpression() <T_NOT>? ::T_LIKE:: StringPrimary()
+    (::T_ESCAPE:: StringLiteral())?
+  ;
+
+InExpression
+  : ScalarExpression() <T_NOT>? ::T_IN::
+    ::T_PARENTHESIS_OPEN::
+      ( Subselect()
+      | InParameter() (::T_COMMA:: InParameter())*
+      )
+    ::T_PARENTHESIS_CLOSE::
+  ;
+
+InParameter
+  : InputParameter()
+  | ArithmeticExpression()
+  ;
+
+ComparisonExpression
+  : ArithmeticExpression() ComparisonOperator()
+    (QuantifiedExpression() | ArithmeticExpression())
+  ;
+
+ComparisonOperator
+  : <T_LTE>
+  | <T_GTE>
+  | <T_NEQ>
+  | <T_EQ>
+  | <T_LT>
+  | <T_GT>
+  ;
+
+QuantifiedExpression
+  : (<T_ALL> | <T_ANY> | <T_SOME>) SubselectExpression()
+  ;

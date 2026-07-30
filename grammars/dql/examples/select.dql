@@ -1,0 +1,19 @@
+SELECT DISTINCT
+    u,
+    u.name,
+    u.address.city,
+    PARTIAL p.{id, title},
+    NEW Demo\Dto\UserName(u.firstName, u.lastName),
+    COUNT(p.id) AS HIDDEN total,
+    AVG(DISTINCT p.rating) AS rating,
+    u.rank * 2 + 1 AS weight,
+    'literal',
+    42,
+    3.14,
+    TRUE
+FROM Demo\Entity\User u
+    INDEX BY u.id
+    LEFT JOIN u.posts p
+GROUP BY u.id, u.name
+HAVING COUNT(p.id) > 10
+ORDER BY rating DESC, u.name ASC
