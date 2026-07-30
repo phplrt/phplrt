@@ -1,0 +1,49 @@
+/**
+ * What a rule is turned into, written as a block of PHP code.
+ */
+
+%pragma root Sum
+
+%token T_NUMBER  \d++
+%token T_PLUS    \+
+
+// A block written on the line it opens on
+Sum -> { return \array_sum($children); }
+  : Number() (::T_PLUS:: Number())*
+  ;
+
+// A block written across several lines, with braces of its own inside it
+Number -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    $value = $children->value;
+
+    if (!\is_numeric($value)) {
+        throw new \InvalidArgumentException('A number is written of digits');
+    }
+
+    foreach ([1, 2, 3] as $each) {
+        $value += $each;
+    }
+
+    return (int) $value;
+}
+  : <T_NUMBER>
+  ;
+
+// A brace written inside a string is not a brace of the block
+Braces -> {
+    $open = '{';
+    $close = "}";
+    $both = "{$open}{$close}";
+
+    // A brace written inside a comment is not one either: }
+    return \str_replace(['{', '}'], '', $both);
+}
+  : <T_NUMBER>
+  ;
+
+// A block written of nothing at all
+Empty -> {}
+  : <T_NUMBER>
+  ;

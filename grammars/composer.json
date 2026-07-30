@@ -13,6 +13,11 @@
     "require": {
         "php": "^8.4"
     },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Example\\": "src"
+        }
+    },
     "authors": [
         {
             "name": "Kirill Nesmeyanov",

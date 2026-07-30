@@ -10,6 +10,8 @@ This repository is a collection of formal grammar examples written for
 The root directory name is the all-lowercase name of the language or file format
 parsed by the grammar. For example, `json`, `json5`, `graphql`, `c`, etc.
 
+The `src/` directory contains a set of shared helper classes.
+
 The `tests/` directory contains a set of tests to validate the grammar for
 correctness.
 
@@ -25,6 +27,7 @@ correctness.
 ### Common
 
 - [JSON](./json)
+- [PP3 Grammar (phplrt)](./pp3)
 
 Please note that some code examples are taken from the
 [ANTLR v4 repository](https://github.com/antlr/grammars-v4) and adapted for

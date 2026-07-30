@@ -3,6 +3,7 @@ parameters:
   fileExtensions:
     - php
   paths:
+    - src
     - tests
   excludePaths:
     - tests/temp

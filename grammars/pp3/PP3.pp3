@@ -1,0 +1,25 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  The PP3 Grammar Format
+ * -----------------------------------------------------------------------------
+ *
+ * The format phplrt v4 reads a grammar in, described in the format it
+ * describes.
+ *
+ * @see https://github.com/phplrt/phplrt/blob/master/libs/components/compiler/resources/pp3.pp3
+ */
+
+%include grammar/lexemes        // Token Definitions
+%include grammar/declarations   // %pragma, %include, %token, %lexer, a rule
+%include grammar/statements     // What a rule recognizes
+%include grammar/quantifiers    // How many times a statement repeats
+
+%pragma root Grammar
+
+/**
+ * A grammar file is a list of declarations, each of them written either as a
+ * "%" directive or as a rule of the parser.
+ */
+Grammar
+  : Declaration()*
+  ;

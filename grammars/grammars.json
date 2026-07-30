@@ -8,6 +8,16 @@
         ]
     },
     {
+        "name": "PP3 Grammar (phplrt)",
+        "entry": "./pp3/PP3.pp3",
+        "example": [
+            "./pp3/examples/directives.pp3",
+            "./pp3/examples/statements.pp3",
+            "./pp3/examples/quantifiers.pp3",
+            "./pp3/examples/reducers.pp3"
+        ]
+    },
+    {
         "name": "PHPDoc Types (TypeLang)",
         "entry": "./phpdoc/phpdoc.pp2",
         "example": [
