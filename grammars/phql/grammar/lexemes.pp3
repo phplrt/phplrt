@@ -1,0 +1,153 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes Of The Phalcon Query Language
+ * -----------------------------------------------------------------------------
+ *
+ *  Every keyword of the language, written in any case, and everything else a
+ *  query is written of: the literals, the placeholders bound to it, the
+ *  operators and the names.
+ *
+ *  A keyword is reserved and does not name a model, a field or an alias.
+ */
+
+%skip   T_WHITESPACE            \s++
+%skip   T_COMMENT               --[^\r\n]*+|/\*.*?\*/
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Literals And Placeholders
+ * -----------------------------------------------------------------------------
+ *
+ *  A value bound to the query is written by its number, by its name, or by the
+ *  colon the name follows.
+ */
+
+%token  T_STRING                '(?:[^']|'')*+'|"(?:[^"]|"")*+"
+%token  T_DOUBLE                [0-9]++\.[0-9]++(?:[eE][+\-]?[0-9]++)?
+%token  T_HINTEGER              0[xX][0-9a-fA-F]++
+%token  T_INTEGER               [0-9]++
+
+%token  T_NPLACEHOLDER          \?[0-9]++
+%token  T_SPLACEHOLDER          :[a-zA-Z_][a-zA-Z0-9_]*+:
+%token  T_BPLACEHOLDER          \{[a-zA-Z_][a-zA-Z0-9_]*+(?::[^}]++)?\}
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Statements And Clauses
+ * -----------------------------------------------------------------------------
+ */
+
+%token  T_SELECT                (?i)select(?![a-zA-Z0-9_])
+%token  T_INSERT                (?i)insert(?![a-zA-Z0-9_])
+%token  T_UPDATE                (?i)update(?![a-zA-Z0-9_])
+%token  T_DELETE                (?i)delete(?![a-zA-Z0-9_])
+%token  T_INTO                  (?i)into(?![a-zA-Z0-9_])
+%token  T_VALUES                (?i)values(?![a-zA-Z0-9_])
+%token  T_SET                   (?i)set(?![a-zA-Z0-9_])
+%token  T_FROM                  (?i)from(?![a-zA-Z0-9_])
+%token  T_WHERE                 (?i)where(?![a-zA-Z0-9_])
+%token  T_GROUP                 (?i)group(?![a-zA-Z0-9_])
+%token  T_HAVING                (?i)having(?![a-zA-Z0-9_])
+%token  T_ORDER                 (?i)order(?![a-zA-Z0-9_])
+%token  T_BY                    (?i)by(?![a-zA-Z0-9_])
+%token  T_LIMIT                 (?i)limit(?![a-zA-Z0-9_])
+%token  T_OFFSET                (?i)offset(?![a-zA-Z0-9_])
+%token  T_FOR                   (?i)for(?![a-zA-Z0-9_])
+%token  T_ASC                   (?i)asc(?![a-zA-Z0-9_])
+%token  T_DESC                  (?i)desc(?![a-zA-Z0-9_])
+%token  T_DISTINCT              (?i)distinct(?![a-zA-Z0-9_])
+%token  T_ALL                   (?i)all(?![a-zA-Z0-9_])
+%token  T_AS                    (?i)as(?![a-zA-Z0-9_])
+
+%token  T_JOIN                  (?i)join(?![a-zA-Z0-9_])
+%token  T_INNER                 (?i)inner(?![a-zA-Z0-9_])
+%token  T_CROSS                 (?i)cross(?![a-zA-Z0-9_])
+%token  T_LEFT                  (?i)left(?![a-zA-Z0-9_])
+%token  T_RIGHT                 (?i)right(?![a-zA-Z0-9_])
+%token  T_FULL                  (?i)full(?![a-zA-Z0-9_])
+%token  T_OUTER                 (?i)outer(?![a-zA-Z0-9_])
+%token  T_ON                    (?i)on(?![a-zA-Z0-9_])
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Operators Written As Words
+ * -----------------------------------------------------------------------------
+ */
+
+%token  T_BETWEEN_NOT           (?i)not\h++between(?![a-zA-Z0-9_])
+%token  T_BETWEEN               (?i)between(?![a-zA-Z0-9_])
+%token  T_AND                   (?i)and(?![a-zA-Z0-9_])
+%token  T_OR                    (?i)or(?![a-zA-Z0-9_])
+%token  T_NOT                   (?i)not(?![a-zA-Z0-9_])
+%token  T_LIKE                  (?i)like(?![a-zA-Z0-9_])
+%token  T_ILIKE                 (?i)ilike(?![a-zA-Z0-9_])
+%token  T_IN                    (?i)in(?![a-zA-Z0-9_])
+%token  T_EXISTS                (?i)exists(?![a-zA-Z0-9_])
+%token  T_IS                    (?i)is(?![a-zA-Z0-9_])
+%token  T_NULL                  (?i)null(?![a-zA-Z0-9_])
+%token  T_TRUE                  (?i)true(?![a-zA-Z0-9_])
+%token  T_FALSE                 (?i)false(?![a-zA-Z0-9_])
+%token  T_AGAINST               (?i)against(?![a-zA-Z0-9_])
+
+%token  T_CASE                  (?i)case(?![a-zA-Z0-9_])
+%token  T_WHEN                  (?i)when(?![a-zA-Z0-9_])
+%token  T_THEN                  (?i)then(?![a-zA-Z0-9_])
+%token  T_ELSE                  (?i)else(?![a-zA-Z0-9_])
+%token  T_END                   (?i)end(?![a-zA-Z0-9_])
+%token  T_CAST                  (?i)cast(?![a-zA-Z0-9_])
+%token  T_CONVERT               (?i)convert(?![a-zA-Z0-9_])
+%token  T_USING                 (?i)using(?![a-zA-Z0-9_])
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Operators Written As Signs
+ * -----------------------------------------------------------------------------
+ *
+ *  An operator written of several characters is declared before the one
+ *  written of its first, so "->>" is not read as "->" followed by ">".
+ */
+
+%token  T_OP_JSON_GET_TEXT      ->>
+%token  T_OP_JSON_GET           ->
+%token  T_OP_JSON_PATH_TEXT     #>>
+%token  T_OP_JSON_PATH          #>
+%token  T_OP_CONTAINS           @>
+%token  T_OP_CONTAINED          <@
+%token  T_OP_MATCHES            @@
+%token  T_OP_OVERLAPS           &&
+%token  T_OP_CONCAT             \|\|
+
+%token  T_GREATEREQUAL          >=
+%token  T_LESSEQUAL             <=
+%token  T_NOTEQUALS             <>|!=
+%token  T_EQUALS                =
+%token  T_GREATER               >
+%token  T_LESS                  <
+
+%token  T_PLUS                  \+
+%token  T_MINUS                 -
+%token  T_TIMES                 \*
+%token  T_DIVIDE                /
+%token  T_MOD                   %
+
+%token  T_BITWISE_AND           &
+%token  T_BITWISE_OR            \|
+%token  T_BITWISE_XOR           \^
+%token  T_BITWISE_NOT           ~
+
+%token  T_PARENTHESES_OPEN      \(
+%token  T_PARENTHESES_CLOSE     \)
+%token  T_COMMA                 ,
+%token  T_DOT                   \.
+%token  T_COLON                 :
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Identifier
+ * -----------------------------------------------------------------------------
+ *
+ *  The name of a model, a field or an alias, written plainly or surrounded by
+ *  a pair of brackets.
+ */
+
+%token  T_IDENTIFIER            \[[^\]]++\]|[a-zA-Z_][a-zA-Z0-9_]*+(?:\\[a-zA-Z_][a-zA-Z0-9_]*+)*+

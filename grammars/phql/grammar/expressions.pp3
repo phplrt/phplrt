@@ -1,0 +1,175 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Expressions
+ * -----------------------------------------------------------------------------
+ *
+ *  One rule per precedence, from the loosest binding one down to the tightest,
+ *  in the order the language declares them:
+ *
+ *   AGAINST, BETWEEN, the comparisons, AND and OR, LIKE, the bitwise pair,
+ *   "*" and "/", "+" and "-", IS, IN, NOT, the JSON operators.
+ */
+
+Expression
+  : Against()
+  ;
+
+Against
+  : Between() (::T_AGAINST:: Against())?
+  ;
+
+Between
+  : Comparison() ((<T_BETWEEN> | <T_BETWEEN_NOT>) Comparison())*
+  ;
+
+Comparison
+  : Logical() (ComparisonOperator() Logical())*
+  ;
+
+ComparisonOperator
+  : <T_GREATEREQUAL>
+  | <T_LESSEQUAL>
+  | <T_NOTEQUALS>
+  | <T_EQUALS>
+  | <T_OP_MATCHES>
+  | <T_OP_CONTAINS>
+  | <T_OP_CONTAINED>
+  | <T_OP_OVERLAPS>
+  | <T_GREATER>
+  | <T_LESS>
+  ;
+
+Logical
+  : Like() ((<T_AND> | <T_OR>) Like())*
+  ;
+
+Like
+  : Bitwise() (<T_NOT>? (<T_LIKE> | <T_ILIKE>) Bitwise())*
+  ;
+
+Bitwise
+  : Product() ((<T_BITWISE_AND> | <T_BITWISE_OR> | <T_BITWISE_XOR>) Product())*
+  ;
+
+Product
+  : Sum() ((<T_TIMES> | <T_DIVIDE> | <T_MOD>) Sum())*
+  ;
+
+Sum
+  : IsNull() ((<T_PLUS> | <T_MINUS> | <T_OP_CONCAT>) IsNull())*
+  ;
+
+IsNull
+  : In() (::T_IS:: <T_NOT>? ::T_NULL::)?
+  ;
+
+// x IN (1, 2), x NOT IN (SELECT ...)
+In
+  : Unary()
+    ( <T_NOT>? ::T_IN::
+      ::T_PARENTHESES_OPEN::
+        (SelectStatement() | ArgumentList())
+      ::T_PARENTHESES_CLOSE::
+    )?
+  ;
+
+Unary
+  : <T_NOT> Unary()
+  | <T_BITWISE_NOT> Unary()
+  | <T_MINUS> Unary()
+  | JsonAccess()
+  ;
+
+JsonAccess
+  : Primary() (JsonOperator() Primary())*
+  ;
+
+JsonOperator
+  : <T_OP_JSON_GET_TEXT>
+  | <T_OP_JSON_GET>
+  | <T_OP_JSON_PATH_TEXT>
+  | <T_OP_JSON_PATH>
+  ;
+
+/**
+ * A subquery and a whole expression are both surrounded by a pair of
+ * parentheses, so the one beginning with a keyword of its own is read first.
+ */
+Primary
+  : ::T_PARENTHESES_OPEN:: SelectStatement() ::T_PARENTHESES_CLOSE::
+  | ::T_PARENTHESES_OPEN:: Expression() ::T_PARENTHESES_CLOSE::
+  | Exists()
+  | CaseExpression()
+  | Cast()
+  | Convert()
+  | FunctionCall()
+  | Literal()
+  | Placeholder()
+  | QualifiedName()
+  ;
+
+Exists
+  : ::T_EXISTS:: ::T_PARENTHESES_OPEN:: SelectStatement() ::T_PARENTHESES_CLOSE::
+  ;
+
+// CASE x WHEN 1 THEN 'a' ELSE 'b' END
+CaseExpression
+  : ::T_CASE:: Expression() WhenClause()+ ::T_END::
+  ;
+
+WhenClause
+  : ::T_WHEN:: Expression() ::T_THEN:: Expression()
+  | ::T_ELSE:: Expression()
+  ;
+
+Cast
+  : ::T_CAST:: ::T_PARENTHESES_OPEN::
+      Expression() ::T_AS:: Identifier()
+    ::T_PARENTHESES_CLOSE::
+  ;
+
+Convert
+  : ::T_CONVERT:: ::T_PARENTHESES_OPEN::
+      Expression() ::T_USING:: Identifier()
+    ::T_PARENTHESES_CLOSE::
+  ;
+
+FunctionCall
+  : Identifier() ::T_PARENTHESES_OPEN::
+      DistinctAll()? ArgumentList()?
+    ::T_PARENTHESES_CLOSE::
+  ;
+
+ArgumentList
+  : Argument() (::T_COMMA:: Argument())*
+  ;
+
+Argument
+  : ::T_TIMES::
+  | Expression()
+  ;
+
+Literal
+  : <T_STRING>
+  | <T_DOUBLE>
+  | <T_HINTEGER>
+  | <T_INTEGER>
+  | <T_NULL>
+  | <T_TRUE>
+  | <T_FALSE>
+  ;
+
+Placeholder
+  : <T_NPLACEHOLDER>
+  | <T_SPLACEHOLDER>
+  | <T_BPLACEHOLDER>
+  ;
+
+// Demo\Model\User, u.name, Demo\Model\User.name
+QualifiedName
+  : Identifier() (::T_DOT:: Identifier())*
+  ;
+
+Identifier
+  : <T_IDENTIFIER>
+  ;

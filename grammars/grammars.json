@@ -246,7 +246,7 @@
         ]
     },
     {
-        "name": "Arithmetic",
+        "name": "Hoa Math",
         "entry": "./hoa-math/Arithmetic.pp3",
         "example": [
             "./hoa-math/examples/functions.txt",
@@ -273,6 +273,17 @@
             "./praspel/examples/behaviors.txt",
             "./praspel/examples/contract.txt",
             "./praspel/examples/domains.txt"
+        ]
+    },
+    {
+        "name": "PHQL (Phalcon)",
+        "entry": "./phql/PHQL.pp3",
+        "example": [
+            "./phql/examples/delete.txt",
+            "./phql/examples/mutations.txt",
+            "./phql/examples/operators.txt",
+            "./phql/examples/select.txt",
+            "./phql/examples/update.txt"
         ]
     }
 ]

@@ -28,6 +28,7 @@ correctness.
 - [Go! AOP Pointcut](./go-aop)
 - [JMS Serializer Type](./jms)
 - [PCRE (Hoa PHPStan Fork)](./hoa-pcre)
+- [PHQL (Phalcon)](./phql)
 - [Praspel](./praspel)
 - [PHPDoc Types (PHPStan)](./phpdoc-phpstan)
 - [PHPDoc Types (PSR-5)](./phpdoc-psr-5)
