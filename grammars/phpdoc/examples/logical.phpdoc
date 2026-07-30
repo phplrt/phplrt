@@ -1,0 +1,11 @@
+// Union and intersection types, nullability and lists
+
+?non-empty-list<Demo\Example\Service>
+    | array<array-key, ?int>
+    | (Traversable&Countable)
+    | Demo\Contract\LoggerInterface&Stringable
+    | int[]
+    | string[][]
+    | \Demo\Example\Entity[]
+    | array<string, mixed>[]
+    | null

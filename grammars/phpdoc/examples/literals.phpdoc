@@ -1,0 +1,23 @@
+// Everything a type may be written of, apart from a name
+
+'single quoted'
+    | "double quoted"
+    | "escaped \" quote"
+    | 42
+    | -1
+    | 0b1010_1010
+    | 0o777
+    | 0xDE_AD_BE_EF
+    | 1_000_000
+    | 3.14
+    | -.5
+    | 42.
+    | 1e10
+    | -2.5E-3
+    | true
+    | false
+    | null
+    | Demo\Example\Status::ACTIVE
+    | Demo\Example\Status::*
+    | Demo\Example\Status::HTTP_*
+    | DEMO_CONSTANT_*

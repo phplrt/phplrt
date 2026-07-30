@@ -1,0 +1,13 @@
+// The parameters and the result a callable type is written of
+
+callable(
+    int,
+    non-empty-string $name,
+    Demo\Contract\LoggerInterface&Stringable $logger,
+    array{first: int, second: int} $pair =,
+    ?Demo\Example\Entity &$out,
+    string ...$rest,
+): (Demo\Example\Collection<int>|false)
+    | \Closure(): void
+    | callable(callable(int): string): iterable<int, string>
+    | Demo\Example\Handler(mixed ...): static

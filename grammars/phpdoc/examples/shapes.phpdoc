@@ -1,0 +1,17 @@
+// The fields an array-like type is written of
+
+array{
+    id: int<1, max>,
+    name: non-empty-string,
+    'quoted key': bool,
+    "double quoted key": bool,
+    0: float,
+    optional?: ?Demo\Example\Entity,
+    Demo\Example\Status::ACTIVE: mixed,
+    list<string>,
+    nested: array{
+        left: int,
+        right: array{...<string, mixed>},
+    },
+    ...<array-key, mixed>,
+}
