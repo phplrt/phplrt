@@ -1,0 +1,4 @@
+
+NamedType
+  : Name() (TemplateArguments() | ShapeFields())?
+  ;

@@ -1,0 +1,45 @@
+
+ShapeFields
+  : ::T_BRACE_OPEN::
+      (
+        (ShapeFieldsList() (::T_COMMA:: ShapeFieldsUnsealed())?)
+        | ShapeFieldsUnsealed()?
+      )
+      ::T_COMMA::?
+    ::T_BRACE_CLOSE::
+  ;
+
+ShapeFieldsUnsealed
+  : <T_ELLIPSIS> TemplateArguments()?
+  ;
+
+ShapeFieldsList
+  : ShapeField() (
+      ::T_COMMA:: ShapeField()
+    )*
+  ;
+
+ShapeField
+  : ExplicitField()
+  | ImplicitField()
+  ;
+
+ExplicitField
+  : ShapeKey() (<T_QMARK>)? ::T_COLON:: ShapeValue()
+  ;
+
+ImplicitField
+  : ShapeValue()
+  ;
+
+ShapeKey
+  : ConstMaskLiteral()
+  | ClassConstLiteral()
+  | Identifier()
+  | IntLiteral()
+  | StringLiteral()
+  ;
+
+ShapeValue
+  : Type()
+  ;

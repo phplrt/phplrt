@@ -1,0 +1,24 @@
+
+TernaryExpressionOrLogicalType
+  : LogicalType() OptionalTernaryExpressionSuffix()
+  | VariableLiteral() TernaryExpressionSuffix()
+  ;
+
+OptionalTernaryExpressionSuffix
+  : TernaryExpressionSuffix()?
+  ;
+
+TernaryExpressionSuffix
+  : TernaryExpressionOperator() (Type() | VariableLiteral())
+    ::T_QMARK:: Type()
+    ::T_COLON:: Type()
+  ;
+
+TernaryExpressionOperator
+  : <T_EQ>
+  | <T_NEQ>
+  | <T_GTE>
+  | <T_LTE>
+  | <T_ANGLE_BRACKET_OPEN>
+  | <T_ANGLE_BRACKET_CLOSE>
+  ;

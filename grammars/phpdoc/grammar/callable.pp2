@@ -1,0 +1,81 @@
+
+CallableType
+  : Name()
+    ::T_PARENTHESIS_OPEN::
+        CallableParameters()?
+    ::T_PARENTHESIS_CLOSE::
+    CallableReturnType()?
+  ;
+
+CallableParameters
+  : CallableParameter()
+    ( ::T_COMMA:: CallableParameter() )*
+    ::T_COMMA::?
+  ;
+
+CallableParameter
+  : MaybeDefaultCallableParameter()
+  ;
+
+// Expects expression:
+// - "<param>"
+// - "<param> ="
+MaybeDefaultCallableParameter
+  : ( MaybePrefixedVariadicTypedNamedCallableParameter()
+    | MaybeModifiersNamedCallableParameter() )
+    <T_ASSIGN>?
+  ;
+
+// Expects expression:
+// - "&...<var_param>"
+// - "...&<var_param>"
+// - "...<var_param>"
+// - "&<var_param>"
+// - "<var_param>"
+MaybeModifiersNamedCallableParameter
+  : <T_AMP> <T_ELLIPSIS> MaybeNamedCallableParameter()
+  | <T_ELLIPSIS> <T_AMP> MaybeNamedCallableParameter()
+  | <T_ELLIPSIS> MaybeNamedCallableParameter()
+  | <T_AMP> MaybeNamedCallableParameter()
+  | MaybeNamedCallableParameter()
+  ;
+
+// Expects expression:
+// - "$<var>"
+MaybeNamedCallableParameter
+  : VariableLiteral()
+  ;
+
+MaybePrefixedVariadicTypedNamedCallableParameter
+  : <T_ELLIPSIS>? MaybeTypedNamedCallableParameter()
+  ;
+
+// Expects expression:
+// - "<typed_param> $<var>"
+// - "<typed_param>"
+MaybeTypedNamedCallableParameter
+  : MaybeModifiersTypedCallableParameter()
+    VariableLiteral()?
+  ;
+
+// Expects expression:
+// - "<type>...&"
+// - "<type>&..."
+// - "<type>&"
+// - "<type>..."
+// - "<type>"
+MaybeModifiersTypedCallableParameter
+  : TypedCallableParameter()
+    ( <T_AMP> <T_ELLIPSIS>?
+    | <T_ELLIPSIS> <T_AMP>? )?
+  ;
+
+// Expects expression:
+// - "<type>"
+TypedCallableParameter
+  : Type()
+  ;
+
+CallableReturnType
+  : ::T_COLON:: Type()
+  ;
