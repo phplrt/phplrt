@@ -1,0 +1,14 @@
+@behavior standard {
+    @requires x: integer(1, 100) and y: boundinteger(1, x);
+    @ensures \result: positive();
+    @description <<<DESC
+      The result is positive whenever both arguments are.
+    DESC;
+}
+and edge {
+    @requires x: integer(0, 0);
+    @throwable \Demo\DivisionByZero cause;
+}
+@default {
+    @ensures \result: null;
+}

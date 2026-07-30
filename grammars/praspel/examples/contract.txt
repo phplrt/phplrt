@@ -1,0 +1,5 @@
+@is pure;
+@requires i: integer(0, 42) and j: boundinteger(0, i);
+@ensures \result: boolean();
+@throwable \Demo\OutOfRangeException error;
+@invariant this->size: integer(0, ..42);

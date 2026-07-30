@@ -1,0 +1,333 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Praspel
+ * -----------------------------------------------------------------------------
+ *
+ * Design by contract for PHP, written in a doc comment: what a method requires
+ * of its arguments, what it ensures of its result, what it throws, and the
+ * domains each value belongs to.
+ *
+ * @see https://github.com/hoaproject/Praspel/blob/master/Grammar.pp
+ */
+
+%pragma root Specification
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ */
+
+%skip  T_WHITESPACE           \s++
+%skip  T_BLOCK_COMMENT        /\*.*?\*/
+%skip  T_INLINE_COMMENT       //[^\r\n]*+
+
+// The clauses a contract is written of
+%token T_AT_IS                @is
+%token T_AT_REQUIRES          @requires
+%token T_AT_ENSURES           @ensures
+%token T_AT_THROWABLE         @throwable
+%token T_AT_INVARIANT         @invariant
+%token T_AT_BEHAVIOR          @behavior
+%token T_AT_DEFAULT           @default
+%token T_AT_DESCRIPTION       @description
+
+%token T_OLD                  \\old
+%token T_RESULT               \\result
+%token T_PRED                 \\pred
+%token T_NOTHING              \\nothing
+
+/**
+ * A here string closes with the very word it opens with, so the two are read
+ * by a single expression tying them together.
+ */
+%token T_HERESTRING           <<<('?)([A-Z]++)\1\R(?:[^\r\n]*+\R)*?\h*+\2;
+
+// A backslash escapes the character past it
+%token T_STRING               '(?:\\.|[^'\\])*+'
+%token T_REGEX                /.*?(?<!\\)/[imsxADSUXJu]*+
+
+%token T_PARENTHESIS_OPEN     \(
+%token T_PARENTHESIS_CLOSE    \)
+%token T_BRACE_OPEN           \{
+%token T_BRACE_CLOSE          \}
+%token T_BRACKET_OPEN         \[
+%token T_BRACKET_CLOSE        \]
+%token T_COMMA                ,
+%token T_BACKSLASH            \\
+%token T_ARROW                ->
+%token T_RESOLUTION           ::
+%token T_COLON                :
+%token T_SEMICOLON            ;
+%token T_RANGE                \.\.
+%token T_CONCAT               \.
+
+%token T_COUNT                #|count(?![a-zA-Z0-9_])
+%token T_DOMAINOF             domainof(?![a-zA-Z0-9_])
+%token T_FROM                 from(?![a-zA-Z0-9_])
+%token T_TO                   to(?![a-zA-Z0-9_])
+%token T_THIS                 this(?![a-zA-Z0-9_])
+%token T_SELF                 self(?![a-zA-Z0-9_])
+%token T_STATIC               static(?![a-zA-Z0-9_])
+%token T_PARENT               parent(?![a-zA-Z0-9_])
+%token T_AND                  and(?![a-zA-Z0-9_])
+%token T_OR                   or(?![a-zA-Z0-9_])
+%token T_WITH                 with(?![a-zA-Z0-9_])
+%token T_PURE                 pure(?![a-zA-Z0-9_])
+%token T_DEFAULT              …|default(?![a-zA-Z0-9_])
+%token T_CONTAINS             contains(?![a-zA-Z0-9_])
+%token T_IS                   is(?![a-zA-Z0-9_])
+%token T_LET                  let(?![a-zA-Z0-9_])
+%token T_NULL                 (?:null|void)(?![a-zA-Z0-9_])
+%token T_TRUE                 true(?![a-zA-Z0-9_])
+%token T_FALSE                false(?![a-zA-Z0-9_])
+
+%token T_BINARY               [+\-]?0b[01]++
+%token T_OCTAL                [+\-]?0[0-7]++
+%token T_HEXADECIMAL          [+\-]?0[xX][0-9a-fA-F]++
+%token T_DECIMAL              [+\-]?(?:0|[1-9][0-9]*+)(?:\.[0-9]++)?(?:[eE][+\-]?[0-9]++)?
+
+%token T_IDENTIFIER           [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*+
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Specification
+ * -----------------------------------------------------------------------------
+ */
+
+Specification
+  : Method()*
+  ;
+
+Method
+  : (Is() | Requires() | Ensures() | Throwable() | Invariant()) ::T_SEMICOLON::+
+  | (Behavior() ::T_SEMICOLON::*)+ DefaultBehavior()? ::T_SEMICOLON::*
+  | Description() ::T_SEMICOLON::*
+  ;
+
+// @is pure
+Is
+  : ::T_AT_IS:: <T_PURE>
+  ;
+
+Requires
+  : ::T_AT_REQUIRES:: Expression()?
+  ;
+
+Ensures
+  : ::T_AT_ENSURES:: Expression()?
+  ;
+
+Throwable
+  : ::T_AT_THROWABLE:: ExceptionalExpression()?
+  ;
+
+Invariant
+  : ::T_AT_INVARIANT:: Expression()?
+  ;
+
+// @behavior name { ... }
+Behavior
+  : ::T_AT_BEHAVIOR:: BehaviorContent() (::T_AND:: BehaviorContent())*
+  ;
+
+BehaviorContent
+  : <T_IDENTIFIER> ::T_BRACE_OPEN::
+    ( (Requires() | Ensures() | Throwable()) ::T_SEMICOLON::+
+    | (Behavior() ::T_SEMICOLON::*)+ DefaultBehavior()? ::T_SEMICOLON::*
+    | Description() ::T_SEMICOLON::*
+    )+
+    ::T_BRACE_CLOSE::
+  ;
+
+DefaultBehavior
+  : ::T_AT_DEFAULT:: ::T_BRACE_OPEN::
+    ( (Ensures() | Throwable()) ::T_SEMICOLON::+
+    | Description() ::T_SEMICOLON::*
+    )+
+    ::T_BRACE_CLOSE::
+  ;
+
+Description
+  : ::T_AT_DESCRIPTION:: Text()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Expression
+ * -----------------------------------------------------------------------------
+ */
+
+Expression
+  : Clause() (::T_AND:: Clause())*
+  | <T_NOTHING>
+  ;
+
+Clause
+  : Declaration()
+  | Constraint()
+  | DomainOf()
+  | Predicate()
+  ;
+
+ExceptionalExpression
+  : Exception() (::T_OR:: Exception())*
+  ;
+
+Exception
+  : ExceptionIdentifier() (::T_OR:: ExceptionIdentifier())*
+    (::T_WITH:: Expression())?
+  ;
+
+ExceptionIdentifier
+  : ClassName() <T_IDENTIFIER>
+  ;
+
+// let x: integer(1, 42)
+Declaration
+  : ::T_LET::? ExtendedIdentifier() ::T_COLON:: Disjunction()
+  ;
+
+Constraint
+  : Qualification()
+  | Contains()
+  ;
+
+// x is fresh, x is dynamic
+Qualification
+  : Identifier() ::T_IS:: <T_IDENTIFIER> (::T_COMMA:: <T_IDENTIFIER>)*
+  ;
+
+Contains
+  : ExtendedIdentifier() ::T_CONTAINS:: DisjunctionOfConstants()
+  ;
+
+DomainOf
+  : Identifier() ::T_DOMAINOF:: Identifier()
+  ;
+
+// \pred('...')
+Predicate
+  : ::T_PRED:: ::T_PARENTHESIS_OPEN:: Text()? ::T_PARENTHESIS_CLOSE::
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Domains And Values
+ * -----------------------------------------------------------------------------
+ */
+
+Disjunction
+  : (Constant() | RealDomain() | ExtendedIdentifier())
+    (::T_OR:: Disjunction())*
+  ;
+
+DisjunctionOfConstants
+  : Constant() (::T_OR:: DisjunctionOfConstants())*
+  ;
+
+// integer(1, 42), boundinteger()
+RealDomain
+  : <T_IDENTIFIER> ::T_PARENTHESIS_OPEN::
+      (Argument() (::T_COMMA:: Argument())*)?
+    ::T_PARENTHESIS_CLOSE::
+  ;
+
+Argument
+  : <T_DEFAULT>
+  | RealDomain()
+  | Constant()
+  | ExtendedIdentifier()
+  ;
+
+Constant
+  : Scalar()
+  | Collection()
+  ;
+
+/**
+ * A range is written of the numbers it runs between, so it is read before a
+ * number written on its own.
+ */
+Scalar
+  : <T_NULL>
+  | Boolean()
+  | Range()
+  | Number()
+  | Text()
+  | Regex()
+  | ClassConstant()
+  ;
+
+Boolean
+  : <T_TRUE>
+  | <T_FALSE>
+  ;
+
+Number
+  : <T_BINARY>
+  | <T_OCTAL>
+  | <T_HEXADECIMAL>
+  | <T_DECIMAL>
+  ;
+
+// 'a' . 'b', <<<EOF ... EOF;
+Text
+  : <T_STRING> (::T_CONCAT:: <T_STRING>)*
+  | <T_HERESTRING>
+  ;
+
+Regex
+  : <T_REGEX>
+  ;
+
+ClassConstant
+  : ClassName()
+  ;
+
+// 1..42, 1.., ..42
+Range
+  : Number() ::T_RANGE:: Number()
+  | Number() ::T_RANGE::
+  | ::T_RANGE:: Number()
+  ;
+
+// [1 to 2, 'key' to 'value']
+Collection
+  : ::T_BRACKET_OPEN::
+      (Pair() (::T_COMMA:: Pair())*)?
+    ::T_BRACKET_CLOSE::
+  ;
+
+Pair
+  : ::T_FROM::? Disjunction() ::T_TO:: Disjunction()
+  | ::T_TO::? Disjunction()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Names
+ * -----------------------------------------------------------------------------
+ */
+
+ExtendedIdentifier
+  : ::T_COUNT::? ArrayAccess()
+  ;
+
+ArrayAccess
+  : Identifier()
+    ( ::T_BRACKET_OPEN:: Scalar() ::T_BRACKET_CLOSE::
+    | ::T_BRACE_OPEN:: Scalar() ::T_BRACE_CLOSE::
+    )?
+  ;
+
+Identifier
+  : ::T_OLD:: ::T_PARENTHESIS_OPEN:: ExtendedIdentifier() ::T_PARENTHESIS_CLOSE::
+  | <T_RESULT>
+  | (<T_SELF> | <T_STATIC> | <T_PARENT>) (::T_RESOLUTION:: <T_IDENTIFIER>)+
+  | (<T_IDENTIFIER> | <T_THIS>) (::T_ARROW:: <T_IDENTIFIER>)*
+  ;
+
+ClassName
+  : ::T_BACKSLASH:: <T_IDENTIFIER> (::T_BACKSLASH:: <T_IDENTIFIER>)*
+  ;
