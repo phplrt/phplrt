@@ -3,8 +3,12 @@
  *  Scalar Expressions
  * -----------------------------------------------------------------------------
  *
- *  What a value is written of. The operators are written one rule per
- *  precedence, the same way the conditions are.
+ *  What a value is written of, one rule per precedence:
+ *  - "+" and "-" - the loosest binding ones.
+ *  - "*" and "/"
+ *  - the sign of a single value.
+ *  - a path, a literal, a parameter, a function or a whole expression
+ *    surrounded by a pair of parentheses.
  */
 
 ScalarExpression
@@ -28,10 +32,6 @@ ArithmeticFactor
   : (<T_PLUS> | <T_MINUS>)? ArithmeticPrimary()
   ;
 
-/**
- * A path is read before a bare name, because a name is the beginning of a path
- * and a rule keeps whatever it reads first.
- */
 ArithmeticPrimary
   : ::T_PARENTHESIS_OPEN:: SimpleArithmeticExpression() ::T_PARENTHESIS_CLOSE::
   | CaseExpression()
@@ -63,8 +63,11 @@ StringPrimary
  *  CASE
  * -----------------------------------------------------------------------------
  *
- *  A case written of conditions is read before a case written of a value,
- *  because a value is never written where the first "WHEN" is.
+ *  A value told apart by a condition, like:
+ *  - CASE WHEN u.rank > 100 THEN 'gold' ELSE 'bronze' END
+ *  - CASE u.status WHEN 1 THEN 'active' ELSE 'unknown' END
+ *  - COALESCE(u.nickname, u.name)
+ *  - NULLIF(u.name, '')
  */
 
 CaseExpression

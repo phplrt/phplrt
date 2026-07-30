@@ -3,9 +3,11 @@
  *  Conditional Expressions
  * -----------------------------------------------------------------------------
  *
- *  The operators are written one rule per precedence, from the loosest binding
- *  one down to the tightest, because a rule reading itself from the left reads
- *  forever.
+ *  What a WHERE, a HAVING and a WITH are written of, one rule per precedence:
+ *  - OR - the loosest binding one.
+ *  - AND
+ *  - NOT
+ *  - a single condition, or one surrounded by a pair of parentheses.
  */
 
 ConditionalExpression
@@ -20,20 +22,23 @@ ConditionalFactor
   : <T_NOT>? ConditionalPrimary()
   ;
 
-/**
- * A condition surrounded by a pair of parentheses is read after a condition
- * written of a single expression, because an arithmetic expression is
- * surrounded by a pair of parentheses too.
- */
+// A single condition, or a whole one surrounded by a pair of parentheses
 ConditionalPrimary
   : SimpleConditionalExpression()
   | ::T_PARENTHESIS_OPEN:: ConditionalExpression() ::T_PARENTHESIS_CLOSE::
   ;
 
 /**
- * Each of these is told apart by the keyword written past the expression it
- * begins with, so the comparison, which is written of an operator instead, is
- * read last.
+ * A single condition, like:
+ *  - EXISTS (SELECT ...)
+ *  - u INSTANCE OF Demo\Entity\Admin
+ *  - u.posts IS NOT EMPTY
+ *  - u.name IS NULL
+ *  - :group MEMBER OF u.groups
+ *  - u.age BETWEEN 18 AND 60
+ *  - u.name LIKE :pattern
+ *  - u.status IN (1, 2)
+ *  - u.rating >= 4.5
  */
 SimpleConditionalExpression
   : ExistsExpression()
@@ -51,11 +56,7 @@ ExistsExpression
   : <T_NOT>? ::T_EXISTS:: SubselectExpression()
   ;
 
-/**
- * The class an entity is an instance of, like:
- *  - u INSTANCE OF Demo\Entity\Admin
- *  - u NOT INSTANCE OF (Demo\Entity\Admin, :type)
- */
+// u INSTANCE OF Demo\Entity\Admin, u NOT INSTANCE OF (Demo\Entity\Admin, :type)
 InstanceOfExpression
   : Identifier() <T_NOT>? ::T_INSTANCE:: ::T_OF::?
     ( ::T_PARENTHESIS_OPEN::

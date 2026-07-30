@@ -51,9 +51,6 @@
 %token  T_ASTERISK          \*
 %token  T_SUBNAMESPACE_SIGN \+
 
-// Note: The "||" operator is declared before the "|" one, because a token is
-// matched in the order it is declared, and "|" would otherwise read the
-// first half of "||".
 %token  T_LOGICAL_OR        \|\|
 %token  T_ALTERNATION       \|
 %token  T_LOGICAL_AND       &&

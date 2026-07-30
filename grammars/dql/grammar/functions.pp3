@@ -3,8 +3,9 @@
  *  Functions
  * -----------------------------------------------------------------------------
  *
- *  The functions are grouped by the arguments they read rather than by the
- *  value they return, because that is the only thing telling them apart here.
+ *  The aggregates and the functions of the language, grouped by the arguments
+ *  each of them reads. The name a function is called by is kept as the value
+ *  of its token.
  */
 
 AggregateExpression
