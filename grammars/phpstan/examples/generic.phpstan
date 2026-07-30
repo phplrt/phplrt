@@ -1,8 +1,0 @@
-Demo\Entity\Collection<
-    covariant array-key,
-    contravariant Demo\Entity\User,
-    ?non-empty-string,
-    array<string, array<int, iterable<int, mixed>>>,
-    Countable&Traversable,
-    *
->

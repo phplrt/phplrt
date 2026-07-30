@@ -1,6 +1,0 @@
-\Closure<TKey of array-key, TValue super Demo\Entity\User, TDefault = null>(
-    TKey $key,
-    TValue&$out,
-    non-empty-string $name =,
-    int ...$rest
-): (TValue|TDefault)

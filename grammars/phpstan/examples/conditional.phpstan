@@ -1,9 +1,0 @@
-(
-    $size is positive-int
-        ? non-empty-array<int, Demo\Entity\User>
-        : (
-            TValue is not Countable
-                ? Demo\Status::ACTIVE
-                : array{empty: false}
-        )
-)
