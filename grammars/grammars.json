@@ -8,6 +8,16 @@
         ]
     },
     {
+        "name": "PP2 Grammar (phplrt)",
+        "entry": "./pp2/PP2.pp3",
+        "example": [
+            "./pp2/examples/directives.pp2",
+            "./pp2/examples/statements.pp2",
+            "./pp2/examples/quantifiers.pp2",
+            "./pp2/examples/reducers.pp2"
+        ]
+    },
+    {
         "name": "PP3 Grammar (phplrt)",
         "entry": "./pp3/PP3.pp3",
         "example": [

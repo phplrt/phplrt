@@ -1,0 +1,36 @@
+/**
+ * Everything a rule may recognize, and the three ways a rule is separated from
+ * what it recognizes.
+ */
+
+%pragma root Expression
+
+// Separated with a colon
+Expression
+  : Sum()
+  | Product()
+  | Terminal()
+  ;
+
+// Separated with "::="
+Sum ::= Product() (::T_PLUS:: Product())
+
+// Separated with "="
+Product = <T_NUMBER> ::T_ASTERISK:: <T_NUMBER> ;
+
+// A token given to the rule, a token read and dropped, and a token written
+// where it is used rather than declared
+Terminal
+  : <T_NUMBER>
+  | ::T_NULL::
+  | "[0-9]+"
+  | "true|false"
+  ;
+
+// A name written in full
+Qualified
+  : \App\Node\Sum()
+  ;
+
+// Nesting, and a rule written on a single line
+Nested : ((Sum() | Product()) (::T_COMMA:: (Sum() | Product()))) ;

@@ -27,6 +27,7 @@ correctness.
 ### Common
 
 - [JSON](./json)
+- [PP2 Grammar (phplrt)](./pp2)
 - [PP3 Grammar (phplrt)](./pp3)
 
 Please note that some code examples are taken from the
