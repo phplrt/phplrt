@@ -17,6 +17,7 @@ correctness.
 
 ### PHP Specific
 
+- [Composer Version Constraint](./composer)
 - [Doctrine Query Language](./dql)
 - [Go! AOP Pointcut](./goaop)
 - [JMS Serializer Type](./jms)
@@ -26,9 +27,18 @@ correctness.
 
 ### Common
 
+- [Cron Expression](./cron)
+- [CSV](./csv)
+- [EBNF](./ebnf)
+- [Graphviz DOT](./dot)
 - [JSON](./json)
+- [JSON5](./json5)
+- [Newick](./newick)
 - [PP2 Grammar (phplrt)](./pp2)
 - [PP3 Grammar (phplrt)](./pp3)
+- [Semantic Versioning](./semver)
+- [TSV](./tsv)
+- [URL](./url)
 
 Please note that some code examples are taken from the
 [ANTLR v4 repository](https://github.com/antlr/grammars-v4) and adapted for
