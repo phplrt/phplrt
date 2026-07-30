@@ -1,0 +1,63 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  Semantic Versioning 2.0.0
+ * -----------------------------------------------------------------------------
+ *
+ * A version written of three numbers, the pre-release it belongs to and the
+ * build it was made by.
+ *
+ * @see https://semver.org
+ */
+
+%pragma root Version
+
+// A version carries no whitespace of its own; it is skipped so that a version
+// may be read out of a file of its own
+%skip  T_WHITESPACE       \s++
+
+/**
+ * An identifier written of a letter somewhere is read before one written of
+ * digits alone, so the "7z" of a pre-release is a single identifier.
+ *
+ * The dash separating the version from its pre-release is not read as part of
+ * an identifier, so an identifier does not begin with one.
+ */
+%token T_ALPHANUMERIC     [0-9]*+[a-zA-Z][a-zA-Z0-9-]*+
+%token T_NUMERIC          [0-9]++
+
+%token T_DOT              \.
+%token T_DASH             -
+%token T_PLUS             \+
+
+Version
+  : Core() PreRelease()? Build()?
+  ;
+
+// 1.2.3
+Core
+  : <T_NUMERIC> ::T_DOT:: <T_NUMERIC> ::T_DOT:: <T_NUMERIC>
+  ;
+
+// -alpha.1
+PreRelease
+  : ::T_DASH:: PreReleaseIdentifier() (::T_DOT:: PreReleaseIdentifier())*
+  ;
+
+PreReleaseIdentifier
+  : <T_ALPHANUMERIC>
+  | <T_NUMERIC>
+  ;
+
+// +build.20130313144700
+Build
+  : ::T_PLUS:: BuildIdentifier() (::T_DOT:: BuildIdentifier())*
+  ;
+
+/**
+ * Unlike a pre-release, a leading zero is written here, so a number is read as
+ * a name of digits.
+ */
+BuildIdentifier
+  : <T_ALPHANUMERIC>
+  | <T_NUMERIC>
+  ;
