@@ -8,6 +8,16 @@
         ]
     },
     {
+        "name": "PP Grammar (Hoa)",
+        "entry": "./pp/Hoa.pp3",
+        "example": [
+            "./pp/examples/arithmetic.pp",
+            "./pp/examples/json.pp",
+            "./pp/examples/llk.pp",
+            "./pp/examples/ruler.pp"
+        ]
+    },
+    {
         "name": "PP2 Grammar (phplrt)",
         "entry": "./pp2/PP2.pp3",
         "example": [
@@ -215,16 +225,6 @@
             "./composer/examples/caret.txt",
             "./composer/examples/hyphen.txt",
             "./composer/examples/range.txt"
-        ]
-    },
-    {
-        "name": "Hoa PP",
-        "entry": "./hoa/Hoa.pp3",
-        "example": [
-            "./hoa/examples/arithmetic.pp",
-            "./hoa/examples/json.pp",
-            "./hoa/examples/llk.pp",
-            "./hoa/examples/ruler.pp"
         ]
     },
     {
