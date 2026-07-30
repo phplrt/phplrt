@@ -37,36 +37,36 @@
  * -----------------------------------------------------------------------------
  */
 
-%token  T_SELECT                (?i)select(?![a-zA-Z0-9_])
-%token  T_INSERT                (?i)insert(?![a-zA-Z0-9_])
-%token  T_UPDATE                (?i)update(?![a-zA-Z0-9_])
-%token  T_DELETE                (?i)delete(?![a-zA-Z0-9_])
-%token  T_INTO                  (?i)into(?![a-zA-Z0-9_])
-%token  T_VALUES                (?i)values(?![a-zA-Z0-9_])
-%token  T_SET                   (?i)set(?![a-zA-Z0-9_])
-%token  T_FROM                  (?i)from(?![a-zA-Z0-9_])
-%token  T_WHERE                 (?i)where(?![a-zA-Z0-9_])
-%token  T_GROUP                 (?i)group(?![a-zA-Z0-9_])
-%token  T_HAVING                (?i)having(?![a-zA-Z0-9_])
-%token  T_ORDER                 (?i)order(?![a-zA-Z0-9_])
-%token  T_BY                    (?i)by(?![a-zA-Z0-9_])
-%token  T_LIMIT                 (?i)limit(?![a-zA-Z0-9_])
-%token  T_OFFSET                (?i)offset(?![a-zA-Z0-9_])
-%token  T_FOR                   (?i)for(?![a-zA-Z0-9_])
-%token  T_ASC                   (?i)asc(?![a-zA-Z0-9_])
-%token  T_DESC                  (?i)desc(?![a-zA-Z0-9_])
-%token  T_DISTINCT              (?i)distinct(?![a-zA-Z0-9_])
-%token  T_ALL                   (?i)all(?![a-zA-Z0-9_])
-%token  T_AS                    (?i)as(?![a-zA-Z0-9_])
+%token  T_SELECT                (?i)select\b
+%token  T_INSERT                (?i)insert\b
+%token  T_UPDATE                (?i)update\b
+%token  T_DELETE                (?i)delete\b
+%token  T_INTO                  (?i)into\b
+%token  T_VALUES                (?i)values\b
+%token  T_SET                   (?i)set\b
+%token  T_FROM                  (?i)from\b
+%token  T_WHERE                 (?i)where\b
+%token  T_GROUP                 (?i)group\b
+%token  T_HAVING                (?i)having\b
+%token  T_ORDER                 (?i)order\b
+%token  T_BY                    (?i)by\b
+%token  T_LIMIT                 (?i)limit\b
+%token  T_OFFSET                (?i)offset\b
+%token  T_FOR                   (?i)for\b
+%token  T_ASC                   (?i)asc\b
+%token  T_DESC                  (?i)desc\b
+%token  T_DISTINCT              (?i)distinct\b
+%token  T_ALL                   (?i)all\b
+%token  T_AS                    (?i)as\b
 
-%token  T_JOIN                  (?i)join(?![a-zA-Z0-9_])
-%token  T_INNER                 (?i)inner(?![a-zA-Z0-9_])
-%token  T_CROSS                 (?i)cross(?![a-zA-Z0-9_])
-%token  T_LEFT                  (?i)left(?![a-zA-Z0-9_])
-%token  T_RIGHT                 (?i)right(?![a-zA-Z0-9_])
-%token  T_FULL                  (?i)full(?![a-zA-Z0-9_])
-%token  T_OUTER                 (?i)outer(?![a-zA-Z0-9_])
-%token  T_ON                    (?i)on(?![a-zA-Z0-9_])
+%token  T_JOIN                  (?i)join\b
+%token  T_INNER                 (?i)inner\b
+%token  T_CROSS                 (?i)cross\b
+%token  T_LEFT                  (?i)left\b
+%token  T_RIGHT                 (?i)right\b
+%token  T_FULL                  (?i)full\b
+%token  T_OUTER                 (?i)outer\b
+%token  T_ON                    (?i)on\b
 
 /**
  * -----------------------------------------------------------------------------
@@ -74,29 +74,29 @@
  * -----------------------------------------------------------------------------
  */
 
-%token  T_BETWEEN_NOT           (?i)not\h++between(?![a-zA-Z0-9_])
-%token  T_BETWEEN               (?i)between(?![a-zA-Z0-9_])
-%token  T_AND                   (?i)and(?![a-zA-Z0-9_])
-%token  T_OR                    (?i)or(?![a-zA-Z0-9_])
-%token  T_NOT                   (?i)not(?![a-zA-Z0-9_])
-%token  T_LIKE                  (?i)like(?![a-zA-Z0-9_])
-%token  T_ILIKE                 (?i)ilike(?![a-zA-Z0-9_])
-%token  T_IN                    (?i)in(?![a-zA-Z0-9_])
-%token  T_EXISTS                (?i)exists(?![a-zA-Z0-9_])
-%token  T_IS                    (?i)is(?![a-zA-Z0-9_])
-%token  T_NULL                  (?i)null(?![a-zA-Z0-9_])
-%token  T_TRUE                  (?i)true(?![a-zA-Z0-9_])
-%token  T_FALSE                 (?i)false(?![a-zA-Z0-9_])
-%token  T_AGAINST               (?i)against(?![a-zA-Z0-9_])
+%token  T_BETWEEN_NOT           (?i)not\h++between\b
+%token  T_BETWEEN               (?i)between\b
+%token  T_AND                   (?i)and\b
+%token  T_OR                    (?i)or\b
+%token  T_NOT                   (?i)not\b
+%token  T_LIKE                  (?i)like\b
+%token  T_ILIKE                 (?i)ilike\b
+%token  T_IN                    (?i)in\b
+%token  T_EXISTS                (?i)exists\b
+%token  T_IS                    (?i)is\b
+%token  T_NULL                  (?i)null\b
+%token  T_TRUE                  (?i)true\b
+%token  T_FALSE                 (?i)false\b
+%token  T_AGAINST               (?i)against\b
 
-%token  T_CASE                  (?i)case(?![a-zA-Z0-9_])
-%token  T_WHEN                  (?i)when(?![a-zA-Z0-9_])
-%token  T_THEN                  (?i)then(?![a-zA-Z0-9_])
-%token  T_ELSE                  (?i)else(?![a-zA-Z0-9_])
-%token  T_END                   (?i)end(?![a-zA-Z0-9_])
-%token  T_CAST                  (?i)cast(?![a-zA-Z0-9_])
-%token  T_CONVERT               (?i)convert(?![a-zA-Z0-9_])
-%token  T_USING                 (?i)using(?![a-zA-Z0-9_])
+%token  T_CASE                  (?i)case\b
+%token  T_WHEN                  (?i)when\b
+%token  T_THEN                  (?i)then\b
+%token  T_ELSE                  (?i)else\b
+%token  T_END                   (?i)end\b
+%token  T_CAST                  (?i)cast\b
+%token  T_CONVERT               (?i)convert\b
+%token  T_USING                 (?i)using\b
 
 /**
  * -----------------------------------------------------------------------------
