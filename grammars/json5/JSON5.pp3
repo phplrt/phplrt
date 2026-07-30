@@ -1,0 +1,77 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  JSON5
+ * -----------------------------------------------------------------------------
+ *
+ * JSON with the parts of ES5 that make it comfortable to write by hand:
+ * comments, trailing commas, unquoted keys, single quotes and more numbers.
+ *
+ * @see https://json5.org
+ */
+
+%pragma root Json5
+
+%skip  T_WHITESPACE      [\x{0020}\t\n\r\x{00A0}\x{FEFF}\x{2003}]++
+%skip  T_COMMENT         //[^\r\n]*+
+%skip  T_DOC             /\*.*?\*/
+
+%token T_LITERAL         (?:true|false|null)(?![a-zA-Z0-9_$])
+%token T_NUMERIC_LITERAL (?:Infinity|NaN)(?![a-zA-Z0-9_$])
+
+// A backslash escapes whatever is written past it, a line break included
+%token T_STRING          "(?:[^"\\\r\n]|\\(?:\r\n|[\s\S]))*+"|'(?:[^'\\\r\n]|\\(?:\r\n|[\s\S]))*+'
+
+// 0x1F, 1234, 1234.5, .5, 1.e2
+%token T_NUMBER          0[xX][0-9a-fA-F]++|(?:0|[1-9][0-9]*+)(?:\.[0-9]*+)?(?:[eE][+\-]?[0-9]*+)?|\.[0-9]++(?:[eE][+\-]?[0-9]*+)?
+
+// A character of a name is written as itself or as "\uXXXX"
+%token T_IDENTIFIER      (?:[\p{L}$_]|\\u[0-9a-fA-F]{4})(?:[\p{L}\p{M}\p{N}\p{Pc}$_\x{200C}\x{200D}]|\\u[0-9a-fA-F]{4})*+
+
+%token T_SIGN            [+\-]
+%token T_BRACE_OPEN      \{
+%token T_BRACE_CLOSE     \}
+%token T_BRACKET_OPEN    \[
+%token T_BRACKET_CLOSE   \]
+%token T_COLON           :
+%token T_COMMA           ,
+
+Json5
+  : Value()?
+  ;
+
+Value
+  : <T_STRING>
+  | Number()
+  | Object()
+  | Array()
+  | <T_LITERAL>
+  ;
+
+// A comma may be written past the last member
+Object
+  : ::T_BRACE_OPEN::
+      (Pair() (::T_COMMA:: Pair())* ::T_COMMA::?)?
+    ::T_BRACE_CLOSE::
+  ;
+
+Pair
+  : Key() ::T_COLON:: Value()
+  ;
+
+// A key is written quoted or as a bare name
+Key
+  : <T_STRING>
+  | <T_IDENTIFIER>
+  | <T_LITERAL>
+  | <T_NUMERIC_LITERAL>
+  ;
+
+Array
+  : ::T_BRACKET_OPEN::
+      (Value() (::T_COMMA:: Value())* ::T_COMMA::?)?
+    ::T_BRACKET_CLOSE::
+  ;
+
+Number
+  : <T_SIGN>? (<T_NUMERIC_LITERAL> | <T_NUMBER>)
+  ;
