@@ -20,6 +20,16 @@
         ]
     },
     {
+        "name": "PSR-5 Type Expression",
+        "entry": "./psr5/PSR-5.pp3",
+        "example": [
+            "./psr5/examples/keywords.psr5",
+            "./psr5/examples/class-names.psr5",
+            "./psr5/examples/arrays.psr5",
+            "./psr5/examples/type-expression.psr5"
+        ]
+    },
+    {
         "name": "Doctrine Query Language",
         "entry": "./dql/DQL.pp3",
         "example": [

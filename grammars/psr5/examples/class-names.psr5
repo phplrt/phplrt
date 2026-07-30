@@ -1,0 +1,9 @@
+MyClass
+| \MyClass
+| My\Name\Space\MyClass
+| \My\Name\Space\MyClass
+| My\Object\Item
+| array\Item
+| \array
+| Кириллица
+| My\Ünïcode\Kläss

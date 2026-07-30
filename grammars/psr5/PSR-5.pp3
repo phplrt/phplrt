@@ -1,0 +1,172 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  PSR-5 Type Expression
+ * -----------------------------------------------------------------------------
+ *
+ * The type language of PSR-5 (PHPDoc), written after the ABNF the proposal
+ * defines it by:
+ *
+ *   type-expression  = type *("|" type) *("&" type)
+ *   type             = class-name / keyword / array
+ *   array            = (type / array-expression) "[]"
+ *   array-expression = "(" type-expression ")"
+ *   class-name       = ["\"] label *("\" label)
+ *   label            = (ALPHA / %x7F-FF) *(ALPHA / DIGIT / %x7F-FF)
+ *   keyword          = "array" / "bool" / "callable" / "false" / "float" / "int" / "iterable" / "mixed" / "never"
+ *   keyword          =/ "null" / "object" / "resource" / "self" / "static" / "string" / "true" / "void" / "$this"
+ *
+ * Two things the ABNF says are worth reading twice, because a type written
+ * every day breaks them:
+ *
+ *  - a label is written of letters and digits only, so neither "_" nor "-"
+ *    names a class here;
+ *  - an expression surrounded by a pair of parentheses is only a type once
+ *    "[]" is written past it, so "(int|string)" alone is not one.
+ *
+ * The one thing written differently: a type-expression is spelled without any
+ * whitespace, because it is read out of a tag which ends where the whitespace
+ * begins. Read on its own it is allowed to be written across several lines.
+ *
+ * @see https://github.com/php-fig/fig-standards/blob/master/proposed/phpdoc.md
+ */
+
+/**
+ * A label is written of octets rather than of characters, so the expressions
+ * are read the same way. Any character outside ASCII is written of the octets
+ * "%x7F-FF" names, which is what allows a class to be named in any language.
+ */
+%pragma lexer.pcre.disable u
+
+%pragma root TypeExpression
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ *
+ *  A keyword is declared before a label, so a word spelled like one is read as
+ *  a keyword. ABNF reads a quoted string in either case, so each keyword is
+ *  written "(?i)", and each ends where a word ends, so "int" is not read out
+ *  of "integer".
+ */
+
+%skip   T_WHITESPACE            \s++
+
+%token  T_THIS                  \$this(?![a-zA-Z0-9\x7f-\xff])
+
+%token  T_ARRAY                 (?i)array(?![a-zA-Z0-9\x7f-\xff])
+%token  T_BOOL                  (?i)bool(?![a-zA-Z0-9\x7f-\xff])
+%token  T_CALLABLE              (?i)callable(?![a-zA-Z0-9\x7f-\xff])
+%token  T_FALSE                 (?i)false(?![a-zA-Z0-9\x7f-\xff])
+%token  T_FLOAT                 (?i)float(?![a-zA-Z0-9\x7f-\xff])
+%token  T_INT                   (?i)int(?![a-zA-Z0-9\x7f-\xff])
+%token  T_ITERABLE              (?i)iterable(?![a-zA-Z0-9\x7f-\xff])
+%token  T_MIXED                 (?i)mixed(?![a-zA-Z0-9\x7f-\xff])
+%token  T_NEVER                 (?i)never(?![a-zA-Z0-9\x7f-\xff])
+%token  T_NULL                  (?i)null(?![a-zA-Z0-9\x7f-\xff])
+%token  T_OBJECT                (?i)object(?![a-zA-Z0-9\x7f-\xff])
+%token  T_RESOURCE              (?i)resource(?![a-zA-Z0-9\x7f-\xff])
+%token  T_SELF                  (?i)self(?![a-zA-Z0-9\x7f-\xff])
+%token  T_STATIC                (?i)static(?![a-zA-Z0-9\x7f-\xff])
+%token  T_STRING                (?i)string(?![a-zA-Z0-9\x7f-\xff])
+%token  T_TRUE                  (?i)true(?![a-zA-Z0-9\x7f-\xff])
+%token  T_VOID                  (?i)void(?![a-zA-Z0-9\x7f-\xff])
+
+// label = (ALPHA / %x7F-FF) *(ALPHA / DIGIT / %x7F-FF)
+%token  T_LABEL                 [a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff]*+
+
+%token  T_NS_DELIMITER          \\
+%token  T_PIPE                  \|
+%token  T_AMPERSAND             &
+%token  T_PARENTHESIS_OPEN      \(
+%token  T_PARENTHESIS_CLOSE     \)
+%token  T_SQUARE_BRACKET_OPEN   \[
+%token  T_SQUARE_BRACKET_CLOSE  \]
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Type Expression
+ * -----------------------------------------------------------------------------
+ *
+ *  The ABNF writes the unions before the intersections rather than mixing
+ *  them, so "int|string&Countable" is a type expression and
+ *  "int&Countable|string" is not. It is read here the way it is written there.
+ */
+
+TypeExpression
+  : Type()
+    (::T_PIPE:: Type())*
+    (::T_AMPERSAND:: Type())*
+  ;
+
+/**
+ * The ABNF writes "array = (type / array-expression) '[]'" and "type = ... /
+ * array", so a type reads itself from the left and cannot be written that way
+ * here. The repetition is written out instead, which reads the same input.
+ *
+ * An expression surrounded by a pair of parentheses is written with at least
+ * one "[]" past it, because nothing but "array" ever writes one.
+ */
+Type
+  : ArrayExpression() ArraySuffix()+
+  | NonArrayType() ArraySuffix()*
+  ;
+
+ArrayExpression
+  : ::T_PARENTHESIS_OPEN:: TypeExpression() ::T_PARENTHESIS_CLOSE::
+  ;
+
+ArraySuffix
+  : ::T_SQUARE_BRACKET_OPEN:: ::T_SQUARE_BRACKET_CLOSE::
+  ;
+
+/**
+ * Every keyword but "$this" is spelled the way a label is, so a keyword is a
+ * class name as much as it is a keyword. Which of the two it is, is told by
+ * what is written around it: a word written next to a separator names a class,
+ * and a word written on its own is the keyword.
+ */
+NonArrayType
+  : ClassName()
+  | Keyword()
+  ;
+
+ClassName
+  : ::T_NS_DELIMITER:: Label() (::T_NS_DELIMITER:: Label())*
+  | Label() (::T_NS_DELIMITER:: Label())+
+  | <T_LABEL>
+  ;
+
+Label
+  : <T_LABEL>
+  | KeywordLabel()
+  ;
+
+Keyword
+  : <T_THIS>
+  | KeywordLabel()
+  ;
+
+/**
+ * Everything the keyword production of the ABNF is written of, apart from
+ * "$this", which is the only one that is not spelled like a label.
+ */
+KeywordLabel
+  : <T_ARRAY>
+  | <T_BOOL>
+  | <T_CALLABLE>
+  | <T_FALSE>
+  | <T_FLOAT>
+  | <T_INT>
+  | <T_ITERABLE>
+  | <T_MIXED>
+  | <T_NEVER>
+  | <T_NULL>
+  | <T_OBJECT>
+  | <T_RESOURCE>
+  | <T_SELF>
+  | <T_STATIC>
+  | <T_STRING>
+  | <T_TRUE>
+  | <T_VOID>
+  ;
