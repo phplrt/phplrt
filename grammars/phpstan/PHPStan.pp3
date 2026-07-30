@@ -1,0 +1,222 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  PHPDoc Type Expression Of PHPStan
+ * -----------------------------------------------------------------------------
+ *
+ * The type language read by "phpstan/phpdoc-parser".
+ *
+ * @see https://github.com/phpstan/phpdoc-parser/blob/2.3.x/doc/grammars/type.abnf
+ */
+
+// An identifier is written of octets, so "\x80-\xff" names every byte a name
+// outside ASCII is written of
+%pragma lexer.pcre.disable u
+
+%pragma root Type
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ */
+
+%skip  T_WHITESPACE             \s++
+
+%token T_CONSTANT_FLOAT         [+\-]?(?:[0-9]++(?:_[0-9]++)*+\.(?:[0-9]++(?:_[0-9]++)*+)?(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)?|[0-9]++(?:_[0-9]++)*+(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)|\.[0-9]++(?:_[0-9]++)*+(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)?)
+%token T_CONSTANT_INT           [+\-]?(?:0[bB][01]++(?:_[01]++)*+|0[oO][0-7]++(?:_[0-7]++)*+|0[xX][0-9a-fA-F]++(?:_[0-9a-fA-F]++)*+|[0-9]++(?:_[0-9]++)*+)
+%token T_CONSTANT_STRING        '(?:\\[^\r\n]|[^\r\n\\'])*+'|"(?:\\[^\r\n]|[^\r\n\\"])*+"
+
+%token T_THIS_VARIABLE          \$this(?![a-zA-Z0-9_\x80-\xff])
+%token T_VARIABLE               \$[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*+
+
+// The words a template argument, a variance and a conditional are written of:
+// "T of User", "covariant T", "T is not int ? A : B"
+%token T_CONTRAVARIANT          contravariant(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_COVARIANT              covariant(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_SUPER                  super(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_NOT                    not(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_IS                     is(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_OF                     of(?![a-zA-Z0-9_\-\\\x80-\xff])
+
+// Every part of a name at once: "\Demo\Entity\User", "non-empty-string"
+%token T_IDENTIFIER             \\?[a-zA-Z_\x80-\xff][a-zA-Z0-9_\-\x80-\xff]*+(?:\\[a-zA-Z_\x80-\xff][a-zA-Z0-9_\-\x80-\xff]*+)*+
+
+%token T_VARIADIC               \.\.\.
+%token T_DOUBLE_COLON           ::
+%token T_COLON                  :
+%token T_EQUAL_SIGN             =
+%token T_UNION                  \|
+%token T_INTERSECTION           &
+%token T_NULLABLE               \?
+%token T_WILDCARD               \*
+%token T_COMMA                  ,
+
+%token T_PARENTHESES_OPEN       \(
+%token T_PARENTHESES_CLOSE      \)
+%token T_ANGLE_BRACKET_OPEN     <
+%token T_ANGLE_BRACKET_CLOSE    >
+%token T_SQUARE_BRACKET_OPEN    \[
+%token T_SQUARE_BRACKET_CLOSE   \]
+%token T_CURLY_BRACKET_OPEN     \{
+%token T_CURLY_BRACKET_CLOSE    \}
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Type
+ * -----------------------------------------------------------------------------
+ */
+
+Type
+  : Atomic() (Union() | Intersection())?
+  | Nullable()
+  ;
+
+// A type written inside a pair of parentheses, where a conditional is written
+ParenthesizedType
+  : <T_VARIABLE> Conditional()
+  | Atomic() (Union() | Intersection() | Conditional())?
+  | Nullable()
+  ;
+
+Union
+  : (::T_UNION:: Atomic())+
+  ;
+
+Intersection
+  : (::T_INTERSECTION:: Atomic())+
+  ;
+
+// is int ? string : bool
+Conditional
+  : ::T_IS:: <T_NOT>? Atomic()
+    ::T_NULLABLE:: Type()
+    ::T_COLON:: ParenthesizedType()
+  ;
+
+// ?int
+Nullable
+  : ::T_NULLABLE:: Atomic()
+  ;
+
+Atomic
+  : <T_CONSTANT_FLOAT>
+  | <T_CONSTANT_INT>
+  | <T_CONSTANT_STRING>
+  | <T_THIS_VARIABLE>
+  | ::T_PARENTHESES_OPEN:: ParenthesizedType() ::T_PARENTHESES_CLOSE:: Array()?
+  | Identifier() (
+      Callable()
+    | Generic()
+    | ArrayShape()
+    | Array()
+    | ClassConstant()
+    )?
+  ;
+
+Identifier
+  : <T_IDENTIFIER>
+  | <T_IS>
+  | <T_NOT>
+  | <T_OF>
+  | <T_SUPER>
+  | <T_COVARIANT>
+  | <T_CONTRAVARIANT>
+  ;
+
+// Demo\Status::ACTIVE
+ClassConstant
+  : ::T_DOUBLE_COLON:: Identifier()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Generic
+ * -----------------------------------------------------------------------------
+ */
+
+// <int, non-empty-string>
+Generic
+  : ::T_ANGLE_BRACKET_OPEN::
+      GenericTypeArgument() (::T_COMMA:: GenericTypeArgument())*
+    ::T_ANGLE_BRACKET_CLOSE::
+  ;
+
+GenericTypeArgument
+  : (<T_CONTRAVARIANT> | <T_COVARIANT>)? Type()
+  | <T_WILDCARD>
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Callable
+ * -----------------------------------------------------------------------------
+ */
+
+// <T of User>(T $value, int ...$rest): T
+Callable
+  : CallableTemplate()?
+    ::T_PARENTHESES_OPEN:: CallableParameters()? ::T_PARENTHESES_CLOSE::
+    ::T_COLON:: CallableReturnType()
+  ;
+
+CallableTemplate
+  : ::T_ANGLE_BRACKET_OPEN::
+      CallableTemplateArgument() (::T_COMMA:: CallableTemplateArgument())*
+    ::T_ANGLE_BRACKET_CLOSE::
+  ;
+
+CallableTemplateArgument
+  : Identifier()
+    (::T_OF:: Type())?
+    (::T_SUPER:: Type())?
+    (::T_EQUAL_SIGN:: Type())?
+  ;
+
+CallableParameters
+  : CallableParameter() (::T_COMMA:: CallableParameter())*
+  ;
+
+// The "&" of a parameter read by reference, the "..." of a variadic one, the
+// name it is called by and the "=" of an optional one
+CallableParameter
+  : Type()
+    <T_INTERSECTION>?
+    <T_VARIADIC>?
+    <T_VARIABLE>?
+    <T_EQUAL_SIGN>?
+  ;
+
+CallableReturnType
+  : Identifier() Generic()?
+  | Nullable()
+  | ::T_PARENTHESES_OPEN:: Type() ::T_PARENTHESES_CLOSE::
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Array And Shape
+ * -----------------------------------------------------------------------------
+ */
+
+// [][]
+Array
+  : (::T_SQUARE_BRACKET_OPEN:: ::T_SQUARE_BRACKET_CLOSE::)+
+  ;
+
+// {id: int, name?: string, 0: bool}
+ArrayShape
+  : ::T_CURLY_BRACKET_OPEN::
+      ArrayShapeItem() (::T_COMMA:: ArrayShapeItem())*
+    ::T_CURLY_BRACKET_CLOSE::
+  ;
+
+ArrayShapeItem
+  : ArrayShapeKey() <T_NULLABLE>? ::T_COLON:: Type()
+  | Type()
+  ;
+
+ArrayShapeKey
+  : <T_CONSTANT_STRING>
+  | <T_CONSTANT_INT>
+  | Identifier()
+  ;
