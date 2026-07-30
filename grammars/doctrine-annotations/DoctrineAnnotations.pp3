@@ -41,9 +41,9 @@
 %token T_FLOAT                 [+\-]?(?:[0-9]*+\.[0-9]++(?:[eE][+\-]?[0-9]++)?|[0-9]++[eE][+\-]?[0-9]++)
 %token T_INTEGER               [+\-]?[0-9]++
 
-%token T_TRUE                  (?i)true(?![a-zA-Z0-9_])
-%token T_FALSE                 (?i)false(?![a-zA-Z0-9_])
-%token T_NULL                  (?i)null(?![a-zA-Z0-9_])
+%token T_TRUE                  (?i)true\b
+%token T_FALSE                 (?i)false\b
+%token T_NULL                  (?i)null\b
 
 %token T_IDENTIFIER            [a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*+
 
