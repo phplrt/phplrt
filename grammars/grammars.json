@@ -72,7 +72,7 @@
         ]
     },
     {
-        "name": "Doctrine Query Language",
+        "name": "DQL (Doctrine Query Language)",
         "entry": "./dql/DQL.pp3",
         "example": [
             "./dql/examples/conditions.txt",
