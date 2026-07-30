@@ -17,7 +17,7 @@ correctness.
 
 ### PHP Specific
 
-- [Composer Version Constraint](./composer-version-constraint)
+- [Composer Version Constraint](./composer)
 - [Doctrine Annotations](./doctrine-annotations)
 - [Doctrine Query Language](./dql)
 - [Hoa PP](./hoa)
