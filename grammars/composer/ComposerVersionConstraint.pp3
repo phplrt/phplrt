@@ -25,7 +25,7 @@
 %token T_LT                <
 %token T_EQ                ==|=
 
-%token T_AS                (?i)as(?![a-zA-Z0-9_])
+%token T_AS                (?i)as\b
 %token T_HYPHEN            -(?=\s)
 
 // 1.2.3, v1.2, 1.*, 1.2.x, dev-main, master, 1.0.0-beta.1+build
