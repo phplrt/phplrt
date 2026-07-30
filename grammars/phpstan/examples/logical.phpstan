@@ -1,0 +1,14 @@
+non-empty-string
+| positive-int
+| class-string
+| null
+| false
+| $this
+| \Demo\Entity\User
+| Demo\Entity\User
+| Кириллица
+| int[]
+| int[][]
+| (int|string)[]
+| (Countable&Traversable)[]
+| (?Demo\Entity\User)[]
