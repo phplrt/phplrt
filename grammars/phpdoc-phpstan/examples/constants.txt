@@ -1,0 +1,19 @@
+'single quoted'
+| "double quoted"
+| 'it\'s escaped'
+| 42
+| -1
+| +7
+| 0b1010_1010
+| 0o777
+| 0xDE_AD_BE_EF
+| 1_000_000
+| 3.14
+| -.5
+| 42.
+| 1e10
+| -2.5E-3
+| true
+| false
+| null
+| Demo\Entity\Status::ACTIVE
