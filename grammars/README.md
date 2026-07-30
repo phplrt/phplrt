@@ -17,13 +17,17 @@ correctness.
 
 ### PHP Specific
 
-- [Composer Version Constraint](./composer)
+- [Composer Version Constraint](./composer-version-constraint)
+- [Doctrine Annotations](./doctrine-annotations)
 - [Doctrine Query Language](./dql)
-- [Go! AOP Pointcut](./goaop)
+- [Hoa PP](./hoa)
+- [Hoa Ruler](./hoa-ruler)
+- [Arithmetic](./hoa-math)
+- [Go! AOP Pointcut](./go-aop)
 - [JMS Serializer Type](./jms)
-- [PHPDoc Types (PHPStan)](./phpstan)
-- [PHPDoc Types (PSR-5)](./psr5)
-- [PHPDoc Types (TypeLang)](./phpdoc)
+- [PHPDoc Types (PHPStan)](./phpdoc-phpstan)
+- [PHPDoc Types (PSR-5)](./phpdoc-psr-5)
+- [PHPDoc Types (TypeLang)](./phpdoc-type-lang)
 
 ### Common
 
