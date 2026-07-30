@@ -6,5 +6,39 @@
             "./json/examples/example1.json",
             "./json/examples/numbers.json"
         ]
+    },
+    {
+        "name": "PHPDoc Types",
+        "entry": "./phpdoc/phpdoc.pp2",
+        "example": [
+            "./phpdoc/examples/logical.phpdoc",
+            "./phpdoc/examples/literals.phpdoc",
+            "./phpdoc/examples/generics.phpdoc",
+            "./phpdoc/examples/shapes.phpdoc",
+            "./phpdoc/examples/callable.phpdoc",
+            "./phpdoc/examples/ternary.phpdoc"
+        ]
+    },
+    {
+        "name": "Doctrine Query Language",
+        "entry": "./dql/DQL.pp3",
+        "example": [
+            "./dql/examples/select.dql",
+            "./dql/examples/joins.dql",
+            "./dql/examples/conditions.dql",
+            "./dql/examples/functions.dql",
+            "./dql/examples/subselect.dql",
+            "./dql/examples/reserved-words.dql",
+            "./dql/examples/update.dql",
+            "./dql/examples/delete.dql"
+        ]
+    },
+    {
+        "name": "Go! AOP Pointcut",
+        "entry": "./goaop/goaop.pp3",
+        "example": [
+            "./goaop/examples/pointcuts.pointcut",
+            "./goaop/examples/expressions.pointcut"
+        ]
     }
 ]
