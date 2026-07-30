@@ -56,6 +56,16 @@
         ]
     },
     {
+        "name": "JMS Serializer Type",
+        "entry": "./jms/JMS.pp3",
+        "example": [
+            "./jms/examples/simple.jms",
+            "./jms/examples/collection.jms",
+            "./jms/examples/datetime.jms",
+            "./jms/examples/parameters.jms"
+        ]
+    },
+    {
         "name": "Go! AOP Pointcut",
         "entry": "./goaop/goaop.pp3",
         "example": [

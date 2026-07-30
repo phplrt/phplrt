@@ -1,0 +1,89 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  JMS Serializer Type
+ * -----------------------------------------------------------------------------
+ *
+ * The type language read by "jms/serializer", the one a "@Type" annotation and
+ * a "#[Type]" attribute are written in.
+ *
+ * @see https://github.com/schmittjoh/serializer/blob/master/src/Type/Lexer.php
+ * @see https://github.com/schmittjoh/serializer/blob/master/src/Type/Parser.php
+ */
+
+%pragma root Type
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ */
+
+%skip  T_WHITESPACE     \s++
+
+// A number written with a point or an exponent, like "2.5", "1.2e3"
+%token T_FLOAT          [0-9]++(?:\.[0-9]++)++(?:[eE][+\-]?[0-9]++)?|[0-9]++[eE][+\-]?[0-9]++
+
+// A whole number, like "42"
+%token T_INTEGER        [0-9]++
+
+// A string, with the quote inside it written twice
+%token T_STRING         '(?:[^']|'')*+'|"(?:[^"]|"")*+"
+
+%token T_NULL           null(?![a-zA-Z_\\0-9])
+
+// The name of a type, aliased or qualified: "string", "App\Entity\User"
+%token T_IDENTIFIER     [a-zA-Z][a-zA-Z_\\0-9]*+
+
+%token T_TYPE_START     <
+%token T_TYPE_END       >
+%token T_ARRAY_START    \[
+%token T_ARRAY_END      \]
+%token T_COMMA          ,
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Type
+ * -----------------------------------------------------------------------------
+ *
+ *  A type, with the parameters it is read with, like:
+ *  - string
+ *  - App\Entity\User
+ *  - array<string, App\Entity\User>
+ *  - DateTimeImmutable<'Y-m-d', 'UTC'>
+ */
+
+Type
+  : <T_IDENTIFIER> (TypeParameters() | ArrayParameters())?
+  | Literal()
+  ;
+
+/**
+ * A type written as a parameter of another one, where a list of values is
+ * written as well, like:
+ *  - Options<[1, 2, 3]>
+ */
+ParameterType
+  : Type()
+  | ArrayParameters()
+  ;
+
+// <string, integer>
+TypeParameters
+  : ::T_TYPE_START::
+      (ParameterType() (::T_COMMA:: ParameterType())*)?
+    ::T_TYPE_END::
+  ;
+
+// [1, 2, 3]
+ArrayParameters
+  : ::T_ARRAY_START::
+      (ParameterType() (::T_COMMA:: ParameterType())*)?
+    ::T_ARRAY_END::
+  ;
+
+Literal
+  : <T_FLOAT>
+  | <T_INTEGER>
+  | <T_STRING>
+  | <T_NULL>
+  ;

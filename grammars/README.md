@@ -17,9 +17,10 @@ correctness.
 
 - [Doctrine Query Language](./dql)
 - [Go! AOP Pointcut](./goaop)
-- [PHPDoc (Advanced)](./phpdoc)
-- [PHPDoc (PHPStan)](./phpstan)
-- [PHPDoc (PSR-5)](./psr5)
+- [JMS Serializer Type](./jms)
+- [PHPDoc Types (PHPStan)](./phpstan)
+- [PHPDoc Types (PSR-5)](./psr5)
+- [PHPDoc Types (TypeLang)](./phpdoc)
 
 ### Common
 

@@ -1,0 +1,6 @@
+array<
+    string,
+    Doctrine\Common\Collections\ArrayCollection<
+        array<integer, App\Entity\Comment>
+    >
+>
