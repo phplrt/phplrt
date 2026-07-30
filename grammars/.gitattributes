@@ -5,13 +5,6 @@
 *.pp2 eol=lf linguist-language=EBNF
 *.pp3 eol=lf linguist-language=EBNF
 
-# custom languages
-*.dql       text eol=lf
-*.pointcut  text eol=lf
-*.phpdoc    text eol=lf
-*.phpstan   text eol=lf
-*.psr5      text eol=lf
-
 # GIT
 .editorconfig export-ignore
 .gitattributes export-ignore
