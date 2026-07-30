@@ -12,9 +12,9 @@
         "entry": "./pp2/PP2.pp3",
         "example": [
             "./pp2/examples/directives.pp2",
-            "./pp2/examples/statements.pp2",
             "./pp2/examples/quantifiers.pp2",
-            "./pp2/examples/reducers.pp2"
+            "./pp2/examples/reducers.pp2",
+            "./pp2/examples/statements.pp2"
         ]
     },
     {
@@ -22,75 +22,75 @@
         "entry": "./pp3/PP3.pp3",
         "example": [
             "./pp3/examples/directives.pp3",
-            "./pp3/examples/statements.pp3",
             "./pp3/examples/quantifiers.pp3",
-            "./pp3/examples/reducers.pp3"
+            "./pp3/examples/reducers.pp3",
+            "./pp3/examples/statements.pp3"
         ]
     },
     {
         "name": "PHPDoc Types (TypeLang)",
-        "entry": "./phpdoc/phpdoc.pp2",
+        "entry": "./phpdoc-type-lang/phpdoc.pp2",
         "example": [
-            "./phpdoc/examples/logical.phpdoc",
-            "./phpdoc/examples/literals.phpdoc",
-            "./phpdoc/examples/generics.phpdoc",
-            "./phpdoc/examples/shapes.phpdoc",
-            "./phpdoc/examples/callable.phpdoc",
-            "./phpdoc/examples/ternary.phpdoc"
+            "./phpdoc-type-lang/examples/callable.txt",
+            "./phpdoc-type-lang/examples/generics.txt",
+            "./phpdoc-type-lang/examples/literals.txt",
+            "./phpdoc-type-lang/examples/logical.txt",
+            "./phpdoc-type-lang/examples/shapes.txt",
+            "./phpdoc-type-lang/examples/ternary.txt"
         ]
     },
     {
         "name": "PHPDoc Types (PHPStan)",
-        "entry": "./phpstan/PHPStan.pp3",
+        "entry": "./phpdoc-phpstan/PHPStan.pp3",
         "example": [
-            "./phpstan/examples/logical.phpstan",
-            "./phpstan/examples/constants.phpstan",
-            "./phpstan/examples/generic.phpstan",
-            "./phpstan/examples/shape.phpstan",
-            "./phpstan/examples/callable.phpstan",
-            "./phpstan/examples/conditional.phpstan"
+            "./phpdoc-phpstan/examples/callable.txt",
+            "./phpdoc-phpstan/examples/conditional.txt",
+            "./phpdoc-phpstan/examples/constants.txt",
+            "./phpdoc-phpstan/examples/generic.txt",
+            "./phpdoc-phpstan/examples/logical.txt",
+            "./phpdoc-phpstan/examples/shape.txt"
         ]
     },
     {
         "name": "PHPDoc Types (PSR-5)",
-        "entry": "./psr5/PSR-5.pp3",
+        "entry": "./phpdoc-psr-5/PSR-5.pp3",
         "example": [
-            "./psr5/examples/keywords.psr5",
-            "./psr5/examples/class-names.psr5",
-            "./psr5/examples/arrays.psr5",
-            "./psr5/examples/type-expression.psr5"
+            "./phpdoc-psr-5/examples/arrays.txt",
+            "./phpdoc-psr-5/examples/class-names.txt",
+            "./phpdoc-psr-5/examples/keywords.txt",
+            "./phpdoc-psr-5/examples/type-expression.txt"
         ]
     },
     {
         "name": "Doctrine Query Language",
         "entry": "./dql/DQL.pp3",
         "example": [
-            "./dql/examples/select.dql",
-            "./dql/examples/joins.dql",
-            "./dql/examples/conditions.dql",
-            "./dql/examples/functions.dql",
-            "./dql/examples/subselect.dql",
-            "./dql/examples/reserved-words.dql",
-            "./dql/examples/update.dql",
-            "./dql/examples/delete.dql"
+            "./dql/examples/conditions.txt",
+            "./dql/examples/delete.txt",
+            "./dql/examples/functions.txt",
+            "./dql/examples/joins.txt",
+            "./dql/examples/reserved-words.txt",
+            "./dql/examples/select.txt",
+            "./dql/examples/subselect.txt",
+            "./dql/examples/update.txt"
         ]
     },
     {
         "name": "JMS Serializer Type",
         "entry": "./jms/JMS.pp3",
         "example": [
-            "./jms/examples/simple.jms",
-            "./jms/examples/collection.jms",
-            "./jms/examples/datetime.jms",
-            "./jms/examples/parameters.jms"
+            "./jms/examples/collection.txt",
+            "./jms/examples/datetime.txt",
+            "./jms/examples/parameters.txt",
+            "./jms/examples/simple.txt"
         ]
     },
     {
         "name": "Go! AOP Pointcut",
-        "entry": "./goaop/goaop.pp3",
+        "entry": "./go-aop/goaop.pp3",
         "example": [
-            "./goaop/examples/pointcuts.pointcut",
-            "./goaop/examples/expressions.pointcut"
+            "./go-aop/examples/expressions.txt",
+            "./go-aop/examples/pointcuts.txt"
         ]
     },
     {
@@ -188,33 +188,71 @@
         "name": "Semantic Versioning",
         "entry": "./semver/SemVer.pp3",
         "example": [
-            "./semver/examples/build.semver",
-            "./semver/examples/full.semver",
-            "./semver/examples/pre-release.semver",
-            "./semver/examples/release.semver"
+            "./semver/examples/build.txt",
+            "./semver/examples/full.txt",
+            "./semver/examples/pre-release.txt",
+            "./semver/examples/release.txt"
         ]
     },
     {
         "name": "Cron Expression",
         "entry": "./cron/Cron.pp3",
         "example": [
-            "./cron/examples/every-15-minutes.cron",
-            "./cron/examples/extensions.cron",
-            "./cron/examples/lists.cron",
-            "./cron/examples/nickname.cron",
-            "./cron/examples/with-year.cron",
-            "./cron/examples/working-hours.cron"
+            "./cron/examples/every-15-minutes.txt",
+            "./cron/examples/extensions.txt",
+            "./cron/examples/lists.txt",
+            "./cron/examples/nickname.txt",
+            "./cron/examples/with-year.txt",
+            "./cron/examples/working-hours.txt"
         ]
     },
     {
         "name": "Composer Version Constraint",
-        "entry": "./composer/Composer.pp3",
+        "entry": "./composer/ComposerVersionConstraint.pp3",
         "example": [
-            "./composer/examples/alternatives.composer",
-            "./composer/examples/branch-alias.composer",
-            "./composer/examples/caret.composer",
-            "./composer/examples/hyphen.composer",
-            "./composer/examples/range.composer"
+            "./composer/examples/alternatives.txt",
+            "./composer/examples/branch-alias.txt",
+            "./composer/examples/caret.txt",
+            "./composer/examples/hyphen.txt",
+            "./composer/examples/range.txt"
+        ]
+    },
+    {
+        "name": "Hoa PP",
+        "entry": "./hoa/Hoa.pp3",
+        "example": [
+            "./hoa/examples/arithmetic.pp",
+            "./hoa/examples/json.pp",
+            "./hoa/examples/llk.pp",
+            "./hoa/examples/ruler.pp"
+        ]
+    },
+    {
+        "name": "Doctrine Annotations",
+        "entry": "./doctrine-annotations/DoctrineAnnotations.pp3",
+        "example": [
+            "./doctrine-annotations/examples/orm.txt",
+            "./doctrine-annotations/examples/values.txt"
+        ]
+    },
+    {
+        "name": "Hoa Ruler",
+        "entry": "./hoa-ruler/Ruler.pp3",
+        "example": [
+            "./hoa-ruler/examples/calls.txt",
+            "./hoa-ruler/examples/chains.txt",
+            "./hoa-ruler/examples/logical.txt",
+            "./hoa-ruler/examples/membership.txt"
+        ]
+    },
+    {
+        "name": "Arithmetic",
+        "entry": "./hoa-math/Arithmetic.pp3",
+        "example": [
+            "./hoa-math/examples/functions.txt",
+            "./hoa-math/examples/grouping.txt",
+            "./hoa-math/examples/precedence.txt",
+            "./hoa-math/examples/unicode.txt"
         ]
     }
 ]
