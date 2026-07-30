@@ -254,5 +254,25 @@
             "./hoa-math/examples/precedence.txt",
             "./hoa-math/examples/unicode.txt"
         ]
+    },
+    {
+        "name": "PCRE (Hoa PHPStan Fork)",
+        "entry": "./hoa-pcre/PCRE.pp3",
+        "example": [
+            "./hoa-pcre/examples/assertions.txt",
+            "./hoa-pcre/examples/classes.txt",
+            "./hoa-pcre/examples/conditions.txt",
+            "./hoa-pcre/examples/groups.txt",
+            "./hoa-pcre/examples/quantifiers.txt"
+        ]
+    },
+    {
+        "name": "Praspel",
+        "entry": "./praspel/Praspel.pp3",
+        "example": [
+            "./praspel/examples/behaviors.txt",
+            "./praspel/examples/contract.txt",
+            "./praspel/examples/domains.txt"
+        ]
     }
 ]
