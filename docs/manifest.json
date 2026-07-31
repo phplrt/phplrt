@@ -8,8 +8,12 @@
         "Introduction": "guide/introduction",
         "Quick Start": "guide/quick-start"
     },
-    "Source": {
-        "Usage": "source"
+    "Compiler": {
+        "Usage": "compiler",
+        "PP3 Grammar Syntax": "compiler/grammar",
+        "PP2 Grammar Syntax (Legacy)": "compiler/legacy-grammar",
+        "PHP in a Grammar": "compiler/code",
+        "Code Generation": "compiler/generation"
     },
     "Lexer": {
         "Usage": "lexer",
@@ -22,12 +26,8 @@
         "Building a Grammar": "parser/builder",
         "Results and Reducers": "parser/ast"
     },
-    "Compiler": {
-        "Usage": "compiler",
-        "PP3 Grammar Syntax": "compiler/grammar",
-        "PP2 Grammar Syntax (Legacy)": "compiler/legacy-grammar",
-        "PHP in a Grammar": "compiler/code",
-        "Code Generation": "compiler/generation"
+    "Source": {
+        "Usage": "source"
     },
     "Errors": {
         "Error Reporting": "errors"
