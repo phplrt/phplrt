@@ -20,9 +20,6 @@
         <testsuite name="contracts">
             <directory>libs/contracts/*/tests</directory>
         </testsuite>
-        <testsuite name="examples">
-            <directory>grammars/tests</directory>
-        </testsuite>
     </testsuites>
 
     <coverage/>
@@ -30,7 +27,6 @@
     <source>
         <include>
             <directory suffix=".php">libs/**/src</directory>
-            <directory suffix=".php">grammars/src</directory>
         </include>
     </source>
 </phpunit>
