@@ -50,6 +50,8 @@ jobs:
           # Examples
           - local_path: 'grammars'
             split_repository: 'grammars'
+          - local_path: 'benchmarks'
+            split_repository: 'benchmarks'
     steps:
       - uses: actions/checkout@v7
 

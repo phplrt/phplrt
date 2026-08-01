@@ -1,0 +1,60 @@
+{
+    "$schema": "./vendor/phpbench/phpbench/phpbench.schema.json",
+    "runner.bootstrap": "vendor/autoload.php",
+    "runner.path": "src",
+    "runner.progress": "classdots",
+    "runner.file_pattern": "*Bench.php",
+    "runner.php_config": {
+        "opcache.enable": 1,
+        "zend.assertions": -1,
+        "opcache.enable_cli": 1,
+        "opcache.jit_buffer_size": "128M",
+        "xdebug.mode": "off",
+        "memory_limit": -1
+    },
+    "storage.xml_storage_path": "vendor/.phpbench",
+    "storage.store_binary": true,
+    "storage.driver": "xml",
+    "report.generators": {
+        "default": {
+            "extends": "overview",
+            "tabbed": false,
+            "components": [
+                {
+                    "component": "section",
+                    "tabbed": true,
+                    "tab_labels": [
+                        "Time",
+                        "Memory"
+                    ],
+                    "components": [
+                        {
+                            "component": "section",
+                            "title": "Results",
+                            "components": [
+                                {
+                                    "component": "table_aggregate",
+                                    "title": "{{ first(frame.suite_tag) }}",
+                                    "partition": [
+                                        "benchmark_name",
+                                        "subject_name",
+                                        "variant_name"
+                                    ],
+                                    "row": {
+                                        "benchmark": "first(partition['benchmark_name'])",
+                                        "subject": "first(partition['subject_name'])",
+                                        "memory": "first(partition['result_mem_peak']) as memory",
+                                        "min": "min(partition['result_time_avg']) as time",
+                                        "max": "max(partition['result_time_avg']) as time",
+                                        "mode": "mode(partition['result_time_avg']) as time",
+                                        "rstdev": "rstdev(partition['result_time_avg'])"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

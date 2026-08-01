@@ -1,0 +1,6 @@
+{
+    "description": "The type parser of phpstan",
+    "require": {
+        "phpstan/phpdoc-parser": "^2.3"
+    }
+}

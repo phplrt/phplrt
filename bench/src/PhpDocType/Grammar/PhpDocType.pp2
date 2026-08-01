@@ -1,0 +1,517 @@
+/**
+ * -----------------------------------------------------------------------------
+ *  PHPDoc Type Expression Of PHPStan
+ * -----------------------------------------------------------------------------
+ *
+ * The type language read by "phpstan/phpdoc-parser".
+ *
+ * This is the grammar of "phplrt/grammars" (./phpdoc-phpstan/PHPStan.pp3) with
+ * reducers added, so that reading a type builds a tree of objects rather than a
+ * list of tokens: the other parsers of this benchmark all build one, and a
+ * parser that builds nothing would be measured doing less work.
+ *
+ * Three rules keep a token the original throws away - the "of" and "super" of a
+ * template argument, the "=" of a default and the "[" of a dimension - because
+ * the value cannot be built without knowing they were there.
+ *
+ * The very same grammar is written for phplrt 4 in ./PhpDocType.pp3, where a
+ * token is read as "$token->value" rather than as "$token->getValue()".
+ *
+ * @see https://github.com/phpstan/phpdoc-parser/blob/2.3.x/doc/grammars/type.abnf
+ */
+
+%pragma root TypeStatement
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Lexemes
+ * -----------------------------------------------------------------------------
+ */
+
+%skip  T_WHITESPACE             \s++
+
+%token T_CONSTANT_FLOAT         [+\-]?(?:[0-9]++(?:_[0-9]++)*+\.(?:[0-9]++(?:_[0-9]++)*+)?(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)?|[0-9]++(?:_[0-9]++)*+(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)|\.[0-9]++(?:_[0-9]++)*+(?:[eE][+\-]?[0-9]++(?:_[0-9]++)*+)?)
+%token T_CONSTANT_INT           [+\-]?(?:0[bB][01]++(?:_[01]++)*+|0[oO][0-7]++(?:_[0-7]++)*+|0[xX][0-9a-fA-F]++(?:_[0-9a-fA-F]++)*+|[0-9]++(?:_[0-9]++)*+)
+%token T_CONSTANT_STRING        '(?:\\[^\r\n]|[^\r\n\\'])*+'|"(?:\\[^\r\n]|[^\r\n\\"])*+"
+
+%token T_THIS_VARIABLE          \$this(?![a-zA-Z0-9_\x80-\xff])
+%token T_VARIABLE               \$[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*+
+
+// The words a template argument, a variance and a conditional are written of:
+// "T of User", "covariant T", "T is not int ? A : B"
+%token T_CONTRAVARIANT          contravariant(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_COVARIANT              covariant(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_SUPER                  super(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_NOT                    not(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_IS                     is(?![a-zA-Z0-9_\-\\\x80-\xff])
+%token T_OF                     of(?![a-zA-Z0-9_\-\\\x80-\xff])
+
+// Every part of a name at once: "\Demo\Entity\User", "non-empty-string"
+%token T_IDENTIFIER             \\?[a-zA-Z_\x80-\xff][a-zA-Z0-9_\-\x80-\xff]*+(?:\\[a-zA-Z_\x80-\xff][a-zA-Z0-9_\-\x80-\xff]*+)*+
+
+%token T_VARIADIC               \.\.\.
+%token T_DOUBLE_COLON           ::
+%token T_COLON                  :
+%token T_EQUAL_SIGN             =
+%token T_UNION                  \|
+%token T_INTERSECTION           &
+%token T_NULLABLE               \?
+%token T_WILDCARD               \*
+%token T_COMMA                  ,
+
+%token T_PARENTHESES_OPEN       \(
+%token T_PARENTHESES_CLOSE      \)
+%token T_ANGLE_BRACKET_OPEN     <
+%token T_ANGLE_BRACKET_CLOSE    >
+%token T_SQUARE_BRACKET_OPEN    \[
+%token T_SQUARE_BRACKET_CLOSE   \]
+%token T_CURLY_BRACKET_OPEN     \{
+%token T_CURLY_BRACKET_CLOSE    \}
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Type
+ * -----------------------------------------------------------------------------
+ */
+
+// phplrt 3 hands back what the root rule has built and demands that it be
+// iterable, so the type read is wrapped in a list of one
+TypeStatement -> {
+    return [\is_array($children) ? $children[0] : $children];
+}
+  : Type()
+  ;
+
+Type -> {
+    if (!\is_array($children)) {
+        return $children;
+    }
+
+    $head = $children[0];
+    $tail = $children[1] ?? null;
+
+    if ($tail === null) {
+        return $head;
+    }
+
+    // What has been read past the head belongs to the same expression, so the
+    // head is written into it rather than beside it
+    if ($tail instanceof \Phplrt\Bench\PhpDocType\Ast\UnionTypeNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\UnionTypeNode([$head, ...$tail->types]);
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\IntersectionTypeNode([$head, ...$tail->types]);
+}
+  : Atomic() (Union() | Intersection())?
+  | Nullable()
+  ;
+
+// A type written inside a pair of parentheses, where a conditional is written
+ParenthesizedType -> {
+    if (!\is_array($children)) {
+        return $children;
+    }
+
+    $head = $children[0];
+    $tail = $children[1] ?? null;
+
+    if ($tail === null) {
+        return $head;
+    }
+
+    // "$size is positive-int ? A : B" - the only head a conditional is written
+    // after that is not a type of its own
+    if (!$head instanceof \Phplrt\Bench\PhpDocType\Ast\Node) {
+        return $tail->withSubject(new \Phplrt\Bench\PhpDocType\Ast\VariableTypeNode($head->getValue()));
+    }
+
+    if ($tail instanceof \Phplrt\Bench\PhpDocType\Ast\ConditionalTypeNode) {
+        return $tail->withSubject($head);
+    }
+
+    if ($tail instanceof \Phplrt\Bench\PhpDocType\Ast\UnionTypeNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\UnionTypeNode([$head, ...$tail->types]);
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\IntersectionTypeNode([$head, ...$tail->types]);
+}
+  : <T_VARIABLE> Conditional()
+  | Atomic() (Union() | Intersection() | Conditional())?
+  | Nullable()
+  ;
+
+// The head of the expression is not read here, and is written in by whoever
+// has read it
+Union -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\UnionTypeNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : (::T_UNION:: Atomic())+
+  ;
+
+Intersection -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\IntersectionTypeNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : (::T_INTERSECTION:: Atomic())+
+  ;
+
+// is int ? string : bool
+Conditional -> {
+    // The subject stands before the "is" and is written in by whoever has read
+    // it, since it is not a part of this rule
+    $negated = !$children[0] instanceof \Phplrt\Bench\PhpDocType\Ast\Node;
+
+    if ($negated) {
+        \array_shift($children);
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\ConditionalTypeNode(
+        subject: null,
+        target: $children[0],
+        then: $children[1],
+        else: $children[2],
+        negated: $negated,
+    );
+}
+  : ::T_IS:: <T_NOT>? Atomic()
+    ::T_NULLABLE:: Type()
+    ::T_COLON:: ParenthesizedType()
+  ;
+
+// ?int
+Nullable -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\NullableTypeNode(
+        \is_array($children) ? $children[0] : $children,
+    );
+}
+  : ::T_NULLABLE:: Atomic()
+  ;
+
+Atomic -> {
+    $type = $children;
+    $suffix = null;
+
+    if (\is_array($children)) {
+        $type = $children[0];
+        $suffix = $children[1] ?? null;
+    }
+
+    // A literal is the only thing read here as a token, and one is told from
+    // another by how it is written
+    if (!$type instanceof \Phplrt\Bench\PhpDocType\Ast\Node) {
+        $value = $type->getValue();
+
+        $type = match (true) {
+            $value[0] === '$' => new \Phplrt\Bench\PhpDocType\Ast\VariableTypeNode($value),
+            $value[0] === '"', $value[0] === "'"
+                => new \Phplrt\Bench\PhpDocType\Ast\LiteralTypeNode($value),
+            \str_contains($value, '.'), \str_contains($value, 'e'), \str_contains($value, 'E')
+                => new \Phplrt\Bench\PhpDocType\Ast\LiteralTypeNode((float) $value),
+            default => new \Phplrt\Bench\PhpDocType\Ast\LiteralTypeNode((int) $value),
+        };
+    }
+
+    if ($suffix === null) {
+        return $type;
+    }
+
+    if ($suffix instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\GenericArgumentsNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\GenericTypeNode($type, $suffix->arguments);
+    }
+
+    if ($suffix instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\ShapeItemsNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\ShapeTypeNode($type, $suffix->items);
+    }
+
+    if ($suffix instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\ClassConstantNameNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\ClassConstantTypeNode($type, $suffix->name);
+    }
+
+    if ($suffix instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\CallableSignatureNode) {
+        return new \Phplrt\Bench\PhpDocType\Ast\CallableTypeNode(
+            $type,
+            $suffix->template,
+            $suffix->parameters,
+            $suffix->return,
+        );
+    }
+
+    // "[][]" - an array around the type, once per dimension read
+    for ($i = 0; $i < $suffix->count; ++$i) {
+        $type = new \Phplrt\Bench\PhpDocType\Ast\ArrayTypeNode($type);
+    }
+
+    return $type;
+}
+  : <T_CONSTANT_FLOAT>
+  | <T_CONSTANT_INT>
+  | <T_CONSTANT_STRING>
+  | <T_THIS_VARIABLE>
+  | ::T_PARENTHESES_OPEN:: ParenthesizedType() ::T_PARENTHESES_CLOSE:: Array()?
+  | Identifier() (
+      Callable()
+    | Generic()
+    | ArrayShape()
+    | Array()
+    | ClassConstant()
+    )?
+  ;
+
+Identifier -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\NamedTypeNode($children->getValue());
+}
+  : <T_IDENTIFIER>
+  | <T_IS>
+  | <T_NOT>
+  | <T_OF>
+  | <T_SUPER>
+  | <T_COVARIANT>
+  | <T_CONTRAVARIANT>
+  ;
+
+// Demo\Status::ACTIVE - the class it is read of stands before the "::" and is
+// written in by whoever has read it
+ClassConstant -> {
+    $name = \is_array($children) ? $children[0] : $children;
+
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\ClassConstantNameNode($name->name);
+}
+  : ::T_DOUBLE_COLON:: Identifier()
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Generic
+ * -----------------------------------------------------------------------------
+ */
+
+// <int, non-empty-string>
+Generic -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\GenericArgumentsNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : ::T_ANGLE_BRACKET_OPEN::
+      GenericTypeArgument() (::T_COMMA:: GenericTypeArgument())*
+    ::T_ANGLE_BRACKET_CLOSE::
+  ;
+
+GenericTypeArgument -> {
+    if (!\is_array($children)) {
+        // "*" is the only argument that is read as a token rather than as a type
+        return $children instanceof \Phplrt\Bench\PhpDocType\Ast\Node
+            ? $children
+            : new \Phplrt\Bench\PhpDocType\Ast\WildcardTypeNode();
+    }
+
+    if (!isset($children[1])) {
+        return $children[0];
+    }
+
+    // "covariant T", "contravariant T"
+    return new \Phplrt\Bench\PhpDocType\Ast\VarianceTypeNode($children[0]->getValue(), $children[1]);
+}
+  : (<T_CONTRAVARIANT> | <T_COVARIANT>)? Type()
+  | <T_WILDCARD>
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Callable
+ * -----------------------------------------------------------------------------
+ */
+
+// <T of User>(T $value, int ...$rest): T
+Callable -> {
+    $template = [];
+    $parameters = [];
+    $return = null;
+
+    // Both the template and the parameters may go unwritten, so each part is
+    // told by what it is rather than by where it stands
+    foreach (\is_array($children) ? $children : [$children] as $child) {
+        if ($child instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\TemplateListNode) {
+            $template = $child->arguments;
+        } elseif ($child instanceof \Phplrt\Bench\PhpDocType\Ast\Intermediate\ParameterListNode) {
+            $parameters = $child->parameters;
+        } else {
+            $return = $child;
+        }
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\CallableSignatureNode(
+        $template,
+        $parameters,
+        $return,
+    );
+}
+  : CallableTemplate()?
+    ::T_PARENTHESES_OPEN:: CallableParameters()? ::T_PARENTHESES_CLOSE::
+    ::T_COLON:: CallableReturnType()
+  ;
+
+CallableTemplate -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\TemplateListNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : ::T_ANGLE_BRACKET_OPEN::
+      CallableTemplateArgument() (::T_COMMA:: CallableTemplateArgument())*
+    ::T_ANGLE_BRACKET_CLOSE::
+  ;
+
+// The word a bound is written with is kept, since a bound and a default are
+// told apart by nothing else
+CallableTemplateArgument -> {
+    $children = \is_array($children) ? $children : [$children];
+    $name = \array_shift($children)->name;
+    $bound = $super = $default = null;
+
+    while ($children !== []) {
+        $marker = \array_shift($children)->getValue();
+        $type = \array_shift($children);
+
+        if ($marker === '=') {
+            $default = $type;
+        } elseif ($marker === 'super') {
+            $super = $type;
+        } else {
+            $bound = $type;
+        }
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\TemplateArgumentNode($name, $bound, $super, $default);
+}
+  : Identifier()
+    (<T_OF> Type())?
+    (<T_SUPER> Type())?
+    (<T_EQUAL_SIGN> Type())?
+  ;
+
+CallableParameters -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\ParameterListNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : CallableParameter() (::T_COMMA:: CallableParameter())*
+  ;
+
+// The "&" of a parameter read by reference, the "..." of a variadic one, the
+// name it is called by and the "=" of an optional one
+CallableParameter -> {
+    $children = \is_array($children) ? $children : [$children];
+    $type = \array_shift($children);
+    $byReference = $variadic = $optional = false;
+    $name = null;
+
+    // Each of them may go unwritten, so what stands past the type is told by
+    // how it is written rather than by where it stands
+    foreach ($children as $child) {
+        $value = $child->getValue();
+
+        if ($value === '&') {
+            $byReference = true;
+        } elseif ($value === '...') {
+            $variadic = true;
+        } elseif ($value === '=') {
+            $optional = true;
+        } else {
+            $name = $value;
+        }
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\CallableParameterNode(
+        $type,
+        $byReference,
+        $variadic,
+        $name,
+        $optional,
+    );
+}
+  : Type()
+    <T_INTERSECTION>?
+    <T_VARIADIC>?
+    <T_VARIABLE>?
+    <T_EQUAL_SIGN>?
+  ;
+
+CallableReturnType -> {
+    if (!\is_array($children)) {
+        return $children;
+    }
+
+    if (!isset($children[1])) {
+        return $children[0];
+    }
+
+    return new \Phplrt\Bench\PhpDocType\Ast\GenericTypeNode($children[0], $children[1]->arguments);
+}
+  : Identifier() Generic()?
+  | Nullable()
+  | ::T_PARENTHESES_OPEN:: Type() ::T_PARENTHESES_CLOSE::
+  ;
+
+/**
+ * -----------------------------------------------------------------------------
+ *  Array And Shape
+ * -----------------------------------------------------------------------------
+ */
+
+// [][] - the bracket is kept, since how many dimensions there are is what the
+// value is built of
+Array -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\ArrayDimensionsNode(
+        \is_array($children) ? \count($children) : 1,
+    );
+}
+  : (<T_SQUARE_BRACKET_OPEN> ::T_SQUARE_BRACKET_CLOSE::)+
+  ;
+
+// {id: int, name?: string, 0: bool}
+ArrayShape -> {
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\ShapeItemsNode(
+        \is_array($children) ? $children : [$children],
+    );
+}
+  : ::T_CURLY_BRACKET_OPEN::
+      ArrayShapeItem() (::T_COMMA:: ArrayShapeItem())*
+    ::T_CURLY_BRACKET_CLOSE::
+  ;
+
+ArrayShapeItem -> {
+    if (!\is_array($children)) {
+        return new \Phplrt\Bench\PhpDocType\Ast\ShapeItemNode(null, false, $children);
+    }
+
+    if (!isset($children[1])) {
+        return new \Phplrt\Bench\PhpDocType\Ast\ShapeItemNode(null, false, $children[0]);
+    }
+
+    $key = \array_shift($children);
+
+    // "name?: string" - what is left of the key is the type, and the "?" that
+    // may stand before it
+    return new \Phplrt\Bench\PhpDocType\Ast\ShapeItemNode(
+        $key->name,
+        \count($children) > 1,
+        \array_pop($children),
+    );
+}
+  : ArrayShapeKey() <T_NULLABLE>? ::T_COLON:: Type()
+  | Type()
+  ;
+
+ArrayShapeKey -> {
+    $key = \is_array($children) ? $children[0] : $children;
+
+    return new \Phplrt\Bench\PhpDocType\Ast\Intermediate\ShapeKeyNode(
+        $key instanceof \Phplrt\Bench\PhpDocType\Ast\NamedTypeNode ? $key->name : $key->getValue(),
+    );
+}
+  : <T_CONSTANT_STRING>
+  | <T_CONSTANT_INT>
+  | Identifier()
+  ;
