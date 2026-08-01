@@ -20,7 +20,7 @@ all it takes.
 
 C-style, both kinds:
 
-```pp2
+```pp3
 // Everything to the end of the line
 
 /*
@@ -32,7 +32,7 @@ C-style, both kinds:
 
 A name and a regular expression, separated by whitespace:
 
-```pp2
+```pp3
 %token T_DIGIT  \d++
 %skip  T_WHITESPACE  \s++
 ```
@@ -43,7 +43,7 @@ get recognized, so offsets stay correct, but they do not clutter the grammar.
 **Order matters.** The lexer takes the first pattern that matches, not the
 longest one, so a longer literal goes above a shorter one:
 
-```pp2
+```pp3
 %token T_POW   \*\*    // ✔
 %token T_STAR  \*
 ```
@@ -56,7 +56,7 @@ of the declaration. Write `\x20` or `\s` instead.
 A token may name the state the reading continues in, and a token declared as
 `state:NAME` belongs to that state's lexer:
 
-```pp2
+```pp3
 %token        T_QUOTE_OPEN  "       -> string
 %token string:T_TEXT        [^"]++
 %token string:T_QUOTE_CLOSE "       -> default
@@ -82,13 +82,13 @@ back can be expressed
 
 A name, a separator, a body, and an optional semicolon:
 
-```pp2
+```pp3
 Sum : <T_DIGIT> ::T_PLUS:: <T_DIGIT> ;
 ```
 
 Three separators mean exactly the same thing, and a grammar may mix them:
 
-```pp2
+```pp3
 Sum ::= <T_DIGIT> ;
 Sum  :  <T_DIGIT> ;
 Sum  =  <T_DIGIT> ;
@@ -100,7 +100,7 @@ Sum  =  <T_DIGIT> ;
 
 A rule may be written with a `#` in front of its name:
 
-```pp2
+```pp3
 Root  : Pair() <T_B> ;
 #Pair : <T_A> <T_A> ;
 ```
@@ -130,7 +130,7 @@ of the rule, before the separator.
 
 ### A Block Of Code
 
-```pp2
+```pp3
 Number -> { return (int) $children->value; }
   : <T_DIGIT>
   ;
@@ -144,7 +144,7 @@ The variables a body may use are the same in both formats - see
 A reducer may also be written as the name of a class, which is then built with
 the context and the children:
 
-```pp2
+```pp3
 Number -> \App\Ast\NumberNode
   : <T_DIGIT>
   ;
@@ -169,7 +169,7 @@ only noticed where the parser runs.
 
 Two spellings, and the difference is whether the token ends up in the result:
 
-```pp2
+```pp3
 Rule : <T_DIGIT> ;    // read it and keep it
 Rule : ::T_COMMA:: ;  // read it and throw it away
 ```
@@ -178,7 +178,7 @@ Rule : ::T_COMMA:: ;  // read it and throw it away
 
 Parentheses after the name - that is what tells a rule reference from a token:
 
-```pp2
+```pp3
 Sum : Number() ::T_PLUS:: Number() ;
 ```
 
@@ -191,7 +191,7 @@ A string literal declares a token right there, without naming it. It is a
 regular expression rather than a literal string, and such a token is always
 discarded:
 
-```pp2
+```pp3
 Phone : <T_DIGIT>{3} "\-" <T_DIGIT>{4} ;
 ```
 
@@ -201,7 +201,7 @@ Phone : <T_DIGIT>{3} "\-" <T_DIGIT>{4} ;
 
 ### Choice
 
-```pp2
+```pp3
 Primary : Number() | Name() | Group() ;
 ```
 
@@ -209,7 +209,7 @@ The alternatives are tried **in order**, and the first match wins.
 
 ### Grouping
 
-```pp2
+```pp3
 Rule : <T_A> (<T_B> | <T_C>) <T_D> ;
 ```
 
@@ -225,7 +225,7 @@ Rule : <T_A> (<T_B> | <T_C>) <T_D> ;
 | `e{2,}`  | two or more          |
 | `e{,5}`  | up to five           |
 
-```pp2
+```pp3
 Arguments : Argument() (::T_COMMA:: Argument())* ;
 ```
 
@@ -236,7 +236,7 @@ Arguments : Argument() (::T_COMMA:: Argument())* ;
 By default it starts at the first rule in the file. Say otherwise with
 `%pragma root`:
 
-```pp2
+```pp3
 %pragma root Expression
 ```
 
@@ -252,7 +252,7 @@ through [the lexer builder](/docs/lexer) and
 
 ## Including Other Files
 
-```pp2
+```pp3
 %include grammar/lexemes
 %include grammar/expressions.pp2
 ```
@@ -266,7 +266,7 @@ tokens: an included token list appears at that point in the token order.
 
 ## A Fuller Example
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %skip  T_COMMENT     //[^\n]*+
 

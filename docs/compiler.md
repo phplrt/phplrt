@@ -91,7 +91,7 @@ are not supported
 Real grammars get long. `%include` pulls in another file, and the
 declarations land exactly where to include is written:
 
-```pp2
+```pp3
 %include grammar/lexemes
 %include grammar/literals
 %include grammar/expressions

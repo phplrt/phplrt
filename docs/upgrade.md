@@ -331,7 +331,7 @@ configured in PHP. Which settings a grammar may carry is listed under
 **Left recursion is now rejected at build time.** It never worked at runtime
 either, but 3.x would let you compile it. Rewrite as a repetition:
 
-```pp2
+```pp3
 // ✘ rejected
 Expression : Expression() ::T_PLUS:: Number() ;
 
@@ -345,41 +345,3 @@ If a rule of yours legitimately produces `null`, wrap it.
 **Reducers returning arrays** are flattened into the rule above. If you
 relied on nesting, return an object instead. See
 [Results and Reducers](/docs/parser/ast).
-
-### Package Names
-
-> Likelihood Of Impact: **Low**
-
-| 3.x                        | 4.x                                         |
-|----------------------------|---------------------------------------------|
-| `phplrt/lexer`             | `phplrt/lexer` (+ `phplrt/lexer-builder`)   |
-| `phplrt/parser`            | `phplrt/parser` (+ `phplrt/parser-builder`) |
-| `phplrt/compiler`          | `phplrt/compiler`                           |
-| `phplrt/source`            | `phplrt/source`                             |
-| `phplrt/exception`         | `phplrt/exception`                          |
-| `phplrt/buffer`            | removed - merged into `phplrt/parser`       |
-| `phplrt/position`          | removed                                     |
-| `phplrt/visitor`           | removed                                     |
-| `phplrt/ast-contracts`     | removed - 4.x does not define a node shape  |
-
-## Upgrading To 3.2 From 3.1
-
-### Grammar Package Removed
-
-> Likelihood Of Impact: **Medium**
-
-The `phplrt/grammar` and `phplrt/grammar-contracts` has been removed. All
-classes and interfaces associated with this package have been moved inside
-the `phplrt/parser` package.
-
-- All classes `Phplrt\Grammar\*` has been renamed to `Phplrt\Parser\Grammar\*`.
-- All interfaces `Phplrt\Contracts\Grammar\*` has been renamed to
-  `Phplrt\Parser\Grammar\*`.
-
-### Buffer Package Has Been Moved
-
-> Likelihood Of Impact: **Medium**
-
-- Interface `Phplrt\Contracts\Lexer\BufferInterface` has been moved
-  into `Phplrt\Buffer\BufferInterface`.
-- All classes `Phplrt\Lexer\Buffer\*` has been moved into `Phplrt\Buffer\*`.

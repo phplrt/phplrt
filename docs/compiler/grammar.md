@@ -3,7 +3,7 @@
 A grammar file describes a language: the words it is made of, and the order
 they may appear in. Here is one in full:
 
-```pp2
+```pp3
 // The words
 %skip  T_WHITESPACE  \s++
 %token T_DIGIT       \d++
@@ -32,7 +32,7 @@ if you have written a grammar before, most of this will look familiar.
 
 C-style, both kinds:
 
-```pp2
+```pp3
 // Everything to the end of the line
 
 /*
@@ -42,7 +42,7 @@ C-style, both kinds:
 
 ## Declaring Tokens
 
-```pp2
+```pp3
 %token T_DIGIT  \d++
 ```
 
@@ -54,7 +54,7 @@ prefix, which makes them obvious in a rule.
 and comments - they still get recognized, so offsets stay correct, but they
 do not clutter the grammar:
 
-```pp2
+```pp3
 %skip T_WHITESPACE  \s++
 %skip T_COMMENT     //[^\n]*+
 ```
@@ -62,14 +62,14 @@ do not clutter the grammar:
 **Order matters.** The lexer takes the first pattern that matches, not the
 longest one:
 
-```pp2
+```pp3
 %token T_STAR  \*      // matches first...
 %token T_POW   \*\*    // ...so this never matches
 ```
 
 Put the longer one first:
 
-```pp2
+```pp3
 %token T_POW   \*\*    // ✔
 %token T_STAR  \*
 ```
@@ -91,7 +91,7 @@ what the token [does](#token-actions).
 **A pattern cannot contain a literal space** - whitespace is what separates
 the parts of the declaration. Write it as `\x20` or `\s`:
 
-```pp2
+```pp3
 %token T_TEXT  [a-z ]++     // ✘ breaks
 %token T_TEXT  [a-z\x20]++  // ✔
 %token T_TEXT  [a-z\s]++    // ✔
@@ -124,7 +124,7 @@ read. There are three actions, and each is written as a call:
 A [channel](/docs/lexer/tokens) keeps a token out of the grammar without
 throwing it away - documentation comments are the usual reason:
 
-```pp2
+```pp3
 %token T_DOC_COMMENT  /\*\*.*?\*/  -> channel(docblocks)
 ```
 
@@ -132,7 +132,7 @@ The parser never sees it, but it is right there in the token stream for
 anything that wants it. `%skip` is shorthand for the built-in `Hidden`
 channel, so these two lines mean the same thing:
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %token T_WHITESPACE  \s++  -> channel(Hidden)
 ```
@@ -143,7 +143,7 @@ A token may hand the reading over to a lexer of its own, which is how a
 fragment written in different lexical rules is read - a string literal, a
 comment, an embedded language:
 
-```pp2
+```pp3
 %token        T_QUOTE_OPEN  "       -> state(string)
 %token string:T_TEXT        [^"]++
 %token string:T_QUOTE_CLOSE "       -> exit()
@@ -157,7 +157,7 @@ reaches the outer stream. See [Nested Lexers](/docs/lexer/embedding).
 
 Actions are separated by commas, and the order does not matter:
 
-```pp2
+```pp3
 %token T_QUOTE_OPEN  "  -> state(string), channel(strings)
 ```
 
@@ -170,7 +170,7 @@ Whitespace and comments are usually the same wherever they appear, and
 repeating them in every state is how a grammar drifts out of sync with itself.
 Write `*:` instead of a state name and the token is added to all of them:
 
-```pp2
+```pp3
 %skip  *:T_WHITESPACE  \s++
 
 %token T_QUOTE_OPEN  "  -> state(string)
@@ -196,7 +196,7 @@ Some fragments cannot be described by regular expressions at all - heredocs,
 indentation-sensitive blocks, another language entirely. `%lexer` names a
 state and gives the expression building the lexer that reads it:
 
-```pp2
+```pp3
 %token T_PHP_OPEN  <\?php  -> state(php)
 
 %lexer php -> { new \App\Lexer\PhpTokenLexer() }
@@ -214,7 +214,7 @@ returns to the lexer that called it, so it needs no token doing `exit()`. See
 
 A rule is a name, a colon, a body, and an optional semicolon:
 
-```pp2
+```pp3
 Sum : <T_DIGIT> ::T_PLUS:: <T_DIGIT> ;
 ```
 
@@ -223,7 +223,7 @@ The colon is the only separator there is. By convention rules are
 
 Long rules read better spread out:
 
-```pp2
+```pp3
 Expression
   : Term() ((<T_PLUS> | <T_MINUS>) Term())*
   ;
@@ -235,7 +235,7 @@ Expression
 
 Two spellings, and the difference is whether the token ends up in the result:
 
-```pp2
+```pp3
 Rule : <T_DIGIT> ;    // read it and keep it
 Rule : ::T_COMMA:: ;  // read it and throw it away
 ```
@@ -243,7 +243,7 @@ Rule : ::T_COMMA:: ;  // read it and throw it away
 Keep the things that carry information (names, numbers, literals). Discard the
 punctuation that only holds the syntax together (commas, brackets, keywords).
 
-```pp2
+```pp3
 // A parenthesized expression: the brackets are required, but useless
 Group : ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE:: ;
 ```
@@ -252,7 +252,7 @@ Group : ::T_PARENTHESIS_OPEN:: Expression() ::T_PARENTHESIS_CLOSE:: ;
 
 Parentheses after the name - that is what tells a rule reference from a token:
 
-```pp2
+```pp3
 Sum : Number() ::T_PLUS:: Number() ;
 ```
 
@@ -270,7 +270,7 @@ expression:
 | `"..."` | the **text** to read, exactly as it is written     |
 | `/.../` | the **regular expression** recognizing the token   |
 
-```pp2
+```pp3
 Sum  : <T_NUMBER> "+" <T_NUMBER> ;          // a plus sign
 Expr : <T_NUMBER> /and|or|xor/ <T_NUMBER> ; // one of three words
 ```
@@ -282,7 +282,7 @@ when you need a choice, a character class or a quantifier.
 The same token written in several rules is declared **once**, and such a token
 is always discarded - it is punctuation by definition:
 
-```pp2
+```pp3
 Sum     : <T_NUMBER> "+" <T_NUMBER> ;
 Unary   : "+" <T_NUMBER> ;              // the very same token
 ```
@@ -298,21 +298,21 @@ declare a real token so the error messages can name it.
 
 ### Choice
 
-```pp2
+```pp3
 Primary : Number() | Name() | Group() ;
 ```
 
 The alternatives are tried **in order**, and the first match wins. Nothing
 else is tried, even if it would have matched more:
 
-```pp2
+```pp3
 Rule : "a" | "ab" ;   // ✘ never reads "ab"
 Rule : "ab" | "a" ;   // ✔
 ```
 
 ### Grouping
 
-```pp2
+```pp3
 Rule : <T_A> (<T_B> | <T_C>) <T_D> ;
 ```
 
@@ -330,7 +330,7 @@ Any token, rule or group can be followed by one:
 | `e{2,}`    | two or more               |
 | `e{,5}`    | up to five                |
 
-```pp2
+```pp3
 Arguments : Argument() (::T_COMMA:: Argument())* ;
 Digits    : <T_DIGIT>{3} ;
 Modifiers : Modifier()* ;
@@ -350,7 +350,7 @@ the rule either goes on or gives up.
 The classic use is refusing a position that belongs to somebody else. A name
 that is not a function call:
 
-```pp2
+```pp3
 Variable : <T_NAME> !::T_PARENTHESIS_OPEN:: ;
 ```
 
@@ -359,7 +359,7 @@ afterwards for whatever rule does want it.
 
 The other direction is committing to a branch without reading it twice:
 
-```pp2
+```pp3
 // Only try the expensive rule when the line really starts with "fn"
 Closure : &::T_FN:: FunctionLiteral() ;
 ```
@@ -367,7 +367,7 @@ Closure : &::T_FN:: FunctionLiteral() ;
 A predicate is written **before** the quantifier, so it looks ahead at the
 whole thing at once:
 
-```pp2
+```pp3
 Rule : &<T_DIGIT>+ Number() ;   // look ahead at one or more digits
 ```
 
@@ -386,7 +386,7 @@ rather than *what* the language contains, which is why EBNF has no equivalent.
 By default, it starts at the first rule in the file. Say otherwise with
 `%pragma root`:
 
-```pp2
+```pp3
 %pragma root Expression
 ```
 
@@ -423,7 +423,7 @@ The lexer compiles its tokens into one pattern, and these say which modifiers
 that pattern carries. A modifier is named either the way PCRE spells it or the
 way phplrt calls it:
 
-```pp2
+```pp3
 %pragma lexer.pcre.flag     Caseless   // ...or "i"
 %pragma lexer.pcre.disable  Utf8       // ...or "u"
 ```
@@ -436,7 +436,7 @@ By default, the pattern is compiled with `S`, `u`, `s` and `m`. See
 A pass rewrites or checks the lexer or the grammar while it is being built,
 and the setting is named after the moment it runs at:
 
-```pp2
+```pp3
 %pragma parser.check     \App\Grammar\NoLeftFactoringPass
 %pragma lexer.optimize   \App\Grammar\MergeKeywordsPass
 ```
@@ -449,7 +449,7 @@ written on.
 A built-in pass can be dropped by name, which is how a grammar opts out of an
 optimization it does not want:
 
-```pp2
+```pp3
 %pragma parser.disable \Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass
 ```
 
@@ -458,7 +458,7 @@ when each priority runs.
 
 ## Including Other Files
 
-```pp2
+```pp3
 %include grammar/lexemes
 %include grammar/expressions.pp3
 ```
@@ -476,7 +476,7 @@ tokens: an included token list appears at that point in the token order.
 A grammar with no reducers returns the tokens it kept. To build something
 else, attach PHP:
 
-```pp2
+```pp3
 Number -> { return (int) $children->value; }
   : <T_DIGIT>
   ;
@@ -484,7 +484,7 @@ Number -> { return (int) $children->value; }
 
 A block of code is the only form a reducer takes - build the node inside it:
 
-```pp2
+```pp3
 Number -> { return new \App\Ast\NumberNode($offset, $children->value); }
   : <T_DIGIT>
   ;
@@ -496,14 +496,14 @@ This has a page of its own: [PHP in a Grammar](/docs/compiler/code).
 
 Nothing is enforced, but the usual style makes grammars much easier to read:
 
-```pp2
+```pp3
 %token T_NUMBER  \d++    // tokens: T_SCREAMING_CASE
 Expression : ... ;       // rules:  PascalCase
 ```
 
 ## A Fuller Example
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %skip  T_COMMENT     //[^\n]*+
 

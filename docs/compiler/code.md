@@ -9,7 +9,7 @@ matches.
 
 Put it between `->` and the rule body:
 
-```pp2
+```pp3
 Number -> { return (int) $children->value; }
   : <T_DIGIT>
   ;
@@ -18,7 +18,7 @@ Number -> { return (int) $children->value; }
 Whatever it returns becomes the value of the rule. The code is ordinary PHP -
 loops, conditionals, whatever you need:
 
-```pp2
+```pp3
 Expression -> {
     if (!\is_array($children)) {
         return $children;
@@ -49,7 +49,7 @@ Braces inside strings are safe - the block is read by a real PHP lexer, so
 A block of code is the only form a reducer takes, so a rule that maps onto a
 node class builds it there:
 
-```pp2
+```pp3
 Number -> { return new \App\Ast\NumberNode($offset, (int) $children->value); }
   : <T_DIGIT>
   ;
@@ -89,7 +89,7 @@ All except `$children` and `$ctx` are shorthands the compiler expands for
 you - `$offset` becomes `$ctx->token->offset`, and so on. They are only
 declared if you use them, so there is no cost to the ones you do not.
 
-```pp2
+```pp3
 Number -> { return new \NumberNode($offset, (float) $children->value); }
   : <T_NUMBER>
   ;
@@ -103,14 +103,14 @@ place in the source when it finds a problem.
 
 **A sequence** (a concatenation or a repetition) gives you an **array**:
 
-```pp2
+```pp3
 Pair : <T_DIGIT> <T_DIGIT> ;   // $children = [Token, Token]
 List : <T_DIGIT>+ ;            // $children = [Token, Token, ...]
 ```
 
 **Anything else** gives you a single value:
 
-```pp2
+```pp3
 Number : <T_DIGIT> ;           // $children = Token
 Choice : Number() | Name() ;   // $children = whatever matched
 ```
@@ -118,7 +118,7 @@ Choice : Number() | Name() ;   // $children = whatever matched
 A rule that can match one thing *or* several will hand you one thing or
 several, which is why reducers so often start with:
 
-```pp2
+```pp3
 Rule -> {
     if (!\is_array($children)) {
         return $children;
@@ -136,7 +136,7 @@ are combined.
 Return `null` and the children pass through untouched, as if the reducer were
 not there:
 
-```pp2
+```pp3
 Debug -> {
     \error_log('reached rule ' . $rule . ' at ' . $offset);
 
@@ -171,7 +171,7 @@ depends on where the reducer ends up - the global namespace when the grammar
 is read on the fly, the generated file's namespace when it is generated. The
 safe answer is to write class names fully qualified:
 
-```pp2
+```pp3
 // ✔ works either way
 Number -> { return new \App\Ast\NumberNode($offset, $children->value); }
 ```
@@ -188,7 +188,7 @@ new Compiler()
         ->save(__DIR__ . '/Parser.php');
 ```
 
-```pp2
+```pp3
 Number -> { return new NumberNode($offset, $children->value); }
 ```
 

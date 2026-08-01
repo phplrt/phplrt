@@ -32,7 +32,7 @@ nothing else - `phplrt/compiler` can go in `require-dev`.
 
 Given this grammar:
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %token T_DIGIT       \d++
 %token T_PLUS        \+
@@ -325,7 +325,7 @@ new Compiler()
 
 Given this grammar:
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %skip  T_COMMENT     //[^\n]*+
 

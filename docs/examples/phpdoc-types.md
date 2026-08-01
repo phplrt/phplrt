@@ -30,7 +30,7 @@ bytes rather than of code points, which is what lets `\x80-\xff` stand for
 
 ## Grammar
 
-```pp2
+```pp3
 /**
  * -----------------------------------------------------------------------------
  *  PHPDoc Type Expression Of PHPStan

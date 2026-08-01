@@ -24,7 +24,7 @@ of two comparisons, and `Comparison()+` says so without an operator to read.
 
 ## Grammar
 
-```pp2
+```pp3
 /**
  * -----------------------------------------------------------------------------
  *  Composer Version Constraint

@@ -32,7 +32,7 @@ an identifier and never as a keyword.
 
 ## Grammar
 
-```pp2
+```pp3
 /**
  * -----------------------------------------------------------------------------
  *  Graphviz DOT

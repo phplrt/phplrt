@@ -216,7 +216,7 @@ $builder->addAnalysisPass(
 
 Everything above has a shorter spelling in a `.pp3` file:
 
-```pp2
+```pp3
 %token T_DIGIT       \d++
 %token T_PLUS        \+
 %skip  T_WHITESPACE  \s++
@@ -225,7 +225,7 @@ Everything above has a shorter spelling in a `.pp3` file:
 A token nothing refers to by name does not have to be declared at all - a rule
 declares it where it reads it, and the two spellings are the two methods above:
 
-```pp2
+```pp3
 Sum  : <T_DIGIT> "+" <T_DIGIT> ;          // addValue('+')
 Expr : <T_DIGIT> /and|or/ <T_DIGIT> ;     // addPattern('and|or')
 ```
@@ -233,7 +233,7 @@ Expr : <T_DIGIT> /and|or/ <T_DIGIT> ;     // addPattern('and|or')
 The modifiers and the compiler passes are settings of the grammar there, so a
 grammar carries the way it wants to be compiled:
 
-```pp2
+```pp3
 %pragma lexer.pcre.flag  Caseless
 %pragma lexer.check      \App\Grammar\MyValidationPass
 ```

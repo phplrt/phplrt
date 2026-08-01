@@ -183,7 +183,7 @@ you ship it:
   not have is an error;
 - **left recursion is rejected**:
 
-```pp2
+```pp3
 Rule Expression = (...) | <name is "T_NUMBER"> is left recursive:
 Expression -> (...) -> Expression
 ```
@@ -235,7 +235,7 @@ $grammar->addAnalysisPass(new MyMetadataPass());
 
 A `.pp3` grammar can do all of this itself, without any PHP around it:
 
-```pp2
+```pp3
 %pragma parser.check    \App\Grammar\MyValidationPass
 %pragma parser.disable  \Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass
 ```

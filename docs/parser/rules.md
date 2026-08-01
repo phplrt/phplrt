@@ -28,7 +28,7 @@ new Lexeme(tokenId: 0);              // read T_DIGIT, keep it
 new Lexeme(tokenId: 1, keep: false); // read T_COMMA, throw it away
 ```
 
-```pp2
+```pp3
 Rule : <T_DIGIT> ;    // keep
 Rule : ::T_COMMA:: ;  // read and discard
 ```
@@ -50,7 +50,7 @@ use Phplrt\Parser\Grammar\Concatenation;
 new Concatenation([1, 2, 1]);
 ```
 
-```pp2
+```pp3
 Rule : Number() Plus() Number() ;
 ```
 
@@ -67,14 +67,14 @@ use Phplrt\Parser\Grammar\Alternation;
 new Alternation([1, 2]);
 ```
 
-```pp2
+```pp3
 Rule : Number() | Name() ;
 ```
 
 **The order is part of the meaning.** The first match wins, and the rest are
 never tried - even if one of them would have read more of the input:
 
-```pp2
+```pp3
 Rule : "a" | "ab" ;   // never reads "ab"
 Rule : "ab" | "a" ;   // ✔
 ```
@@ -93,7 +93,7 @@ use Phplrt\Parser\Grammar\Optional;
 new Optional(ruleId: 1);
 ```
 
-```pp2
+```pp3
 Rule : Sign()? ;
 ```
 
@@ -112,7 +112,7 @@ new Repetition(ruleId: 1, min: 1);         // one or more,  "+"
 new Repetition(ruleId: 1, min: 2, max: 5); // between two and five
 ```
 
-```pp2
+```pp3
 Rule : Number()* ;
 Rule : Number()+ ;
 Rule : Number(){2,5} ;
@@ -148,7 +148,7 @@ EBNF has nothing like this - a predicate describes *how* something is read
 rather than *what* the language contains. A grammar file writes it with the
 same two signs:
 
-```pp2
+```pp3
 Variable : <T_NAME> !::T_PARENTHESIS_OPEN:: ;
 Closure  : &::T_FN:: FunctionLiteral() ;
 ```
@@ -162,14 +162,14 @@ One distinction matters when you write reducers.
 `Concatenation` and `Repetition` implement `SequenceInterface`: they recognize
 a *list* of things, so their value is a list.
 
-```pp2
+```pp3
 Rule : Number() Plus() Number() ;  // $children is an array
 Rule : Number()+ ;                 // $children is an array
 ```
 
 Everything else passes a **single value** through:
 
-```pp2
+```pp3
 Rule : Number() | Name() ;   // $children is whatever matched
 Rule : Number()? ;           // $children is the Number, or nothing
 Rule : <T_DIGIT> ;           // $children is the token

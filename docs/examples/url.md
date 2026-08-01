@@ -20,7 +20,7 @@ of a host is a name, not a number followed by a letter.
 
 ## Grammar
 
-```pp2
+```pp3
 /**
  * -----------------------------------------------------------------------------
  *  URL

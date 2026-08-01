@@ -29,7 +29,7 @@ means what it says in both cases.
 
 ## Grammar
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 
 %token T_STRING      "(?:[^"\\]|\\.)*+"

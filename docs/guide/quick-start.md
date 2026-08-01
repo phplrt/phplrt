@@ -14,7 +14,7 @@ composer require phplrt/compiler --dev
 Before anything can be parsed, the text has to be cut into pieces. Create
 `grammar.pp3` and start with the tokens:
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 
 %token T_NUMBER      \d++(?:\.\d++)?
@@ -37,7 +37,7 @@ the first one that matches.
 
 Now the rules. A rule has a name, a `:`, a body, and an optional `;`:
 
-```pp2
+```pp3
 Number : <T_NUMBER> ;
 ```
 
@@ -47,7 +47,7 @@ punctuation you do not care about, like commas and brackets.
 
 Rules can refer to each other with `RuleName()`:
 
-```pp2
+```pp3
 Primary
   : ::T_PARENTHESIS_OPEN::
       Expression()
@@ -62,7 +62,7 @@ matches wins - so put the more specific ones first.
 To get operator precedence right, use the classic trick: multiplication binds
 tighter than addition, so addition is written *in terms of* multiplication.
 
-```pp2
+```pp3
 Expression : Term()    ((<T_PLUS> | <T_MINUS>) Term())*    ;
 Term       : Primary() ((<T_MUL>  | <T_DIV>)   Primary())* ;
 ```
@@ -76,7 +76,7 @@ At this point the grammar is complete - it can already tell `2 + 2` from
 `2 +`. But parsing alone just gives you a pile of tokens. To get a *value*,
 attach a **reducer**: a block of PHP that runs when the rule matches.
 
-```pp2
+```pp3
 Number -> { return (float) $children->value; }
   : <T_NUMBER>
   ;
@@ -89,7 +89,7 @@ reducer turns it into `42.0`.
 For `Expression`, `$children` is a list: `[2.0, Token('+'), 3.0]`. Fold it
 left to right:
 
-```pp2
+```pp3
 Expression -> {
     // A single operand: nothing to add up
     if (!\is_array($children)) {
@@ -115,7 +115,7 @@ Expression -> {
 
 ## The Whole Grammar
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 
 %token T_NUMBER      \d++(?:\.\d++)?
@@ -297,7 +297,7 @@ can reach whatever you add, through `$this`.
 
 Add a rule for variables:
 
-```pp2
+```pp3
 %token T_NAME  [a-z_][a-z0-9_]*+
 
 Operand

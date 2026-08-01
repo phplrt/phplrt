@@ -9,7 +9,7 @@ something out of it. The first part is the grammar. The second part is
 A grammar with no reducers still returns something - the tokens it kept,
 nested the way the rules were:
 
-```pp2
+```pp3
 Sum : <T_DIGIT> (::T_PLUS:: <T_DIGIT>)* ;
 ```
 
@@ -25,7 +25,7 @@ configuration array - and for that you attach a reducer.
 
 A reducer is a block of PHP that runs when its rule matches:
 
-```pp2
+```pp3
 Number -> { return (int) $children->value; }
   : <T_DIGIT>
   ;
@@ -50,14 +50,14 @@ This is the part worth reading twice.
 **A rule that recognizes a sequence** - a concatenation or a repetition -
 gets an **array**:
 
-```pp2
+```pp3
 Pair : <T_DIGIT> <T_DIGIT> ;      // $children = [Token, Token]
 List : <T_DIGIT>+ ;               // $children = [Token, Token, ...]
 ```
 
 **Any other rule** gets the single value it recognized:
 
-```pp2
+```pp3
 Number : <T_DIGIT> ;              // $children = Token
 Choice : Number() | Name() ;      // $children = whatever matched
 ```
@@ -66,7 +66,7 @@ And the arrays are **flattened into the parent**. If a nested rule returns a
 list, its items are spliced into the list of the rule above rather than
 nested inside it:
 
-```pp2
+```pp3
 Root : <T_A> Pair() <T_B> ;
 Pair : <T_DIGIT> <T_DIGIT> ;
 
@@ -78,7 +78,7 @@ This is deliberate - it keeps the result flat and predictable - but it means
 that a rule which *should* produce a group must say so by returning a value
 of its own. A reducer returning an object or a scalar is never flattened:
 
-```pp2
+```pp3
 Pair -> { return $children; /* an array */ }  // still flattened
 Pair -> { return new PairNode($children); }   // stays one value ✔
 ```
@@ -86,7 +86,7 @@ Pair -> { return new PairNode($children); }   // stays one value ✔
 Because a rule can match one thing or a list depending on the input, reducers
 often start with a check:
 
-```pp2
+```pp3
 Expression -> {
     // Just one operand: nothing to fold
     if (!\is_array($children)) {
@@ -134,7 +134,7 @@ final class BinaryNode extends Node
 
 Then build them in the grammar:
 
-```pp2
+```pp3
 %skip  T_WHITESPACE  \s++
 %token T_NUMBER      \d++(?:\.\d++)?
 %token T_PLUS        \+
@@ -208,7 +208,7 @@ A reducer that returns `null` leaves the value alone: the children are passed
 up as if there were no reducer at all. That makes `null` useful for reducers
 that only observe:
 
-```pp2
+```pp3
 Debug -> {
     \error_log('matched at ' . $offset);
 

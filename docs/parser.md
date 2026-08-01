@@ -138,14 +138,14 @@ Two consequences are worth knowing before you write a grammar.
 **Alternatives are ordered.** The first one that matches wins, and the rest
 are not tried:
 
-```pp2
+```pp3
 Rule : "a" | "ab" ;
 ```
 
 This never reads `ab`. `"a"` already matched, and the parser does not go back
 to look for something longer. Put the longer alternative first:
 
-```pp2
+```pp3
 Rule : "ab" | "a" ;
 ```
 
@@ -154,7 +154,7 @@ read any input, and you can always tell which one by reading top to bottom.
 
 **Left recursion is not allowed.** A rule cannot start with itself:
 
-```pp2
+```pp3
 // This never terminates, and the builder will refuse it
 Expression : Expression() ::T_PLUS:: Number() ;
 ```
@@ -162,7 +162,7 @@ Expression : Expression() ::T_PLUS:: Number() ;
 Write it as a repetition instead - this is the standard translation, and it
 is what you want anyway:
 
-```pp2
+```pp3
 Expression : Number() (::T_PLUS:: Number())* ;
 ```
 

@@ -93,7 +93,7 @@ The same thing in `.pp3` is written with states. A token declaration says what
 it does after `->`, and a token declared as `state:NAME` belongs to that
 state's lexer:
 
-```pp2
+```pp3
 %token        T_QUOTE_OPEN  "      -> state(string)
 %token string:T_TEXT        [^"]++
 %token string:T_QUOTE_CLOSE "      -> exit()
@@ -108,7 +108,7 @@ to jump straight from one state into another.
 
 A token may do more than one thing, written with commas:
 
-```pp2
+```pp3
 %token T_QUOTE_OPEN  "  -> state(string), channel(strings)
 ```
 
@@ -148,7 +148,7 @@ $builder->addEmbeddedLexer('php', new PhpTokenLexer());
 In a grammar file that is `%lexer`, which names the state and gives the
 expression building the lexer:
 
-```pp2
+```pp3
 %token T_PHP_OPEN  <\?php  -> state(php)
 
 %lexer php -> { new \App\Lexer\PhpTokenLexer() }
