@@ -33,12 +33,14 @@
         "Error Reporting": "errors"
     },
     "Examples": {
-        "Simple Math Expression": "examples/simple-math",
-        "Advanced Math Expression": "examples/advanced-math",
-        "Calculator": "examples/calculator",
         "JSON": "examples/json",
-        "JSON5": "examples/json5",
+        "Cron Expression": "examples/cron",
+        "Composer Constraints": "examples/composer-constraints",
+        "URL": "examples/url",
+        "Graphviz DOT": "examples/dot",
+        "EBNF": "examples/ebnf",
+        "Rule Engine": "examples/rules",
         "PhpDoc Types (psalm/phpstan)": "examples/phpdoc-types",
-        "Go! AOP Pointcuts": "examples/go-aop"
+        "Regular Expressions": "examples/regex"
     }
 }
