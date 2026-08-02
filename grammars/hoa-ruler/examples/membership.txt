@@ -1,1 +1,0 @@
-group in ['admin', 'moderator'] and points > 30

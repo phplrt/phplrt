@@ -1,2 +1,0 @@
-INSERT INTO Demo\Model\Robot (name, type, year)
-VALUES ('Astro Boy', :type:, 1952)

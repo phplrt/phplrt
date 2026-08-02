@@ -1,7 +1,0 @@
-{
-    "description": "The compiler phplrt was born out of",
-    "require": {
-        "hoa/compiler": "^3.17",
-        "hoa/file": "^1.17"
-    }
-}

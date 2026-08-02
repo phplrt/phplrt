@@ -1,4 +1,0 @@
-UPDATE Demo\Model\Robot AS r
-SET r.name = UPPER(r.name), r.year = r.year + 1, r.meta = NULL
-WHERE r.id = ?1
-LIMIT 10

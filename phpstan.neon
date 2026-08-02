@@ -13,8 +13,6 @@ includes:
   - libs/contracts/lexer/phpstan.neon
   - libs/contracts/parser/phpstan.neon
   - libs/contracts/source/phpstan.neon
-  # Examples
-  - grammars/phpstan.neon
 parameters:
   level: max
   strictRules:

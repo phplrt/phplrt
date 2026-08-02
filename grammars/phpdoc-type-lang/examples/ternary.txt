@@ -1,9 +1,0 @@
-// A type told apart by a condition
-
-$value is Demo\Example\Entity
-    ? Demo\Example\Collection<Demo\Example\Entity>
-    : (
-        $value is not non-empty-string
-            ? (TValue is int ? positive-int : false)
-            : list<string>
-    )

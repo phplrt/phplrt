@@ -1,1 +1,0 @@
-DateTimeImmutable<'Y-m-d\TH:i:sP', 'UTC', "Y-m-d|">

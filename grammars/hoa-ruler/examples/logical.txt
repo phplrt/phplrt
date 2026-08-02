@@ -1,1 +1,0 @@
-not (banned = true) and logged_in = true or role = 'root'

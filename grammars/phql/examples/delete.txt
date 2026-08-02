@@ -1,3 +1,0 @@
-DELETE FROM Demo\Model\Robot r
-WHERE r.year < 1950 AND r.parts IS NULL
-LIMIT {max:int}

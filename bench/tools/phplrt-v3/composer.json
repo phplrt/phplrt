@@ -1,7 +1,0 @@
-{
-    "description": "phplrt 3.x, the version before the one this repository holds",
-    "require": {
-        "phplrt/phplrt": "^3.0"
-    },
-    "minimum-stability": "stable"
-}

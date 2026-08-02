@@ -1,1 +1,0 @@
-(?i)^\Afoo(?=bar)(?!baz)(?<=qux)(?<!nope)end\K\z$

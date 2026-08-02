@@ -1,1 +1,0 @@
-array{id1: positive-int, name1: non-empty-string, tags1: list<Demo\Tag1>}|Demo\Collection2<array-key, Demo\User2>|array<string, array<int, iterable<int, Demo\Nu3>>>|(Countable&Demo\Xi4)[]|Demo\Status5::ACTIVE|'literal-6'|int<0, 7>|Demo\Omicron8

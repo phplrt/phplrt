@@ -1,6 +1,0 @@
-int
-| null
-| \MyClass
-| (int|string)[]
-& \Countable
-& \PHPUnit\Framework\MockObject\MockObject

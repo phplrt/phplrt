@@ -1,6 +1,0 @@
-{
-    "description": "The type parser of psalm",
-    "require": {
-        "vimeo/psalm": "^6.0"
-    }
-}

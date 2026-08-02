@@ -44,14 +44,6 @@ jobs:
           # Metadata
           - local_path: 'libs/meta/runtime'
             split_repository: 'runtime'
-          # Documentation
-          - local_path: 'docs'
-            split_repository: 'docs'
-          # Examples
-          - local_path: 'grammars'
-            split_repository: 'grammars'
-          - local_path: 'bench'
-            split_repository: 'benchmarks'
     steps:
       - uses: actions/checkout@v7
 

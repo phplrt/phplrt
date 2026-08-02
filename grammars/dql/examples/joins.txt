@@ -1,8 +1,0 @@
-SELECT u, p, c, a
-FROM Demo\Entity\User u
-    JOIN u.profile p
-    LEFT JOIN u.comments c INDEX BY c.id WITH c.approved = TRUE
-    LEFT OUTER JOIN u.avatar a
-    INNER JOIN Demo\Entity\Group g WITH g.owner = u
-    , Demo\Entity\Audit audit
-WHERE audit.subject = u.id

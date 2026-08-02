@@ -1,1 +1,0 @@
-request.headers.get('User-Agent') matches '/firefox/i'

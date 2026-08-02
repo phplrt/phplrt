@@ -1,4 +1,0 @@
-DELETE FROM Demo\Entity\User u
-WHERE u.lastLoginAt IS NULL
-    AND u.createdAt < :before
-    AND u.posts IS EMPTY

@@ -10,9 +10,6 @@
 
 # Common
 /.github export-ignore
-/bench export-ignore
-/docs export-ignore
-/grammars export-ignore
 
 # Tools
 .php-cs-fixer.php export-ignore

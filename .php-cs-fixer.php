@@ -17,8 +17,6 @@ const DIR_INCLUDE = [
     __DIR__ . '/libs/contracts/lexer/src',
     __DIR__ . '/libs/contracts/parser/src',
     __DIR__ . '/libs/contracts/source/src',
-    // Examples
-    __DIR__ . '/grammars/src',
 ];
 
 const DIR_EXCLUDE = [];

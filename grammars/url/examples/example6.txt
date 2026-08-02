@@ -1,1 +1,0 @@
-http://abc.com:80/~smith/home.html
