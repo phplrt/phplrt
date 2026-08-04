@@ -34,7 +34,6 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  * @template-implements ParserInterface<TResult>
  *
  * @phpstan-import-type ReducerType from ReducerTable
- *
  * @phpstan-import-type LookaheadTableType from GrammarTable
  * @phpstan-import-type KeptTableType from GrammarTable
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
@@ -167,8 +166,8 @@ readonly class Parser implements ParserInterface
     }
 
     /**
-     * @throws ParserSourceException in case of the source cannot be read
      * @return TResult
+     * @throws ParserSourceException in case of the source cannot be read
      */
     private function reduce(ReadableInterface $source, Success $result): mixed
     {
