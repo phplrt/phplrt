@@ -6,6 +6,7 @@ return new readonly class extends \Phplrt\Parser\Parser {
 {% else %}
 /**
  * @template TResult of mixed = mixed
+ *
  * @template-extends \Phplrt\Parser\Parser<TResult>
  */
 readonly class {{ class }} extends \Phplrt\Parser\Parser
