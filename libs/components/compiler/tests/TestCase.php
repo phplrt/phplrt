@@ -15,9 +15,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     /**
-     * Reads the given grammar and writes every declaration of it back, so that
-     * what has been recognized is compared the way it is written.
-     *
      * @return list<string>
      */
     protected static function describe(string $source): array

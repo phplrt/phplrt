@@ -12,14 +12,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
-/**
- * Checks that the parser reading a grammar file is still the one the grammar
- * describing that format compiles into.
- *
- * A parser cannot be built from the grammar describing its own format at
- * runtime, so it is generated ahead of time and committed. Which means the two
- * may drift apart, and this is what tells that they have.
- */
 #[Group('phplrt/compiler')]
 final class SyntaxGrammarTest extends TestCase
 {
@@ -31,9 +23,6 @@ final class SyntaxGrammarTest extends TestCase
     private const string BUILD_SCRIPT = 'composer dev:syntax';
 
     /**
-     * Every format the compiler reads: the grammar describing it, the file the
-     * parser of it is generated into and the name it is generated under.
-     *
      * @return iterable<non-empty-string, array{non-empty-string, non-empty-string, non-empty-string, non-empty-string}>
      */
     public static function formatsDataProvider(): iterable

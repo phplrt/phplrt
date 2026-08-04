@@ -95,7 +95,7 @@ final class PP2LoaderTest extends TestCase
     public function testTransitionBetweenNamedStatesIsReported(): void
     {
         $this->expectException(UnsupportedTransitionException::class);
-        $this->expectExceptionMessage('cannot be continued by the state "second"');
+        $this->expectExceptionMessageIsOrContains('cannot be continued by the state "second"');
 
         $this->load('%token first:T_X x -> second');
     }
@@ -162,7 +162,7 @@ final class PP2LoaderTest extends TestCase
     public function testUnknownPragmaIsReported(): void
     {
         $this->expectException(UnsupportedPragmaException::class);
-        $this->expectExceptionMessage('Unrecognized pragma "check_tokens"');
+        $this->expectExceptionMessageIs('Unrecognized pragma "check_tokens"');
 
         $this->load('%pragma check_tokens false');
     }

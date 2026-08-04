@@ -10,7 +10,6 @@ namespace Phplrt\Compiler\Syntax\PP2;
 
 /**
  * @template TResult of mixed = mixed
- *
  * @template-extends \Phplrt\Parser\Parser<TResult>
  */
 readonly class PP2Parser extends \Phplrt\Parser\Parser

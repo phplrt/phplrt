@@ -110,7 +110,7 @@ final class PredicateTest extends TestCase
         ], 'Root'));
 
         $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessage('only looks at what comes next, so it builds nothing to reduce');
+        $this->expectExceptionMessageIsOrContains('only looks at what comes next, so it builds nothing to reduce');
 
         $parser->build(self::createLexerBuilder()->build());
     }
@@ -128,7 +128,7 @@ final class PredicateTest extends TestCase
         $parser->setInitialRule($root);
 
         $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessage('is left recursive');
+        $this->expectExceptionMessageIsOrContains('is left recursive');
 
         $parser->build(self::createLexerBuilder()->build());
     }

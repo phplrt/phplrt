@@ -164,7 +164,8 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The escaping of the quotes surrounding an inline pattern is undone')]
     public function testInlinePatternQuotes(): void
     {
-        $declarations = new PP2Parser()->parse(new Source('A : "\"" ;'));
+        $declarations = new PP2Parser()
+            ->parse(new Source('A : "\"" ;'));
 
         $rule = $declarations[0];
 

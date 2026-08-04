@@ -51,7 +51,7 @@ final class CompilerTest extends TestCase
     public function testPPGrammarIsNotSupported(): void
     {
         $this->expectException(UnsupportedFormatException::class);
-        $this->expectExceptionMessage('Grammar files written in the "pp" format are not supported');
+        $this->expectExceptionMessageIs('Grammar files written in the "pp" format are not supported');
 
         $this->load('legacy.pp');
     }
@@ -60,7 +60,7 @@ final class CompilerTest extends TestCase
     public function testUnresolvableReferenceIsReported(): void
     {
         $this->expectException(GrammarNotFoundException::class);
-        $this->expectExceptionMessage('nowhere/at/all: failed to open stream');
+        $this->expectExceptionMessageIsOrContains('nowhere/at/all: failed to open stream');
 
         $this->load('unresolvable.pp2');
     }

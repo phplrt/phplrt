@@ -29,9 +29,6 @@ use Phplrt\Source\VirtualFile;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
-/**
- * Describes what the PP3 format says differently from the PP2 one.
- */
 #[Group('phplrt/compiler')]
 final class PP3LoaderTest extends TestCase
 {
@@ -206,7 +203,7 @@ final class PP3LoaderTest extends TestCase
     public function testUnknownActionIsReported(): void
     {
         $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessage('Unrecognized token action "skip"');
+        $this->expectExceptionMessageIs('Unrecognized token action "skip"');
 
         $this->load('%token T_A a -> skip()');
     }
@@ -215,7 +212,7 @@ final class PP3LoaderTest extends TestCase
     public function testActionWithoutValueIsReported(): void
     {
         $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessage('The "state" action of a token expects a value');
+        $this->expectExceptionMessageIs('The "state" action of a token expects a value');
 
         $this->load('%token T_A a -> state()');
     }
@@ -224,7 +221,7 @@ final class PP3LoaderTest extends TestCase
     public function testActionWithUnexpectedValueIsReported(): void
     {
         $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessage('The "exit" action of a token expects no value');
+        $this->expectExceptionMessageIs('The "exit" action of a token expects no value');
 
         $this->load('%token T_A a -> exit(somewhere)');
     }
@@ -273,9 +270,8 @@ final class PP3LoaderTest extends TestCase
     public function testSeveralTransitionsAreReported(): void
     {
         $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessage(
-            'A token is read once, so the "exit" action cannot be applied after the "state" one',
-        );
+        $this->expectExceptionMessageIs('A token is read once, so the "exit" '
+            . 'action cannot be applied after the "state" one');
 
         $this->load("%token T_QUOTE \" -> state(string), exit()\n%token string:T_TEXT [^\"]++");
     }

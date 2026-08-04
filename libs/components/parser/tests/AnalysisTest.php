@@ -162,7 +162,7 @@ final class AnalysisTest extends TestCase
         foreach (['1 + 2 +', '1 1', '+ 1', ''] as $source) {
             $result = $parser->analyze(new Source($source), Mode::SyntaxCheck);
 
-            self::assertNotInstanceOf(SuccessfulResult::class, $result);
+            self::assertNotSame(SuccessfulResult::class, $result::class);
 
             try {
                 $parser->parse(new Source($source));
@@ -203,7 +203,7 @@ final class AnalysisTest extends TestCase
         self::assertInstanceOf(FailureResult::class, $result);
 
         $this->expectException(UnexpectedTokenException::class);
-        $this->expectExceptionMessage('Syntax error, unexpected "+" (T_PLUS)');
+        $this->expectExceptionMessageIs('Syntax error, unexpected "+" (T_PLUS)');
 
         throw $result->diagnostics[0]->error;
     }

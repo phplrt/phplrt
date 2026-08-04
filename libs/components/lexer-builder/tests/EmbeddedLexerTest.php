@@ -145,7 +145,7 @@ final class EmbeddedLexerTest extends TestCase
         $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('new '));
 
         $this->expectException(LexerCompilerException::class);
-        $this->expectExceptionMessage('The lexer "fragment" cannot be compiled: ');
+        $this->expectExceptionMessageIsOrContains('The lexer "fragment" cannot be compiled: ');
 
         $builder->build()
             ->toLexer();
@@ -158,7 +158,7 @@ final class EmbeddedLexerTest extends TestCase
         $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('42'));
 
         $this->expectException(LexerCompilerException::class);
-        $this->expectExceptionMessage(\sprintf(
+        $this->expectExceptionMessageIs(\sprintf(
             'The lexer "fragment" must be an instance of %s, int given',
             LexerInterface::class,
         ));

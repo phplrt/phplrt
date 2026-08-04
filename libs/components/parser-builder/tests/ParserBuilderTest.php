@@ -182,7 +182,7 @@ final class ParserBuilderTest extends TestCase
         $parser = self::createParserWithReducer('return $this->something;');
 
         $this->expectException(\Error::class);
-        $this->expectExceptionMessage('Using $this when not in object context');
+        $this->expectExceptionMessageIs('Using $this when not in object context');
 
         $parser->parse(new Source('1 + 2 + 3'));
     }
@@ -191,7 +191,7 @@ final class ParserBuilderTest extends TestCase
     public function testReducerAsPhpCodeMalformed(): void
     {
         $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessage('The reducer of the rule Root cannot be compiled: ');
+        $this->expectExceptionMessageIsOrContains('The reducer of the rule Root cannot be compiled: ');
 
         self::createParserWithReducer('return $children');
     }

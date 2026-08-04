@@ -27,8 +27,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 final class GeneratorTest extends TestCase
 {
     /**
-     * The files the generated code has been saved into.
-     *
      * @var list<non-empty-string>
      */
     private array $files = [];
@@ -172,7 +170,7 @@ final class GeneratorTest extends TestCase
     public function testCallableReducerIsReported(): void
     {
         $this->expectException(UnsupportedReducerException::class);
-        $this->expectExceptionMessage('The rule #0 is reduced by');
+        $this->expectExceptionMessageIsOrContains('The rule #0 is reduced by');
 
         $lexer = new LexerBuilder();
         $lexer->addPattern('\d++', 'T_NUMBER');
@@ -189,7 +187,7 @@ final class GeneratorTest extends TestCase
     public function testRuntimeEmbeddedLexerIsReported(): void
     {
         $this->expectException(UnsupportedEmbeddedLexerException::class);
-        $this->expectExceptionMessage('The fragment "php" is read by');
+        $this->expectExceptionMessageIsOrContains('The fragment "php" is read by');
 
         $embedded = new LexerBuilder();
         $embedded->addPattern('\s++', 'T_WHITESPACE');
@@ -251,7 +249,7 @@ final class GeneratorTest extends TestCase
     public function testInvalidClassNameIsReported(): void
     {
         $this->expectException(InvalidClassNameException::class);
-        $this->expectExceptionMessage('The parser cannot be declared as "App\\Parser"');
+        $this->expectExceptionMessageIsOrContains('The parser cannot be declared as "App\\Parser"');
 
         (string) $this->compile('grammar.pp2')
             ->generate()

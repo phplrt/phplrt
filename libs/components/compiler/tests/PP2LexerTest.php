@@ -8,6 +8,7 @@ use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Source\File;
 use Phplrt\Source\Source;
@@ -25,10 +26,6 @@ final class PP2LexerTest extends TestCase
      */
     private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
 
-    /**
-     * Compiling the grammar takes long enough to be done once for the whole
-     * test case.
-     */
     private static ?LexerInterface $lexer = null;
 
     /**
@@ -54,8 +51,6 @@ final class PP2LexerTest extends TestCase
     }
 
     /**
-     * Returns the name and the value of every token reaching the parser.
-     *
      * @return list<string>
      */
     private static function describeTokens(string $source): array
@@ -70,8 +65,6 @@ final class PP2LexerTest extends TestCase
     }
 
     /**
-     * Returns what the subgroups of every token have captured.
-     *
      * @return list<list<string>>
      */
     private static function describeCaptures(string $source): array
@@ -79,6 +72,8 @@ final class PP2LexerTest extends TestCase
         $result = [];
 
         foreach (self::tokenize($source) as $token) {
+            \assert($token instanceof Token);
+
             if ($token->captures !== []) {
                 $result[] = $token->captures;
             }

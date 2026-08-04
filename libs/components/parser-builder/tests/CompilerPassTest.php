@@ -19,7 +19,7 @@ final class CompilerPassTest extends TestCase
     public function testEmptyGrammar(): void
     {
         $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessage('The grammar of the parser contains no rules');
+        $this->expectExceptionMessageIs('The grammar of the parser contains no rules');
 
         self::compile(new ParserBuilder());
     }
@@ -34,7 +34,7 @@ final class CompilerPassTest extends TestCase
         ]));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('Rule name of Number = <name is "T_PLUS"> is not unique');
+        $this->expectExceptionMessageIs('Rule name of Number = <name is "T_PLUS"> is not unique');
 
         self::compile($parser);
     }
@@ -46,7 +46,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addConcatenation([$parser->addRuleReference('Missing')], 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('refers to the rule named "Missing", which has not been defined');
+        $this->expectExceptionMessageIsOrContains('refers to the rule named "Missing", which has not been defined');
 
         self::compile($parser);
     }
@@ -114,7 +114,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addTokenReference('T_UNKNOWN', 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
+        $this->expectExceptionMessageIsOrContains('refers to the token, which is not recognized by the lexer');
 
         self::compile($parser);
     }
@@ -126,7 +126,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addTokenReference(42, 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
+        $this->expectExceptionMessageIsOrContains('refers to the token, which is not recognized by the lexer');
 
         self::compile($parser);
     }
@@ -138,7 +138,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addTokenReference(new ValueTokenDefinition('+'), 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('refers to the token, which is not recognized by the lexer');
+        $this->expectExceptionMessageIsOrContains('refers to the token, which is not recognized by the lexer');
 
         self::compile($parser);
     }
@@ -150,7 +150,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addTokenReference('T_WHITESPACE', 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('refers to the hidden token');
+        $this->expectExceptionMessageIsOrContains('refers to the hidden token');
 
         self::compile($parser);
     }
@@ -162,7 +162,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($parser->addConcatenation([], 'Root'));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('Rule Root = () must refer to at least one rule');
+        $this->expectExceptionMessageIs('Rule Root = () must refer to at least one rule');
 
         self::compile($parser);
     }
@@ -179,7 +179,7 @@ final class CompilerPassTest extends TestCase
         ));
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('cannot be repeated from 5 to 2 times');
+        $this->expectExceptionMessageIsOrContains('cannot be repeated from 5 to 2 times');
 
         self::compile($parser);
     }
@@ -193,7 +193,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($expression);
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('is left recursive: Expression -> Expression');
+        $this->expectExceptionMessageIsOrContains('is left recursive: Expression -> Expression');
 
         self::compile($parser);
     }
@@ -212,7 +212,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($first);
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('is left recursive: First -> Second -> First');
+        $this->expectExceptionMessageIsOrContains('is left recursive: First -> Second -> First');
 
         self::compile($parser);
     }
@@ -229,7 +229,7 @@ final class CompilerPassTest extends TestCase
         $parser->setInitialRule($expression);
 
         $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessage('is left recursive: Expression -> Expression');
+        $this->expectExceptionMessageIsOrContains('is left recursive: Expression -> Expression');
 
         self::compile($parser);
     }
