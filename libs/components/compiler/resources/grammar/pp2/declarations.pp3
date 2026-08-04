@@ -37,7 +37,7 @@ TokenDeclaration -> {
     $pattern = $children->captures[2] ?? '';
 
     if ($name === '' || $pattern === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
     }
 
     $state = $children->captures[0] ?? '';

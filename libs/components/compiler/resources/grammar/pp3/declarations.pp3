@@ -48,7 +48,7 @@ TokenDeclaration -> {
         switch ($part->name) {
             case 'T_STATE':
                 if ($state !== null) {
-                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
                 $state = \substr($part->value, 0, -1);
@@ -57,7 +57,7 @@ TokenDeclaration -> {
 
             case 'T_NAME':
                 if ($name !== null) {
-                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
                 $name = $part->value;
@@ -66,7 +66,7 @@ TokenDeclaration -> {
 
             case 'T_PATTERN':
                 if ($pattern !== null) {
-                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
                 $pattern = $part->value;
@@ -75,7 +75,7 @@ TokenDeclaration -> {
 
             case 'T_ACTIONS':
                 if ($actions !== []) {
-                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $part);
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
                 \preg_match_all(
@@ -105,7 +105,7 @@ TokenDeclaration -> {
     // A declaration written of anything but a name and an expression describes
     // no token at all
     if ($name === null || $name === '' || $pattern === null || $pattern === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
     }
 
     return new \Phplrt\Compiler\Node\Declaration\TokenDeclaration(
@@ -142,7 +142,7 @@ LexerDeclaration -> {
     $name = $declaration->captures[0] ?? '';
 
     if ($name === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $declaration);
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $declaration);
     }
 
     return new \Phplrt\Compiler\Node\Declaration\LexerDeclaration(

@@ -22,7 +22,7 @@ PragmaDeclaration -> {
     $value = $children->captures[1] ?? '';
 
     if ($name === '' || $value === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
     }
 
     return new \Phplrt\Compiler\Node\Declaration\PragmaDeclaration(
@@ -45,7 +45,7 @@ IncludeDeclaration -> {
     $target = $children->captures[0] ?? '';
 
     if ($target === '') {
-        throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
     }
 
     return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
