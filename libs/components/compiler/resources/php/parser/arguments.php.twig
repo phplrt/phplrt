@@ -13,3 +13,6 @@ kept: {{ value(parser.kept) }},
 {% if parser.choicePrediction is not empty %}
 choicePrediction: {{ value(parser.choicePrediction) }},
 {% endif %}
+{% if parser.expectations is not empty %}
+expectations: {{ value(parser.expectations) }},
+{% endif %}
