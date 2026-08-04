@@ -33,6 +33,7 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @template-implements ParserInterface<TResult>
  *
  * @phpstan-type ExpectationsTableType array<int, non-empty-string>
+ *
  * @phpstan-import-type ReducerType from ReducerTable
  * @phpstan-import-type LookaheadTableType from GrammarTable
  * @phpstan-import-type KeptTableType from GrammarTable
