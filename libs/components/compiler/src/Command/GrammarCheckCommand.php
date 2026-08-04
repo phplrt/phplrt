@@ -101,8 +101,8 @@ final class GrammarCheckCommand extends Command
     {
         $count = 0;
 
-        foreach ($result->parser->startTokens as $map) {
-            $count += \count($map);
+        foreach ($result->parser->lookahead as $tokens) {
+            $count += \count($tokens ?? []);
         }
 
         return $count;
@@ -112,8 +112,10 @@ final class GrammarCheckCommand extends Command
     {
         $count = 0;
 
-        foreach ($result->parser->matchesEmptyInput as $matches) {
-            if ($matches) {
+        // A rule that may begin with any token at all is a rule that reads the
+        // empty input, which is the only way it may begin with all of them
+        foreach ($result->parser->lookahead as $tokens) {
+            if ($tokens === null) {
                 ++$count;
             }
         }

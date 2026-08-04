@@ -4,12 +4,12 @@ initial: {{ parser.initial }},
 {% if parser.reducers is not empty %}
 reducers: {{ include('parser/reducers.php.twig')|trim }},
 {% endif %}
-{% if parser.startTokens is not empty %}
-startTokens: {{ value(parser.startTokens) }},
-{% endif %}
-{% if parser.matchesEmptyInput is not empty %}
-matchesEmptyInput: {{ value(parser.matchesEmptyInput) }},
+{% if parser.lookahead is not empty %}
+lookahead: {{ value(parser.lookahead) }},
 {% endif %}
 {% if parser.presentInTree is not empty %}
 presentInTree: {{ value(parser.presentInTree) }},
+{% endif %}
+{% if parser.branchesByToken is not empty %}
+branchesByToken: {{ value(parser.branchesByToken) }},
 {% endif %}

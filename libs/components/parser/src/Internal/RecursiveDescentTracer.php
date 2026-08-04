@@ -55,6 +55,11 @@ final class RecursiveDescentTracer
      */
     private readonly array $presentInTree;
 
+    /**
+     * @var array<int, array<int, list<int>>>
+     */
+    private readonly array $branchesByToken;
+
     private readonly ErrorReport $error;
 
     private function __construct(
@@ -64,6 +69,7 @@ final class RecursiveDescentTracer
         $this->grammar = $table->rules;
         $this->lookahead = $table->lookahead;
         $this->presentInTree = $table->presentInTree;
+        $this->branchesByToken = $table->branchesByToken;
 
         $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
@@ -189,7 +195,7 @@ final class RecursiveDescentTracer
         // such a table would cost, and doing it that way measured ~5% slower.
         $matched = match (true) {
             $definition instanceof Concatenation => $this->matchConcatenation($definition),
-            $definition instanceof Alternation => $this->matchAlternation($definition),
+            $definition instanceof Alternation => $this->matchAlternation($rule, $definition),
             $definition instanceof Optional => $this->matchOptional($definition),
             $definition instanceof Repetition => $this->matchRepetition($definition),
             $definition instanceof Predicate => $this->matchPredicate($definition),
@@ -233,12 +239,23 @@ final class RecursiveDescentTracer
         return true;
     }
 
-    private function matchAlternation(Alternation $rule): bool
+    /**
+     * Recognizes the first of the alternatives that reads the input.
+     *
+     * Which of them are worth entering is decided by the token the input is at:
+     * every other one would have been rejected by that very token as soon as it
+     * was entered, and more than half of them are. An alternation the grammar
+     * says nothing about is recognized by trying every alternative it has.
+     */
+    private function matchAlternation(int $rule, Alternation $definition): bool
     {
         $buffer = $this->buffer;
         $rollback = $buffer->key;
 
-        foreach ($rule->ruleIds as $inner) {
+        $branches = $this->branchesByToken[$rule][$buffer->current->id]
+            ?? $definition->ruleIds;
+
+        foreach ($branches as $inner) {
             if ($this->match($inner)) {
                 return true;
             }
@@ -250,6 +267,15 @@ final class RecursiveDescentTracer
             if ($buffer->key !== $rollback) {
                 $buffer->seek($rollback);
             }
+        }
+
+        /**
+         * The alternatives left out are the ones the token the input is at
+         * rejects, and the tokens this rule may begin with are all of theirs,
+         * so it is reported in place of every one of them.
+         */
+        if ($buffer->key > $this->error->furthest) {
+            $this->error->record($rule);
         }
 
         return false;

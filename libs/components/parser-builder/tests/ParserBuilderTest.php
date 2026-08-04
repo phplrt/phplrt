@@ -222,18 +222,18 @@ final class ParserBuilderTest extends TestCase
         $result = self::compile();
 
         // The expression begins with a number
-        self::assertSame([1 => true], $result->startTokens[0]);
-        // Any of the operators begins the tail of the expression
-        self::assertSame([2 => true, 3 => true], $result->startTokens[2]);
+        self::assertSame([1 => true], $result->lookahead[0]);
     }
 
-    #[TestDox('The rules that may be recognized without consuming a token are computed')]
+    #[TestDox('A rule that may be recognized without consuming a token may begin with any of them')]
     public function testNullable(): void
     {
         $result = self::compile();
 
-        self::assertTrue($result->matchesEmptyInput[2], 'The tail of the expression is optional');
-        self::assertFalse($result->matchesEmptyInput[0], 'The expression requires a number');
+        // The tail of the expression is optional, so whatever comes after the
+        // expression suits it, operator or not
+        self::assertNull($result->lookahead[2]);
+        self::assertNotNull($result->lookahead[0], 'The expression requires a number');
     }
 
     #[TestDox('The rules that are present in the resulting tree are computed')]

@@ -31,9 +31,9 @@ final readonly class RuntimeParserTransformer
             grammar: $result->grammar,
             initial: $result->initial,
             reducers: $this->transformReducers($result),
-            startTokens: $result->startTokens,
-            matchesEmptyInput: $result->matchesEmptyInput,
+            lookahead: $result->lookahead,
             presentInTree: $result->presentInTree,
+            branchesByToken: $result->branchesByToken,
         );
     }
 

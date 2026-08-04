@@ -14,6 +14,7 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
@@ -240,9 +241,9 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            startTokens: $analysis->startTokens,
-            matchesEmptyInput: $analysis->matchesEmptyInput,
+            lookahead: $analysis->lookahead,
             presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
         );
 
         $withoutTables = new Parser(
@@ -267,6 +268,84 @@ final class AnalysisTest extends TestCase
         }
     }
 
+    #[TestDox('The tokens of the alternatives never entered are told all the same')]
+    public function testExpectedTokensOfAlternativesNeverEntered(): void
+    {
+        /**
+         * Neither alternative is a terminal, so the tokens they may begin with
+         * are known from the tables alone, and the tables are what keeps them
+         * from being entered on a token that is neither.
+         *
+         * @var list<RuleInterface> $grammar
+         */
+        $grammar = [
+            0 => new Alternation([1, 2]),
+            1 => new Concatenation([3]),
+            2 => new Concatenation([4]),
+            3 => new Lexeme(ArithmeticLexer::T_PLUS),
+            4 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        $parser = new Parser(
+            lexer: new ArithmeticLexer(),
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            lookahead: $analysis->lookahead,
+            presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
+        );
+
+        $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
+
+        \sort($expected);
+
+        $actual = $parser->analyze(new Source('1'), Mode::SyntaxCheck);
+
+        self::assertInstanceOf(FailureResult::class, $actual);
+        self::assertSame($expected, $actual->diagnostics[0]->expected);
+    }
+
+    #[TestDox('An alternation that has recognized none of its alternatives tells the tokens of them all')]
+    public function testExpectedTokensOfAnAlternationRecognizingNothing(): void
+    {
+        /**
+         * The first alternative may begin with a minus and refuses to read one,
+         * so a minus is what makes the alternation try it, and nothing else,
+         * and what makes it fail without a word about itself.
+         *
+         * @var list<RuleInterface> $grammar
+         */
+        $grammar = [
+            0 => new Alternation([1, 2]),
+            1 => new Concatenation([3, 4]),
+            2 => new Lexeme(ArithmeticLexer::T_PLUS),
+            3 => new Predicate(4, isExpected: false),
+            4 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        $parser = new Parser(
+            lexer: new ArithmeticLexer(),
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            lookahead: $analysis->lookahead,
+            presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
+        );
+
+        $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
+
+        \sort($expected);
+
+        $actual = $parser->analyze(new Source('-'), Mode::SyntaxCheck);
+
+        self::assertInstanceOf(FailureResult::class, $actual);
+        self::assertSame($expected, $actual->diagnostics[0]->expected);
+    }
+
     #[TestDox('A grammar reading nothing but a repetition reads an empty fragment')]
     public function testEmptyFragmentIsRead(): void
     {
@@ -282,9 +361,9 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            startTokens: $analysis->startTokens,
-            matchesEmptyInput: $analysis->matchesEmptyInput,
+            lookahead: $analysis->lookahead,
             presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
         );
 
         $actual = $parser->analyze(new Source('+ 1'));
@@ -309,9 +388,9 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            startTokens: $analysis->startTokens,
-            matchesEmptyInput: $analysis->matchesEmptyInput,
+            lookahead: $analysis->lookahead,
             presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
         );
 
         $actual = $parser->analyze(new Source(''));
@@ -357,9 +436,9 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            startTokens: $analysis->startTokens,
-            matchesEmptyInput: $analysis->matchesEmptyInput,
+            lookahead: $analysis->lookahead,
             presentInTree: $analysis->presentInTree,
+            branchesByToken: $analysis->branchesByToken,
             reducers: $reducers,
         );
     }

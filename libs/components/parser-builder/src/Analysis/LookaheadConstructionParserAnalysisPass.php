@@ -13,8 +13,11 @@ use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 
 /**
- * Describes which tokens each rule of the grammar may begin with and which of
- * them may be recognized without consuming a token.
+ * Describes which tokens each rule of the grammar may begin with.
+ *
+ * Which of the rules may be recognized without consuming a token is found out
+ * along the way, and it is the same answer: a rule reading the empty input may
+ * begin with anything at all.
  *
  * TODO Refactor lookahead table builder (expand method is sucks)
  */
@@ -47,32 +50,45 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
             }
         } while ($changed);
 
-        $context->startTokens = self::sort($startTokens);
-        $context->matchesEmptyInput = $matchesEmptyInput;
+        $context->lookahead = self::merge($startTokens, $matchesEmptyInput);
     }
 
     /**
-     * Returns the sets of the tokens ordered by the identifiers they are
-     * indexed by.
+     * Returns the tokens each rule may begin with, or {@see null} for a rule
+     * that may begin with any of them.
      *
-     * The sets are filled in while the rules refer to each other, so the order
-     * they end up in is the order the grammar has been walked in rather than
-     * one that means anything.
+     * A rule reading the empty input reads it wherever it stands, so there is
+     * no token such a rule may be rejected by and its own set says nothing
+     * about it: what has been found out about the rules is one answer from
+     * here on.
+     *
+     * The sets are filled in while the rules refer to each other, so they are
+     * ordered here as well: the order they end up in is the order the grammar
+     * has been walked in rather than one that means anything.
      *
      * @param array<int, array<int, true>> $startTokens
-     * @return array<int, array<int, true>>
+     * @param array<int, bool> $matchesEmptyInput
+     * @return array<int, array<int, true>|null>
      */
-    private static function sort(array $startTokens): array
+    private static function merge(array $startTokens, array $matchesEmptyInput): array
     {
+        $result = [];
+
         foreach ($startTokens as $rule => $tokens) {
+            if ($matchesEmptyInput[$rule] ?? true) {
+                $result[$rule] = null;
+
+                continue;
+            }
+
             \ksort($tokens);
 
-            $startTokens[$rule] = $tokens;
+            $result[$rule] = $tokens;
         }
 
-        \ksort($startTokens);
+        \ksort($result);
 
-        return $startTokens;
+        return $result;
     }
 
     /**

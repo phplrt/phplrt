@@ -45,25 +45,28 @@ readonly class Parser implements ParserInterface
      * @param int<0, max> $initial the identifier of the rule the analysis
      *        starts at
      * @param array<int<0, max>, ReducerType> $reducers
-     * @param array<int, array<int, true>> $startTokens
-     * @param array<int, bool> $matchesEmptyInput
+     * @param array<int, array<int, true>|null> $lookahead the tokens a rule may
+     *        begin with, or "null" for a rule that may begin with any of them
      * @param array<int, bool> $presentInTree
+     * @param array<int, array<int, list<int>>> $branchesByToken the alternatives
+     *        of every alternation worth trying, indexed by the token the
+     *        reading is at
      */
     public function __construct(
         private LexerInterface $lexer,
         array $grammar,
         int $initial,
         array $reducers = [],
-        array $startTokens = [],
-        array $matchesEmptyInput = [],
+        array $lookahead = [],
         array $presentInTree = [],
+        array $branchesByToken = [],
     ) {
         $this->table = new GrammarTable(
             rules: $grammar,
             initial: $initial,
-            startTokens: $startTokens,
-            matchesEmptyInput: $matchesEmptyInput,
+            lookahead: $lookahead,
             presentInTree: $presentInTree,
+            branchesByToken: $branchesByToken,
         );
 
         $this->reducers = new ReducerTable(

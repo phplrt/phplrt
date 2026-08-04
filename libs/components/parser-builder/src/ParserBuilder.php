@@ -6,6 +6,7 @@ namespace Phplrt\Parser\Builder;
 
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Analysis\BranchPredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
@@ -140,6 +141,12 @@ final class ParserBuilder
         $this->analysisPasses = [
             new LookaheadConstructionParserAnalysisPass(),
             new TreePresenceConstructionParserAnalysisPass(),
+            /**
+             * Which alternative may be entered is decided by the tokens a rule
+             * begins with, so the alternations are answered for only once those
+             * are known.
+             */
+            new BranchPredictionConstructionParserAnalysisPass(),
         ];
     }
 

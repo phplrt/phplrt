@@ -27,7 +27,8 @@ final readonly class GrammarTable
      * matches empty input, so whatever comes next is fine, or we simply weren't
      * given a lookahead table for this grammar. Both mean "never reject this
      * rule up front", so both are written down as "null" and the tracer doesn't
-     * have to tell them apart.
+     * have to tell them apart. Which of the two it is, is decided long before
+     * the recognition, so it is never asked here.
      *
      * @var array<int, array<int, true>|null>
      */
@@ -47,8 +48,7 @@ final readonly class GrammarTable
     /**
      * @param list<RuleInterface> $rules
      * @param int<0, max> $initial
-     * @param array<int, array<int, true>> $startTokens
-     * @param array<int, bool> $matchesEmptyInput
+     * @param array<int, array<int, true>|null> $lookahead
      * @param array<int, bool> $presentInTree
      */
     public function __construct(
@@ -62,11 +62,37 @@ final readonly class GrammarTable
          * @var int<0, max>
          */
         public int $initial,
-        array $startTokens = [],
-        array $matchesEmptyInput = [],
+        array $lookahead = [],
         array $presentInTree = [],
+        /**
+         * The alternatives of every alternation worth trying, indexed by the
+         * token the reading is at.
+         *
+         * An alternative is rejected by that token before it reads anything, so
+         * which of them stand a chance is a question about the token rather
+         * than about the input, and the compiler answers it once for all of
+         * them. An alternation the grammar says nothing about is recognized by
+         * trying every alternative it has, the way a regular PEG does.
+         *
+         * ```php
+         * [
+         *     // alternation #7 is worth entering by its 2nd alternative alone
+         *     // in case the reading is at token #3
+         *     7 => [3 => [9], 4 => [9, 12]],
+         * ]
+         * ```
+         *
+         * @var array<int, array<int, list<int>>>
+         */
+        public array $branchesByToken = [],
     ) {
-        $this->lookahead = self::calculateLookahead($rules, $startTokens, $matchesEmptyInput);
+        // A grammar that has not been described is recognized all the same: it
+        // reads exactly the same sources, only slower, and errors get reported
+        // at later stages (in more nested rules), since the rules alone don't
+        // say where the reading was supposed to go.
+        $this->lookahead = $lookahead === []
+            ? \array_fill_keys(\array_keys($rules), null)
+            : $lookahead;
 
         // If a rule doesn't change anything, it can be skipped. This reduces
         // the amount of tracing and speeds up subsequent processing, although
@@ -77,33 +103,5 @@ final readonly class GrammarTable
         $this->presentInTree = $presentInTree === []
             ? \array_fill_keys(\array_keys($rules), true)
             : $presentInTree;
-    }
-
-    /**
-     * @param list<RuleInterface> $rules
-     * @param array<int, array<int, true>> $startTokens
-     * @param array<int, bool> $matchesEmptyInput
-     * @return array<int, array<int, true>|null>
-     */
-    private static function calculateLookahead(array $rules, array $startTokens, array $matchesEmptyInput): array
-    {
-        // Both tables are needed to reject a rule, so one without the other is
-        // useless and we just accept everything. That turns the parser into a
-        // regular PEG: it reads exactly the same sources, only slower, and
-        // errors get reported at later stages (in more nested rules), since the
-        // rules alone don't say where the reading was supposed to go.
-        if ($startTokens === [] || $matchesEmptyInput === []) {
-            return \array_fill_keys(\array_keys($rules), null);
-        }
-
-        $result = [];
-
-        foreach ($rules as $rule => $_) {
-            $result[$rule] = ($matchesEmptyInput[$rule] ?? true)
-                ? null
-                : ($startTokens[$rule] ?? []);
-        }
-
-        return $result;
     }
 }

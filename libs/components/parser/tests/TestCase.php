@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Tests;
 
+use Phplrt\Parser\Builder\Analysis\BranchPredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Analysis\TreePresenceConstructionParserAnalysisPass;
@@ -31,6 +32,7 @@ abstract class TestCase extends BaseTestCase
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
             new TreePresenceConstructionParserAnalysisPass(),
+            new BranchPredictionConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {
