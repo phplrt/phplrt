@@ -7,12 +7,15 @@ namespace Phplrt\Parser\Internal\Tracing\Result;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
 /**
- * A successful recognition result: the parse tree.
+ * What the recognition has made of an input.
+ *
+ * Whatever the grammar has managed to read is here, and whether that was the
+ * whole input is told by the class of the result and by nothing else.
  *
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Phplrt\Parser\Internal\Tracing
+ * @psalm-internal Phplrt\Parser
  */
-final class Success extends Result
+abstract class TracingResult
 {
     public function __construct(
         /**
@@ -24,26 +27,12 @@ final class Success extends Result
          *
          * @var array<int<0, max>, int|TokenInterface>
          */
-        public array $entries,
+        public array $entries = [],
         /**
          * The number of meaningful entries. Anything beyond it must be ignored.
          *
          * @var int<0, max>
          */
-        public int $length,
-        /**
-         * The token the recognition stopped at.
-         *
-         * The whole input is recognized only in case this is the terminal
-         * token, so anything else is the beginning of the fragment the grammar
-         * says nothing about.
-         */
-        public TokenInterface $stoppedAt,
-        /**
-         * The furthest the recognition has reached, which is not where it has
-         * stopped, or {@see null} in case of the input has been recognized in
-         * full.
-         */
-        public ?Failure $furthest = null,
+        public int $length = 0,
     ) {}
 }

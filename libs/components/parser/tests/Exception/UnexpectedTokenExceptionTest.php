@@ -27,7 +27,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     {
         $source = new Source(self::SOURCE);
 
-        $exception = UnexpectedTokenException::fromToken($source, $this->createToken());
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
         self::assertSame($source, $exception->source);
         self::assertSame(18, $exception->token->offset);
@@ -36,7 +36,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error is printed along with the fragment of the source code')]
     public function testStringRepresentation(): void
     {
-        $exception = UnexpectedTokenException::fromToken(new Source(self::SOURCE), $this->createToken());
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(new Source(self::SOURCE), $this->createToken());
 
         self::assertStringStartsWith(<<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
@@ -53,7 +53,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     {
         $source = new VirtualFile('/app/example.pp2', self::SOURCE);
 
-        $exception = UnexpectedTokenException::fromToken($source, $this->createToken());
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
         self::assertStringStartsWith(<<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
@@ -69,7 +69,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error occurred outside the source code is printed without a fragment')]
     public function testStringRepresentationOfAnEmptySource(): void
     {
-        $exception = UnexpectedTokenException::fromToken(
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(
             new Source(''),
             new Token(0, null, Channel::EndOfInput, '', 0),
         );

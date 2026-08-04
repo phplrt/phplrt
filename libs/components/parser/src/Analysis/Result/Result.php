@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Analysis\Result;
 
-use Phplrt\Parser\Analysis\Diagnostic;
-
 /**
  * What an analysis has made of a source.
  *
@@ -15,11 +13,11 @@ abstract readonly class Result
 {
     public function __construct(
         /**
-         * Everything the analysis has to say about the source, in the order it
-         * occurs there.
+         * What the source has been built into, or {@see null} in case of the
+         * analysis has built nothing.
          *
-         * @var list<Diagnostic>
+         * @var TValue
          */
-        public array $diagnostics = [],
+        public mixed $value = null,
     ) {}
 }

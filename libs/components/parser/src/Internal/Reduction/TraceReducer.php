@@ -6,7 +6,7 @@ namespace Phplrt\Parser\Internal\Reduction;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Parser\Internal\Tracing\Result\Success;
+use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
 
 /**
  * Builds the traces of a single source into whatever the grammar describes.
@@ -51,7 +51,7 @@ final readonly class TraceReducer
         );
     }
 
-    public function reduce(Success $trace): mixed
+    public function reduce(TracingResult $trace): mixed
     {
         $entries = $trace->entries;
 

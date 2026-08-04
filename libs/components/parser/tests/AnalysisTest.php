@@ -31,8 +31,9 @@ final class AnalysisTest extends TestCase
     {
         $actual = self::createParser()->analyze(new Source('1 + 2 + 3'));
 
+        // A source read in full has nothing to report, which is what the
+        // class of the result says and the only thing it can say
         self::assertInstanceOf(SuccessfulResult::class, $actual);
-        self::assertSame([], $actual->diagnostics, 'A source read in full has nothing to report');
     }
 
     #[TestDox('A source the grammar reads only in part is partial')]
@@ -125,12 +126,10 @@ final class AnalysisTest extends TestCase
         $actual = self::createParser()->analyze(new Source('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
-        self::assertCount(1, $actual->diagnostics);
 
-        $diagnostic = $actual->diagnostics[0];
+        $error = $actual->error;
 
-        self::assertSame('Syntax error, unexpected "+" (T_PLUS)', $diagnostic->message);
-        self::assertSame([ArithmeticLexer::T_NUMBER], $diagnostic->expected);
+        self::assertSame('Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected', $error->getMessage());
     }
 
     #[TestDox('A partial analysis stops where the fragment ends and reports where the reading broke')]
@@ -139,7 +138,6 @@ final class AnalysisTest extends TestCase
         $actual = self::createParser()->analyze(new Source('1 + 2 +'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(PartialResult::class, $actual);
-        self::assertCount(1, $actual->diagnostics);
 
         // The fragment ends before the operator that opens an iteration the
         // grammar cannot finish
@@ -147,11 +145,10 @@ final class AnalysisTest extends TestCase
         self::assertSame(6, $actual->token->offset);
 
         // ...while what is wrong is the operand that never came after it
-        $diagnostic = $actual->diagnostics[0];
+        $error = $actual->error;
 
-        self::assertSame(Channel::EndOfInput, $diagnostic->token->channel);
-        self::assertSame('Syntax error, unexpected end of input', $diagnostic->message);
-        self::assertSame([ArithmeticLexer::T_NUMBER], $diagnostic->expected);
+        self::assertSame(Channel::EndOfInput, $error->token->channel);
+        self::assertSame('Syntax error, unexpected end of input, T_NUMBER expected', $error->getMessage());
     }
 
     #[TestDox('An analysis reports the very error an ordinary reading is rejected with')]
@@ -169,12 +166,11 @@ final class AnalysisTest extends TestCase
 
                 self::fail(\sprintf('The source "%s" is expected to be rejected', $source));
             } catch (UnexpectedTokenException $e) {
-                $error = $result->diagnostics[0]->error;
+                $error = $result->error;
 
                 self::assertSame($e::class, $error::class);
                 self::assertSame($e->getMessage(), $error->getMessage());
                 self::assertSame($e->token->offset, $error->token->offset);
-                self::assertSame($e->expected, $error->expected);
 
                 // The place an error has been raised at belongs to the trace
                 // rather than to the report, and the two are raised apart
@@ -203,9 +199,9 @@ final class AnalysisTest extends TestCase
         self::assertInstanceOf(FailureResult::class, $result);
 
         $this->expectException(UnexpectedTokenException::class);
-        $this->expectExceptionMessageIs('Syntax error, unexpected "+" (T_PLUS)');
+        $this->expectExceptionMessageIs('Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected');
 
-        throw $result->diagnostics[0]->error;
+        throw $result->error;
     }
 
     #[TestDox('The expected tokens are told without the lookahead tables as well')]
@@ -217,12 +213,37 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: self::createGrammar(),
             initial: self::RULE_EXPRESSION,
+            expectations: self::createExpectations(),
         );
 
         $actual = $parser->analyze(new Source('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
-        self::assertSame([ArithmeticLexer::T_NUMBER], $actual->diagnostics[0]->expected);
+    }
+
+    #[TestDox('A parser that has not been told how to name the tokens says nothing about them')]
+    public function testExpectedTokensOfAParserThatCannotNameThem(): void
+    {
+        // How to name a token is written down by the compiler, and a parser is
+        // allowed to be given none of it
+        $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION);
+
+        $parser = new Parser(
+            lexer: new ArithmeticLexer(),
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            lookahead: $analysis->lookahead,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
+        );
+
+        $actual = $parser->analyze(new Source('+ 1'), Mode::SyntaxCheck);
+
+        self::assertInstanceOf(FailureResult::class, $actual);
+
+        // Better to say nothing than to offer a number the reader has no way
+        // of turning back into a token
+        self::assertSame('Syntax error, unexpected "+" (T_PLUS)', $actual->error->getMessage());
     }
 
     #[TestDox('The tokens of the rules failing alongside each other are told together')]
@@ -244,17 +265,19 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
         );
 
         $withoutTables = new Parser(
             lexer: new ArithmeticLexer(),
             grammar: $grammar,
             initial: 0,
+            expectations: self::createExpectations(),
         );
 
-        $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
-
-        \sort($expected);
+        // Told in the order of their identifiers, which is how the report
+        // collects them
+        $expected = 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected';
 
         foreach (['with' => $withTables, 'without' => $withoutTables] as $name => $parser) {
             $actual = $parser->analyze(new Source('1'), Mode::SyntaxCheck);
@@ -262,7 +285,7 @@ final class AnalysisTest extends TestCase
             self::assertInstanceOf(FailureResult::class, $actual);
             self::assertSame(
                 $expected,
-                $actual->diagnostics[0]->expected,
+                $actual->error->getMessage(),
                 \sprintf('Both branches are expected to be told %s the lookahead tables', $name),
             );
         }
@@ -295,16 +318,19 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
         );
-
-        $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
-
-        \sort($expected);
 
         $actual = $parser->analyze(new Source('1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
-        self::assertSame($expected, $actual->diagnostics[0]->expected);
+
+        // Told in the order of their identifiers, which is how the report
+        // collects them
+        self::assertSame(
+            'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected',
+            $actual->error->getMessage(),
+        );
     }
 
     #[TestDox('An alternation that has recognized none of its alternatives tells the tokens of them all')]
@@ -334,16 +360,19 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
         );
-
-        $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
-
-        \sort($expected);
 
         $actual = $parser->analyze(new Source('-'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
-        self::assertSame($expected, $actual->diagnostics[0]->expected);
+
+        // Told in the order of their identifiers, which is how the report
+        // collects them
+        self::assertSame(
+            'Syntax error, unexpected "-" (T_MINUS), one of T_PLUS, T_MINUS expected',
+            $actual->error->getMessage(),
+        );
     }
 
     #[TestDox('A grammar reading nothing but a repetition reads an empty fragment')]
@@ -364,6 +393,7 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
         );
 
         $actual = $parser->analyze(new Source('+ 1'));
@@ -391,13 +421,13 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
         );
 
         $actual = $parser->analyze(new Source(''));
 
         self::assertInstanceOf(SuccessfulResult::class, $actual);
         self::assertSame([], $actual->value);
-        self::assertSame([], $actual->diagnostics);
     }
 
     private const int RULE_EXPRESSION = 0;
@@ -426,6 +456,21 @@ final class AnalysisTest extends TestCase
     }
 
     /**
+     * How an error has to name the tokens of the lexer above, which is what a
+     * compiler writes down for a generated parser.
+     *
+     * @return array<int, non-empty-string>
+     */
+    private static function createExpectations(): array
+    {
+        return [
+            ArithmeticLexer::T_NUMBER => 'T_NUMBER',
+            ArithmeticLexer::T_PLUS => 'T_PLUS',
+            ArithmeticLexer::T_MINUS => 'T_MINUS',
+        ];
+    }
+
+    /**
      * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
      */
     private static function createParser(array $reducers = []): Parser
@@ -439,6 +484,7 @@ final class AnalysisTest extends TestCase
             lookahead: $analysis->lookahead,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
+            expectations: self::createExpectations(),
             reducers: $reducers,
         );
     }

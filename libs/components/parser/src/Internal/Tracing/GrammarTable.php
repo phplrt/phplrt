@@ -50,8 +50,6 @@ final readonly class GrammarTable
     public array $kept;
 
     /**
-     * @param list<RuleInterface> $rules
-     * @param int<0, max> $initial
      * @param LookaheadTableType $lookahead
      * @param KeptTableType $kept
      */

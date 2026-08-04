@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal;
+namespace Phplrt\Parser\Internal\Tracing;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
@@ -14,10 +14,8 @@ use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\Tracing\ErrorReport;
-use Phplrt\Parser\Internal\Tracing\GrammarTable;
-use Phplrt\Parser\Internal\Tracing\Result\Failure;
-use Phplrt\Parser\Internal\Tracing\Result\Success;
+use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
+use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
 
 /**
  * Recognizes an input against a PEG grammar.
@@ -75,42 +73,29 @@ final class RecursiveDescentTracer
         $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
 
-    public static function trace(GrammarTable $table, BufferInterface $buffer): Success|Failure
-    {
+    public static function trace(
+        GrammarTable $table,
+        BufferInterface $buffer,
+    ): SuccessfulTracingResult|FailureTracingResult {
         if ($table->rules === []) {
             // Fast-finish on empty grammar
-            return new Failure($buffer->current);
+            return new FailureTracingResult($buffer->current, $buffer->current);
         }
 
-        $self = new self($table, $buffer);
+        $isMatched = ($self = new self($table, $buffer))
+            ->match($table->initial);
 
-        if (!$self->match($table->initial)) {
-            return $self->error->finish();
+        $current = $buffer->current;
+
+        if ($isMatched && $current->channel === Channel::EndOfInput) {
+            return new SuccessfulTracingResult($self->entries, $self->length);
         }
 
-        return new Success(
+        return $self->error->toFailureResult(
+            stoppedAt: $current,
             entries: $self->entries,
-            length: $self->length,
-            /**
-             * The rules are greedy, so whatever the recognition has stopped at
-             * is the first token the grammar cannot read.
-             */
-            stoppedAt: $buffer->current,
-            /**
-             * An input that has not been read to its end has broken somewhere,
-             * and where it has broken is not where the reading has stopped, so
-             * the report is kept for whoever has to say what is wrong.
-             */
-            furthest: $self->isEndOfInput() ? null : $self->error->finish(),
+            length: $isMatched ? $self->length : 0,
         );
-    }
-
-    /**
-     * The whole input is recognized only in case it is completely consumed.
-     */
-    private function isEndOfInput(): bool
-    {
-        return $this->buffer->current->channel === Channel::EndOfInput;
     }
 
     private function match(int $rule): bool

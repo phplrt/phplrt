@@ -8,7 +8,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\Tracing\Result\Failure;
+use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
 
 /**
  * Collects the furthest point the input failed to match, for error reporting.
@@ -20,6 +20,8 @@ use Phplrt\Parser\Internal\Tracing\Result\Failure;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal
+ *
+ * @phpstan-import-type LookaheadTableType from GrammarTable
  */
 final class ErrorReport
 {
@@ -52,13 +54,15 @@ final class ErrorReport
      */
     private array $rules = [];
 
-    /**
-     * @param list<RuleInterface> $grammar
-     * @param array<int, array<int, true>|null> $lookahead
-     */
     public function __construct(
         private readonly BufferInterface $buffer,
+        /**
+         * @var list<RuleInterface>
+         */
         private readonly array $grammar,
+        /**
+         * @var LookaheadTableType
+         */
         private readonly array $lookahead,
     ) {}
 
@@ -87,19 +91,34 @@ final class ErrorReport
         }
     }
 
-    public function finish(): Failure
+    /**
+     * Describes the reading that has stopped at the given token, along with
+     * everything it has managed to read.
+     *
+     * @param array<int<0, max>, int|TokenInterface> $entries
+     * @param int<0, max> $length
+     */
+    public function toFailureResult(TokenInterface $stoppedAt, array $entries = [], int $length = 0): FailureTracingResult
     {
         $buffer = $this->buffer;
 
         // The input the analysis stopped at is reported in case no deeper
         // failure has been recorded
         if ($this->token === null || $this->furthest < $buffer->key) {
-            return new Failure($buffer->current);
+            return new FailureTracingResult(
+                stoppedAt: $stoppedAt,
+                token: $buffer->current,
+                entries: $entries,
+                length: $length,
+            );
         }
 
-        return new Failure(
+        return new FailureTracingResult(
+            stoppedAt: $stoppedAt,
             token: $this->token,
             expected: $this->calculateExpectedTokens(),
+            entries: $entries,
+            length: $length,
         );
     }
 

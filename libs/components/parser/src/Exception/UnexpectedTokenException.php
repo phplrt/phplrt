@@ -10,31 +10,34 @@ use Phplrt\Contracts\Source\ReadableInterface;
 class UnexpectedTokenException extends ParserRuntimeException
 {
     /**
-     * The identifiers of the tokens that could have been read instead, in no
-     * particular order.
-     *
-     * @var list<int>
+     * @param list<non-empty-string> $expected
      */
-    public private(set) array $expected = [];
-
-    /**
-     * @param list<int> $expected
-     */
-    public static function fromToken(
+    public static function becauseUnexpectedTokenProduced(
         ReadableInterface $source,
         TokenInterface $token,
         array $expected = [],
         ?\Throwable $previous = null,
     ): self {
-        $instance = new self(
+        return new self(
             source: $source,
             token: $token,
-            message: \sprintf('Syntax error, unexpected %s', $token),
+            message: self::createMessage($token, $expected),
             previous: $previous,
         );
+    }
 
-        $instance->expected = $expected;
+    /**
+     * @param list<non-empty-string> $expected
+     * @return non-empty-string
+     */
+    private static function createMessage(TokenInterface $token, array $expected): string
+    {
+        $message = \sprintf('Syntax error, unexpected %s', $token);
 
-        return $instance;
+        return $message . match (\count($expected)) {
+            0 => '',
+            1 => \sprintf(', %s expected', \implode(', ', $expected)),
+            default => \sprintf(', one of %s expected', \implode(', ', $expected)),
+        };
     }
 }
