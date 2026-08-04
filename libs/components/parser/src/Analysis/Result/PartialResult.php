@@ -19,13 +19,14 @@ use Phplrt\Parser\Analysis\Diagnostic;
 final readonly class PartialResult extends Result
 {
     /**
-     * @param TValue $value
      * @param list<Diagnostic> $diagnostics
      */
     public function __construct(
         /**
          * What the fragment has been built into, or {@see null} in case of the
          * analysis has built nothing.
+         *
+         * @var TValue
          */
         public mixed $value,
         /**

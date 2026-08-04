@@ -13,9 +13,6 @@ use Phplrt\Parser\Analysis\Diagnostic;
  */
 abstract readonly class Result
 {
-    /**
-     * @param list<Diagnostic> $diagnostics
-     */
     public function __construct(
         /**
          * Everything the analysis has to say about the source, in the order it

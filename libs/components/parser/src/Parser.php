@@ -29,6 +29,9 @@ use Phplrt\Parser\Internal\Tracing\Result\Failure;
 use Phplrt\Parser\Internal\Tracing\Result\Success;
 
 /**
+ * @template TResult of mixed = mixed
+ *
+ * @template-implements ParserInterface<TResult>
  * @phpstan-import-type ReducerType from ReducerTable
  */
 readonly class Parser implements ParserInterface
@@ -103,7 +106,7 @@ readonly class Parser implements ParserInterface
      * by the class of the result, and what stands in the way by its
      * diagnostics.
      *
-     * @return ($mode is Mode::Tolerant ? Result : Result<null>)
+     * @return ($mode is Mode::Tolerant ? Result<TResult> : Result<null>)
      * @throws ParserSourceException in case of the source cannot be read
      * @throws LexerExceptionInterface in case of the source cannot be read into
      *         tokens
@@ -121,30 +124,23 @@ readonly class Parser implements ParserInterface
             return new FailureResult($error->token, [new Diagnostic($error)]);
         }
 
-        $value = $mode === Mode::Tolerant ? $this->reduce($source, $result) : null;
+        $value = null;
+
+        if ($mode === Mode::Tolerant) {
+            $value = $this->reduce($source, $result);
+        }
 
         if ($result->furthest === null) {
+            // @phpstan-ignore-next-line : PHPStan false-positive
             return new SuccessfulResult($value);
         }
 
-        return new PartialResult($value, $result->stoppedAt, [
-            new Diagnostic($this->describe($source, $result->furthest, $result->stoppedAt)),
-        ]);
+        $error = $this->describe($source, $result->furthest, $result->stoppedAt);
+
+        // @phpstan-ignore-next-line : PHPStan false-positive
+        return new PartialResult($value, $result->stoppedAt, [new Diagnostic($error)]);
     }
 
-    /**
-     * Parses the source into an AST.
-     *
-     * A source the grammar does not describe in full is an error rather than
-     * a result.
-     *
-     * @throws UnexpectedTokenException on a syntax error
-     * @throws ParserSourceException in case of the source cannot be read
-     * @throws LexerExceptionInterface in case of the source cannot be read into
-     *         tokens
-     * @throws LexerRuntimeExceptionInterface in case of the source contains
-     *         what no token recognizes
-     */
     public function parse(ReadableInterface $source): mixed
     {
         $buffer = $this->lex($source);
@@ -163,6 +159,7 @@ readonly class Parser implements ParserInterface
 
     /**
      * @throws ParserSourceException in case of the source cannot be read
+     * @return TResult
      */
     private function reduce(ReadableInterface $source, Success $result): mixed
     {
