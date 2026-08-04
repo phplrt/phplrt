@@ -41,19 +41,19 @@ final readonly class GrammarTable
     /**
      * The rules that become a node of the result.
      *
-     * A rule that is present builds its own value out of its children and hands
-     * it to its reducer. A rule that is absent passes the children straight up
+     * A rule that is kept builds its own value out of its children and hands
+     * it to its reducer. A rule that is dropped passes the children straight up
      * to the rule above and leaves nothing behind.
      *
      * @var KeptTableType
      */
-    public array $presentInTree;
+    public array $kept;
 
     /**
      * @param list<RuleInterface> $rules
      * @param int<0, max> $initial
      * @param LookaheadTableType $lookahead
-     * @param KeptTableType $presentInTree
+     * @param KeptTableType $kept
      */
     public function __construct(
         /**
@@ -67,7 +67,7 @@ final readonly class GrammarTable
          */
         public int $initial,
         array $lookahead = [],
-        array $presentInTree = [],
+        array $kept = [],
         /**
          * The alternatives of every alternation worth trying, indexed by the
          * token the reading is at.
@@ -88,7 +88,7 @@ final readonly class GrammarTable
          *
          * @var ChoicePredictionTableType
          */
-        public array $branchesByToken = [],
+        public array $choicePrediction = [],
     ) {
         // A grammar that has not been described is recognized all the same: it
         // reads exactly the same sources, only slower, and errors get reported
@@ -104,8 +104,8 @@ final readonly class GrammarTable
         //
         // If the set of rules isn't explicitly passed, then we simply fill them
         // all in, assuming every rule is important.
-        $this->presentInTree = $presentInTree === []
+        $this->kept = $kept === []
             ? \array_fill_keys(\array_keys($rules), true)
-            : $presentInTree;
+            : $kept;
     }
 }

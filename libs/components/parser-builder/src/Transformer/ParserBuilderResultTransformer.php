@@ -19,10 +19,10 @@ final readonly class ParserBuilderResultTransformer
             grammar: $context->grammar,
             initial: $context->initial,
             lookahead: $context->lookahead,
-            presentInTree: $context->presentInTree,
+            kept: $context->kept,
             reducers: $context->reducers,
             constants: $context->constants,
-            branchesByToken: $context->branchesByToken,
+            choicePrediction: $context->choicePrediction,
         );
     }
 }

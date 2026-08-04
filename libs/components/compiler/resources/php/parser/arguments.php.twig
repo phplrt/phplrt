@@ -7,9 +7,9 @@ reducers: {{ include('parser/reducers.php.twig')|trim }},
 {% if parser.lookahead is not empty %}
 lookahead: {{ value(parser.lookahead) }},
 {% endif %}
-{% if parser.presentInTree is not empty %}
-presentInTree: {{ value(parser.presentInTree) }},
+{% if parser.kept is not empty %}
+kept: {{ value(parser.kept) }},
 {% endif %}
-{% if parser.branchesByToken is not empty %}
-branchesByToken: {{ value(parser.branchesByToken) }},
+{% if parser.choicePrediction is not empty %}
+choicePrediction: {{ value(parser.choicePrediction) }},
 {% endif %}

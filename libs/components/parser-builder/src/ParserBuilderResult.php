@@ -42,12 +42,12 @@ final readonly class ParserBuilderResult
          */
         public array $lookahead,
         /**
-         * The rules that are present in the resulting tree, indexed by the rule
+         * The rules that are kept in the resulting tree, indexed by the rule
          * identifiers.
          *
          * @var array<int, bool>
          */
-        public array $presentInTree,
+        public array $kept,
         /**
          * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
@@ -67,7 +67,7 @@ final readonly class ParserBuilderResult
          *
          * @var array<int, array<int, list<int>>>
          */
-        public array $branchesByToken = [],
+        public array $choicePrediction = [],
     ) {}
 
     /**

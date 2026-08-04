@@ -32,8 +32,8 @@ final readonly class RuntimeParserTransformer
             initial: $result->initial,
             reducers: $this->transformReducers($result),
             lookahead: $result->lookahead,
-            presentInTree: $result->presentInTree,
-            branchesByToken: $result->branchesByToken,
+            kept: $result->kept,
+            choicePrediction: $result->choicePrediction,
         );
     }
 

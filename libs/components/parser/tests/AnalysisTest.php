@@ -242,8 +242,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         $withoutTables = new Parser(
@@ -293,8 +293,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
@@ -332,8 +332,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         $expected = [ArithmeticLexer::T_PLUS, ArithmeticLexer::T_MINUS];
@@ -362,8 +362,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         $actual = $parser->analyze(new Source('+ 1'));
@@ -389,8 +389,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         $actual = $parser->analyze(new Source(''));
@@ -437,8 +437,8 @@ final class AnalysisTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
             reducers: $reducers,
         );
     }

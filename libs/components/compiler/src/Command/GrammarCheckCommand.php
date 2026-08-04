@@ -127,8 +127,8 @@ final class GrammarCheckCommand extends Command
     {
         $count = 0;
 
-        foreach ($result->parser->presentInTree as $isPresent) {
-            if ($isPresent) {
+        foreach ($result->parser->kept as $isKept) {
+            if ($isKept) {
                 ++$count;
             }
         }

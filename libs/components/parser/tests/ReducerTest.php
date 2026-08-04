@@ -192,8 +192,8 @@ final class ReducerTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
         );
 
         self::assertSame([], $parser->parse(new Source('1')));
@@ -241,8 +241,8 @@ final class ReducerTest extends TestCase
             grammar: $analysis->grammar,
             initial: $analysis->initial,
             lookahead: $analysis->lookahead,
-            presentInTree: $analysis->presentInTree,
-            branchesByToken: $analysis->branchesByToken,
+            kept: $analysis->kept,
+            choicePrediction: $analysis->choicePrediction,
             reducers: $reducers,
         );
     }

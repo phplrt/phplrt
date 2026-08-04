@@ -52,8 +52,9 @@ readonly class Parser implements ParserInterface
      * @param array<int<0, max>, ReducerType> $reducers
      * @param LookaheadTableType $lookahead the tokens a rule may begin with,
      *        or {@see null} for a rule that may begin with any of them
-     * @param KeptTableType $presentInTree
-     * @param ChoicePredictionTableType $branchesByToken the alternatives
+     * @param KeptTableType $kept The rule identifiers that become a node of
+     *        the result
+     * @param ChoicePredictionTableType $choicePrediction the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
      */
@@ -63,15 +64,15 @@ readonly class Parser implements ParserInterface
         int $initial,
         array $reducers = [],
         array $lookahead = [],
-        array $presentInTree = [],
-        array $branchesByToken = [],
+        array $kept = [],
+        array $choicePrediction = [],
     ) {
         $this->table = new GrammarTable(
             rules: $grammar,
             initial: $initial,
             lookahead: $lookahead,
-            presentInTree: $presentInTree,
-            branchesByToken: $branchesByToken,
+            kept: $kept,
+            choicePrediction: $choicePrediction,
         );
 
         $this->reducers = new ReducerTable(

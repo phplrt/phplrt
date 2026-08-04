@@ -54,12 +54,12 @@ final class RecursiveDescentTracer
     /**
      * @var KeptTableType
      */
-    private readonly array $presentInTree;
+    private readonly array $kept;
 
     /**
      * @var ChoicePredictionTableType
      */
-    private readonly array $branchesByToken;
+    private readonly array $choicePrediction;
 
     private readonly ErrorReport $error;
 
@@ -69,8 +69,8 @@ final class RecursiveDescentTracer
     ) {
         $this->grammar = $table->rules;
         $this->lookahead = $table->lookahead;
-        $this->presentInTree = $table->presentInTree;
-        $this->branchesByToken = $table->branchesByToken;
+        $this->kept = $table->kept;
+        $this->choicePrediction = $table->choicePrediction;
 
         $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
@@ -146,7 +146,7 @@ final class RecursiveDescentTracer
             if ($definition->keep) {
                 $length = $this->length;
 
-                if ($this->presentInTree[$rule]) {
+                if ($this->kept[$rule]) {
                     // The terminal is recorded as an ordinary rule containing a
                     // single token, so it can be reduced in the same way
                     $this->entries[$length] = $rule;
@@ -183,9 +183,9 @@ final class RecursiveDescentTracer
         }
 
         $mark = $this->length;
-        $presentInTree = $this->presentInTree[$rule];
+        $kept = $this->kept[$rule];
 
-        if ($presentInTree) {
+        if ($kept) {
             $this->entries[$mark] = $rule;
             $this->length = $mark + 1;
         }
@@ -212,7 +212,7 @@ final class RecursiveDescentTracer
             return false;
         }
 
-        if ($presentInTree) {
+        if ($kept) {
             $length = $this->length;
 
             $this->entries[$length] = -$rule - 1;
@@ -253,10 +253,10 @@ final class RecursiveDescentTracer
         $buffer = $this->buffer;
         $rollback = $buffer->key;
 
-        $branches = $this->branchesByToken[$rule][$buffer->current->id]
+        $alternatives = $this->choicePrediction[$rule][$buffer->current->id]
             ?? $definition->ruleIds;
 
-        foreach ($branches as $inner) {
+        foreach ($alternatives as $inner) {
             if ($this->match($inner)) {
                 return true;
             }

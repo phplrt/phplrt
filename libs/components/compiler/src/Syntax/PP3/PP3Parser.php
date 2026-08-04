@@ -399,7 +399,7 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                     6 => true,
                 ],
             ],
-            presentInTree: [
+            kept: [
                 true,
                 false,
                 true,
@@ -456,7 +456,7 @@ readonly class PP3Parser extends \Phplrt\Parser\Parser
                 false,
                 false,
             ],
-            branchesByToken: [
+            choicePrediction: [
                 1 => [
                     21 => [
                         2,

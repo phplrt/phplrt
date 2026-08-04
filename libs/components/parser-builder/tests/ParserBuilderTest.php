@@ -241,8 +241,8 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        self::assertTrue($result->presentInTree[0], 'The initial rule is always kept');
-        self::assertFalse($result->presentInTree[4], 'An alternation without a reducer passes its value through');
+        self::assertTrue($result->kept[0], 'The initial rule is always kept');
+        self::assertFalse($result->kept[4], 'An alternation without a reducer passes its value through');
     }
 
     #[TestDox('A rule may refer to the token definition instead of its name')]

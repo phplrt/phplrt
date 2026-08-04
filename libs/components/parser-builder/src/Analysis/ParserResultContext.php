@@ -48,18 +48,18 @@ final class ParserResultContext
          */
         public array $lookahead = [],
         /**
-         * The rules that are present in the resulting tree, indexed by the
-         * rule identifiers.
+         * The rules that are kept in the resulting tree, indexed by the rule
+         * identifiers.
          *
          * @var array<int, bool>
          */
-        public array $presentInTree = [],
+        public array $kept = [],
         /**
          * The alternatives of every alternation worth trying, indexed by the
          * token the reading is at and then by the rule identifiers.
          *
          * @var array<int, array<int, list<int>>>
          */
-        public array $branchesByToken = [],
+        public array $choicePrediction = [],
     ) {}
 }
