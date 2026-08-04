@@ -146,7 +146,7 @@ readonly class Parser implements ParserInterface
         $error = $this->describe($source, $result->furthest, $result->stoppedAt);
 
         // @phpstan-ignore-next-line : PHPStan false-positive
-        return new PartialResult($value, $result->stoppedAt, [new Diagnostic($error)]);
+        return new PartialResult($result->stoppedAt, $value, [new Diagnostic($error)]);
     }
 
     public function parse(ReadableInterface $source): mixed

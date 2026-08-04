@@ -13,7 +13,7 @@ use Phplrt\Parser\Analysis\Diagnostic;
  *
  * @template-extends Result<TValue>
  */
-final readonly class SuccessfulResult extends Result
+readonly class SuccessfulResult extends Result
 {
     /**
      * @param list<Diagnostic> $diagnostics

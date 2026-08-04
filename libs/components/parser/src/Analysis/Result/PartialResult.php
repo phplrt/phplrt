@@ -12,30 +12,25 @@ use Phplrt\Parser\Analysis\Diagnostic;
  *
  * The fragment is the longest one the grammar recognizes.
  *
- * @template-covariant TValue of mixed = mixed
+ * @template-covariant TValue of mixed = null
  *
- * @template-extends Result<TValue>
+ * @template-extends SuccessfulResult<TValue>
  */
-final readonly class PartialResult extends Result
+final readonly class PartialResult extends SuccessfulResult
 {
     /**
      * @param list<Diagnostic> $diagnostics
+     * @param TValue $value
      */
     public function __construct(
-        /**
-         * What the fragment has been built into, or {@see null} in case of the
-         * analysis has built nothing.
-         *
-         * @var TValue
-         */
-        public mixed $value,
         /**
          * The first token the grammar says nothing about, which is where the
          * fragment ends.
          */
         public TokenInterface $token,
+        mixed $value = null,
         array $diagnostics = [],
     ) {
-        parent::__construct($diagnostics);
+        parent::__construct($value, $diagnostics);
     }
 }
