@@ -22,6 +22,7 @@ final readonly class ParserBuilderResultTransformer
             kept: $context->kept,
             reducers: $context->reducers,
             constants: $context->constants,
+            expectations: $context->expectations,
             choicePrediction: $context->choicePrediction,
         );
     }

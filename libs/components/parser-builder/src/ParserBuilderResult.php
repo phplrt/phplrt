@@ -68,6 +68,13 @@ final readonly class ParserBuilderResult
          * @var array<int, array<int, list<int>>>
          */
         public array $choicePrediction = [],
+        /**
+         * A map of token ID and the way an error has to name it: a name, or
+         * what an anonymous token is recognized by.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $expectations = [],
     ) {}
 
     /**

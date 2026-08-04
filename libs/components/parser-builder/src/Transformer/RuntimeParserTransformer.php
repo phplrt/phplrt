@@ -34,6 +34,7 @@ final readonly class RuntimeParserTransformer
             lookahead: $result->lookahead,
             kept: $result->kept,
             choicePrediction: $result->choicePrediction,
+            expectations: $result->expectations,
         );
     }
 

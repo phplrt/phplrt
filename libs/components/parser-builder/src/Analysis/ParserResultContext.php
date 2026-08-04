@@ -48,6 +48,13 @@ final class ParserResultContext
          */
         public array $lookahead = [],
         /**
+         * A map of token ID and the way an error has to name it: a name, or
+         * what an anonymous token is recognized by.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $expectations = [],
+        /**
          * The rules that are kept in the resulting tree, indexed by the rule
          * identifiers.
          *

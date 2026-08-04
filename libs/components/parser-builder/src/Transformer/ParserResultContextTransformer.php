@@ -77,7 +77,28 @@ final readonly class ParserResultContextTransformer
             initial: $identifiers[$initial],
             reducers: $reducers,
             constants: $constants,
+            expectations: $this->createExpectations($lexer),
         );
+    }
+
+    /**
+     * Describes every token the way an error has to name it.
+     *
+     * A token that has a name is called by it, and an anonymous one stands for
+     * what it is recognized by: a value in quotes or a pattern in slashes,
+     * which is exactly what its definition prints.
+     *
+     * @return array<int, non-empty-string>
+     */
+    private function createExpectations(LexerBuilderResult $lexer): array
+    {
+        $result = [];
+
+        foreach ($lexer->tokens as $id => $definition) {
+            $result[$id] = $definition->name ?? (string) $definition;
+        }
+
+        return $result;
     }
 
     /**
