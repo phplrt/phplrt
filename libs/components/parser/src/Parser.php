@@ -32,7 +32,12 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  * @template TResult of mixed = mixed
  *
  * @template-implements ParserInterface<TResult>
+ *
  * @phpstan-import-type ReducerType from ReducerTable
+ *
+ * @phpstan-import-type LookaheadTableType from GrammarTable
+ * @phpstan-import-type KeptTableType from GrammarTable
+ * @phpstan-import-type ChoicePredictionTableType from GrammarTable
  */
 readonly class Parser implements ParserInterface
 {
@@ -45,10 +50,10 @@ readonly class Parser implements ParserInterface
      * @param int<0, max> $initial the identifier of the rule the analysis
      *        starts at
      * @param array<int<0, max>, ReducerType> $reducers
-     * @param array<int, array<int, true>|null> $lookahead the tokens a rule may
-     *        begin with, or "null" for a rule that may begin with any of them
-     * @param array<int, bool> $presentInTree
-     * @param array<int, array<int, list<int>>> $branchesByToken the alternatives
+     * @param LookaheadTableType $lookahead the tokens a rule may begin with,
+     *        or {@see null} for a rule that may begin with any of them
+     * @param KeptTableType $presentInTree
+     * @param ChoicePredictionTableType $branchesByToken the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
      */

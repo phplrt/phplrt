@@ -16,6 +16,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @phpstan-type LookaheadTableType array<int, array<int, true>|null>
+ * @phpstan-type KeptTableType array<int, bool>
+ * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
  */
 final readonly class GrammarTable
 {
@@ -30,7 +34,7 @@ final readonly class GrammarTable
      * have to tell them apart. Which of the two it is, is decided long before
      * the recognition, so it is never asked here.
      *
-     * @var array<int, array<int, true>|null>
+     * @var LookaheadTableType
      */
     public array $lookahead;
 
@@ -41,15 +45,15 @@ final readonly class GrammarTable
      * it to its reducer. A rule that is absent passes the children straight up
      * to the rule above and leaves nothing behind.
      *
-     * @var array<int, bool>
+     * @var KeptTableType
      */
     public array $presentInTree;
 
     /**
      * @param list<RuleInterface> $rules
      * @param int<0, max> $initial
-     * @param array<int, array<int, true>|null> $lookahead
-     * @param array<int, bool> $presentInTree
+     * @param LookaheadTableType $lookahead
+     * @param KeptTableType $presentInTree
      */
     public function __construct(
         /**
@@ -82,7 +86,7 @@ final readonly class GrammarTable
          * ]
          * ```
          *
-         * @var array<int, array<int, list<int>>>
+         * @var ChoicePredictionTableType
          */
         public array $branchesByToken = [],
     ) {

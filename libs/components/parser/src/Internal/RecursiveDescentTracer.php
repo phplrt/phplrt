@@ -24,6 +24,10 @@ use Phplrt\Parser\Internal\Tracing\Result\Success;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @phpstan-import-type LookaheadTableType from GrammarTable
+ * @phpstan-import-type KeptTableType from GrammarTable
+ * @phpstan-import-type ChoicePredictionTableType from GrammarTable
  */
 final class RecursiveDescentTracer
 {
@@ -37,26 +41,23 @@ final class RecursiveDescentTracer
      */
     private int $length = 0;
 
-    // These three are read on literally every rule, so we copy them out of the
-    // GrammarTable once instead of hopping through it every time.
-
     /**
      * @var list<RuleInterface>
      */
     private readonly array $grammar;
 
     /**
-     * @var array<int, array<int, true>|null>
+     * @var LookaheadTableType
      */
     private readonly array $lookahead;
 
     /**
-     * @var array<int, bool>
+     * @var KeptTableType
      */
     private readonly array $presentInTree;
 
     /**
-     * @var array<int, array<int, list<int>>>
+     * @var ChoicePredictionTableType
      */
     private readonly array $branchesByToken;
 
