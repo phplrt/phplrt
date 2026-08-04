@@ -9,6 +9,7 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
@@ -17,13 +18,16 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class ChannelTest extends TestCase
 {
-    private static function createAnnotatedLexer(): LexerInterface
+    /**
+     * @param iterable<mixed, ChannelInterface> $skip
+     */
+    private static function createAnnotatedLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
             $lexer->addPattern('##[^\n]*+', 'T_DOC')->setChannel('documentation');
             $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
-        });
+        }, $skip);
     }
 
     /**
@@ -52,10 +56,21 @@ final class ChannelTest extends TestCase
         self::assertSame(Channel::Default, $channels['T_NAME']);
     }
 
-    #[TestDox('A hidden token stays in the stream on its own channel')]
-    public function testHiddenTokensArePresentInTheStreamOnTheirOwnChannel(): void
+    #[TestDox('A hidden token is left out of the stream')]
+    public function testHiddenTokensAreLeftOutOfTheStream(): void
     {
         $lexer = self::createAnnotatedLexer();
+        $source = 'a b';
+
+        $channels = self::channels($lexer->lex(new Source($source)));
+
+        self::assertArrayNotHasKey('T_WHITESPACE', $channels);
+    }
+
+    #[TestDox('A hidden token stays in the stream on its own channel in case nothing is skipped')]
+    public function testHiddenTokensArePresentInTheStreamOnTheirOwnChannel(): void
+    {
+        $lexer = self::createAnnotatedLexer(skip: []);
         $source = 'a b';
 
         $channels = self::channels($lexer->lex(new Source($source)));
@@ -94,7 +109,7 @@ final class ChannelTest extends TestCase
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
             $lexer->addPattern('\d++', 'T_NUMBER');
-        });
+        }, skip: []);
         $source = '42 ???';
 
         $tokens = \iterator_to_array($lexer->lex(new Source($source)), false);

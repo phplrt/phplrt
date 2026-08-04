@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests\Token;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Source\Source;
 use PHPUnit\Framework\Attributes\Group;
@@ -15,7 +17,10 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class TokenStreamTest extends TestCase
 {
-    private static function createExpressionLexer(): LexerInterface
+    /**
+     * @param iterable<mixed, ChannelInterface> $skip
+     */
+    private static function createExpressionLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
@@ -23,13 +28,13 @@ final class TokenStreamTest extends TestCase
             $lexer->addPattern('[a-zA-Z_]\w*+', 'T_NAME');
             $lexer->addValue('+', 'T_PLUS');
             $lexer->addValue('=', 'T_ASSIGN');
-        });
+        }, $skip);
     }
 
     #[TestDox('Tokens are produced in the same order they occur in the source')]
     public function testProducesTokensInSourceOrder(): void
     {
-        $lexer = self::createExpressionLexer();
+        $lexer = self::createExpressionLexer(skip: []);
         $source = 'x = 1 + 20';
 
         $actual = self::describe($lexer->lex(new Source($source)));
@@ -48,6 +53,24 @@ final class TokenStreamTest extends TestCase
         ], $actual);
     }
 
+    #[TestDox('A token of a channel the lexer does not report never reaches the stream')]
+    public function testSkippedChannelDoesNotReachTheStream(): void
+    {
+        $lexer = self::createExpressionLexer();
+        $source = 'x = 1 + 20';
+
+        $actual = self::describe($lexer->lex(new Source($source)));
+
+        self::assertSame([
+            'T_NAME(x)@0',
+            'T_ASSIGN(=)@2',
+            'T_NUMBER(1)@4',
+            'T_PLUS(+)@6',
+            'T_NUMBER(20)@8',
+            'EndOfInput()@10',
+        ], $actual);
+    }
+
     #[TestDox('Every token points at the exact place its lexeme was read from')]
     public function testEveryTokenPointsAtItsPositionInSource(): void
     {
@@ -60,7 +83,7 @@ final class TokenStreamTest extends TestCase
     #[TestDox('The tokens together cover the whole source')]
     public function testTokensCoverTheWholeSource(): void
     {
-        $lexer = self::createExpressionLexer();
+        $lexer = self::createExpressionLexer(skip: []);
         $source = '  alpha =  1+2  ';
 
         self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));
@@ -106,7 +129,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
             $lexer->addPattern('\p{L}++', 'T_WORD');
-        });
+        }, skip: []);
         $source = 'привет мир';
 
         $actual = self::describe($lexer->lex(new Source($source)));

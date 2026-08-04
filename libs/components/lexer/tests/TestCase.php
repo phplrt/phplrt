@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
+use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
@@ -16,14 +18,18 @@ abstract class TestCase extends BaseTestCase
 {
     /**
      * @param callable(LexerBuilder):void $definition
+     * @param iterable<mixed, ChannelInterface> $skip the channels the lexer
+     *        reads but does not report
      */
-    protected static function lexer(callable $definition): LexerInterface
-    {
+    protected static function lexer(
+        callable $definition,
+        iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS,
+    ): LexerInterface {
         $builder = new LexerBuilder();
 
         $definition($builder);
 
-        return new RuntimeLexerTransformer()
+        return new RuntimeLexerTransformer($skip)
             ->transform($builder->build());
     }
 

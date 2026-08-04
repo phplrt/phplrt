@@ -74,7 +74,7 @@ final class ErrorReportingTest extends TestCase
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
             $lexer->addPattern('[a-z]++', 'T_NAME');
-        });
+        }, skip: []);
         $source = 'abc 123 def';
 
         self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));

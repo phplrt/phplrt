@@ -22,7 +22,6 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\ChannelFilter;
 use Phplrt\Parser\Internal\RecursiveDescentTracer;
 use Phplrt\Parser\Internal\Reduction\ReducerTable;
 use Phplrt\Parser\Internal\Tracing\GrammarTable;
@@ -37,11 +36,6 @@ readonly class Parser implements ParserInterface
     private GrammarTable $table;
 
     private ReducerTable $reducers;
-
-    /**
-     * Selects which tokens are passed to the grammar.
-     */
-    private ChannelFilter $filter;
 
     /**
      * @param list<RuleInterface> $grammar
@@ -61,8 +55,6 @@ readonly class Parser implements ParserInterface
         array $matchesEmptyInput = [],
         array $presentInTree = [],
     ) {
-        $this->filter = new ChannelFilter();
-
         $this->table = new GrammarTable(
             rules: $grammar,
             initial: $initial,
@@ -185,6 +177,9 @@ readonly class Parser implements ParserInterface
     }
 
     /**
+     * Which tokens reach the grammar is decided by the lexer: a token it does
+     * not report is a token the grammar is not written in terms of.
+     *
      * @throws LexerExceptionInterface in case of the source cannot be read into
      *         tokens
      * @throws LexerRuntimeExceptionInterface in case of the source contains
@@ -192,10 +187,6 @@ readonly class Parser implements ParserInterface
      */
     private function lex(ReadableInterface $source): BufferInterface
     {
-        $stream = $this->lexer->lex($source);
-
-        $filtered = $this->filter->apply($stream);
-
-        return new ArrayBuffer($filtered);
+        return new ArrayBuffer($this->lexer->lex($source));
     }
 }

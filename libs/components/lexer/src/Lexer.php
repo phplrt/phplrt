@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -21,6 +22,15 @@ use Phplrt\Lexer\Token\TokenEmbedding;
 readonly class Lexer implements LexerInterface
 {
     /**
+     * The channels a lexer says nothing about are not reported.
+     *
+     * @var non-empty-list<ChannelInterface>
+     */
+    public const array DEFAULT_SKIP_CHANNELS = [
+        Channel::Hidden,
+    ];
+
+    /**
      * Reads everything this lexer recognizes on its own.
      */
     private Tokenizer $tokenizer;
@@ -33,6 +43,15 @@ readonly class Lexer implements LexerInterface
     private array $transitions;
 
     /**
+     * The channels that are not reported, keyed by name, so that a token read
+     * by a lexer of another kind is a lookup rather than a search through a
+     * list.
+     *
+     * @var array<non-empty-string, true>
+     */
+    private array $excluded;
+
+    /**
      * The pattern, channels and names are fully consumed by the executor, so
      * the lexer itself only keeps what it needs to reach the other lexers.
      *
@@ -41,6 +60,7 @@ readonly class Lexer implements LexerInterface
      * @param array<int, non-empty-string> $names
      * @param array<int, LexerInterface|null> $transitions
      * @param array<int, int<1, max>> $subgroups
+     * @param iterable<mixed, ChannelInterface> $skip
      */
     public function __construct(
         /**
@@ -120,7 +140,18 @@ readonly class Lexer implements LexerInterface
          * ```
          */
         array $subgroups = [],
+        /**
+         * The channels this lexer reads but does not report.
+         *
+         * A token on such a channel is recognized the same way, so the reading
+         * goes on exactly as it would otherwise, and it is only left out of the
+         * stream: nothing downstream ever sees it.
+         */
+        iterable $skip = self::DEFAULT_SKIP_CHANNELS,
     ) {
+        $this->excluded = self::formatLexerSkippedTokens($skip);
+        $this->transitions = $transitions;
+
         $this->tokenizer = new Tokenizer(
             pattern: $pattern,
             prototypes: TokenPrototypeLoader::load($channels, $names),
@@ -128,10 +159,60 @@ readonly class Lexer implements LexerInterface
             // just hand the transitions over and "isset()" them there. The
             // tokenizer needs the plain set of IDs it has to stop after.
             breaks: \array_fill_keys(\array_keys($transitions), true),
+            skip: self::formatTokenizerSkippedTokens($channels, $transitions, $this->excluded),
             subgroups: $subgroups,
         );
+    }
 
-        $this->transitions = $transitions;
+    /**
+     * Returns a list of excluded token channels at the tokenizer's level.
+     *
+     * @param iterable<mixed, ChannelInterface> $excluded
+     * @return array<non-empty-string, true>
+     */
+    private static function formatLexerSkippedTokens(iterable $excluded): array
+    {
+        $result = [];
+
+        foreach ($excluded as $channel) {
+            $result[$channel->name] = true;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns a list of excluded token channels at the lexer's level.
+     *
+     * @param array<int, non-empty-string> $channels
+     * @param array<int, LexerInterface|null> $transitions
+     * @param array<non-empty-string, true> $excluded
+     * @return array<int, true>
+     */
+    private static function formatTokenizerSkippedTokens(
+        array $channels,
+        array $transitions,
+        array $excluded,
+    ): array {
+        if ($excluded === []) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($channels as $id => $channel) {
+            /**
+             * If exclude a token with a transition, the "state switching" will
+             * break. Therefore, it should be left in when passed to the
+             * {@see Tokenizer} and only excluded after it's created in the
+             * lexer {@see self::execute()} method.
+             */
+            if (isset($excluded[$channel]) && !\array_key_exists($id, $transitions)) {
+                $result[$id] = true;
+            }
+        }
+
+        return $result;
     }
 
     final public function lex(ReadableInterface $source, int $offset = 0): iterable
@@ -168,15 +249,23 @@ readonly class Lexer implements LexerInterface
         $result = [];
 
         while ($offset < $length) {
+            $indexBeforeExecution = \array_key_last($result);
+
             $offset = $this->tokenizer->tokenize($source, $content, $offset, $result);
 
-            $index = \array_key_last($result);
+            $indexAfterExecution = \array_key_last($result);
 
-            if ($index === null) {
+            /**
+             * The reading is handed over by the token it has stopped at, so a
+             * pass that has added no token of its own has read everything it
+             * could: whatever is at the end of the list has been read, and
+             * entered, before.
+             */
+            if ($indexAfterExecution === null || $indexAfterExecution === $indexBeforeExecution) {
                 break;
             }
 
-            $lexer = $this->transitions[$result[$index]->id] ?? null;
+            $lexer = $this->transitions[$result[$indexAfterExecution]->id] ?? null;
 
             /**
              * The executor only stops on purpose at a token that hands the
@@ -187,9 +276,9 @@ readonly class Lexer implements LexerInterface
                 break;
             }
 
-            $embedding = $this->enter($lexer, $source, $content, $offset, $result[$index]);
+            $embedding = $this->enter($lexer, $source, $content, $offset, $result[$indexAfterExecution]);
 
-            $result[$index] = $embedding;
+            $result[$indexAfterExecution] = $embedding;
             $offset = $embedding->offset + $embedding->size;
         }
 
@@ -222,6 +311,8 @@ readonly class Lexer implements LexerInterface
             ? $lexer->execute($source, $content, $offset)
             : $lexer->lex($source, $offset);
 
+        $excluded = $this->excluded;
+
         $children = [];
         $end = $offset;
 
@@ -236,8 +327,20 @@ readonly class Lexer implements LexerInterface
                 break;
             }
 
-            $children[] = $child;
+            // How far the reading has gone is a question about the source
+            // rather than about the stream, so a token that is not carried
+            // over is still a token that has been read
             $end = $child->offset + $child->size;
+
+            // A lexer of another kind knows nothing about the channels this one
+            // does not report, and a lexer of the same kind has already left
+            // them out, so this is where a foreign stream is brought in line
+            // with the rest.
+            if (isset($excluded[$child->channel->name])) {
+                continue;
+            }
+
+            $children[] = $child;
         }
 
         // The embedding starts where the token that entered the lexer does,

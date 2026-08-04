@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Transformer;
 
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\PhpCodeEmbeddedLexer;
@@ -25,6 +26,19 @@ use Phplrt\Lexer\Lexer;
 final readonly class RuntimeLexerTransformer
 {
     /**
+     * @param iterable<mixed, ChannelInterface> $skip
+     */
+    public function __construct(
+        /**
+         * The channels the built lexers read but do not report.
+         *
+         * A lexer reading a fragment is built the same way as the one entering
+         * it, so what is not reported is not reported anywhere.
+         */
+        private iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS,
+    ) {}
+
+    /**
      * @throws LexerCompilerException in case of a fragment cannot be read
      */
     public function transform(LexerBuilderResult $result): Lexer
@@ -43,6 +57,7 @@ final readonly class RuntimeLexerTransformer
             names: $result->names,
             transitions: self::transformTransitions($result, $lexers),
             subgroups: $result->subgroups,
+            skip: $this->skip,
         );
     }
 

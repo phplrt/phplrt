@@ -57,6 +57,12 @@ final readonly class Tokenizer
          */
         private array $breaks,
         /**
+         * A set of token IDs that are read but never reported.
+         *
+         * @var array<int, true>
+         */
+        private array $skip = [],
+        /**
          * The number of subgroups each token definition has, indexed by the
          * token IDs. A token that is not mentioned captures nothing.
          *
@@ -110,6 +116,7 @@ final readonly class Tokenizer
         $prototypes = $this->prototypes;
         $fallback = $this->fallback;
         $breaks = $this->breaks;
+        $skip = $this->skip;
         $subgroups = $this->subgroups;
 
         /**
@@ -119,10 +126,35 @@ final readonly class Tokenizer
          */
         $isBreakable = $breaks !== [];
 
+        /**
+         * The same for a lexer that reports everything it reads.
+         */
+        $isSkipping = $skip !== [];
+
         foreach ($foundNames as $index => $alias) {
             $id = (int) $alias;
             $value = $foundValues[$index];
             $length = \strlen($value);
+
+            if ($length === 0) {
+                $empty = clone ($prototypes[$id] ?? $fallback);
+
+                $empty->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+                throw EmptyTokenException::becauseTokenIsEmpty($source, $empty);
+            }
+
+            /**
+             * A token that is not reported is only stepped over: nothing ever
+             * reads it, so it is not built in the first place.
+             */
+            if ($isSkipping && isset($skip[$id])) {
+                $offset += $length;
+
+                continue;
+            }
 
             /**
              * Clone optimization: speeds up the creation of a new object:
@@ -136,10 +168,6 @@ final readonly class Tokenizer
             $token->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-
-            if ($length === 0) {
-                throw EmptyTokenException::becauseTokenIsEmpty($source, $token);
-            }
 
             /**
              * The subgroups of all the token definitions share their numbers,

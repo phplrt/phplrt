@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
+use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
@@ -22,14 +23,16 @@ final class GroupCaptureTest extends TestCase
     /**
      * Reads the declarations whose parts are captured by the subgroups of a
      * single token definition.
+     *
+     * @param iterable<mixed, ChannelInterface> $skip
      */
-    private static function createLexer(): LexerInterface
+    private static function createLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
             $lexer->addPattern('\s++', 'T_WHITESPACE')->setHidden();
             $lexer->addPattern('%token\h++(?:(\w++):)?(\w++)', 'T_TOKEN');
             $lexer->addPattern('[a-z]++', 'T_NAME');
-        });
+        }, $skip);
     }
 
     /**
@@ -72,7 +75,7 @@ final class GroupCaptureTest extends TestCase
     #[TestDox('The captures do not change the fragment the token describes')]
     public function testCapturedTokenDescribesTheWholeFragment(): void
     {
-        $lexer = self::createLexer();
+        $lexer = self::createLexer(skip: []);
         $source = 'foo %token string:T_A';
 
         $tokens = \iterator_to_array($lexer->lex(new Source($source)), false);
@@ -87,7 +90,7 @@ final class GroupCaptureTest extends TestCase
     #[TestDox('The captures do not change the way the source is covered by the stream')]
     public function testSourceIsCoveredByTheStream(): void
     {
-        $lexer = self::createLexer();
+        $lexer = self::createLexer(skip: []);
         $source = '%token string:T_A foo';
 
         self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));

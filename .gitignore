@@ -1,6 +1,5 @@
 # IDE
 /.idea
-/.cursor
 
 # Composer
 /composer.phar
