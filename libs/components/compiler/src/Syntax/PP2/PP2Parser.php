@@ -10,6 +10,7 @@ namespace Phplrt\Compiler\Syntax\PP2;
 
 /**
  * @template TResult of mixed = mixed
+ *
  * @template-extends \Phplrt\Parser\Parser<TResult>
  */
 readonly class PP2Parser extends \Phplrt\Parser\Parser
@@ -475,6 +476,36 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
                     ],
                 ],
             ],
+            expectations: [
+                'T_WHITESPACE',
+                'T_COMMENT',
+                'T_DOC',
+                'T_PRAGMA',
+                'T_INCLUDE',
+                'T_PHP',
+                'T_SEMICOLON',
+                'T_OR',
+                'T_PARENTHESIS_OPEN',
+                'T_PARENTHESIS_CLOSE',
+                'T_ANGLE_OPEN',
+                'T_ANGLE_CLOSE',
+                'T_QUESTION_MARK',
+                'T_PLUS',
+                'T_ASTERISK',
+                'T_BRACE_OPEN',
+                'T_BRACE_CLOSE',
+                'T_COMMA',
+                'T_INT',
+                'T_STRING',
+                'T_NAME',
+                'T_TOKEN',
+                'T_SKIP',
+                'T_ARROW',
+                'T_DOUBLE_COLON',
+                'T_EQ',
+                'T_HASH',
+                '/[^\\s]++/',
+            ],
         );
     }
 
@@ -486,7 +517,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         $pattern = $children->captures[2] ?? '';
 
         if ($name === '' || $pattern === '') {
-            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
         }
 
         $state = $children->captures[0] ?? '';
@@ -511,7 +542,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         $value = $children->captures[1] ?? '';
 
         if ($name === '' || $value === '') {
-            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
         }
 
         return new \Phplrt\Compiler\Node\Declaration\PragmaDeclaration(
@@ -529,7 +560,7 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         $target = $children->captures[0] ?? '';
 
         if ($target === '') {
-            throw \Phplrt\Parser\Exception\UnexpectedTokenException::fromToken($ctx->source, $children);
+            throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
         }
 
         return new \Phplrt\Compiler\Node\Declaration\IncludeDeclaration(
