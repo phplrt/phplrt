@@ -46,17 +46,7 @@ class CompatibilityTest extends TestCase
     public function testSourceFactoryCompatibility(): void
     {
         new class () implements SourceFactoryInterface {
-            public function createFromString(string $content, ?string $pathname = null): ReadableInterface
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-
-            public function createFromFile(string $pathname): FileInterface
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-
-            public function createFromStream(mixed $stream, ?string $pathname = null): ReadableInterface
+            public function create(mixed $source): ReadableInterface
             {
                 throw new \LogicException('Declared to be compiled rather than called');
             }
