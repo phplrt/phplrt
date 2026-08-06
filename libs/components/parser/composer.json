@@ -35,7 +35,7 @@
         "phplrt/exception": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
-        "phpunit/phpunit": "^13.0",
+        "phpunit/phpunit": "^13.2",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {

@@ -45,7 +45,7 @@
         "friendsofphp/php-cs-fixer": "^3.95",
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^13.0",
+        "phpunit/phpunit": "^13.2",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
         "symplify/monorepo-builder": "^12.7"
     },
