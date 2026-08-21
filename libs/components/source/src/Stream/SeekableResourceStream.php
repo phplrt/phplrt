@@ -15,6 +15,8 @@ use Phplrt\Source\Exception\NotReadableException;
  * The position is kept by the cursor itself and is only handed over to the
  * resource right before it is read, so that several cursors are able to share
  * a single resource without interfering with each other.
+ *
+ * @internal do not work with this implementation directly, use the interface instead
  */
 final class SeekableResourceStream extends ResourceStream implements SeekableStreamInterface
 {

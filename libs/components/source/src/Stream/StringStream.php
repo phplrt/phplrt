@@ -8,6 +8,8 @@ use Phplrt\Contracts\Source\Stream\SeekableStreamInterface;
 
 /**
  * A cursor over a string that is already held in memory
+ *
+ * @internal do not work with this implementation directly, use the interface instead
  */
 final class StringStream implements SeekableStreamInterface
 {

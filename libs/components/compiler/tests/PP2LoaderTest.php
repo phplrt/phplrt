@@ -19,7 +19,8 @@ use Phplrt\Parser\Builder\Definition\RuleReference;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -317,7 +318,7 @@ final class PP2LoaderTest extends TestCase
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP2Loader()
-            ->load(new VirtualStringSource($pathname, $source), $this->parser, $this->lexer);
+            ->load(new VirtualSource($pathname, new StringSource($source)), $this->parser, $this->lexer);
 
         return \iterator_to_array($result, false);
     }

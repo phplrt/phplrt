@@ -7,7 +7,7 @@ namespace Phplrt\Lexer\Builder\Tests;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Source\StringSource;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -80,7 +80,7 @@ final class SourceReferenceTest extends TestCase
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
             ->exit()
-            ->setSource(new VirtualStringSource('/app/example.pp2', self::SOURCE), 22);
+            ->setSource(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), 22);
 
         try {
             $lexer->build();

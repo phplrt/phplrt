@@ -12,9 +12,10 @@ use Phplrt\Source\SourceFactory;
 use Phplrt\Source\Stream;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualFile;
-use Phplrt\Source\VirtualResourceSource;
+use Phplrt\Source\VirtualSource;
 use Phplrt\Source\VirtualStreamingFile;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualStreamingFile;
+use Phplrt\Source\VirtualFile;
 use PHPUnit\Framework\Attributes\Group;
 
 /**
@@ -54,7 +55,7 @@ final class DeprecatedAliasesTest extends TestCase
     {
         $source = new VirtualFile('virtual.txt', '2 + 2');
 
-        self::assertSame(VirtualStringSource::class, $source::class);
+        self::assertSame(VirtualFile::class, $source::class);
         self::assertSame('virtual.txt', $source->pathname);
         self::assertSame('2 + 2', $source->content);
     }
@@ -66,9 +67,32 @@ final class DeprecatedAliasesTest extends TestCase
 
         $source = new VirtualStreamingFile('virtual.txt', $stream, autoclose: true);
 
-        self::assertSame(VirtualResourceSource::class, $source::class);
+        self::assertSame(VirtualStreamingFile::class, $source::class);
         self::assertSame('virtual.txt', $source->pathname);
         self::assertSame('2 + 2', $source->content);
+    }
+
+    public function testVirtualStringSourceIsAVirtualFileSource(): void
+    {
+        $source = new VirtualFile('virtual.txt', '2 + 2');
+
+        self::assertInstanceOf(VirtualSource::class, $source);
+        self::assertSame('virtual.txt', $source->pathname);
+        self::assertSame('2 + 2', $source->content);
+        self::assertSame(5, $source->size);
+    }
+
+    public function testVirtualResourceSourceIsAVirtualFileSource(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+        \fwrite($stream, '2 + 2');
+
+        $source = new VirtualStreamingFile('virtual.txt', $stream, autoclose: true);
+
+        self::assertInstanceOf(VirtualSource::class, $source);
+        self::assertSame('virtual.txt', $source->pathname);
+        self::assertSame('2 + 2', $source->content);
+        self::assertSame(5, $source->size);
     }
 
     public function testASourceBuiltUnderTheNewNameMatchesTheOldOne(): void

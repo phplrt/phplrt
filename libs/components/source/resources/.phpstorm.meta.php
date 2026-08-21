@@ -32,14 +32,14 @@ namespace Phplrt\Source {
 
     /**
      * @deprecated since phplrt 4.0 and will be removed in 5.0,
-     *             please use {@see VirtualStringSource} instead.
+     *             please use {@see VirtualSource} instead.
      */
-    final class VirtualFile extends VirtualStringSource {}
+    final class VirtualFile extends VirtualSource {}
 
     /**
      * @deprecated since phplrt 4.0 and will be removed in 5.0,
-     *             please use {@see VirtualResourceSource} instead.
+     *             please use {@see VirtualSource} instead.
      */
-    final class VirtualStreamingFile extends VirtualResourceSource {}
+    final class VirtualStreamingFile extends VirtualSource {}
 
 }

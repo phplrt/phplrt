@@ -17,9 +17,9 @@ if (!\class_exists(Stream::class, false)) {
 }
 
 if (!\class_exists(VirtualFile::class, false)) {
-    \class_alias(VirtualStringSource::class, VirtualFile::class);
+    \class_alias(VirtualSource::class, VirtualFile::class);
 }
 
 if (!\class_exists(VirtualStreamingFile::class, false)) {
-    \class_alias(VirtualResourceSource::class, VirtualStreamingFile::class);
+    \class_alias(VirtualSource::class, VirtualStreamingFile::class);
 }

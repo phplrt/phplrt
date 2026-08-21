@@ -121,11 +121,11 @@ Anything that cannot be recognized points at the exact spot in the source:
 
 ```php
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\VirtualSource;
 
 try {
     // VirtualFile is a string that also has a name, so errors can name it
-    $parser->parse(new VirtualFile('expr.txt', "1 + 2\n3 + + 4\n"));
+    $parser->parse(new Virtual('expr.txt', "1 + 2\n3 + + 4\n"));
 } catch (UnexpectedTokenException $e) {
     echo $e;
 }

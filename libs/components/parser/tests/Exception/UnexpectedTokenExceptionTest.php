@@ -10,7 +10,7 @@ use Phplrt\Lexer\Token\Token;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Tests\TestCase;
 use Phplrt\Source\StringSource;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -51,7 +51,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error occurred in a file is printed along with the name of that file')]
     public function testStringRepresentationOfAFile(): void
     {
-        $source = new VirtualStringSource('/app/example.pp2', self::SOURCE);
+        $source = new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE));
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 

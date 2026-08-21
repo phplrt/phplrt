@@ -73,7 +73,7 @@ class FileSource extends Readable implements FileInterface
      * @var int<0, max>
      */
     public int $size {
-        get => (int) \filesize($this->pathname);
+        get => $this->isReadable ? (int) @\filesize($this->pathname) : 0;
     }
 
     /**
@@ -82,7 +82,7 @@ class FileSource extends Readable implements FileInterface
      * @var int<0, max>
      */
     public int $modifiedAt {
-        get => (int) \filemtime($this->pathname);
+        get => $this->isReadable ? (int) \filemtime($this->pathname) : 0;
     }
 
     /**
@@ -105,6 +105,24 @@ class FileSource extends Readable implements FileInterface
          */
         public readonly string $pathname,
     ) {}
+
+    /**
+     * @api
+     *
+     * @param non-empty-string $pathname
+     */
+    public static function createFromPathname(string $pathname): self
+    {
+        return new self($pathname);
+    }
+
+    /**
+     * @api
+     */
+    public static function createFromSplFileInfo(\SplFileInfo $info): self
+    {
+        return self::createFromPathname($info->getPathname());
+    }
 
     /**
      * @throws NotReadableException When the file cannot be opened for reading

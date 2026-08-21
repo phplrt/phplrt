@@ -24,6 +24,22 @@ class StringSource extends Readable
         public readonly string $content = '',
     ) {}
 
+    /**
+     * @api
+     */
+    public static function createEmpty(): self
+    {
+        return new self('');
+    }
+
+    /**
+     * @api
+     */
+    public static function createFromString(string $content): self
+    {
+        return new self($content);
+    }
+
     public function createStream(): StringStream
     {
         // The content is already held in memory, so the cursor reads it as it

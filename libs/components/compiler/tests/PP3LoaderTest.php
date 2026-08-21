@@ -25,7 +25,7 @@ use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -520,7 +520,7 @@ final class PP3LoaderTest extends TestCase
     private function build(string $source): CompilerResult
     {
         $compiler = new Compiler();
-        $compiler->load(new VirtualStringSource(self::PATHNAME, $source));
+        $compiler->load(new VirtualSource(self::PATHNAME, new StringSource($source)));
 
         return $compiler->build();
     }
@@ -528,7 +528,7 @@ final class PP3LoaderTest extends TestCase
     private function compile(string $source): ParserInterface
     {
         $compiler = new Compiler();
-        $compiler->load(new VirtualStringSource(self::PATHNAME, $source));
+        $compiler->load(new VirtualSource(self::PATHNAME, new StringSource($source)));
 
         return $compiler->getParser();
     }
@@ -539,7 +539,7 @@ final class PP3LoaderTest extends TestCase
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP3Loader()
-            ->load(new VirtualStringSource($pathname, $source), $this->parser, $this->lexer);
+            ->load(new VirtualSource($pathname, new StringSource($source)), $this->parser, $this->lexer);
 
         return \iterator_to_array($result, false);
     }

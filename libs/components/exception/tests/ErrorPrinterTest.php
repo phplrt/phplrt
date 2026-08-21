@@ -10,7 +10,7 @@ use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\Level;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -103,7 +103,7 @@ final class ErrorPrinterTest extends TestCase
               |        ^^^^
             3 | third line
             OUT, (string) new ErrorPrinter()
-                ->print(new VirtualStringSource('/app/example.pp2', self::SOURCE), 18, 4)
+                ->print(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), 18, 4)
                 ->withMessage('Something went wrong'));
     }
 
@@ -111,7 +111,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsGivenPathname(): void
     {
         $actual = (string) new ErrorPrinter()
-            ->print(new VirtualStringSource('/app/example.pp2', self::SOURCE), 18, 4)
+            ->print(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), 18, 4)
             ->withMessage('Something went wrong')
             ->withPathname('/app/another.pp2');
 
@@ -187,7 +187,7 @@ final class ErrorPrinterTest extends TestCase
         self::assertSame(
             (string) new ErrorPrinter()->print(new StringSource(self::SOURCE), 18, 4),
             (string) new ErrorPrinter()
-                ->print(new VirtualStringSource(__DIR__ . '/non-existent-file.txt', self::SOURCE), 18, 4)
+                ->print(new VirtualSource(__DIR__ . '/non-existent-file.txt', new StringSource(self::SOURCE)), 18, 4)
                 ->withPathname(null),
         );
     }

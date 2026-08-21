@@ -140,6 +140,16 @@ class ResourceSource extends Readable
     }
 
     /**
+     * @api
+     *
+     * @param resource $resource
+     */
+    public static function createFromResource(mixed $resource): self
+    {
+        return new self($resource, false);
+    }
+
+    /**
      * @throws NotCreatableException When the stream has been closed from the outside
      * @throws NotReadableException When the stream has already been read out
      * @throws NotAccessibleException When the stream cannot be rewound
@@ -186,7 +196,8 @@ class ResourceSource extends Readable
      */
     private function isReadableMode(string $mode): bool
     {
-        return \str_contains($mode, 'r') || \str_contains($mode, '+');
+        return \str_contains($mode, 'r')
+            || \str_contains($mode, '+');
     }
 
     /**

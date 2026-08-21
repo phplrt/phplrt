@@ -9,6 +9,8 @@ use Phplrt\Source\Exception\NotReadableException;
 /**
  * A cursor that reads a resource stream from the position it has been given
  * at to the very end of it, and never returns back
+ *
+ * @internal do not work with this implementation directly, use the interface instead
  */
 final class ForwardResourceStream extends ResourceStream
 {

@@ -9,7 +9,7 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\StringSource;
-use Phplrt\Source\VirtualStringSource;
+use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -67,7 +67,7 @@ final class SourceReferenceTest extends TestCase
     {
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([], 'Root')
-            ->setSource(new VirtualStringSource('/app/example.pp2', self::SOURCE), self::RULE_OFFSET));
+            ->setSource(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), self::RULE_OFFSET));
 
         try {
             $parser->build(self::createLexerBuilder()->build());

@@ -20,7 +20,7 @@ class NotReadableException extends NotAccessibleException
      */
     public static function becauseFileNotReadable(string $filename, ?\Throwable $prev = null): self
     {
-        $message = 'An error occurred while trying read the file "%s" (permission denied?)';
+        $message = 'An error occurred while trying read the file "%s"';
 
         return new self(\sprintf($message, $filename), self::CODE_FILE_READING, $prev);
     }

@@ -10,6 +10,8 @@ use Phplrt\Source\Exception\NotReadableException;
 
 /**
  * An arbitrary cursor over a resource stream
+ *
+ * @internal do not work with this implementation directly, use the interface instead
  */
 abstract class ResourceStream implements ReadableStreamInterface
 {
