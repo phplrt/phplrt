@@ -7,7 +7,7 @@ namespace Phplrt\Compiler\Tests;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Compiler\Syntax\PP3\PP3Parser;
-use Phplrt\Source\File;
+use Phplrt\Source\FileSource;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -57,7 +57,7 @@ final class SyntaxGrammarTest extends TestCase
         string $class,
     ): void {
         $expected = new Compiler()
-            ->load(new File($grammar))
+            ->load(new FileSource($grammar))
             ->generate()
             ->withNamespaceName($namespace)
             ->withClassName($class)
@@ -74,7 +74,7 @@ final class SyntaxGrammarTest extends TestCase
     public function testPP3GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP3Parser()
-            ->parse(new File(__DIR__ . '/../resources/pp3.pp3'));
+            ->parse(new FileSource(__DIR__ . '/../resources/pp3.pp3'));
 
         self::assertNotEmpty([...$declarations]);
     }
@@ -83,7 +83,7 @@ final class SyntaxGrammarTest extends TestCase
     public function testPP2GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP2Parser()
-            ->parse(new File(__DIR__ . '/resources/grammar.pp2'));
+            ->parse(new FileSource(__DIR__ . '/resources/grammar.pp2'));
 
         self::assertNotEmpty([...$declarations]);
     }

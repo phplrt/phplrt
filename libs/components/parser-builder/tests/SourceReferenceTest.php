@@ -8,8 +8,8 @@ use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
-use Phplrt\Source\Source;
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualStringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -31,7 +31,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         $parser = new ParserBuilder();
         $definition = $parser->addConcatenation([], 'Root');
@@ -44,7 +44,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('An error is printed along with the fragment of the source the rule has been written in')]
     public function testErrorRefersToTheSourceOfTheRule(): void
     {
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([], 'Root')
@@ -67,7 +67,7 @@ final class SourceReferenceTest extends TestCase
     {
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([], 'Root')
-            ->setSource(new VirtualFile('/app/example.pp2', self::SOURCE), self::RULE_OFFSET));
+            ->setSource(new VirtualStringSource('/app/example.pp2', self::SOURCE), self::RULE_OFFSET));
 
         try {
             $parser->build(self::createLexerBuilder()->build());
@@ -102,7 +102,7 @@ final class SourceReferenceTest extends TestCase
     public function testErrorRefersToTheSourceOfTheReducer(): void
     {
         $code = "Root -> { return \$children }\n  : <T_NUMBER>\n  ;\n";
-        $source = new Source($code);
+        $source = new StringSource($code);
 
         $lexer = self::createLexerBuilder();
 

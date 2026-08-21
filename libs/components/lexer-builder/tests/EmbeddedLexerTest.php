@@ -11,7 +11,7 @@ use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Tests\Stub\FragmentLexer;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -44,7 +44,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $result = [];
 
-        foreach ($lexer->lex(new Source($source)) as $token) {
+        foreach ($lexer->lex(new StringSource($source)) as $token) {
             if ($token->channel === Channel::Default) {
                 $result[] = \sprintf('%s(%s)', (string) $token->name, $token->value);
             }

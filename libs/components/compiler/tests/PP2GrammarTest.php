@@ -11,7 +11,7 @@ use Phplrt\Compiler\Node\Statement\Concatenation;
 use Phplrt\Compiler\Node\Statement\InlinePattern;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -165,7 +165,7 @@ final class PP2GrammarTest extends TestCase
     public function testInlinePatternQuotes(): void
     {
         $declarations = new PP2Parser()
-            ->parse(new Source('A : "\"" ;'));
+            ->parse(new StringSource('A : "\"" ;'));
 
         $rule = $declarations[0];
 
@@ -225,7 +225,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('A reducer written as code is read up to the brace closing it')]
     public function testCodeReducer(): void
     {
-        $declarations = new PP2Parser()->parse(new Source(<<<'PP2'
+        $declarations = new PP2Parser()->parse(new StringSource(<<<'PP2'
             A -> {
                 if ($children === []) {
                     return null;
@@ -253,7 +253,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The position a declaration starts at is where it is written')]
     public function testDeclarationOffsets(): void
     {
-        $declarations = new PP2Parser()->parse(new Source(<<<'PP2'
+        $declarations = new PP2Parser()->parse(new StringSource(<<<'PP2'
             %token T_A a
 
             A : <T_A> ;
@@ -271,7 +271,7 @@ final class PP2GrammarTest extends TestCase
     #[TestDox('The position of a statement is where the statement itself is written')]
     public function testStatementOffsets(): void
     {
-        $declarations = new PP2Parser()->parse(new Source('A : <T_A> ::T_B:: ;'));
+        $declarations = new PP2Parser()->parse(new StringSource('A : <T_A> ::T_B:: ;'));
 
         $rule = $declarations[0];
 
@@ -287,6 +287,6 @@ final class PP2GrammarTest extends TestCase
     {
         $this->expectException(UnexpectedTokenException::class);
 
-        new PP2Parser()->parse(new Source('A : ;'));
+        new PP2Parser()->parse(new StringSource('A : ;'));
     }
 }

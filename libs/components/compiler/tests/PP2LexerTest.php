@@ -10,8 +10,8 @@ use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
-use Phplrt\Source\File;
-use Phplrt\Source\Source;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -34,14 +34,14 @@ final class PP2LexerTest extends TestCase
     private static function tokenize(string $source): array
     {
         $lexer = self::$lexer ??= new Compiler()
-            ->load(new File(self::GRAMMAR))
+            ->load(new FileSource(self::GRAMMAR))
             ->build()
             ->lexer
             ->toLexer();
 
         $result = [];
 
-        foreach ($lexer->lex(new Source($source)) as $token) {
+        foreach ($lexer->lex(new StringSource($source)) as $token) {
             if ($token->channel === Channel::Default) {
                 $result[] = $token;
             }

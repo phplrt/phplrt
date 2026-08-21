@@ -7,7 +7,7 @@ namespace Phplrt\Compiler\Command;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
 use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Source\File;
+use Phplrt\Source\FileSource;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -143,7 +143,7 @@ final class GrammarCheckCommand extends Command
         $output->writeln(\sprintf('Checking <comment>%s</comment> grammar', $grammar));
 
         $compiler = new Compiler()
-            ->load(new File($grammar));
+            ->load(new FileSource($grammar));
 
         $loaded = $this->getLoadedFiles($compiler);
 

@@ -8,9 +8,9 @@ use Phplrt\Exception\ErrorInfoResult;
 use Phplrt\Exception\ErrorPrinter;
 use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\Level;
-use Phplrt\Source\File;
-use Phplrt\Source\Source;
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualStringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -30,14 +30,14 @@ final class ErrorPrinterTest extends TestCase
             2 | second line
               |        ^^^^
             3 | third line
-            OUT, (string) new ErrorPrinter()->print(new Source(self::SOURCE), 18, 4));
+            OUT, (string) new ErrorPrinter()->print(new StringSource(self::SOURCE), 18, 4));
     }
 
     #[TestDox('The size told after the fragment has been printed describes it the same way')]
     public function testLengthDescribesTheFragment(): void
     {
         $printer = new ErrorPrinter();
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18, 4),
@@ -49,7 +49,7 @@ final class ErrorPrinterTest extends TestCase
     public function testNegativeLengthIsEmpty(): void
     {
         $printer = new ErrorPrinter();
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18),
@@ -68,7 +68,7 @@ final class ErrorPrinterTest extends TestCase
               |        ^^^^
             3 | third line
             OUT, (string) new ErrorPrinter()
-                ->print(new Source(self::SOURCE), 18, 4)
+                ->print(new StringSource(self::SOURCE), 18, 4)
                 ->withMessage('Something went wrong')
                 ->withClass('App\Node\SumNodeException'));
     }
@@ -77,7 +77,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsGivenErrorInfo(): void
     {
         $printer = new ErrorPrinter();
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18, 4)
@@ -103,7 +103,7 @@ final class ErrorPrinterTest extends TestCase
               |        ^^^^
             3 | third line
             OUT, (string) new ErrorPrinter()
-                ->print(new VirtualFile('/app/example.pp2', self::SOURCE), 18, 4)
+                ->print(new VirtualStringSource('/app/example.pp2', self::SOURCE), 18, 4)
                 ->withMessage('Something went wrong'));
     }
 
@@ -111,7 +111,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsGivenPathname(): void
     {
         $actual = (string) new ErrorPrinter()
-            ->print(new VirtualFile('/app/example.pp2', self::SOURCE), 18, 4)
+            ->print(new VirtualStringSource('/app/example.pp2', self::SOURCE), 18, 4)
             ->withMessage('Something went wrong')
             ->withPathname('/app/another.pp2');
 
@@ -122,7 +122,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsGivenLevel(): void
     {
         $actual = (string) new ErrorPrinter()
-            ->print(new Source(self::SOURCE), 18, 4)
+            ->print(new StringSource(self::SOURCE), 18, 4)
             ->withMessage('Something went wrong')
             ->withLevel(Level::Warning);
 
@@ -136,7 +136,7 @@ final class ErrorPrinterTest extends TestCase
             2 | second line
               |        ^^^^
             OUT, (string) new ErrorPrinter()
-                ->print(new Source(self::SOURCE), 18, 4)
+                ->print(new StringSource(self::SOURCE), 18, 4)
                 ->withLinesAround(0));
     }
 
@@ -144,7 +144,7 @@ final class ErrorPrinterTest extends TestCase
     public function testPrintsDefaultLinesCount(): void
     {
         $printer = new ErrorPrinter();
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         self::assertSame(
             (string) $printer->print($source, 18, 4)
@@ -156,7 +156,7 @@ final class ErrorPrinterTest extends TestCase
     #[TestDox('The description of the error is not changed, but a new one is returned')]
     public function testDescriptionIsImmutable(): void
     {
-        $result = new ErrorPrinter()->print(new Source(self::SOURCE), 18, 4);
+        $result = new ErrorPrinter()->print(new StringSource(self::SOURCE), 18, 4);
 
         $described = $result->withMessage('Something went wrong');
 
@@ -172,8 +172,8 @@ final class ErrorPrinterTest extends TestCase
 
         try {
             self::assertSame(
-                (string) new ErrorPrinter()->print(new Source(self::SOURCE), 18, 4),
-                (string) new ErrorPrinter()->print(new File($pathname), 18, 4)
+                (string) new ErrorPrinter()->print(new StringSource(self::SOURCE), 18, 4),
+                (string) new ErrorPrinter()->print(new FileSource($pathname), 18, 4)
                     ->withPathname(null),
             );
         } finally {
@@ -185,9 +185,9 @@ final class ErrorPrinterTest extends TestCase
     public function testReadsSourceOfAVirtualFile(): void
     {
         self::assertSame(
-            (string) new ErrorPrinter()->print(new Source(self::SOURCE), 18, 4),
+            (string) new ErrorPrinter()->print(new StringSource(self::SOURCE), 18, 4),
             (string) new ErrorPrinter()
-                ->print(new VirtualFile(__DIR__ . '/non-existent-file.txt', self::SOURCE), 18, 4)
+                ->print(new VirtualStringSource(__DIR__ . '/non-existent-file.txt', self::SOURCE), 18, 4)
                 ->withPathname(null),
         );
     }

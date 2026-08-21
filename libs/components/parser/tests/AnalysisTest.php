@@ -19,7 +19,7 @@ use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
 use Phplrt\Parser\Tests\Stub\ArithmeticLexer;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -29,7 +29,7 @@ final class AnalysisTest extends TestCase
     #[TestDox('A source the grammar describes in full is a success')]
     public function testCompleteSourceIsSuccessful(): void
     {
-        $actual = self::createParser()->analyze(new Source('1 + 2 + 3'));
+        $actual = self::createParser()->analyze(new StringSource('1 + 2 + 3'));
 
         // A source read in full has nothing to report, which is what the
         // class of the result says and the only thing it can say
@@ -41,7 +41,7 @@ final class AnalysisTest extends TestCase
     {
         // The trailing operator opens an iteration the grammar cannot finish,
         // so the whole iteration is given back
-        $actual = self::createParser()->analyze(new Source('1 + 2 +'));
+        $actual = self::createParser()->analyze(new StringSource('1 + 2 +'));
 
         self::assertInstanceOf(PartialResult::class, $actual);
         self::assertSame('T_PLUS', $actual->token->name);
@@ -51,7 +51,7 @@ final class AnalysisTest extends TestCase
     #[TestDox('A source the grammar cannot begin to read is a failure')]
     public function testUnreadableSourceIsFailure(): void
     {
-        $actual = self::createParser()->analyze(new Source('+ 1'));
+        $actual = self::createParser()->analyze(new StringSource('+ 1'));
 
         self::assertInstanceOf(FailureResult::class, $actual);
         self::assertSame('T_PLUS', $actual->token->name);
@@ -63,7 +63,7 @@ final class AnalysisTest extends TestCase
         $parser = self::createParser();
 
         foreach (['', '+', '1 + 2 +', '1 + 2 + 3'] as $source) {
-            $parser->analyze(new Source($source));
+            $parser->analyze(new StringSource($source));
         }
 
         $this->expectNotToPerformAssertions();
@@ -76,8 +76,8 @@ final class AnalysisTest extends TestCase
             self::RULE_NUMBER => static fn(Context $ctx, mixed $children): int => (int) $children->value,
         ]);
 
-        $complete = $parser->analyze(new Source('1 + 2 + 3'), Mode::Tolerant);
-        $partial = $parser->analyze(new Source('1 + 2 + 3 -'), Mode::Tolerant);
+        $complete = $parser->analyze(new StringSource('1 + 2 + 3'), Mode::Tolerant);
+        $partial = $parser->analyze(new StringSource('1 + 2 + 3 -'), Mode::Tolerant);
 
         self::assertInstanceOf(SuccessfulResult::class, $complete);
         self::assertInstanceOf(PartialResult::class, $partial);
@@ -99,7 +99,7 @@ final class AnalysisTest extends TestCase
             },
         ]);
 
-        $actual = $parser->analyze(new Source('1 + 2 + 3'), Mode::SyntaxCheck);
+        $actual = $parser->analyze(new StringSource('1 + 2 + 3'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(SuccessfulResult::class, $actual);
         self::assertNull($actual->value);
@@ -113,8 +113,8 @@ final class AnalysisTest extends TestCase
 
         foreach (['1 + 2 + 3', '1 + 2 +', '+ 1', ''] as $source) {
             self::assertSame(
-                $parser->analyze(new Source($source), Mode::Tolerant)::class,
-                $parser->analyze(new Source($source), Mode::SyntaxCheck)::class,
+                $parser->analyze(new StringSource($source), Mode::Tolerant)::class,
+                $parser->analyze(new StringSource($source), Mode::SyntaxCheck)::class,
                 \sprintf('The source "%s" is expected to be read alike in both modes', $source),
             );
         }
@@ -123,7 +123,7 @@ final class AnalysisTest extends TestCase
     #[TestDox('A failure tells which tokens the grammar could read instead')]
     public function testFailureReportsExpectedTokens(): void
     {
-        $actual = self::createParser()->analyze(new Source('+ 1'), Mode::SyntaxCheck);
+        $actual = self::createParser()->analyze(new StringSource('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
@@ -135,7 +135,7 @@ final class AnalysisTest extends TestCase
     #[TestDox('A partial analysis stops where the fragment ends and reports where the reading broke')]
     public function testPartialReportsWhereTheReadingBroke(): void
     {
-        $actual = self::createParser()->analyze(new Source('1 + 2 +'), Mode::SyntaxCheck);
+        $actual = self::createParser()->analyze(new StringSource('1 + 2 +'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(PartialResult::class, $actual);
 
@@ -157,12 +157,12 @@ final class AnalysisTest extends TestCase
         $parser = self::createParser();
 
         foreach (['1 + 2 +', '1 1', '+ 1', ''] as $source) {
-            $result = $parser->analyze(new Source($source), Mode::SyntaxCheck);
+            $result = $parser->analyze(new StringSource($source), Mode::SyntaxCheck);
 
             self::assertNotSame(SuccessfulResult::class, $result::class);
 
             try {
-                $parser->parse(new Source($source));
+                $parser->parse(new StringSource($source));
 
                 self::fail(\sprintf('The source "%s" is expected to be rejected', $source));
             } catch (UnexpectedTokenException $e) {
@@ -194,7 +194,7 @@ final class AnalysisTest extends TestCase
     #[TestDox('The error an analysis reports is thrown as it is')]
     public function testTheReportedErrorIsThrowable(): void
     {
-        $result = self::createParser()->analyze(new Source('+ 1'), Mode::SyntaxCheck);
+        $result = self::createParser()->analyze(new StringSource('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $result);
 
@@ -216,7 +216,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $actual = $parser->analyze(new Source('+ 1'), Mode::SyntaxCheck);
+        $actual = $parser->analyze(new StringSource('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
     }
@@ -237,7 +237,7 @@ final class AnalysisTest extends TestCase
             choicePrediction: $analysis->choicePrediction,
         );
 
-        $actual = $parser->analyze(new Source('+ 1'), Mode::SyntaxCheck);
+        $actual = $parser->analyze(new StringSource('+ 1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
@@ -280,7 +280,7 @@ final class AnalysisTest extends TestCase
         $expected = 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected';
 
         foreach (['with' => $withTables, 'without' => $withoutTables] as $name => $parser) {
-            $actual = $parser->analyze(new Source('1'), Mode::SyntaxCheck);
+            $actual = $parser->analyze(new StringSource('1'), Mode::SyntaxCheck);
 
             self::assertInstanceOf(FailureResult::class, $actual);
             self::assertSame(
@@ -321,7 +321,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $actual = $parser->analyze(new Source('1'), Mode::SyntaxCheck);
+        $actual = $parser->analyze(new StringSource('1'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
@@ -363,7 +363,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $actual = $parser->analyze(new Source('-'), Mode::SyntaxCheck);
+        $actual = $parser->analyze(new StringSource('-'), Mode::SyntaxCheck);
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
@@ -396,7 +396,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $actual = $parser->analyze(new Source('+ 1'));
+        $actual = $parser->analyze(new StringSource('+ 1'));
 
         self::assertInstanceOf(PartialResult::class, $actual);
         self::assertSame([], $actual->value);
@@ -424,7 +424,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $actual = $parser->analyze(new Source(''));
+        $actual = $parser->analyze(new StringSource(''));
 
         self::assertInstanceOf(SuccessfulResult::class, $actual);
         self::assertSame([], $actual->value);

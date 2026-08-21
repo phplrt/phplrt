@@ -13,7 +13,7 @@ use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -99,7 +99,7 @@ final class EmbeddedLexerTest extends TestCase
             '    T_STRING_CHARS(hello)@6',
             '    T_STRING_END(")@11',
             'EndOfInput()@12',
-        ], self::describeTree($lexer->lex(new Source('name "hello"'))));
+        ], self::describeTree($lexer->lex(new StringSource('name "hello"'))));
     }
 
     #[TestDox('The tokens of an embedded lexer never reach the stream of the lexer that called it')]
@@ -112,7 +112,7 @@ final class EmbeddedLexerTest extends TestCase
             'T_WHITESPACE( )@4',
             'T_STRING(")@5',
             'EndOfInput()@12',
-        ], self::describe($lexer->lex(new Source('name "hello"'))));
+        ], self::describe($lexer->lex(new StringSource('name "hello"'))));
     }
 
     #[TestDox('The token that entered an embedded lexer spans as far as that lexer has read')]
@@ -121,7 +121,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = '"hello"';
 
-        $tokens = \iterator_to_array($lexer->lex(new Source($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(new StringSource($source)), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
@@ -135,7 +135,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $lexer = self::createStringLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(new Source('"hello"')), false);
+        $tokens = \iterator_to_array($lexer->lex(new StringSource('"hello"')), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
@@ -154,7 +154,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer(skip: []);
         $source = 'a "b" c';
 
-        self::assertTokensCoverSource($source, $lexer->lex(new Source($source)));
+        self::assertTokensCoverSource($source, $lexer->lex(new StringSource($source)));
     }
 
     #[TestDox('A lexer written by hand is embedded the very same way')]
@@ -171,7 +171,7 @@ final class EmbeddedLexerTest extends TestCase
             'T_WHITESPACE( )@7',
             'T_NAME(b)@8',
             'EndOfInput()@9',
-        ], self::describeTree($lexer->lex(new Source('a [xyz] b'))));
+        ], self::describeTree($lexer->lex(new StringSource('a [xyz] b'))));
     }
 
     #[TestDox('The terminal token of an embedded lexer is not carried over')]
@@ -180,7 +180,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createHostLexer();
         $source = 'a [xyz] b';
 
-        self::assertTerminatedStream($source, $lexer->lex(new Source($source)));
+        self::assertTerminatedStream($source, $lexer->lex(new StringSource($source)));
     }
 
     #[TestDox('An embedded lexer may be entered several times')]
@@ -190,7 +190,7 @@ final class EmbeddedLexerTest extends TestCase
 
         $values = [];
 
-        foreach ($lexer->lex(new Source('[one] [two]')) as $token) {
+        foreach ($lexer->lex(new StringSource('[one] [two]')) as $token) {
             if ($token instanceof TokenEmbedding) {
                 $values[] = $token[0]->value;
             }
@@ -206,7 +206,7 @@ final class EmbeddedLexerTest extends TestCase
 
         // The trailing space is read but not reported, so the token that has
         // entered the embedded lexer stays the last one on the list
-        $tokens = \iterator_to_array($lexer->lex(new Source('"hello" ')), false);
+        $tokens = \iterator_to_array($lexer->lex(new StringSource('"hello" ')), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);
@@ -221,6 +221,6 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = '"hello';
 
-        self::assertTerminatedStream($source, $lexer->lex(new Source($source)));
+        self::assertTerminatedStream($source, $lexer->lex(new StringSource($source)));
     }
 }

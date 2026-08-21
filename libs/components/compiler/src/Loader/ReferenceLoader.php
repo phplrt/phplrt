@@ -10,7 +10,7 @@ use Phplrt\Compiler\Exception\GrammarNotFoundException;
 use Phplrt\Compiler\Exception\IncludeException;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Source\File;
+use Phplrt\Source\FileSource;
 
 /**
  * Reads the grammar a reference points at.
@@ -43,7 +43,7 @@ final readonly class ReferenceLoader
         $pathname = $this->findPathname($source, $reference);
 
         try {
-            $this->context->load(new File($pathname));
+            $this->context->load(new FileSource($pathname));
         } catch (\Throwable $e) {
             /**
              * Whatever has gone wrong has gone wrong in another grammar, so

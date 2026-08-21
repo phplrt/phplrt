@@ -10,7 +10,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Lexer\Token\EndOfInputToken;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -41,7 +41,7 @@ final class TokenTest extends TestCase
         $lexer = self::createNamesLexer();
         $source = 'one two';
 
-        foreach ($lexer->lex(new Source($source)) as $token) {
+        foreach ($lexer->lex(new StringSource($source)) as $token) {
             if ($token->channel === Channel::EndOfInput) {
                 continue;
             }
@@ -59,7 +59,7 @@ final class TokenTest extends TestCase
         $lexer = self::createNamesLexer();
         $source = 'word';
 
-        foreach ($lexer->lex(new Source($source)) as $token) {
+        foreach ($lexer->lex(new StringSource($source)) as $token) {
             self::assertGreaterThanOrEqual(TokenInterface::MIN_OFFSET, $token->offset);
         }
     }

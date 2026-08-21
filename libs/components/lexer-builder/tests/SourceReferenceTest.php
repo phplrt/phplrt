@@ -6,8 +6,8 @@ namespace Phplrt\Lexer\Builder\Tests;
 
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use Phplrt\Source\Source;
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualStringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -22,7 +22,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         $lexer = new LexerBuilder();
         $definition = $lexer->addValue('"', 'T_END');
@@ -39,7 +39,7 @@ final class SourceReferenceTest extends TestCase
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
             ->exit()
-            ->setSource(new Source(self::SOURCE), 22, 12);
+            ->setSource(new StringSource(self::SOURCE), 22, 12);
 
         try {
             $lexer->build();
@@ -55,7 +55,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('An error is printed along with the fragment of the source the definition has been written in')]
     public function testErrorRefersToTheSourceOfTheDefinition(): void
     {
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
@@ -80,7 +80,7 @@ final class SourceReferenceTest extends TestCase
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
             ->exit()
-            ->setSource(new VirtualFile('/app/example.pp2', self::SOURCE), 22);
+            ->setSource(new VirtualStringSource('/app/example.pp2', self::SOURCE), 22);
 
         try {
             $lexer->build();

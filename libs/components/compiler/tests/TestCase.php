@@ -9,7 +9,7 @@ use Phplrt\Compiler\Node\Node;
 use Phplrt\Compiler\Node\Reducer;
 use Phplrt\Compiler\Node\Statement;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
-use Phplrt\Source\Source;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -21,7 +21,7 @@ abstract class TestCase extends BaseTestCase
     {
         $result = [];
 
-        foreach (new PP2Parser()->parse(new Source($source)) as $declaration) {
+        foreach (new PP2Parser()->parse(new StringSource($source)) as $declaration) {
             $result[] = self::describeNode($declaration);
         }
 

@@ -9,8 +9,8 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Tests\TestCase;
-use Phplrt\Source\Source;
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualStringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -25,7 +25,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The source the error occurred in is available')]
     public function testSource(): void
     {
-        $source = new Source(self::SOURCE);
+        $source = new StringSource(self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
@@ -36,7 +36,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error is printed along with the fragment of the source code')]
     public function testStringRepresentation(): void
     {
-        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(new Source(self::SOURCE), $this->createToken());
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(new StringSource(self::SOURCE), $this->createToken());
 
         self::assertStringStartsWith(<<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
@@ -51,7 +51,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error occurred in a file is printed along with the name of that file')]
     public function testStringRepresentationOfAFile(): void
     {
-        $source = new VirtualFile('/app/example.pp2', self::SOURCE);
+        $source = new VirtualStringSource('/app/example.pp2', self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
@@ -70,7 +70,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     public function testStringRepresentationOfAnEmptySource(): void
     {
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(
-            new Source(''),
+            new StringSource(''),
             new Token(0, null, Channel::EndOfInput, '', 0),
         );
 
