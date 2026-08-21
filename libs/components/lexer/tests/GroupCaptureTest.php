@@ -45,7 +45,7 @@ final class GroupCaptureTest extends TestCase
     {
         $result = [];
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             if ($token->captures !== []) {
                 $result[] = $token->captures;
             }
@@ -78,7 +78,7 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::createLexer(skip: []);
         $source = 'foo %token string:T_A';
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
         $declaration = $tokens[2];
 
         self::assertSame('T_TOKEN', $declaration->name);
@@ -93,7 +93,7 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::createLexer(skip: []);
         $source = '%token string:T_A foo';
 
-        self::assertTokensCoverSource($source, $lexer->lex(new StringSource($source)));
+        self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
     #[TestDox('A token entering an embedded lexer keeps what its own subgroups have captured')]
@@ -114,7 +114,7 @@ final class GroupCaptureTest extends TestCase
             });
         });
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource('[note]hello')), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('[note]hello')), false);
         $embedding = $tokens[0];
 
         self::assertInstanceOf(TokenEmbedding::class, $embedding);

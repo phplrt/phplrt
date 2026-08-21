@@ -42,7 +42,7 @@ final class CompilerTest extends TestCase
         $result = $compiler->parser
             ->build($compiler->lexer->build())
             ->toParser($compiler->lexer->build()->toLexer())
-            ->parse(new StringSource('1 + 2 + 39'));
+            ->parse(StringSource::createFromString('1 + 2 + 39'));
 
         self::assertSame(42, $result);
     }
@@ -86,7 +86,7 @@ final class CompilerTest extends TestCase
     public function testGrammarOfNoFileIsRead(): void
     {
         $compiler = new Compiler();
-        $compiler->load(new StringSource('%token T_NUMBER \d++'));
+        $compiler->load(StringSource::createFromString('%token T_NUMBER \d++'));
 
         self::assertSame('T_NUMBER', $compiler->lexer->tokens[0]->name);
     }
@@ -97,7 +97,7 @@ final class CompilerTest extends TestCase
     private function load(string $name): Compiler
     {
         $compiler = new Compiler();
-        $compiler->load(new FileSource(__DIR__ . '/resources/' . $name));
+        $compiler->load(FileSource::createFromPathname(__DIR__ . '/resources/' . $name));
 
         return $compiler;
     }

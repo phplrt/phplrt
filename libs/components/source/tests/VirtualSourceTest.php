@@ -10,7 +10,7 @@ use Phplrt\Source\Stream\StringStream;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 
-final class VirtualFileSourceTest extends TestCase
+final class VirtualSourceTest extends TestCase
 {
     public function testPathnameProperty(): void
     {

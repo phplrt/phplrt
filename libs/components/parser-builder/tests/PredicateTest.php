@@ -40,7 +40,7 @@ final class PredicateTest extends TestCase
     {
         $parser = self::createParserFor(true);
 
-        self::assertSame(['1'], self::collectValues($parser->parse(new StringSource('1'))));
+        self::assertSame(['1'], self::collectValues($parser->parse(StringSource::createFromString('1'))));
     }
 
     #[TestDox('A predicate reads nothing, so the rule behind it reads the very same token')]
@@ -49,7 +49,7 @@ final class PredicateTest extends TestCase
         $parser = self::createParserFor(true);
 
         // The number would be read twice in case of the predicate consumed it
-        self::assertCount(1, self::collectValues($parser->parse(new StringSource('1'))));
+        self::assertCount(1, self::collectValues($parser->parse(StringSource::createFromString('1'))));
     }
 
     #[TestDox('A rule behind a predicate is not recognized while the predicate does not match')]
@@ -59,7 +59,7 @@ final class PredicateTest extends TestCase
 
         $this->expectException(UnexpectedTokenException::class);
 
-        $parser->parse(new StringSource('+'));
+        $parser->parse(StringSource::createFromString('+'));
     }
 
     #[TestDox('A negative predicate matches everything the rule does not')]
@@ -67,7 +67,7 @@ final class PredicateTest extends TestCase
     {
         $parser = self::createParserFor(false);
 
-        self::assertSame(['+'], self::collectValues($parser->parse(new StringSource('+'))));
+        self::assertSame(['+'], self::collectValues($parser->parse(StringSource::createFromString('+'))));
     }
 
     #[TestDox('A negative predicate matches nothing the rule does')]
@@ -77,7 +77,7 @@ final class PredicateTest extends TestCase
 
         $this->expectException(UnexpectedTokenException::class);
 
-        $parser->parse(new StringSource('1'));
+        $parser->parse(StringSource::createFromString('1'));
     }
 
     #[TestDox('A predicate is compiled into a rule of its own')]

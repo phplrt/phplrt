@@ -22,7 +22,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
-        $source = new StringSource(self::SOURCE);
+        $source = StringSource::createFromString(self::SOURCE);
 
         $lexer = new LexerBuilder();
         $definition = $lexer->addValue('"', 'T_END');
@@ -39,7 +39,7 @@ final class SourceReferenceTest extends TestCase
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
             ->exit()
-            ->setSource(new StringSource(self::SOURCE), 22, 12);
+            ->setSource(StringSource::createFromString(self::SOURCE), 22, 12);
 
         try {
             $lexer->build();
@@ -55,7 +55,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('An error is printed along with the fragment of the source the definition has been written in')]
     public function testErrorRefersToTheSourceOfTheDefinition(): void
     {
-        $source = new StringSource(self::SOURCE);
+        $source = StringSource::createFromString(self::SOURCE);
 
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
@@ -80,7 +80,7 @@ final class SourceReferenceTest extends TestCase
         $lexer = new LexerBuilder();
         $lexer->addValue('"', 'T_END')
             ->exit()
-            ->setSource(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), 22);
+            ->setSource(VirtualSource::createFromString('/app/example.pp2', self::SOURCE), 22);
 
         try {
             $lexer->build();

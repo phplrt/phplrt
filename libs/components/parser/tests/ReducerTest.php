@@ -24,7 +24,7 @@ final class ReducerTest extends TestCase
     #[TestDox('The rules without a reducer are reduced to the recognized tokens')]
     public function testReducesRulesToTokens(): void
     {
-        $actual = self::createParser()->parse(new StringSource('1 + 2 - 3'));
+        $actual = self::createParser()->parse(StringSource::createFromString('1 + 2 - 3'));
 
         self::assertSame(
             ['T_NUMBER(1)', 'T_NUMBER(2)', 'T_NUMBER(3)'],
@@ -36,7 +36,7 @@ final class ReducerTest extends TestCase
     public function testOmitsTokensThatAreNotKept(): void
     {
         // The "+" and "-" lexemes of the grammar are not kept
-        $actual = self::createParser()->parse(new StringSource('1 + 2'));
+        $actual = self::createParser()->parse(StringSource::createFromString('1 + 2'));
 
         self::assertCount(2, self::describe($actual));
     }
@@ -52,7 +52,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame([1, 2, 3], $parser->parse(new StringSource('1 + 2 + 3')));
+        self::assertSame([1, 2, 3], $parser->parse(StringSource::createFromString('1 + 2 + 3')));
     }
 
     #[TestDox('The reducer of a concatenation receives the list of its children')]
@@ -67,7 +67,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame(6, $parser->parse(new StringSource('1 + 2 + 3')));
+        self::assertSame(6, $parser->parse(StringSource::createFromString('1 + 2 + 3')));
     }
 
     #[TestDox('The reducer of an alternation receives the value of the matched branch')]
@@ -82,7 +82,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        self::assertSame([1, '?', 2], $parser->parse(new StringSource('1 + 2')));
+        self::assertSame([1, '?', 2], $parser->parse(StringSource::createFromString('1 + 2')));
     }
 
     #[TestDox('The reducer of a repetition without iterations receives an empty list')]
@@ -99,7 +99,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        $parser->parse(new StringSource('1'));
+        $parser->parse(StringSource::createFromString('1'));
 
         self::assertSame([[]], $received);
     }
@@ -119,8 +119,8 @@ final class ReducerTest extends TestCase
             },
         ];
 
-        self::assertSame(['sign', 1], self::createParser($reducers)->parse(new StringSource('-1')));
-        self::assertSame([1], self::createParser($reducers)->parse(new StringSource('1')));
+        self::assertSame(['sign', 1], self::createParser($reducers)->parse(StringSource::createFromString('-1')));
+        self::assertSame([1], self::createParser($reducers)->parse(StringSource::createFromString('1')));
 
         self::assertSame(['sign', []], $received);
     }
@@ -133,7 +133,7 @@ final class ReducerTest extends TestCase
             self::RULE_EXPRESSION => static fn(Context $context, mixed $children): mixed => null,
         ]);
 
-        self::assertSame([1, 2], $parser->parse(new StringSource('1 + 2')));
+        self::assertSame([1, 2], $parser->parse(StringSource::createFromString('1 + 2')));
     }
 
     #[TestDox('The context contains the rule, the source code and the last recognized token')]
@@ -149,7 +149,7 @@ final class ReducerTest extends TestCase
             },
         ]);
 
-        $parser->parse(new StringSource('1 + 2'));
+        $parser->parse(StringSource::createFromString('1 + 2'));
 
         self::assertCount(1, $contexts);
         self::assertSame(self::RULE_EXPRESSION, $contexts[0]->rule);
@@ -175,8 +175,8 @@ final class ReducerTest extends TestCase
         );
 
         self::assertSame(
-            self::createParser($reducers)->parse(new StringSource('-1 + 2 - 3')),
-            $parser->parse(new StringSource('-1 + 2 - 3')),
+            self::createParser($reducers)->parse(StringSource::createFromString('-1 + 2 - 3')),
+            $parser->parse(StringSource::createFromString('-1 + 2 - 3')),
         );
     }
 
@@ -196,7 +196,7 @@ final class ReducerTest extends TestCase
             choicePrediction: $analysis->choicePrediction,
         );
 
-        self::assertSame([], $parser->parse(new StringSource('1')));
+        self::assertSame([], $parser->parse(StringSource::createFromString('1')));
     }
 
     private const int RULE_EXPRESSION = 0;

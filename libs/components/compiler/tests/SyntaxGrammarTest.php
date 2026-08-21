@@ -57,7 +57,7 @@ final class SyntaxGrammarTest extends TestCase
         string $class,
     ): void {
         $expected = new Compiler()
-            ->load(new FileSource($grammar))
+            ->load(FileSource::createFromPathname($grammar))
             ->generate()
             ->withNamespaceName($namespace)
             ->withClassName($class)
@@ -74,7 +74,7 @@ final class SyntaxGrammarTest extends TestCase
     public function testPP3GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP3Parser()
-            ->parse(new FileSource(__DIR__ . '/../resources/pp3.pp3'));
+            ->parse(FileSource::createFromPathname(__DIR__ . '/../resources/pp3.pp3'));
 
         self::assertNotEmpty([...$declarations]);
     }
@@ -83,7 +83,7 @@ final class SyntaxGrammarTest extends TestCase
     public function testPP2GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP2Parser()
-            ->parse(new FileSource(__DIR__ . '/resources/grammar.pp2'));
+            ->parse(FileSource::createFromPathname(__DIR__ . '/resources/grammar.pp2'));
 
         self::assertNotEmpty([...$declarations]);
     }

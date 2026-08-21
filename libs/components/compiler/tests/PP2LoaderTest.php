@@ -318,7 +318,7 @@ final class PP2LoaderTest extends TestCase
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP2Loader()
-            ->load(new VirtualSource($pathname, new StringSource($source)), $this->parser, $this->lexer);
+            ->load(VirtualSource::createFromString($pathname, $source), $this->parser, $this->lexer);
 
         return \iterator_to_array($result, false);
     }

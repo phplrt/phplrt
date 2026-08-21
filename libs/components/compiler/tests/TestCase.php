@@ -21,7 +21,7 @@ abstract class TestCase extends BaseTestCase
     {
         $result = [];
 
-        foreach (new PP2Parser()->parse(new StringSource($source)) as $declaration) {
+        foreach (new PP2Parser()->parse(StringSource::createFromString($source)) as $declaration) {
             $result[] = self::describeNode($declaration);
         }
 

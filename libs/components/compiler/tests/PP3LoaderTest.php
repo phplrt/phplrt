@@ -102,7 +102,7 @@ final class PP3LoaderTest extends TestCase
 
         // The predicate reads nothing, so the "a" is still there to be read
         // and never reaches the rule twice
-        self::assertSame(2, $parser->parse(new StringSource('ab')));
+        self::assertSame(2, $parser->parse(StringSource::createFromString('ab')));
     }
 
     #[TestDox('A statement written after "!" is recognized when the statement is not')]
@@ -120,11 +120,11 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        self::assertSame('42', $parser->parse(new StringSource('42')));
+        self::assertSame('42', $parser->parse(StringSource::createFromString('42')));
 
         $this->expectException(UnexpectedTokenException::class);
 
-        $parser->parse(new StringSource('42 beta'));
+        $parser->parse(StringSource::createFromString('42 beta'));
     }
 
     #[TestDox('A predicate stands before the quantifier of the statement it looks at')]
@@ -139,7 +139,7 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        self::assertSame(3, $parser->parse(new StringSource('aab')));
+        self::assertSame(3, $parser->parse(StringSource::createFromString('aab')));
     }
 
     #[TestDox('A reducer written as code is read')]
@@ -332,7 +332,7 @@ final class PP3LoaderTest extends TestCase
 
         // The value is read as it is written, so the "+" of a regular
         // expression is only a plus sign here
-        self::assertSame(3, $parser->parse(new StringSource('1+2')));
+        self::assertSame(3, $parser->parse(StringSource::createFromString('1+2')));
     }
 
     #[TestDox('A statement written of an expression declares the token recognizing it')]
@@ -349,8 +349,8 @@ final class PP3LoaderTest extends TestCase
 
         $parser = $result->parser->toParser($result->lexer->toLexer());
 
-        self::assertSame(2, $parser->parse(new StringSource('1 and 2')));
-        self::assertSame(2, $parser->parse(new StringSource('1 xor 2')));
+        self::assertSame(2, $parser->parse(StringSource::createFromString('1 and 2')));
+        self::assertSame(2, $parser->parse(StringSource::createFromString('1 xor 2')));
     }
 
     #[TestDox('The same value written in several rules declares a single token')]
@@ -520,7 +520,7 @@ final class PP3LoaderTest extends TestCase
     private function build(string $source): CompilerResult
     {
         $compiler = new Compiler();
-        $compiler->load(new VirtualSource(self::PATHNAME, new StringSource($source)));
+        $compiler->load(VirtualSource::createFromString(self::PATHNAME, $source));
 
         return $compiler->build();
     }
@@ -528,7 +528,7 @@ final class PP3LoaderTest extends TestCase
     private function compile(string $source): ParserInterface
     {
         $compiler = new Compiler();
-        $compiler->load(new VirtualSource(self::PATHNAME, new StringSource($source)));
+        $compiler->load(VirtualSource::createFromString(self::PATHNAME, $source));
 
         return $compiler->getParser();
     }
@@ -539,7 +539,7 @@ final class PP3LoaderTest extends TestCase
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP3Loader()
-            ->load(new VirtualSource($pathname, new StringSource($source)), $this->parser, $this->lexer);
+            ->load(VirtualSource::createFromString($pathname, $source), $this->parser, $this->lexer);
 
         return \iterator_to_array($result, false);
     }

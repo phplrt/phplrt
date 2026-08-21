@@ -45,7 +45,7 @@ final class GeneratorTest extends TestCase
     {
         $parser = $this->generate('grammar.pp2');
 
-        self::assertSame(42, $parser->parse(new StringSource('1 + 2 + 39')));
+        self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
     }
 
     #[TestDox('The generated lexer reads the fragments the grammar says')]
@@ -53,7 +53,7 @@ final class GeneratorTest extends TestCase
     {
         $parser = $this->generate('states.pp2');
 
-        $result = $parser->parse(new StringSource('"hello",'));
+        $result = $parser->parse(StringSource::createFromString('"hello",'));
 
         self::assertIsArray($result);
         self::assertInstanceOf(TokenEmbedding::class, $result[0]);
@@ -242,7 +242,7 @@ final class GeneratorTest extends TestCase
         $parser = new $class();
 
         self::assertInstanceOf(ParserInterface::class, $parser);
-        self::assertSame(42, $parser->parse(new StringSource('1 + 2 + 39')));
+        self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
     }
 
     #[TestDox('A parser named the way no class may be named is reported')]
@@ -282,13 +282,13 @@ final class GeneratorTest extends TestCase
     private function compile(string $name): Compiler
     {
         return new Compiler()
-            ->load(new FileSource(__DIR__ . '/resources/' . $name));
+            ->load(FileSource::createFromPathname(__DIR__ . '/resources/' . $name));
     }
 
     private function generateOf(string $grammar): GeneratedOutput
     {
         return new Compiler()
-            ->load(new StringSource($grammar))
+            ->load(StringSource::createFromString($grammar))
             ->generate();
     }
 

@@ -165,7 +165,7 @@ final class ParserBuilderTest extends TestCase
             'return \implode(\'+\', \array_map(static fn(mixed $item): string => $item->value, $children));',
         );
 
-        self::assertSame('1+2+3', $parser->parse(new StringSource('1 + 2 + 3')));
+        self::assertSame('1+2+3', $parser->parse(StringSource::createFromString('1 + 2 + 3')));
     }
 
     #[TestDox('A reducer defined as PHP code is given the state of the analysis')]
@@ -173,7 +173,7 @@ final class ParserBuilderTest extends TestCase
     {
         $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->token->value, $ctx->content];');
 
-        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse(new StringSource('1 + 2 + 3')));
+        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse(StringSource::createFromString('1 + 2 + 3')));
     }
 
     #[TestDox('A reducer defined as PHP code that refers to "$this" is unusable until it is bound')]
@@ -184,7 +184,7 @@ final class ParserBuilderTest extends TestCase
         $this->expectException(\Error::class);
         $this->expectExceptionMessageIs('Using $this when not in object context');
 
-        $parser->parse(new StringSource('1 + 2 + 3'));
+        $parser->parse(StringSource::createFromString('1 + 2 + 3'));
     }
 
     #[TestDox('A reducer defined as PHP code that cannot be compiled is reported')]
@@ -300,7 +300,7 @@ final class ParserBuilderTest extends TestCase
             result: $parser->build($lexer->build()),
         );
 
-        $actual = $compiled->parse(new StringSource('1 + 2 + 3'));
+        $actual = $compiled->parse(StringSource::createFromString('1 + 2 + 3'));
 
         self::assertIsList($actual);
 
@@ -345,7 +345,7 @@ final class ParserBuilderTest extends TestCase
          * The value of the sum is joined with the values above it everywhere
          * but the initial rule, which has nothing to join it with.
          */
-        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse(new StringSource('1 + 2 + 3'))));
+        self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse(StringSource::createFromString('1 + 2 + 3'))));
     }
 
     #[TestDox('The compiled parser recognizes the source')]
@@ -358,7 +358,7 @@ final class ParserBuilderTest extends TestCase
             result: self::createParserBuilder()->build($lexer->build()),
         );
 
-        $actual = $parser->parse(new StringSource('1 + 2 - 3'));
+        $actual = $parser->parse(StringSource::createFromString('1 + 2 - 3'));
 
         self::assertIsList($actual);
 

@@ -31,7 +31,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
-        $source = new StringSource(self::SOURCE);
+        $source = StringSource::createFromString(self::SOURCE);
 
         $parser = new ParserBuilder();
         $definition = $parser->addConcatenation([], 'Root');
@@ -44,7 +44,7 @@ final class SourceReferenceTest extends TestCase
     #[TestDox('An error is printed along with the fragment of the source the rule has been written in')]
     public function testErrorRefersToTheSourceOfTheRule(): void
     {
-        $source = new StringSource(self::SOURCE);
+        $source = StringSource::createFromString(self::SOURCE);
 
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([], 'Root')
@@ -67,7 +67,7 @@ final class SourceReferenceTest extends TestCase
     {
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([], 'Root')
-            ->setSource(new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE)), self::RULE_OFFSET));
+            ->setSource(VirtualSource::createFromString('/app/example.pp2', self::SOURCE), self::RULE_OFFSET));
 
         try {
             $parser->build(self::createLexerBuilder()->build());
@@ -102,7 +102,7 @@ final class SourceReferenceTest extends TestCase
     public function testErrorRefersToTheSourceOfTheReducer(): void
     {
         $code = "Root -> { return \$children }\n  : <T_NUMBER>\n  ;\n";
-        $source = new StringSource($code);
+        $source = StringSource::createFromString($code);
 
         $lexer = self::createLexerBuilder();
 

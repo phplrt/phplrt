@@ -25,7 +25,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The source the error occurred in is available')]
     public function testSource(): void
     {
-        $source = new StringSource(self::SOURCE);
+        $source = StringSource::createFromString(self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
@@ -36,7 +36,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error is printed along with the fragment of the source code')]
     public function testStringRepresentation(): void
     {
-        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(new StringSource(self::SOURCE), $this->createToken());
+        $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(StringSource::createFromString(self::SOURCE), $this->createToken());
 
         self::assertStringStartsWith(<<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
@@ -51,7 +51,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     #[TestDox('The error occurred in a file is printed along with the name of that file')]
     public function testStringRepresentationOfAFile(): void
     {
-        $source = new VirtualSource('/app/example.pp2', new StringSource(self::SOURCE));
+        $source = VirtualSource::createFromString('/app/example.pp2', self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
@@ -70,7 +70,7 @@ final class UnexpectedTokenExceptionTest extends TestCase
     public function testStringRepresentationOfAnEmptySource(): void
     {
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(
-            new StringSource(''),
+            StringSource::createEmpty(),
             new Token(0, null, Channel::EndOfInput, '', 0),
         );
 

@@ -21,9 +21,9 @@ final class SyntaxLoaderRegistryTest extends TestCase
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PPLoader::class, $registry->selectFor(new VirtualSource('/app/a.pp', new StringSource())));
-        self::assertInstanceOf(PP2Loader::class, $registry->selectFor(new VirtualSource('/app/a.pp2', new StringSource())));
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(new VirtualSource('/app/a.pp3', new StringSource())));
+        self::assertInstanceOf(PPLoader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp')));
+        self::assertInstanceOf(PP2Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp2')));
+        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp3')));
     }
 
     #[TestDox('A grammar written in no file is read as the newest format there is')]
@@ -31,7 +31,7 @@ final class SyntaxLoaderRegistryTest extends TestCase
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(new StringSource('')));
+        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(StringSource::createEmpty()));
     }
 
     #[TestDox('A file named with an extension of no format is read as the newest one')]
@@ -39,8 +39,8 @@ final class SyntaxLoaderRegistryTest extends TestCase
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(new VirtualSource('/app/a.txt', new StringSource())));
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(new VirtualSource('/app/grammar', new StringSource())));
+        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.txt')));
+        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/grammar')));
     }
 
     #[TestDox('The extensions a grammar file may be named with are known')]

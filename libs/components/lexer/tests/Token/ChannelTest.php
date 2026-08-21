@@ -51,7 +51,7 @@ final class ChannelTest extends TestCase
         $lexer = self::createAnnotatedLexer();
         $source = 'name';
 
-        $channels = self::channels($lexer->lex(new StringSource($source)));
+        $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
         self::assertSame(Channel::Default, $channels['T_NAME']);
     }
@@ -62,7 +62,7 @@ final class ChannelTest extends TestCase
         $lexer = self::createAnnotatedLexer();
         $source = 'a b';
 
-        $channels = self::channels($lexer->lex(new StringSource($source)));
+        $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
         self::assertArrayNotHasKey('T_WHITESPACE', $channels);
     }
@@ -73,7 +73,7 @@ final class ChannelTest extends TestCase
         $lexer = self::createAnnotatedLexer(skip: []);
         $source = 'a b';
 
-        $channels = self::channels($lexer->lex(new StringSource($source)));
+        $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
         self::assertArrayHasKey('T_WHITESPACE', $channels);
         self::assertSame(Channel::Hidden, $channels['T_WHITESPACE']);
@@ -85,7 +85,7 @@ final class ChannelTest extends TestCase
         $lexer = self::createAnnotatedLexer();
         $source = '## note';
 
-        $channels = self::channels($lexer->lex(new StringSource($source)));
+        $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
         self::assertArrayHasKey('T_DOC', $channels);
         self::assertSame('documentation', $channels['T_DOC']->name);
@@ -97,8 +97,8 @@ final class ChannelTest extends TestCase
     {
         $lexer = self::createAnnotatedLexer();
 
-        $first = self::channels($lexer->lex(new StringSource('## one')));
-        $second = self::channels($lexer->lex(new StringSource('## two')));
+        $first = self::channels($lexer->lex(StringSource::createFromString('## one')));
+        $second = self::channels($lexer->lex(StringSource::createFromString('## two')));
 
         self::assertSame($first['T_DOC']->name, $second['T_DOC']->name);
     }
@@ -112,7 +112,7 @@ final class ChannelTest extends TestCase
         }, skip: []);
         $source = '42 ???';
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
 
         $unknown = [];
 
@@ -132,7 +132,7 @@ final class ChannelTest extends TestCase
         $lexer = self::createAnnotatedLexer();
         $source = 'name';
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
 
         self::assertSame(Channel::EndOfInput, $tokens[\count($tokens) - 1]->channel);
     }

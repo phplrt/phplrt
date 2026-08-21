@@ -37,7 +37,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer(skip: []);
         $source = 'x = 1 + 20';
 
-        $actual = self::describe($lexer->lex(new StringSource($source)));
+        $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
         self::assertSame([
             'T_NAME(x)@0',
@@ -59,7 +59,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer();
         $source = 'x = 1 + 20';
 
-        $actual = self::describe($lexer->lex(new StringSource($source)));
+        $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
         self::assertSame([
             'T_NAME(x)@0',
@@ -77,7 +77,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer();
         $source = 'first = 42 + second';
 
-        self::assertTokensMatchSource($source, $lexer->lex(new StringSource($source)));
+        self::assertTokensMatchSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
     #[TestDox('The tokens together cover the whole source')]
@@ -86,7 +86,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer(skip: []);
         $source = '  alpha =  1+2  ';
 
-        self::assertTokensCoverSource($source, $lexer->lex(new StringSource($source)));
+        self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
     #[TestDox('The stream is always terminated by a single end of input token')]
@@ -95,7 +95,7 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer();
         $source = 'a = 1';
 
-        self::assertTerminatedStream($source, $lexer->lex(new StringSource($source)));
+        self::assertTerminatedStream($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
     #[TestDox('An empty source produces nothing but the terminal token')]
@@ -103,7 +103,7 @@ final class TokenStreamTest extends TestCase
     {
         $lexer = self::createExpressionLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource('')), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createEmpty()), false);
 
         self::assertCount(1, $tokens);
         self::assertSame(Channel::EndOfInput, $tokens[0]->channel);
@@ -118,7 +118,7 @@ final class TokenStreamTest extends TestCase
         });
         $source = '"  spaced  "';
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
 
         self::assertSame('"  spaced  "', $tokens[0]->value);
     }
@@ -132,7 +132,7 @@ final class TokenStreamTest extends TestCase
         }, skip: []);
         $source = 'привет мир';
 
-        $actual = self::describe($lexer->lex(new StringSource($source)));
+        $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
         self::assertSame([
             'T_WORD(привет)@0',
@@ -149,7 +149,7 @@ final class TokenStreamTest extends TestCase
             $lexer->addPattern('\d++');
         });
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource('42')), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('42')), false);
 
         self::assertNull($tokens[0]->name);
     }
@@ -162,7 +162,7 @@ final class TokenStreamTest extends TestCase
 
         $identifiers = [];
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             $identifiers[$token->name ?? 'eoi'] = $token->id;
         }
 
@@ -179,8 +179,8 @@ final class TokenStreamTest extends TestCase
         $source = 'a = 1 + 2';
 
         self::assertSame(
-            self::describe($lexer->lex(new StringSource($source))),
-            self::describe($lexer->lex(new StringSource($source))),
+            self::describe($lexer->lex(StringSource::createFromString($source))),
+            self::describe($lexer->lex(StringSource::createFromString($source))),
         );
     }
 
@@ -190,9 +190,9 @@ final class TokenStreamTest extends TestCase
         $lexer = self::createExpressionLexer();
         $source = 'a = 1';
 
-        $before = self::describe($lexer->lex(new StringSource($source)));
-        $lexer->lex(new StringSource('completely + different + source'));
-        $after = self::describe($lexer->lex(new StringSource($source)));
+        $before = self::describe($lexer->lex(StringSource::createFromString($source)));
+        $lexer->lex(StringSource::createFromString('completely + different + source'));
+        $after = self::describe($lexer->lex(StringSource::createFromString($source)));
 
         self::assertSame($before, $after);
     }

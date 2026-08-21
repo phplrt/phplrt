@@ -44,7 +44,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $result = [];
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             if ($token->channel === Channel::Default) {
                 $result[] = \sprintf('%s(%s)', (string) $token->name, $token->value);
             }

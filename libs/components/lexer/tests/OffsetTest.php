@@ -29,7 +29,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two three';
 
-        $actual = self::describe($lexer->lex(new StringSource($source), 8));
+        $actual = self::describe($lexer->lex(StringSource::createFromString($source), 8));
 
         self::assertSame([
             'T_NAME(three)@8',
@@ -43,7 +43,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two three';
 
-        self::assertTokensMatchSource($source, $lexer->lex(new StringSource($source), 4));
+        self::assertTokensMatchSource($source, $lexer->lex(StringSource::createFromString($source), 4));
     }
 
     #[TestDox('An offset equal to the source length produces only the terminal token')]
@@ -52,7 +52,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two';
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource($source), \strlen($source)), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source), \strlen($source)), false);
 
         self::assertCount(1, $tokens);
         self::assertSame(Channel::EndOfInput, $tokens[0]->channel);
@@ -66,8 +66,8 @@ final class OffsetTest extends TestCase
         $source = 'one two';
 
         self::assertSame(
-            self::describe($lexer->lex(new StringSource($source))),
-            self::describe($lexer->lex(new StringSource($source), 0)),
+            self::describe($lexer->lex(StringSource::createFromString($source))),
+            self::describe($lexer->lex(StringSource::createFromString($source), 0)),
         );
     }
 
@@ -78,6 +78,6 @@ final class OffsetTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        \iterator_to_array($lexer->lex(new StringSource('one two'), -1), false);
+        \iterator_to_array($lexer->lex(StringSource::createFromString('one two'), -1), false);
     }
 }

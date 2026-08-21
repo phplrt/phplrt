@@ -34,14 +34,14 @@ final class PP2LexerTest extends TestCase
     private static function tokenize(string $source): array
     {
         $lexer = self::$lexer ??= new Compiler()
-            ->load(new FileSource(self::GRAMMAR))
+            ->load(FileSource::createFromPathname(self::GRAMMAR))
             ->build()
             ->lexer
             ->toLexer();
 
         $result = [];
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             if ($token->channel === Channel::Default) {
                 $result[] = $token;
             }

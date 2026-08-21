@@ -29,7 +29,7 @@ final class ErrorReportingTest extends TestCase
 
         $this->expectException(RuntimeExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(new StringSource('first second')), false);
+        \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
     }
 
     #[TestDox('A reported error is a lexer exception')]
@@ -39,7 +39,7 @@ final class ErrorReportingTest extends TestCase
 
         $this->expectException(LexerExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(new StringSource('first second')), false);
+        \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
     }
 
     #[TestDox('A reported error points at the unreadable fragment')]
@@ -48,7 +48,7 @@ final class ErrorReportingTest extends TestCase
         $lexer = self::createIncompleteLexer();
 
         try {
-            \iterator_to_array($lexer->lex(new StringSource('first second')), false);
+            \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
         } catch (RuntimeExceptionInterface $e) {
             self::assertSame(5, $e->token->offset);
 
@@ -63,7 +63,7 @@ final class ErrorReportingTest extends TestCase
     {
         $lexer = self::createIncompleteLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(new StringSource('word')), false);
+        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('word')), false);
 
         self::assertCount(2, $tokens);
     }
@@ -77,7 +77,7 @@ final class ErrorReportingTest extends TestCase
         }, skip: []);
         $source = 'abc 123 def';
 
-        self::assertTokensCoverSource($source, $lexer->lex(new StringSource($source)));
+        self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
     #[TestDox('A failure that happens inside a state is reported as well')]
@@ -94,6 +94,6 @@ final class ErrorReportingTest extends TestCase
 
         $this->expectException(RuntimeExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(new StringSource('"abc def"')), false);
+        \iterator_to_array($lexer->lex(StringSource::createFromString('"abc def"')), false);
     }
 }

@@ -41,7 +41,7 @@ final class TokenTest extends TestCase
         $lexer = self::createNamesLexer();
         $source = 'one two';
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             if ($token->channel === Channel::EndOfInput) {
                 continue;
             }
@@ -59,7 +59,7 @@ final class TokenTest extends TestCase
         $lexer = self::createNamesLexer();
         $source = 'word';
 
-        foreach ($lexer->lex(new StringSource($source)) as $token) {
+        foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
             self::assertGreaterThanOrEqual(TokenInterface::MIN_OFFSET, $token->offset);
         }
     }
