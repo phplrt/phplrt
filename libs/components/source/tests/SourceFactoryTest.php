@@ -7,13 +7,13 @@ namespace Phplrt\Source\Tests;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\Driver\SourceDriverInterface;
 use Phplrt\Source\Driver\SplFileInfoSourceDriver;
-use Phplrt\Source\Driver\StreamSourceDriver;
+use Phplrt\Source\Driver\ResourceSourceDriver;
 use Phplrt\Source\Driver\StringSourceDriver;
 use Phplrt\Source\Exception\NotCreatableException;
-use Phplrt\Source\File;
-use Phplrt\Source\Source;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
 use Phplrt\Source\SourceFactory;
-use Phplrt\Source\Stream;
+use Phplrt\Source\ResourceSource;
 
 final class SourceFactoryTest extends TestCase
 {
@@ -22,7 +22,7 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create('2 + 2');
 
-        self::assertInstanceOf(Source::class, $source);
+        self::assertInstanceOf(StringSource::class, $source);
         self::assertSame('2 + 2', $source->content);
     }
 
@@ -33,7 +33,7 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create(new \SplFileInfo($this->temp));
 
-        self::assertInstanceOf(File::class, $source);
+        self::assertInstanceOf(FileSource::class, $source);
         self::assertSame($this->temp, $source->pathname);
         self::assertSame('2 + 2', $source->content);
     }
@@ -45,13 +45,13 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create($resource);
 
-        self::assertInstanceOf(Stream::class, $source);
+        self::assertInstanceOf(ResourceSource::class, $source);
         self::assertSame($resource, $source->stream);
     }
 
     public function testPassesReadableThrough(): void
     {
-        $expected = new Source('2 + 2');
+        $expected = new StringSource('2 + 2');
 
         $actual = SourceFactory::createDefault()
             ->create($expected);
@@ -78,7 +78,7 @@ final class SourceFactoryTest extends TestCase
 
     public function testPassesReadableThroughWithoutAnyDrivers(): void
     {
-        $expected = new Source('2 + 2');
+        $expected = new StringSource('2 + 2');
 
         self::assertSame($expected, new SourceFactory()->create($expected));
     }
@@ -103,7 +103,7 @@ final class SourceFactoryTest extends TestCase
 
     public function testTheFirstMatchingDriverWins(): void
     {
-        $expected = new Source('overridden');
+        $expected = new StringSource('overridden');
 
         $factory = new SourceFactory([
             new class ($expected) implements SourceDriverInterface {
@@ -126,30 +126,30 @@ final class SourceFactoryTest extends TestCase
     {
         $factory = new SourceFactory([
             new SplFileInfoSourceDriver(),
-            new StreamSourceDriver(),
+            new ResourceSourceDriver(),
             new StringSourceDriver(),
         ]);
 
-        self::assertInstanceOf(Source::class, $factory->create('2 + 2'));
+        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
     }
 
     public function testAcceptsDriversFromTraversable(): void
     {
         $factory = new SourceFactory(new \ArrayIterator([
-            new StreamSourceDriver(),
+            new ResourceSourceDriver(),
             new StringSourceDriver(),
         ]));
 
-        self::assertInstanceOf(Source::class, $factory->create('2 + 2'));
+        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
     }
 
     public function testIgnoresDriverListKeys(): void
     {
         $factory = new SourceFactory([
-            'stream' => new StreamSourceDriver(),
+            'resource' => new ResourceSourceDriver(),
             'string' => new StringSourceDriver(),
         ]);
 
-        self::assertInstanceOf(Source::class, $factory->create('2 + 2'));
+        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
     }
 }

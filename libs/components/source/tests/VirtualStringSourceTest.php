@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\VirtualFile;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualStringSource;
 
-final class VirtualFileTest extends TestCase
+final class VirtualStringSourceTest extends TestCase
 {
     public function testConstructor(): void
     {
         $pathname = 'virtual/file.php';
         $content = 'test content';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, $content);
 
         self::assertSame($pathname, $virtualFile->pathname);
         self::assertSame($content, $virtualFile->content);
@@ -22,7 +23,7 @@ final class VirtualFileTest extends TestCase
     {
         $pathname = 'virtual/file.php';
         $content = 'test content';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, $content);
 
         self::assertSame($pathname, $virtualFile->pathname);
     }
@@ -31,39 +32,45 @@ final class VirtualFileTest extends TestCase
     {
         $pathname = 'virtual/file.php';
         $content = 'test content';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, $content);
 
         self::assertSame($content, $virtualFile->content);
     }
 
-    public function testStreamProperty(): void
+    public function testSizeProperty(): void
+    {
+        $virtualFile = new VirtualStringSource('virtual/file.php', 'test content');
+
+        self::assertSame(12, $virtualFile->size);
+    }
+
+    public function testCreateStream(): void
     {
         $pathname = 'virtual/file.php';
         $content = 'test content';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, $content);
 
-        $stream = $virtualFile->stream;
+        $stream = $virtualFile->createStream();
 
-        self::assertIsResource($stream);
-        self::assertSame($content, \stream_get_contents($stream));
+        self::assertSame(0, $stream->offset);
+        self::assertSame($content, $stream->read(1024));
     }
 
     public function testInheritsFromSource(): void
     {
         $pathname = 'virtual/file.php';
         $content = 'test content';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, $content);
 
-        self::assertInstanceOf(\Phplrt\Source\Source::class, $virtualFile);
+        self::assertInstanceOf(StringSource::class, $virtualFile);
     }
 
     public function testEmptyContent(): void
     {
         $pathname = 'virtual/file.php';
-        $content = '';
-        $virtualFile = new VirtualFile($pathname, $content);
+        $virtualFile = new VirtualStringSource($pathname, '');
 
         self::assertSame('', $virtualFile->content);
-        self::assertIsResource($virtualFile->stream);
+        self::assertTrue($virtualFile->createStream()->isEof);
     }
 }

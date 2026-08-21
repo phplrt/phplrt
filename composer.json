@@ -37,7 +37,10 @@
             "Phplrt\\Parser\\": "libs/components/parser/src",
             "Phplrt\\Parser\\Builder\\": "libs/components/parser-builder/src",
             "Phplrt\\Source\\": "libs/components/source/src"
-        }
+        },
+        "files": [
+            "libs/components/source/src/polyfill.php"
+        ]
     },
     "require-dev": {
         "ext-intl": "*",

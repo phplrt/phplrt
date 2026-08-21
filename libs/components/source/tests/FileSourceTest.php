@@ -6,13 +6,14 @@ namespace Phplrt\Source\Tests;
 
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\File;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\Stream\SeekableResourceStream;
 
-final class FileTest extends TestCase
+final class FileSourceTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame($this->temp, $file->pathname);
     }
@@ -21,14 +22,14 @@ final class FileTest extends TestCase
     {
         \file_put_contents($this->temp, 'test content');
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertTrue($file->isExists);
     }
 
     public function testIsExistsPropertyWhenFileNotExists(): void
     {
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertFalse($file->isExists);
     }
@@ -37,14 +38,14 @@ final class FileTest extends TestCase
     {
         \file_put_contents($this->temp, 'test content');
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertTrue($file->isReadable);
     }
 
     public function testIsReadablePropertyWhenFileNotExists(): void
     {
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertFalse($file->isReadable);
     }
@@ -54,7 +55,7 @@ final class FileTest extends TestCase
         \file_put_contents($this->temp, 'test content');
         $expectedTime = \filemtime($this->temp);
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame($expectedTime, $file->modifiedAt);
     }
@@ -64,7 +65,7 @@ final class FileTest extends TestCase
         $content = 'test content';
         \file_put_contents($this->temp, $content);
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame($content, $file->content);
     }
@@ -74,7 +75,7 @@ final class FileTest extends TestCase
         \file_put_contents($this->temp, 'first content');
         $modifiedAt = \filemtime($this->temp);
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame('first content', $file->content);
 
@@ -90,7 +91,7 @@ final class FileTest extends TestCase
     {
         \file_put_contents($this->temp, 'first content');
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame('first content', $file->content);
 
@@ -105,7 +106,7 @@ final class FileTest extends TestCase
         \file_put_contents($this->temp, 'first content');
         $modifiedAt = \filemtime($this->temp);
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         self::assertSame('first content', $file->content);
 
@@ -119,33 +120,75 @@ final class FileTest extends TestCase
 
     public function testContentPropertyThrowsWhenFileNotFound(): void
     {
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
         $this->expectException(NotFoundException::class);
 
         $file->content;
     }
 
-    public function testStreamProperty(): void
+    public function testSizeProperty(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $file = new FileSource($this->temp);
+
+        self::assertSame(12, $file->size);
+    }
+
+    public function testCreateStreamReadsTheFileFromTheBeginning(): void
     {
         $content = 'test content';
         \file_put_contents($this->temp, $content);
 
-        $file = new File($this->temp);
+        $file = new FileSource($this->temp);
 
-        $stream = $file->stream;
+        $stream = $file->createStream();
 
-        self::assertIsResource($stream);
-        self::assertSame($content, \stream_get_contents($stream));
+        // A regular file can be rewound, so the cursor it hands out can too
+        self::assertInstanceOf(SeekableResourceStream::class, $stream);
+        self::assertSame(0, $stream->offset);
+        self::assertSame($content, $stream->read(1024));
+        self::assertTrue($stream->isEof);
     }
 
-    public function testStreamPropertyThrowsWhenFileNotReadable(): void
+    public function testCreateStreamReturnsIndependentCursors(): void
     {
-        $file = new File($this->temp);
+        $content = 'test content';
+        \file_put_contents($this->temp, $content);
+
+        $file = new FileSource($this->temp);
+
+        $first = $file->createStream();
+        $first->read(5);
+
+        $second = $file->createStream();
+
+        self::assertSame(5, $first->offset);
+        self::assertSame(0, $second->offset);
+        self::assertSame($content, $second->read(1024));
+    }
+
+    public function testCreateStreamClosesTheFileAlongWithTheCursor(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $file = new FileSource($this->temp);
+
+        $before = \count(\get_resources('stream'));
+
+        $stream = $file->createStream();
+        unset($stream);
+
+        self::assertCount($before, \get_resources('stream'));
+    }
+
+    public function testCreateStreamThrowsWhenFileNotReadable(): void
+    {
+        $file = new FileSource($this->temp);
 
         $this->expectException(NotReadableException::class);
 
-        $file->stream;
+        $file->createStream();
     }
-
 }

@@ -8,10 +8,15 @@ use Phplrt\Contracts\Source\FileInterface;
 
 /**
  * Implementing a readable object that references a virtual (non-real)
- * file with predefined content string
+ * file with a predefined content stream
+ *
+ * @final please do not inherit from this class
  */
-class VirtualFile extends Source implements FileInterface
+class VirtualResourceSource extends ResourceSource implements FileInterface
 {
+    /**
+     * @param resource $stream The resource stream
+     */
     public function __construct(
         /**
          * The virtual file pathname
@@ -19,8 +24,9 @@ class VirtualFile extends Source implements FileInterface
          * @var non-empty-string
          */
         public readonly string $pathname,
-        string $content = '',
+        mixed $stream,
+        bool $autoclose = false,
     ) {
-        parent::__construct($content);
+        parent::__construct($stream, $autoclose);
     }
 }

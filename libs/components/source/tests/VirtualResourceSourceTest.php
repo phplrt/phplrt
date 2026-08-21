@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\VirtualFileStream;
+use Phplrt\Source\ResourceSource;
+use Phplrt\Source\VirtualResourceSource;
 
-final class VirtualFileStreamTest extends TestCase
+final class VirtualResourceSourceTest extends TestCase
 {
     public function testConstructor(): void
     {
@@ -16,7 +17,7 @@ final class VirtualFileStreamTest extends TestCase
         \fwrite($stream, $content);
         \rewind($stream);
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertSame($pathname, $virtualFileStream->pathname);
         self::assertSame($stream, $virtualFileStream->stream);
@@ -27,7 +28,7 @@ final class VirtualFileStreamTest extends TestCase
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'rb+');
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertSame($pathname, $virtualFileStream->pathname);
     }
@@ -40,7 +41,7 @@ final class VirtualFileStreamTest extends TestCase
         \fwrite($stream, $content);
         \rewind($stream);
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertSame($content, $virtualFileStream->content);
     }
@@ -50,9 +51,9 @@ final class VirtualFileStreamTest extends TestCase
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'rb+');
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
-        self::assertInstanceOf(\Phplrt\Source\Stream::class, $virtualFileStream);
+        self::assertInstanceOf(ResourceSource::class, $virtualFileStream);
     }
 
     public function testUriProperty(): void
@@ -60,7 +61,7 @@ final class VirtualFileStreamTest extends TestCase
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'rb+');
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertSame('php://memory', $virtualFileStream->uri);
     }
@@ -70,21 +71,34 @@ final class VirtualFileStreamTest extends TestCase
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'w+b');
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertSame('w+b', $virtualFileStream->mode);
     }
 
-    public function testOffsetProperty(): void
+    public function testCreateStream(): void
     {
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
         \fseek($stream, 5);
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
-        self::assertSame(5, $virtualFileStream->offset);
+        $cursor = $virtualFileStream->createStream();
+
+        self::assertSame(0, $cursor->offset);
+        self::assertSame('test content', $cursor->read(1024));
+    }
+
+    public function testAutocloseIsPassedThrough(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+
+        $virtualFileStream = new VirtualResourceSource('virtual/file.php', $stream, autoclose: true);
+        unset($virtualFileStream);
+
+        self::assertIsClosedResource($stream);
     }
 
     public function testIsLocalProperty(): void
@@ -92,7 +106,7 @@ final class VirtualFileStreamTest extends TestCase
         $pathname = 'virtual/file.php';
         $stream = \fopen('php://memory', 'rb+');
 
-        $virtualFileStream = new VirtualFileStream($pathname, $stream);
+        $virtualFileStream = new VirtualResourceSource($pathname, $stream);
 
         self::assertTrue($virtualFileStream->isLocal);
     }

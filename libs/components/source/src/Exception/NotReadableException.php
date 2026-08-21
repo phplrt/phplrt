@@ -11,6 +11,8 @@ namespace Phplrt\Source\Exception;
 class NotReadableException extends NotAccessibleException
 {
     final public const int CODE_FILE_READING = 0x01;
+    final public const int CODE_STREAM_READING = 0x02;
+    final public const int CODE_STREAM_EXHAUSTED = 0x03;
 
     /**
      * @psalm-taint-sink file $filename
@@ -21,5 +23,26 @@ class NotReadableException extends NotAccessibleException
         $message = 'An error occurred while trying read the file "%s" (permission denied?)';
 
         return new self(\sprintf($message, $filename), self::CODE_FILE_READING, $prev);
+    }
+
+    /**
+     * @param non-empty-string $stream
+     */
+    public static function becauseStreamIsNotReadable(string $stream, ?\Throwable $prev = null): self
+    {
+        $message = 'The stream "%s" is not open for reading';
+
+        return new self(\sprintf($message, $stream), self::CODE_STREAM_READING, $prev);
+    }
+
+    /**
+     * @param non-empty-string $stream
+     */
+    public static function becauseStreamIsAlreadyRead(string $stream, ?\Throwable $prev = null): self
+    {
+        $message = 'The stream "%s" does not support offset (seek/rewind) changes '
+            . 'and therefore can be read only once';
+
+        return new self(\sprintf($message, $stream), self::CODE_STREAM_EXHAUSTED, $prev);
     }
 }

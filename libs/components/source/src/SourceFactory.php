@@ -7,9 +7,9 @@ namespace Phplrt\Source;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\SourceFactoryInterface;
+use Phplrt\Source\Driver\ResourceSourceDriver;
 use Phplrt\Source\Driver\SourceDriverInterface;
 use Phplrt\Source\Driver\SplFileInfoSourceDriver;
-use Phplrt\Source\Driver\StreamSourceDriver;
 use Phplrt\Source\Driver\StringSourceDriver;
 use Phplrt\Source\Exception\NotCreatableException;
 
@@ -53,7 +53,7 @@ final readonly class SourceFactory implements SourceFactoryInterface
         return [
             new StringSourceDriver(),
             new SplFileInfoSourceDriver(),
-            new StreamSourceDriver(),
+            new ResourceSourceDriver(),
         ];
     }
 

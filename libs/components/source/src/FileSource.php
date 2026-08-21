@@ -5,38 +5,24 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\Stream\ReadableStreamInterface;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Stream\ForwardResourceStream;
+use Phplrt\Source\Stream\SeekableResourceStream;
 
 /**
  * Implementing a readable object that references a real physical file
+ *
+ * @final please do not inherit from this class
  */
-class File extends Readable implements FileInterface
+class FileSource extends Readable implements FileInterface
 {
     /**
      * The modification time and the size of the file at the moment its
      * content has been read.
      */
     private string $memoizedAt = '';
-
-    public mixed $stream {
-        /**
-         * @throws NotReadableException When the file cannot be opened for reading
-         */
-        get {
-            if (!$this->isReadable) {
-                throw NotReadableException::becauseFileNotReadable($this->pathname);
-            }
-
-            $stream = \fopen($this->pathname, 'rb');
-
-            if (!\is_resource($stream)) {
-                throw NotReadableException::becauseFileNotReadable($this->pathname);
-            }
-
-            return $stream;
-        }
-    }
 
     public private(set) string $content {
         /**
@@ -119,4 +105,28 @@ class File extends Readable implements FileInterface
          */
         public readonly string $pathname,
     ) {}
+
+    /**
+     * @throws NotReadableException When the file cannot be opened for reading
+     */
+    public function createStream(): ReadableStreamInterface
+    {
+        if (!$this->isReadable) {
+            throw NotReadableException::becauseFileNotReadable($this->pathname);
+        }
+
+        $stream = @\fopen($this->pathname, 'rb');
+
+        if (!\is_resource($stream)) {
+            throw NotReadableException::becauseFileNotReadable($this->pathname);
+        }
+
+        // A pathname does not necessarily reference a regular file, so what the
+        // cursor is able to do is only known after the file has been opened.
+        //
+        // The stream belongs to the cursor alone, so it is closed along with it.
+        return \stream_get_meta_data($stream)['seekable']
+            ? new SeekableResourceStream($stream, autoclose: true)
+            : new ForwardResourceStream($stream, autoclose: true);
+    }
 }
