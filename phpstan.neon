@@ -25,7 +25,6 @@ parameters:
     - php
   tmpDir: vendor/.cache.phpstan
   treatPhpDocTypesAsCertain: false
-  # Other checks
   reportUnmatchedIgnoredErrors: true
   ignoreErrors:
     # Design By Contract assertions should not affect the statistical analysis
