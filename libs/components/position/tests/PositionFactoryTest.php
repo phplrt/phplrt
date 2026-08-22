@@ -36,6 +36,19 @@ final class PositionFactoryTest extends TestCase
         self::assertSame(self::calculateColumn($code, \strlen($code)), $position->column);
     }
 
+    public function testEveryOffsetOfAnEmptySourcePointsAtItsBeginning(): void
+    {
+        $factory = new PositionFactory();
+        $source = new StringSource();
+
+        foreach ([0, 1, \PHP_INT_MAX] as $offset) {
+            $position = $factory->createFromOffset($source, $offset);
+
+            self::assertSame(PositionInterface::MIN_LINE, $position->line);
+            self::assertSame(PositionInterface::MIN_COLUMN, $position->column);
+        }
+    }
+
     public function testFailsInCaseOfNonPositiveChunkSize(): void
     {
         $this->expectException(InvalidArgumentException::class);

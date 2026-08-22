@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Position\Tests;
 
+use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\StringSource;
@@ -44,6 +45,40 @@ final class CreateOffsetFromPositionTest extends TestCase
         $source = new StringSource("first\nsecond");
 
         self::assertSame(12, $factory->createOffsetFromPosition($source, new Position(100, 1)));
+    }
+
+    public function testGreatestPositionPointsAtTheEndOfTheSource(): void
+    {
+        $factory = new PositionFactory();
+        $source = new StringSource("first\nsecond");
+
+        $position = new Position(\PHP_INT_MAX, \PHP_INT_MAX);
+
+        self::assertSame(12, $factory->createOffsetFromPosition($source, $position));
+    }
+
+    public function testEveryPositionOfAnEmptySourcePointsAtItsBeginning(): void
+    {
+        $factory = new PositionFactory();
+        $source = new StringSource();
+
+        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position()));
+        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position(50, 50)));
+    }
+
+    public function testPositionBelowTheMinimumPointsAtTheBeginning(): void
+    {
+        $factory = new PositionFactory();
+        $source = new StringSource("first\nsecond");
+
+        // A position of an implementation that does not hold the one-based
+        // invariant of the contract.
+        $position = new class () implements PositionInterface {
+            public int $line = 0;
+            public int $column = -100;
+        };
+
+        self::assertSame(0, $factory->createOffsetFromPosition($source, $position));
     }
 
     #[DataProvider('chunkSizeProvider')]
