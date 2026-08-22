@@ -77,9 +77,13 @@ class FileSource extends Readable implements FileInterface
          * @throws NotReadableException When the file cannot be read
          */
         get {
-            $this->assertReadable();
+            $size = @\filesize($this->pathname);
 
-            return \max(0, (int) \filesize($this->pathname));
+            if ($size === false) {
+                throw $this->createAccessFailure();
+            }
+
+            return \max(0, $size);
         }
     }
 
@@ -94,9 +98,13 @@ class FileSource extends Readable implements FileInterface
          * @throws NotReadableException When the file cannot be read
          */
         get {
-            $this->assertReadable();
+            $time = @\filemtime($this->pathname);
 
-            return \max(0, (int) \filemtime($this->pathname));
+            if ($time === false) {
+                throw $this->createAccessFailure();
+            }
+
+            return \max(0, $time);
         }
     }
 
@@ -164,12 +172,10 @@ class FileSource extends Readable implements FileInterface
      */
     private function open(): ResourceSource
     {
-        $this->assertReadable();
-
         $stream = @\fopen($this->pathname, 'rb');
 
         if (!\is_resource($stream)) {
-            throw NotReadableException::becauseFileNotReadable($this->pathname);
+            throw $this->createAccessFailure();
         }
 
         // Closing the handle is what gives the file up again, so the source
@@ -180,19 +186,16 @@ class FileSource extends Readable implements FileInterface
     }
 
     /**
-     * @throws NotFoundException When the file does not exist
-     * @throws NotReadableException When the file cannot be read
+     * Tells what the file that could not be accessed is about, which costs a
+     * request to the file system and is therefore found out only after the
+     * access has failed.
      */
-    private function assertReadable(): void
+    private function createAccessFailure(): NotReadableException
     {
-        \clearstatcache(true, $this->pathname);
-
         if (!$this->isExists) {
-            throw NotFoundException::becauseFileNotFound($this->pathname);
+            return NotFoundException::becauseFileNotFound($this->pathname);
         }
 
-        if (!$this->isReadable) {
-            throw NotReadableException::becauseFileNotReadable($this->pathname);
-        }
+        return NotReadableException::becauseFileNotReadable($this->pathname);
     }
 }
