@@ -152,7 +152,17 @@ final readonly class PhpCodePrinter
      */
     public function createMethodNames(array $reducers, array $constants): array
     {
-        $rules = \array_flip($constants);
+        $rules = [];
+
+        foreach ($constants as $rule => $constant) {
+            // A rule spelled as a number is not a rule the grammar can name
+            if (!\is_string($rule)) {
+                continue;
+            }
+
+            $rules[$constant] = $rule;
+        }
+
         $names = [];
         $taken = [];
 
