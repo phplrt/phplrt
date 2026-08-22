@@ -6,10 +6,8 @@ namespace Phplrt\Contracts\Source\Tests;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Contracts\Source\FiniteStreamInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Contracts\Source\ReadableStreamInterface;
-use Phplrt\Contracts\Source\SeekableStreamInterface;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
@@ -27,6 +25,7 @@ class CompatibilityTest extends TestCase
             public string $content;
             public ?int $size;
             public int $offset;
+            public bool $isSeekable;
             public bool $isEof;
 
             public function read(int $bytes): string
@@ -48,6 +47,7 @@ class CompatibilityTest extends TestCase
             public string $content;
             public ?int $size;
             public int $offset;
+            public bool $isSeekable;
             public bool $isEof;
 
             public function read(int $bytes): string
@@ -68,36 +68,7 @@ class CompatibilityTest extends TestCase
         new class () implements ReadableStreamInterface {
             public ?int $size;
             public int $offset;
-            public bool $isEof;
-
-            public function read(int $bytes): string
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-        };
-    }
-
-    #[DoesNotPerformAssertions]
-    public function testSeekableStreamCompatibility(): void
-    {
-        new class () implements SeekableStreamInterface {
-            public ?int $size;
-            public int $offset;
-            public bool $isEof;
-
-            public function read(int $bytes): string
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-        };
-    }
-
-    #[DoesNotPerformAssertions]
-    public function testFiniteStreamCompatibility(): void
-    {
-        new class () implements FiniteStreamInterface {
-            public int $size;
-            public int $offset;
+            public bool $isSeekable;
             public bool $isEof;
 
             public function read(int $bytes): string

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Contracts\Source\FiniteStreamInterface;
-use Phplrt\Contracts\Source\SeekableStreamInterface;
 use Phplrt\Source\Exception\InvalidArgumentException;
 
 /**
@@ -13,7 +11,7 @@ use Phplrt\Source\Exception\InvalidArgumentException;
  *
  * @final please do not inherit from this class
  */
-class StringSource extends Readable implements FiniteStreamInterface, SeekableStreamInterface
+class StringSource extends Readable
 {
     /**
      * @var int<0, max>
@@ -38,12 +36,16 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
         get => $this->position;
         set {
             // Invariant against the callers not covered by static analysis.
-            if ($value < 0) { // @phpstan-ignore smaller.alwaysFalse
+            if ($value < 0) {
                 throw InvalidArgumentException::becauseOffsetIsNegative($value);
             }
 
             $this->position = $value;
         }
+    }
+
+    public bool $isSeekable {
+        get => true;
     }
 
     public bool $isEof {
@@ -79,7 +81,7 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
     public function read(int $bytes): string
     {
         // Invariant against the callers not covered by static analysis.
-        if ($bytes < 1) { // @phpstan-ignore smaller.alwaysFalse
+        if ($bytes < 1) {
             throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
         }
 

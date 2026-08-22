@@ -41,6 +41,18 @@ class VirtualSource extends Readable implements FileInterface
      */
     public int $offset {
         get => $this->source->offset;
+
+        /**
+         * @throws SourceExceptionInterface may occur during the inability to
+         *         move the position
+         */
+        set {
+            $this->source->offset = $value;
+        }
+    }
+
+    public bool $isSeekable {
+        get => $this->source->isSeekable;
     }
 
     public bool $isEof {

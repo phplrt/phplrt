@@ -25,12 +25,29 @@ interface ReadableStreamInterface
     }
 
     /**
-     * Gets the position the next read starts at, counted in bytes from the
-     * beginning of the source.
+     * Gets or moves the position the next read starts at, counted in bytes
+     * from the beginning of the source.
+     *
+     * A position beyond the end of the source is allowed: reading at such a
+     * position returns an empty string.
      *
      * @var int<0, max>
      */
     public int $offset {
+        get;
+
+        /**
+         * @throws SourceExceptionInterface may occur during the inability to
+         *         move the position
+         */
+        set;
+    }
+
+    /**
+     * Returns {@see true} in case the position can be moved to an arbitrary
+     * one, and {@see false} in case the source can only be read forwards.
+     */
+    public bool $isSeekable {
         get;
     }
 

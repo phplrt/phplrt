@@ -54,6 +54,24 @@ class ResourceSource extends Readable
      */
     private bool $isConsumed = false;
 
+    /**
+     * The resource this source reads from.
+     *
+     * @var resource
+     */
+    private mixed $resource {
+        /**
+         * @throws NotCreatableException When the resource has been closed from the outside
+         */
+        get {
+            if (!\is_resource($this->stream)) {
+                throw NotCreatableException::becauseSourceIs('closed resource');
+            }
+
+            return $this->stream;
+        }
+    }
+
     public string $content {
         /**
          * @throws NotCreatableException When the stream has been closed from the outside
@@ -71,6 +89,7 @@ class ResourceSource extends Readable
      */
     public ?int $size {
         /**
+         * @throws NotCreatableException When the resource has been closed from the outside
          * @throws NotReadableException When the stream cannot be read
          */
         get {
@@ -78,7 +97,7 @@ class ResourceSource extends Readable
                 return $this->isEof ? $this->position : null;
             }
 
-            $info = @\fstat($this->stream);
+            $info = @\fstat($this->resource);
 
             return $info === false ? null : \max(0, $info['size']);
         }
@@ -89,10 +108,32 @@ class ResourceSource extends Readable
      */
     public int $offset {
         get => $this->position;
+
+        /**
+         * @throws InvalidArgumentException When the position is negative
+         * @throws LogicException When the stream cannot be moved to an
+         *         arbitrary position
+         */
+        set {
+            // Invariant against the callers not covered by static analysis.
+            if ($value < 0) {
+                throw InvalidArgumentException::becauseOffsetIsNegative($value);
+            }
+
+            if (!$this->isSeekable) {
+                throw LogicException::becauseStreamIsNotSeekable($this->uri ?? $this->mode);
+            }
+
+            // The resource is put where this source is on the next reading of
+            // it, so the byte peeked at the old position is given up here.
+            $this->peeked = '';
+            $this->position = $value;
+        }
     }
 
     public bool $isEof {
         /**
+         * @throws NotCreatableException When the resource has been closed from the outside
          * @throws NotReadableException When the stream cannot be read
          */
         get {
@@ -180,12 +221,13 @@ class ResourceSource extends Readable
 
     /**
      * @throws InvalidArgumentException When the number of bytes is not positive
+     * @throws NotCreatableException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read
      */
     public function read(int $bytes): string
     {
         // Invariant against the callers not covered by static analysis.
-        if ($bytes < 1) { // @phpstan-ignore smaller.alwaysFalse
+        if ($bytes < 1) {
             throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
         }
 
@@ -213,6 +255,7 @@ class ResourceSource extends Readable
      * Reads everything the resource has left, including the byte that has
      * been peeked at.
      *
+     * @throws NotCreatableException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read
      */
     private function takeRest(): string
@@ -224,7 +267,7 @@ class ResourceSource extends Readable
 
         \error_clear_last();
 
-        $result = @\stream_get_contents($this->stream);
+        $result = @\stream_get_contents($this->resource);
 
         if ($result === false) {
             throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
@@ -246,6 +289,7 @@ class ResourceSource extends Readable
      * currently is at.
      *
      * @param int<1, max> $bytes
+     * @throws NotCreatableException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read
      */
     private function fetch(int $bytes): string
@@ -254,7 +298,7 @@ class ResourceSource extends Readable
 
         \error_clear_last();
 
-        $result = @\fread($this->stream, $bytes);
+        $result = @\fread($this->resource, $bytes);
 
         if ($result === false) {
             throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
@@ -267,6 +311,8 @@ class ResourceSource extends Readable
      * Hands the resource the position this source is at, which the resource
      * is not necessarily left at: it may have been given away at some other
      * one, and taking the whole content out moves it to the end.
+     *
+     * @throws NotCreatableException When the resource has been closed from the outside
      */
     private function synchronize(): void
     {
@@ -276,8 +322,8 @@ class ResourceSource extends Readable
 
         $expected = $this->position + \strlen($this->peeked);
 
-        if (\ftell($this->stream) !== $expected) {
-            @\fseek($this->stream, $expected);
+        if (\ftell($this->resource) !== $expected) {
+            @\fseek($this->resource, $expected);
         }
     }
 
@@ -285,15 +331,10 @@ class ResourceSource extends Readable
      * Tells that the content of the stream is about to be taken out of it,
      * which a stream that cannot be rewound only survives once.
      *
-     * @throws NotCreatableException When the stream has been closed from the outside
      * @throws NotReadableException When the stream has already been read out
      */
     private function consume(): void
     {
-        if (!\is_resource($this->stream)) {
-            throw NotCreatableException::becauseSourceIs('closed resource');
-        }
-
         if ($this->isSeekable) {
             return;
         }

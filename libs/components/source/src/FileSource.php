@@ -35,6 +35,20 @@ class FileSource extends Readable implements FileInterface
          * @throws NotReadableException When the file cannot be opened for reading
          */
         get => $this->reader->offset;
+
+        /**
+         * @throws NotReadableException When the file cannot be opened for reading
+         */
+        set {
+            $this->reader->offset = $value;
+        }
+    }
+
+    public bool $isSeekable {
+        /**
+         * @throws NotReadableException When the file cannot be opened for reading
+         */
+        get => $this->reader->isSeekable;
     }
 
     public bool $isEof {
@@ -58,7 +72,15 @@ class FileSource extends Readable implements FileInterface
      * @var int<0, max>
      */
     public int $size {
-        get => $this->isReadable ? (int) @\filesize($this->pathname) : 0;
+        /**
+         * @throws NotFoundException When the file does not exist
+         * @throws NotReadableException When the file cannot be read
+         */
+        get {
+            $this->assertReadable();
+
+            return \max(0, (int) \filesize($this->pathname));
+        }
     }
 
     /**
@@ -67,7 +89,15 @@ class FileSource extends Readable implements FileInterface
      * @var int<0, max>
      */
     public int $modifiedAt {
-        get => $this->isReadable ? (int) \filemtime($this->pathname) : 0;
+        /**
+         * @throws NotFoundException When the file does not exist
+         * @throws NotReadableException When the file cannot be read
+         */
+        get {
+            $this->assertReadable();
+
+            return \max(0, (int) \filemtime($this->pathname));
+        }
     }
 
     /**
@@ -134,15 +164,7 @@ class FileSource extends Readable implements FileInterface
      */
     private function open(): ResourceSource
     {
-        \clearstatcache(true, $this->pathname);
-
-        if (!$this->isExists) {
-            throw NotFoundException::becauseFileNotFound($this->pathname);
-        }
-
-        if (!$this->isReadable) {
-            throw NotReadableException::becauseFileNotReadable($this->pathname);
-        }
+        $this->assertReadable();
 
         $stream = @\fopen($this->pathname, 'rb');
 
@@ -155,5 +177,22 @@ class FileSource extends Readable implements FileInterface
         @\flock($stream, \LOCK_SH);
 
         return new ResourceSource($stream, autoclose: true);
+    }
+
+    /**
+     * @throws NotFoundException When the file does not exist
+     * @throws NotReadableException When the file cannot be read
+     */
+    private function assertReadable(): void
+    {
+        \clearstatcache(true, $this->pathname);
+
+        if (!$this->isExists) {
+            throw NotFoundException::becauseFileNotFound($this->pathname);
+        }
+
+        if (!$this->isReadable) {
+            throw NotReadableException::becauseFileNotReadable($this->pathname);
+        }
     }
 }

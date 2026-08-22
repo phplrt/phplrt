@@ -108,6 +108,24 @@ final class FileSourceTest extends TestCase
         $file->content;
     }
 
+    public function testSizeThrowsWhenFileNotFound(): void
+    {
+        $file = new FileSource($this->temp);
+
+        $this->expectException(NotFoundException::class);
+
+        $file->size;
+    }
+
+    public function testModifiedAtThrowsWhenFileNotFound(): void
+    {
+        $file = new FileSource($this->temp);
+
+        $this->expectException(NotFoundException::class);
+
+        $file->modifiedAt;
+    }
+
     public function testSizeProperty(): void
     {
         \file_put_contents($this->temp, 'test content');
@@ -139,6 +157,20 @@ final class FileSourceTest extends TestCase
         self::assertSame('test', $file->read(4));
         self::assertSame(4, $file->offset);
         self::assertSame(' content', $file->read(1024));
+    }
+
+    public function testMovesToAnArbitraryPosition(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $file = new FileSource($this->temp);
+
+        self::assertTrue($file->isSeekable);
+        self::assertSame('test', $file->read(4));
+
+        $file->offset = 0;
+
+        self::assertSame('test', $file->read(4));
     }
 
     public function testDoesNotOpenTheFileUntilItIsRead(): void

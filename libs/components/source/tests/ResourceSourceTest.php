@@ -176,6 +176,56 @@ final class ResourceSourceTest extends TestCase
         self::assertSame(' content', $source->content);
     }
 
+    public function testMovesToAnArbitraryPosition(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+        \fwrite($stream, 'test content');
+        \rewind($stream);
+
+        $source = new ResourceSource($stream);
+
+        self::assertTrue($source->isSeekable);
+        self::assertSame('test', $source->read(4));
+
+        $source->offset = 0;
+
+        self::assertSame(0, $source->offset);
+        self::assertSame('test', $source->read(4));
+    }
+
+    public function testMovingForgetsWhatHasBeenPeekedAt(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+        \fwrite($stream, 'test content');
+        \rewind($stream);
+
+        $source = new ResourceSource($stream);
+
+        self::assertFalse($source->isEof);
+
+        $source->offset = 5;
+
+        self::assertSame('content', $source->read(1024));
+    }
+
+    public function testNonSeekableStreamCannotBeMoved(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $source = new ResourceSource($stream);
+
+            self::assertFalse($source->isSeekable);
+
+            $this->expectException(LogicException::class);
+            $this->expectExceptionMessage('does not support offset');
+
+            $source->offset = 5;
+        } finally {
+            \fclose($stream);
+        }
+    }
+
     public function testFailsInCaseOfNonPositiveReadSize(): void
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
@@ -268,6 +318,30 @@ final class ResourceSourceTest extends TestCase
         $this->expectExceptionMessage('from closed resource type');
 
         $source->content;
+    }
+
+    public function testEveryReadingOfAClosedResourceIsReported(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+        \fwrite($stream, 'test content');
+        \rewind($stream);
+
+        $source = new ResourceSource($stream);
+
+        \fclose($stream);
+
+        foreach (['size', 'isEof', 'content'] as $property) {
+            try {
+                $source->$property;
+                self::fail(\sprintf('Reading $%s did not report the closed resource', $property));
+            } catch (NotCreatableException $e) {
+                self::assertStringContainsString('from closed resource type', $e->getMessage());
+            }
+        }
+
+        $this->expectException(NotCreatableException::class);
+
+        $source->read(4);
     }
 
     public function testSerializationWithFileStream(): void
