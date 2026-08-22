@@ -77,7 +77,9 @@ final readonly class SourceLineReader
     private function readLines(ReadableInterface $source, int $offset, int $length, int $lines): array
     {
         $number = $this->positions->createFromOffset($source, $offset)->line;
-        $first = \max(1, $number - $lines);
+
+        $above = \min($lines, $number - 1);
+        $first = \max(1, $number - $above);
 
         $end = $offset + \max(0, \min($length, \PHP_INT_MAX - $offset));
 
@@ -85,7 +87,7 @@ final readonly class SourceLineReader
         $current = $first;
         $trailing = $lines;
 
-        foreach ($this->walk($source, $this->findLineOffset($source, $offset, $number - $first)) as [$start, $value]) {
+        foreach ($this->walk($source, $this->findLineOffset($source, $offset, $above)) as [$start, $value]) {
             if ($current < $number) {
                 $result[$current] = new SourceLine($current, $start, $value);
                 ++$current;
@@ -139,7 +141,7 @@ final readonly class SourceLineReader
 
         for ($width = $this->chunkSize;; $width *= 2) {
             $from = \max(0, $offset - $width);
-            $window = $this->readAt($source, $from, $offset - $from);
+            $window = $this->readAt($source, $from, \min($offset, $width));
 
             $index = \strlen($window);
             $found = 0;
@@ -160,7 +162,7 @@ final readonly class SourceLineReader
             }
 
             if ($found === $expected) {
-                return $from + $index + 1;
+                return \max(0, $from + $index + 1);
             }
 
             // The source begins before the window does, so there is nothing
