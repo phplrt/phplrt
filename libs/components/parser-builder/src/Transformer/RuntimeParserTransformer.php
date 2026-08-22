@@ -122,7 +122,7 @@ final readonly class RuntimeParserTransformer
     {
         $name = \array_search($rule, $result->constants, true);
 
-        if ($name === false) {
+        if (!\is_string($name)) {
             return \sprintf('#%d', $rule);
         }
 
