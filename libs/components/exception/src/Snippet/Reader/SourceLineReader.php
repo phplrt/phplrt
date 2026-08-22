@@ -4,16 +4,26 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Snippet\Reader;
 
+use Phplrt\Contracts\Position\PositionFactoryInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
-use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
-use Phplrt\Exception\Snippet\Reader\Content\ContentInterface;
 use Phplrt\Exception\Snippet\SourceLine;
+use Phplrt\Position\PositionFactory;
+use Phplrt\Source\StringSource;
 
 /**
  * Reads the lines of the source code around the captured (error) fragment.
  */
 final readonly class SourceLineReader
 {
+    /**
+     * The default number of bytes read at once.
+     *
+     * @var int<1, max>
+     */
+    public const int DEFAULT_CHUNK_SIZE = 8192;
+
     /**
      * @var non-empty-string
      */
@@ -24,30 +34,65 @@ final readonly class SourceLineReader
      */
     private const string DELIMITER_EXTRA = "\r";
 
+    public function __construct(
+        /**
+         * The factory telling which line and column of the source the
+         * captured fragment is located at.
+         */
+        private PositionFactoryInterface $positions = new PositionFactory(),
+        /**
+         * The number of bytes read at once.
+         *
+         * @var int<1, max>
+         */
+        private int $chunkSize = self::DEFAULT_CHUNK_SIZE,
+    ) {}
+
     /**
      * @param int<0, max> $offset
      * @param int<0, max> $length
      * @param int<0, max> $lines
      * @return array<int<1, max>, SourceLine>
-     * @throws SourceNotReadableException
+     * @throws SourceExceptionInterface in case the source cannot be read
      */
-    public function read(ContentInterface $content, int $offset, int $length, int $lines): array
+    public function read(ReadableInterface $source, int $offset, int $length, int $lines): array
     {
-        $size = $content->getSize();
-        $offset = \max(0, \min($offset, $size));
+        $source = $this->rewindable($source);
+        $restore = $source->offset;
+
+        try {
+            return $this->readLines($source, \max(0, $offset), \max(0, $length), \max(0, $lines));
+        } finally {
+            $source->offset = $restore;
+        }
+    }
+
+    /**
+     * @param int<0, max> $offset
+     * @param int<0, max> $length
+     * @param int<0, max> $lines
+     * @return array<int<1, max>, SourceLine>
+     * @throws SourceExceptionInterface
+     */
+    private function readLines(ReadableInterface $source, int $offset, int $length, int $lines): array
+    {
+        $number = $this->positions->createFromOffset($source, $offset)->line;
+        $first = \max(1, $number - $lines);
+
         $end = $offset + \max(0, \min($length, \PHP_INT_MAX - $offset));
-        $lines = \max(0, $lines);
 
-        $anchor = $content->findBefore(self::DELIMITER_ANCHOR, $offset);
-        $start = $anchor === null ? 0 : $anchor + 1;
-        $number = $content->countBefore(self::DELIMITER_ANCHOR, $start) + 1;
-
-        $result = $this->readBefore($content, $start, $number, $lines);
-
-        $current = $number;
+        $result = [];
+        $current = $first;
         $trailing = $lines;
 
-        while (true) {
+        foreach ($this->walk($source, $this->findLineOffset($source, $offset, $number - $first)) as [$start, $value]) {
+            if ($current < $number) {
+                $result[$current] = new SourceLine($current, $start, $value);
+                ++$current;
+
+                continue;
+            }
+
             // A fragment ending right at the beginning of a line does not
             // capture this line.
             $captured = $current === $number || $start < $end;
@@ -55,9 +100,6 @@ final readonly class SourceLineReader
             if (!$captured && $trailing-- === 0) {
                 break;
             }
-
-            $anchor = $content->findAfter(self::DELIMITER_ANCHOR, $start);
-            $value = $this->readLine($content, $start, $anchor);
 
             $startColumn = $this->calculateColumn($offset, $start, $value);
 
@@ -73,11 +115,6 @@ final readonly class SourceLineReader
                 )
                 : new SourceLine($current, $start, $value);
 
-            if ($anchor === null) {
-                break;
-            }
-
-            $start = $anchor + 1;
             ++$current;
         }
 
@@ -85,45 +122,144 @@ final readonly class SourceLineReader
     }
 
     /**
-     * @param int<0, max> $start
-     * @param int<1, max> $number
+     * Returns the offset of the beginning of the line located the given
+     * number of lines above the one the offset points at.
+     *
+     * @param int<0, max> $offset
      * @param int<0, max> $lines
-     * @return array<int<1, max>, SourceLine>
-     * @throws SourceNotReadableException
+     * @return int<0, max>
+     * @throws SourceExceptionInterface
      */
-    private function readBefore(ContentInterface $content, int $start, int $number, int $lines): array
+    private function findLineOffset(ReadableInterface $source, int $offset, int $lines): int
     {
-        $result = [];
+        // The line the offset points at begins right after the delimiter
+        // closing the line above it, so one more delimiter is passed than
+        // the number of lines being stepped over.
+        $expected = $lines + 1;
 
-        for ($i = 1; $i <= $lines && $start > 0; ++$i) {
-            $anchor = $start - 1;
-            $previous = $content->findBefore(self::DELIMITER_ANCHOR, $anchor);
-            $start = $previous === null ? 0 : $previous + 1;
+        for ($width = $this->chunkSize;; $width *= 2) {
+            $from = \max(0, $offset - $width);
+            $window = $this->readAt($source, $from, $offset - $from);
 
-            $current = \max(1, $number - $i);
+            $index = \strlen($window);
+            $found = 0;
 
-            $result[$current] = new SourceLine($current, $start, $this->readLine($content, $start, $anchor));
+            while ($found < $expected && $index > 0) {
+                // A negative offset limits the search to the occurrences
+                // starting before the position found the last time.
+                $delimiter = \strrpos($window, self::DELIMITER_ANCHOR, $index - \strlen($window) - 1);
+
+                if ($delimiter === false) {
+                    $index = 0;
+
+                    break;
+                }
+
+                $index = $delimiter;
+                ++$found;
+            }
+
+            if ($found === $expected) {
+                return $from + $index + 1;
+            }
+
+            // The source begins before the window does, so there is nothing
+            // left to step over.
+            if ($from === 0) {
+                return 0;
+            }
         }
-
-        return \array_reverse($result, true);
     }
 
     /**
-     * @param int<0, max> $start
-     * @param int<0, max>|null $anchor
-     * @throws SourceNotReadableException
+     * Reads the given number of bytes located at the given offset.
+     *
+     * @param int<0, max> $from
+     * @param int<0, max> $length
+     * @throws SourceExceptionInterface
      */
-    private function readLine(ContentInterface $content, int $start, ?int $anchor): string
+    private function readAt(ReadableInterface $source, int $from, int $length): string
     {
-        if ($anchor === null) {
-            return $content->read($start, \max(0, $content->getSize() - $start));
+        $source->offset = $from;
+
+        $result = '';
+
+        while (($rest = $length - \strlen($result)) > 0) {
+            $chunk = $source->read(\min($this->chunkSize, $rest));
+
+            if ($chunk === '') {
+                break;
+            }
+
+            $result .= $chunk;
         }
 
-        $value = $content->read($start, \max(0, $anchor - $start));
+        return $result;
+    }
 
-        return \str_ends_with($value, self::DELIMITER_EXTRA)
-            ? \substr($value, 0, -1)
-            : $value;
+    /**
+     * Reads the source line by line, starting at the given offset.
+     *
+     * A line ends wherever its delimiter is, and the data left after the last
+     * delimiter is the line the source ends with.
+     *
+     * @param int<0, max> $from
+     * @return iterable<mixed, array{int<0, max>, string}>
+     * @throws SourceExceptionInterface
+     */
+    private function walk(ReadableInterface $source, int $from): iterable
+    {
+        $source->offset = $from;
+
+        $buffer = '';
+        $start = $from;
+        $isEof = false;
+
+        while (true) {
+            $anchor = \strpos($buffer, self::DELIMITER_ANCHOR);
+
+            if ($anchor === false) {
+                if (!$isEof) {
+                    $chunk = $source->read($this->chunkSize);
+                    $isEof = $chunk === '';
+                    $buffer .= $chunk;
+
+                    continue;
+                }
+
+                // The source ends without a delimiter, so whatever is left of
+                // it is the last line, the "\r" of which belongs to the line
+                // rather than closes it.
+                yield [$start, $buffer];
+
+                return;
+            }
+
+            $value = \substr($buffer, 0, $anchor);
+
+            yield [$start, \str_ends_with($value, self::DELIMITER_EXTRA)
+                ? \substr($value, 0, -1)
+                : $value];
+
+            $start += $anchor + 1;
+            $buffer = \substr($buffer, $anchor + 1);
+        }
+    }
+
+    /**
+     * Returns the source the lines can be read from in an arbitrary order.
+     *
+     * @throws SourceExceptionInterface
+     */
+    private function rewindable(ReadableInterface $source): ReadableInterface
+    {
+        // A source that can only be read forwards is taken as a whole, which
+        // is the only chance of reading it more than once.
+        if (!$source->isSeekable) {
+            return new StringSource($source->content);
+        }
+
+        return $source;
     }
 
     /**

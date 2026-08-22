@@ -9,9 +9,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\PrinterInterface;
 use Phplrt\Exception\Printer\RustStylePrinter;
-use Phplrt\Exception\Snippet\Reader\Content\ContentInterface;
-use Phplrt\Exception\Snippet\Reader\Content\FileContent;
-use Phplrt\Exception\Snippet\Reader\Content\StringContent;
 use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 
 /**
@@ -56,26 +53,12 @@ final readonly class ErrorPrinter
         return new ErrorInfoResult(
             reader: $this->reader,
             printer: $this->printer,
-            content: $this->getContent($source),
+            source: $source,
             offset: $offset,
             length: $length,
             info: new ErrorInfo(
                 pathname: $pathname,
             ),
         );
-    }
-
-    /**
-     * A source stored in a file that can be read from the disk is read from
-     * there, so that only the fragment around the captured one is loaded.
-     * Anything else describes the source code it already holds.
-     */
-    private function getContent(ReadableInterface $source): ContentInterface
-    {
-        if ($source instanceof FileInterface && \is_readable($source->pathname)) {
-            return new FileContent($source->pathname);
-        }
-
-        return new StringContent($source->content);
     }
 }

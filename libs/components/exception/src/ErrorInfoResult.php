@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\Level;
 use Phplrt\Exception\Printer\PrinterInterface;
-use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
-use Phplrt\Exception\Snippet\Reader\Content\ContentInterface;
 use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 
 /**
@@ -38,7 +38,7 @@ final readonly class ErrorInfoResult implements \Stringable
     public function __construct(
         private SourceLineReader $reader,
         private PrinterInterface $printer,
-        private ContentInterface $content,
+        private ReadableInterface $source,
         private int $offset,
         private int $length = 0,
         private ErrorInfo $info = new ErrorInfo(),
@@ -134,12 +134,12 @@ final readonly class ErrorInfoResult implements \Stringable
     }
 
     /**
-     * @throws SourceNotReadableException in case the source code cannot be read
+     * @throws SourceExceptionInterface in case the source code cannot be read
      */
     public function __toString(): string
     {
         return $this->printer->print(
-            $this->reader->read($this->content, $this->offset, $this->length, $this->linesAround),
+            $this->reader->read($this->source, $this->offset, $this->length, $this->linesAround),
             $this->info,
         );
     }
@@ -153,7 +153,7 @@ final readonly class ErrorInfoResult implements \Stringable
         return new self(
             reader: $this->reader,
             printer: $this->printer,
-            content: $this->content,
+            source: $this->source,
             offset: $this->offset,
             length: $length ?? $this->length,
             info: $info ?? $this->info,
