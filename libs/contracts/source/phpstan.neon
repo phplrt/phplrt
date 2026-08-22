@@ -4,3 +4,4 @@ parameters:
     - php
   paths:
     - src
+  treatPhpDocTypesAsCertain: false

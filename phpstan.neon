@@ -27,7 +27,6 @@ parameters:
   treatPhpDocTypesAsCertain: false
   # Other checks
   reportUnmatchedIgnoredErrors: true
-  reportAlwaysTrueInLastCondition: false
   ignoreErrors:
     # Design By Contract assertions should not affect the statistical analysis
     # - identifier: if.alwaysTrue
