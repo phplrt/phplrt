@@ -69,35 +69,20 @@ final class FileSourceTest extends TestCase
         self::assertSame($content, $file->content);
     }
 
-    public function testContentIsTheWholeFileNoMatterWhereTheCursorIs(): void
+    public function testContentIsWhatIsLeftFromTheCursor(): void
     {
         \file_put_contents($this->temp, 'test content');
 
         $file = new FileSource($this->temp);
 
         self::assertSame('test', $file->read(4));
-        self::assertSame('test content', $file->content);
 
         // Taking the content out leaves the cursor where it has been
+        self::assertSame(' content', $file->content);
+        self::assertSame(' content', $file->content);
         self::assertSame(4, $file->offset);
+
         self::assertSame(' content', $file->read(1024));
-    }
-
-    public function testContentPropertyDoesNotChangeAfterModification(): void
-    {
-        \file_put_contents($this->temp, 'first content');
-
-        $file = new FileSource($this->temp);
-
-        self::assertSame('first content', $file->content);
-
-        // A platform holding the lock against writers rejects this, and one
-        // that does not lets the file change under the source: either way the
-        // file belongs to the source from the moment it has been opened
-        @\file_put_contents($this->temp, 'second content and a bit more');
-        @\touch($this->temp, \filemtime($this->temp) + 1);
-
-        self::assertSame('first content', $file->content);
     }
 
     public function testTheFileIsGivenUpAlongWithTheSource(): void

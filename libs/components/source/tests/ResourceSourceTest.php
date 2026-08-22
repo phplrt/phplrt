@@ -153,10 +153,11 @@ final class ResourceSourceTest extends TestCase
 
         self::assertSame('test', $source->read(4));
 
-        // Taking the content out moves the source to its very end
+        // Taking the content out leaves the cursor where it has been
         self::assertSame(' content', $source->content);
-        self::assertSame(12, $source->offset);
-        self::assertTrue($source->isEof);
+        self::assertSame(' content', $source->content);
+        self::assertSame(4, $source->offset);
+        self::assertFalse($source->isEof);
     }
 
     public function testReadingIsNotAffectedByCheckingForTheEnd(): void

@@ -21,13 +21,7 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
     private int $position = 0;
 
     public string $content {
-        get {
-            $result = \substr($this->source, $this->position);
-
-            $this->position = \strlen($this->source);
-
-            return $result;
-        }
+        get => \substr($this->source, $this->position);
     }
 
     /**

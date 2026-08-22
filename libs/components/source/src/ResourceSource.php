@@ -232,7 +232,11 @@ class ResourceSource extends Readable
 
         $result = $peeked . $result;
 
-        $this->position += \strlen($result);
+        // A stream that can be rewound is put back where this source is on the
+        // next reading of it. The one that cannot is left at its very end.
+        if (!$this->isSeekable) {
+            $this->position += \strlen($result);
+        }
 
         return $result;
     }
