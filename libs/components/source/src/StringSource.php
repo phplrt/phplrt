@@ -4,20 +4,46 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\Stream\StringStream;
+use Phplrt\Contracts\Source\FiniteStreamInterface;
+use Phplrt\Contracts\Source\SeekableStreamInterface;
+use Phplrt\Source\Exception\InvalidArgumentException;
 
 /**
  * Implementing a readable object that references a source code as a string value
  *
  * @final please do not inherit from this class
  */
-class StringSource extends Readable
+class StringSource extends Readable implements FiniteStreamInterface, SeekableStreamInterface
 {
+    /**
+     * @var int<0, max>
+     */
+    private int $position = 0;
+
     /**
      * @var int<0, max>
      */
     public int $size {
         get => \strlen($this->content);
+    }
+
+    /**
+     * @var int<0, max>
+     */
+    public int $offset {
+        get => $this->position;
+        set {
+            // Invariant against the callers not covered by static analysis.
+            if ($value < 0) { // @phpstan-ignore smaller.alwaysFalse
+                throw InvalidArgumentException::becauseOffsetIsNegative($value);
+            }
+
+            $this->position = $value;
+        }
+    }
+
+    public bool $isEof {
+        get => $this->position >= $this->size;
     }
 
     public function __construct(
@@ -40,10 +66,20 @@ class StringSource extends Readable
         return new self($content);
     }
 
-    public function createStream(): StringStream
+    /**
+     * @throws InvalidArgumentException When the number of bytes is not positive
+     */
+    public function read(int $bytes): string
     {
-        // The content is already held in memory, so the cursor reads it as it
-        // is rather than through a resource of its own.
-        return new StringStream($this->content);
+        // Invariant against the callers not covered by static analysis.
+        if ($bytes < 1) { // @phpstan-ignore smaller.alwaysFalse
+            throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
+        }
+
+        $result = \substr($this->content, $this->position, $bytes);
+
+        $this->position += \strlen($result);
+
+        return $result;
     }
 }

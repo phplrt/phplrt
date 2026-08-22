@@ -9,9 +9,9 @@ use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 interface SourceFactoryInterface
 {
     /**
-     * @template TArgSource of ReadableInterface
+     * @template TArgSource
      * @param TArgSource $source
-     * @return ($source is ReadableInterface ? TArgSource : ReadableInterface)
+     * @return (TArgSource is ReadableInterface ? TArgSource&ReadableInterface : ReadableInterface)
      * @throws SourceExceptionInterface in case of an error in creating the source object
      */
     public function create(mixed $source): ReadableInterface;

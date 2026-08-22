@@ -6,7 +6,6 @@ namespace Phplrt\Source\Tests;
 
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\ResourceSource;
-use Phplrt\Source\Stream\StringStream;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 
@@ -28,14 +27,14 @@ final class VirtualSourceTest extends TestCase
         self::assertSame(12, $source->size);
     }
 
-    public function testHandsOutTheCursorOfTheSourceItWraps(): void
+    public function testReadsThroughTheSourceItWraps(): void
     {
         $source = new VirtualSource('virtual/file.php', new StringSource('test content'));
 
-        $stream = $source->createStream();
-
-        self::assertInstanceOf(StringStream::class, $stream);
-        self::assertSame('test content', $stream->read(1024));
+        self::assertSame(0, $source->offset);
+        self::assertSame('test content', $source->read(1024));
+        self::assertSame(12, $source->offset);
+        self::assertTrue($source->isEof);
     }
 
     public function testWrapsAFileOfItsOwn(): void
@@ -84,6 +83,6 @@ final class VirtualSourceTest extends TestCase
 
         self::assertSame('', $source->content);
         self::assertSame(0, $source->size);
-        self::assertTrue($source->createStream()->isEof);
+        self::assertTrue($source->isEof);
     }
 }

@@ -6,10 +6,10 @@ namespace Phplrt\Contracts\Source\Tests;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Contracts\Source\FiniteStreamInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\Stream\ReadableStreamInterface;
-use Phplrt\Contracts\Source\Stream\SeekableStreamInterface;
-use Phplrt\Contracts\Source\SourceFactoryInterface;
+use Phplrt\Contracts\Source\ReadableStreamInterface;
+use Phplrt\Contracts\Source\SeekableStreamInterface;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 /**
@@ -26,8 +26,15 @@ class CompatibilityTest extends TestCase
 
             public string $content;
             public ?int $size;
+            public int $offset;
+            public bool $isEof;
 
-            public function createStream(): ReadableStreamInterface
+            public function read(int $bytes): string
+            {
+                throw new \LogicException('Declared to be compiled rather than called');
+            }
+
+            public function __toString(): string
             {
                 throw new \LogicException('Declared to be compiled rather than called');
             }
@@ -40,8 +47,15 @@ class CompatibilityTest extends TestCase
         new class () implements ReadableInterface {
             public string $content;
             public ?int $size;
+            public int $offset;
+            public bool $isEof;
 
-            public function createStream(): ReadableStreamInterface
+            public function read(int $bytes): string
+            {
+                throw new \LogicException('Declared to be compiled rather than called');
+            }
+
+            public function __toString(): string
             {
                 throw new \LogicException('Declared to be compiled rather than called');
             }
@@ -52,6 +66,7 @@ class CompatibilityTest extends TestCase
     public function testReadableStreamCompatibility(): void
     {
         new class () implements ReadableStreamInterface {
+            public ?int $size;
             public int $offset;
             public bool $isEof;
 
@@ -66,6 +81,22 @@ class CompatibilityTest extends TestCase
     public function testSeekableStreamCompatibility(): void
     {
         new class () implements SeekableStreamInterface {
+            public ?int $size;
+            public int $offset;
+            public bool $isEof;
+
+            public function read(int $bytes): string
+            {
+                throw new \LogicException('Declared to be compiled rather than called');
+            }
+        };
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testFiniteStreamCompatibility(): void
+    {
+        new class () implements FiniteStreamInterface {
+            public int $size;
             public int $offset;
             public bool $isEof;
 
@@ -80,16 +111,5 @@ class CompatibilityTest extends TestCase
     public function testSourceExceptionCompatibility(): void
     {
         new class () extends \Exception implements SourceExceptionInterface {};
-    }
-
-    #[DoesNotPerformAssertions]
-    public function testSourceFactoryCompatibility(): void
-    {
-        new class () implements SourceFactoryInterface {
-            public function create(mixed $source): ReadableInterface
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-        };
     }
 }

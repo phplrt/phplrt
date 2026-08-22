@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\Stream\StringStream;
+use Phplrt\Source\Exception\InvalidArgumentException;
 use Phplrt\Source\StringSource;
 
 final class StringSourceTest extends TestCase
@@ -32,41 +32,68 @@ final class StringSourceTest extends TestCase
         self::assertSame(12, $source->size);
     }
 
-    public function testCreateStream(): void
+    public function testReadsTheWholeContent(): void
     {
         $content = 'test content';
         $source = new StringSource($content);
 
-        $stream = $source->createStream();
-
-        self::assertInstanceOf(StringStream::class, $stream);
-        self::assertSame(0, $stream->offset);
-        self::assertSame($content, $stream->read(1024));
+        self::assertSame(0, $source->offset);
+        self::assertSame($content, $source->read(1024));
+        self::assertSame(12, $source->offset);
+        self::assertTrue($source->isEof);
     }
 
-    public function testCreateStreamReturnsIndependentCursors(): void
+    public function testReadsByChunks(): void
+    {
+        $source = new StringSource('test content');
+
+        self::assertSame('test', $source->read(4));
+        self::assertSame(4, $source->offset);
+        self::assertSame(' content', $source->read(1024));
+    }
+
+    public function testMovesBackwards(): void
     {
         $content = 'test content';
         $source = new StringSource($content);
 
-        $first = $source->createStream();
-        $first->offset = 5;
+        $source->read(1024);
+        $source->offset = 0;
 
-        $second = $source->createStream();
-
-        // Each call returns a cursor placed at the beginning of the source
-        self::assertSame(0, $second->offset);
-        self::assertSame($content, $second->read(1024));
-        self::assertSame(5, $first->offset);
+        self::assertSame($content, $source->read(1024));
     }
 
-    public function testCreateStreamDoesNotOpenAnyResource(): void
+    public function testReadsFromTheGivenOffset(): void
+    {
+        $source = new StringSource('test content');
+        $source->offset = 5;
+
+        self::assertSame('content', $source->read(1024));
+    }
+
+    public function testFailsInCaseOfNegativeOffset(): void
+    {
+        $source = new StringSource('test content');
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $source->offset = -1;
+    }
+
+    public function testFailsInCaseOfNonPositiveReadSize(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new StringSource('test content')->read(0);
+    }
+
+    public function testReadingDoesNotOpenAnyResource(): void
     {
         $source = new StringSource('test content');
 
         $before = \count(\get_resources('stream'));
 
-        $source->createStream();
+        $source->read(1024);
 
         self::assertCount($before, \get_resources('stream'));
     }
@@ -77,6 +104,7 @@ final class StringSourceTest extends TestCase
 
         self::assertSame('', $source->content);
         self::assertSame(0, $source->size);
-        self::assertTrue($source->createStream()->isEof);
+        self::assertTrue($source->isEof);
+        self::assertSame('', $source->read(1024));
     }
 }

@@ -54,6 +54,7 @@ final class NamedConstructorsTest extends TestCase
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
+        \rewind($stream);
 
         try {
             $source = ResourceSource::createFromResource($stream);
@@ -91,13 +92,14 @@ final class NamedConstructorsTest extends TestCase
 
         self::assertSame('virtual.txt', $source->pathname);
         self::assertSame('', $source->content);
-        self::assertTrue($source->createStream()->isEof);
+        self::assertTrue($source->isEof);
     }
 
     public function testVirtualSourceFromResourceStream(): void
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
+        \rewind($stream);
 
         try {
             $source = VirtualSource::createFromResourceStream('virtual.txt', $stream);

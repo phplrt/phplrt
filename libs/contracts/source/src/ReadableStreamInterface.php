@@ -2,18 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Contracts\Source\Stream;
+namespace Phplrt\Contracts\Source;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
 /**
  * A cursor over the bytes of a source.
- *
- * A cursor carries a position of its own, so several of them are able to read
- * the very same source independently of each other.
  */
 interface ReadableStreamInterface
 {
+    /**
+     * Gets the number of bytes that have been read out of the source, or
+     * {@see null} in case the end of it has not been reached yet.
+     *
+     * @var int<0, max>|null
+     *
+     * @throws SourceExceptionInterface may occur when it is not possible to
+     *         read source's data
+     */
+    public ?int $size {
+        get;
+    }
+
     /**
      * Gets the position the next read starts at, counted in bytes from the
      * beginning of the source.

@@ -1,13 +1,13 @@
 {
-    "name": "phplrt/source",
+    "name": "phplrt/source-factory-contracts",
     "type": "library",
-    "description": "The phplrt sources package",
+    "description": "A set of phplrt source factory abstractions",
     "license": "MIT",
-    "keywords": ["file", "directory", "reader", "abstraction", "fs", "file system"],
+    "keywords": ["file", "source", "io", "disk", "read", "factory"],
     "homepage": "https://github.com/phplrt",
     "support": {
         "issues": "https://github.com/phplrt/phplrt/issues",
-        "source": "https://github.com/phplrt/source"
+        "source": "https://github.com/phplrt/source-factory-contracts"
     },
     "authors": [
         {
@@ -17,16 +17,12 @@
     ],
     "require": {
         "php": "^8.4",
-        "phplrt/source-contracts": "^4.0",
-        "phplrt/source-factory-contracts": "^4.0"
+        "phplrt/source-contracts": "^4.0"
     },
     "autoload": {
         "psr-4": {
-            "Phplrt\\Source\\": "src"
-        },
-        "files": [
-            "src/polyfill.php"
-        ]
+            "Phplrt\\Contracts\\Source\\": "src"
+        }
     },
     "require-dev": {
         "phpunit/phpunit": "^13.2",
@@ -34,12 +30,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phplrt\\Source\\Tests\\": "tests"
+            "Phplrt\\Contracts\\Source\\Tests\\Factory\\": "tests"
         }
-    },
-    "provide": {
-        "phplrt/source-contracts-implementation": "^4.0",
-        "phplrt/source-factory-contracts-implementation": "^4.0"
     },
     "extra": {
         "branch-alias": {

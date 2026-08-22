@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Contracts\Source\Stream\ReadableStreamInterface;
+use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
-use Phplrt\Source\Stream\ForwardResourceStream;
-use Phplrt\Source\Stream\SeekableResourceStream;
 
 /**
  * Implementing a readable object that references a real physical file
@@ -19,52 +17,41 @@ use Phplrt\Source\Stream\SeekableResourceStream;
 class FileSource extends Readable implements FileInterface
 {
     /**
-     * The modification time and the size of the file at the moment its
-     * content has been read.
+     * The file this source owns, opened at the first reading of it.
      */
-    private string $memoizedAt = '';
+    private ResourceSource $reader {
+        /**
+         * @throws NotFoundException When the file does not exist
+         * @throws NotReadableException When the file cannot be opened for reading
+         */
+        get => $this->reader ??= $this->open();
+    }
+
+    /**
+     * @var int<0, max>
+     */
+    public int $offset {
+        /**
+         * @throws NotReadableException When the file cannot be opened for reading
+         */
+        get => $this->reader->offset;
+    }
+
+    public bool $isEof {
+        /**
+         * @throws NotReadableException When the file cannot be opened or read
+         */
+        get => $this->reader->isEof;
+    }
 
     public private(set) string $content {
         /**
          * @throws NotFoundException When the file does not exist
-         * @throws NotReadableException When the file cannot be read
+         * @throws NotReadableException When the file cannot be opened or read
          */
-        get {
-            // PHP remembers what it has learned about a file, so everything it
-            // knows about this one is forgotten before it is asked about again:
-            // the file may have been changed by somebody else meanwhile.
-            \clearstatcache(true, $this->pathname);
-
-            if (!\is_file($this->pathname)) {
-                throw NotFoundException::becauseFileNotFound($this->pathname);
-            }
-
-            // The modification time alone is measured in seconds, so the size
-            // is taken into account as well: a file rewritten within the very
-            // same second is unlikely to keep its length...
-            //
-            // However, this is theoretically possible, but not critical
-            // for our purposes =)
-            $state = $this->modifiedAt . ':' . $this->size;
-
-            // A file that has not been changed since it was read contains the
-            // very same thing, so it is not read over again
-            if ($this->memoizedAt === $state && isset($this->content)) {
-                return $this->content;
-            }
-
-            \error_clear_last();
-
-            $result = @\file_get_contents($this->pathname);
-
-            if ($result === false) {
-                throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
-            }
-
-            $this->memoizedAt = $state;
-
-            return $this->content = $result;
-        }
+        // The file is read over again rather than through the cursor of this
+        // source, which is somewhere in the middle of it by then.
+        get => $this->content ??= $this->open()->content;
     }
 
     /**
@@ -118,17 +105,43 @@ class FileSource extends Readable implements FileInterface
 
     /**
      * @api
+     *
+     * @throws NotCreatableException When the reference carries no pathname
      */
     public static function createFromSplFileInfo(\SplFileInfo $info): self
     {
-        return self::createFromPathname($info->getPathname());
+        $pathname = $info->getPathname();
+
+        if ($pathname === '') {
+            throw NotCreatableException::becauseSourceIs('empty pathname');
+        }
+
+        return self::createFromPathname($pathname);
     }
 
     /**
+     * @throws NotReadableException When the file cannot be opened or read
+     */
+    public function read(int $bytes): string
+    {
+        return $this->reader->read($bytes);
+    }
+
+    /**
+     * Takes the file over: from here on it belongs to this source, which
+     * holds it against being written to until it is given up again.
+     *
+     * @throws NotFoundException When the file does not exist
      * @throws NotReadableException When the file cannot be opened for reading
      */
-    public function createStream(): ReadableStreamInterface
+    private function open(): ResourceSource
     {
+        \clearstatcache(true, $this->pathname);
+
+        if (!$this->isExists) {
+            throw NotFoundException::becauseFileNotFound($this->pathname);
+        }
+
         if (!$this->isReadable) {
             throw NotReadableException::becauseFileNotReadable($this->pathname);
         }
@@ -139,12 +152,10 @@ class FileSource extends Readable implements FileInterface
             throw NotReadableException::becauseFileNotReadable($this->pathname);
         }
 
-        // A pathname does not necessarily reference a regular file, so what the
-        // cursor is able to do is only known after the file has been opened.
-        //
-        // The stream belongs to the cursor alone, so it is closed along with it.
-        return \stream_get_meta_data($stream)['seekable']
-            ? new SeekableResourceStream($stream, autoclose: true)
-            : new ForwardResourceStream($stream, autoclose: true);
+        // Closing the handle is what gives the file up again, so the source
+        // that owns the handle owns the lock along with it.
+        @\flock($stream, \LOCK_SH);
+
+        return new ResourceSource($stream, autoclose: true);
     }
 }

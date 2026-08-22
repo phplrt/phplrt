@@ -62,6 +62,7 @@ final class DeprecatedAliasesTest extends TestCase
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, '2 + 2');
+        \rewind($stream);
 
         $source = new VirtualStreamingFile('virtual.txt', new ResourceSource($stream, autoclose: true));
 

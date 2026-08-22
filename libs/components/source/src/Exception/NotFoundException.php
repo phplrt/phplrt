@@ -9,8 +9,6 @@ namespace Phplrt\Source\Exception;
  */
 class NotFoundException extends NotReadableException
 {
-    final public const int CODE_FILE_NOT_FOUND = 0x01;
-
     /**
      * @psalm-taint-sink file $pathname
      * @param non-empty-string $pathname
@@ -19,6 +17,6 @@ class NotFoundException extends NotReadableException
     {
         $message = 'File "%s" not found';
 
-        return new static(\sprintf($message, $pathname), self::CODE_FILE_NOT_FOUND);
+        return new self(\sprintf($message, $pathname));
     }
 }

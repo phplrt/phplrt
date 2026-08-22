@@ -22,8 +22,6 @@ class NotAccessibleException extends \RuntimeException implements SourceExceptio
     private const string DEFAULT_ERROR_MESSAGE = 'An unknown internal error occurred while accessing to the source';
 
     final public const int CODE_INTERNAL = 0x00;
-    final public const int CODE_STREAM_WRITE = 0x01;
-    final public const int CODE_STREAM_SEEK = 0x02;
 
     final public function __construct(string $message, int $code = 0, ?\Throwable $previous = null)
     {
@@ -36,7 +34,7 @@ class NotAccessibleException extends \RuntimeException implements SourceExceptio
     private static function createErrorFromArray(?array $error, ?\Throwable $prev = null): \Exception
     {
         if ($error === null) {
-            return new \RuntimeException(self::DEFAULT_ERROR_MESSAGE);
+            return new \RuntimeException(self::DEFAULT_ERROR_MESSAGE, previous: $prev);
         }
 
         $message = $error['message'];
@@ -63,19 +61,5 @@ class NotAccessibleException extends \RuntimeException implements SourceExceptio
         $prev = self::createErrorFromArray($error, $prev);
 
         return new static($prev->getMessage(), self::CODE_INTERNAL, $prev);
-    }
-
-    public static function becauseStreamIsNotWritable(string $stream): self
-    {
-        $message = \sprintf('Can not write content data into "%s" stream', $stream);
-
-        return new self($message, self::CODE_STREAM_WRITE);
-    }
-
-    public static function becauseStreamIsNotSeekable(string $stream): self
-    {
-        $message = \sprintf('The stream "%s" does not support offset (seek/rewind) changes', $stream);
-
-        return new self($message, self::CODE_STREAM_SEEK);
     }
 }

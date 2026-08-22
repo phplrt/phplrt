@@ -7,13 +7,14 @@ namespace Phplrt\Source;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\Stream\ReadableStreamInterface;
 
 /**
  * Implementing a virtual (non-real) file over an arbitrary source
  *
  * The pathname is the only thing this object adds: everything that is read
  * comes from the source it has been given, whatever kind it is.
+ *
+ * @final please do not inherit from this class
  */
 class VirtualSource extends Readable implements FileInterface
 {
@@ -35,6 +36,21 @@ class VirtualSource extends Readable implements FileInterface
         get => $this->source->size;
     }
 
+    /**
+     * @var int<0, max>
+     */
+    public int $offset {
+        get => $this->source->offset;
+    }
+
+    public bool $isEof {
+        /**
+         * @throws SourceExceptionInterface may occur during the inability to
+         *         read the source
+         */
+        get => $this->source->isEof;
+    }
+
     public function __construct(
         /**
          * The virtual file pathname
@@ -45,7 +61,7 @@ class VirtualSource extends Readable implements FileInterface
         /**
          * The source everything is read from
          */
-        protected readonly ReadableInterface $source,
+        private readonly ReadableInterface $source,
     ) {}
 
     /**
@@ -90,11 +106,11 @@ class VirtualSource extends Readable implements FileInterface
     }
 
     /**
-     * @throws SourceExceptionInterface may occur during the inability to open
-     *         or some operations with the source
+     * @throws SourceExceptionInterface may occur during the inability to read
+     *         the source
      */
-    public function createStream(): ReadableStreamInterface
+    public function read(int $bytes): string
     {
-        return $this->source->createStream();
+        return $this->source->read($bytes);
     }
 }

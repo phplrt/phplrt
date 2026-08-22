@@ -60,9 +60,9 @@ final readonly class SourceFactory implements SourceFactoryInterface
     /**
      * @api
      *
-     * @template TArgSource of ReadableInterface
+     * @template TArgSource
      * @param TArgSource $source
-     * @return ($source is ReadableInterface ? TArgSource : ReadableInterface)
+     * @return (TArgSource is ReadableInterface ? TArgSource&ReadableInterface : ReadableInterface)
      * @throws NotCreatableException in case none of the drivers recognizes
      *         the source argument
      * @throws SourceExceptionInterface in case of source creation exception occurs

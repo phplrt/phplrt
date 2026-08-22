@@ -11,8 +11,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
  */
 class NotCreatableException extends NotAccessibleException
 {
-    final public const int CODE_INVALID_TYPE = 0x01;
-
     /**
      * @param non-empty-string $type
      */
@@ -23,7 +21,7 @@ class NotCreatableException extends NotAccessibleException
             $type,
         ]);
 
-        return new self($message, self::CODE_INVALID_TYPE, $prev);
+        return new self($message, previous: $prev);
     }
 
     public static function becauseSourceIsInvalid(mixed $source, ?\Throwable $prev = null): self

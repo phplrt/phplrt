@@ -7,7 +7,6 @@ namespace Phplrt\Source\Tests;
 use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\FileSource;
-use Phplrt\Source\Stream\SeekableResourceStream;
 
 final class FileSourceTest extends TestCase
 {
@@ -70,24 +69,38 @@ final class FileSourceTest extends TestCase
         self::assertSame($content, $file->content);
     }
 
-    public function testContentPropertyIsReadOnce(): void
+    public function testContentIsTheWholeFileNoMatterWhereTheCursorIs(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $file = new FileSource($this->temp);
+
+        self::assertSame('test', $file->read(4));
+        self::assertSame('test content', $file->content);
+
+        // Taking the content out leaves the cursor where it has been
+        self::assertSame(4, $file->offset);
+        self::assertSame(' content', $file->read(1024));
+    }
+
+    public function testContentPropertyDoesNotChangeAfterModification(): void
     {
         \file_put_contents($this->temp, 'first content');
-        $modifiedAt = \filemtime($this->temp);
 
         $file = new FileSource($this->temp);
 
         self::assertSame('first content', $file->content);
 
-        // The file is changed the way neither its modification time nor its
-        // size is
-        \file_put_contents($this->temp, 'other content');
-        \touch($this->temp, $modifiedAt);
+        // A platform holding the lock against writers rejects this, and one
+        // that does not lets the file change under the source: either way the
+        // file belongs to the source from the moment it has been opened
+        @\file_put_contents($this->temp, 'second content and a bit more');
+        @\touch($this->temp, \filemtime($this->temp) + 1);
 
         self::assertSame('first content', $file->content);
     }
 
-    public function testContentPropertyIsReadAgainAfterModification(): void
+    public function testTheFileIsGivenUpAlongWithTheSource(): void
     {
         \file_put_contents($this->temp, 'first content');
 
@@ -95,27 +108,10 @@ final class FileSourceTest extends TestCase
 
         self::assertSame('first content', $file->content);
 
-        \file_put_contents($this->temp, 'second content');
-        \touch($this->temp, \filemtime($this->temp) + 1);
+        unset($file);
 
-        self::assertSame('second content', $file->content);
-    }
-
-    public function testContentPropertyIsReadAgainAfterResize(): void
-    {
-        \file_put_contents($this->temp, 'first content');
-        $modifiedAt = \filemtime($this->temp);
-
-        $file = new FileSource($this->temp);
-
-        self::assertSame('first content', $file->content);
-
-        // The file is rewritten within the very same second, so only its size
-        // tells that it has been changed
-        \file_put_contents($this->temp, 'first content and a bit more');
-        \touch($this->temp, $modifiedAt);
-
-        self::assertSame('first content and a bit more', $file->content);
+        self::assertNotFalse(\file_put_contents($this->temp, 'second content'));
+        self::assertSame('second content', new FileSource($this->temp)->content);
     }
 
     public function testContentPropertyThrowsWhenFileNotFound(): void
@@ -136,59 +132,64 @@ final class FileSourceTest extends TestCase
         self::assertSame(12, $file->size);
     }
 
-    public function testCreateStreamReadsTheFileFromTheBeginning(): void
+    public function testReadsTheFileFromTheBeginning(): void
     {
         $content = 'test content';
         \file_put_contents($this->temp, $content);
 
         $file = new FileSource($this->temp);
 
-        $stream = $file->createStream();
-
-        // A regular file can be rewound, so the cursor it hands out can too
-        self::assertInstanceOf(SeekableResourceStream::class, $stream);
-        self::assertSame(0, $stream->offset);
-        self::assertSame($content, $stream->read(1024));
-        self::assertTrue($stream->isEof);
+        self::assertSame(0, $file->offset);
+        self::assertSame($content, $file->read(1024));
+        self::assertSame(12, $file->offset);
+        self::assertTrue($file->isEof);
     }
 
-    public function testCreateStreamReturnsIndependentCursors(): void
-    {
-        $content = 'test content';
-        \file_put_contents($this->temp, $content);
-
-        $file = new FileSource($this->temp);
-
-        $first = $file->createStream();
-        $first->read(5);
-
-        $second = $file->createStream();
-
-        self::assertSame(5, $first->offset);
-        self::assertSame(0, $second->offset);
-        self::assertSame($content, $second->read(1024));
-    }
-
-    public function testCreateStreamClosesTheFileAlongWithTheCursor(): void
+    public function testReadsByChunks(): void
     {
         \file_put_contents($this->temp, 'test content');
 
         $file = new FileSource($this->temp);
 
+        self::assertSame('test', $file->read(4));
+        self::assertSame(4, $file->offset);
+        self::assertSame(' content', $file->read(1024));
+    }
+
+    public function testDoesNotOpenTheFileUntilItIsRead(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
         $before = \count(\get_resources('stream'));
 
-        $stream = $file->createStream();
-        unset($stream);
+        $file = new FileSource($this->temp);
+
+        self::assertCount($before, \get_resources('stream'));
+
+        $file->read(1);
+
+        self::assertCount($before + 1, \get_resources('stream'));
+    }
+
+    public function testClosesTheFileAlongWithTheSource(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $before = \count(\get_resources('stream'));
+
+        $file = new FileSource($this->temp);
+        $file->read(1);
+        unset($file);
 
         self::assertCount($before, \get_resources('stream'));
     }
 
-    public function testCreateStreamThrowsWhenFileNotReadable(): void
+    public function testReadingThrowsWhenFileNotReadable(): void
     {
         $file = new FileSource($this->temp);
 
         $this->expectException(NotReadableException::class);
 
-        $file->createStream();
+        $file->read(1024);
     }
 }

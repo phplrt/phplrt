@@ -13,9 +13,18 @@ use Phplrt\Contracts\Source\ReadableInterface;
 abstract class Readable implements ReadableInterface
 {
     /**
-     * @template TArgSource of ReadableInterface
+     * @throws SourceExceptionInterface may occur when it is not possible to
+     *         read source's data and/or convert it to a string
+     */
+    public function __toString(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @template TArgSource
      * @param TArgSource $source
-     * @return ($source is ReadableInterface ? TArgSource : ReadableInterface)
+     * @return (TArgSource is ReadableInterface ? TArgSource&ReadableInterface : ReadableInterface)
      * @throws SourceExceptionInterface
      */
     #[\Deprecated('Please use "SourceFactory::create()" instead', since: '4.0')]

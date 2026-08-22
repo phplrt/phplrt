@@ -41,12 +41,14 @@ final class SourceFactoryTest extends TestCase
     public function testCreatesStreamFromResource(): void
     {
         $resource = \fopen('php://memory', 'rb+');
+        \fwrite($resource, 'test content');
+        \rewind($resource);
 
         $source = SourceFactory::createDefault()
             ->create($resource);
 
         self::assertInstanceOf(ResourceSource::class, $source);
-        self::assertSame($resource, $source->stream);
+        self::assertSame('test content', $source->content);
     }
 
     public function testPassesReadableThrough(): void
