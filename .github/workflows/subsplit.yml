@@ -32,6 +32,8 @@ jobs:
             split_repository: 'parser'
           - local_path: 'libs/components/parser-builder'
             split_repository: 'parser-builder'
+          - local_path: 'libs/components/position'
+            split_repository: 'position'
           - local_path: 'libs/components/source'
             split_repository: 'source'
           # Contracts
