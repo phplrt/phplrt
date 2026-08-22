@@ -8,10 +8,10 @@ use Phplrt\Exception\Printer\ErrorInfo;
 use Phplrt\Exception\Printer\Level;
 use Phplrt\Exception\Printer\RustStylePrinter;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
-use Phplrt\Exception\Snippet\Reader\Content\StringContent;
 use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\Tests\TestCase;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -32,7 +32,7 @@ final class RustStylePrinterTest extends TestCase
               |   ^^
             5 | line 5
             6 | line 6
-            OUT, $printer->print($reader->read(new StringContent(self::createSource()), 23, 2, 2)));
+            OUT, $printer->print($reader->read(new StringSource(self::createSource()), 23, 2, 2)));
     }
 
     #[TestDox('The line numbers are aligned to the widest one')]
@@ -50,7 +50,7 @@ final class RustStylePrinterTest extends TestCase
                | ^^^^^^^
             11 | line 11
             12 | line 12
-            OUT, $printer->print($reader->read(new StringContent($source), 63, 7, 2)));
+            OUT, $printer->print($reader->read(new StringSource($source), 63, 7, 2)));
     }
 
     #[TestDox('The multi-byte characters are underlined as single ones')]
@@ -97,7 +97,7 @@ final class RustStylePrinterTest extends TestCase
             6 | line 6
               | ^^^^
             7 | line 7
-            OUT, $printer->print($reader->read(new StringContent(self::createSource()), 26, 13, 1)));
+            OUT, $printer->print($reader->read(new StringSource(self::createSource()), 26, 13, 1)));
     }
 
     #[TestDox('A line exceeding the available width is wrapped')]
@@ -193,7 +193,7 @@ final class RustStylePrinterTest extends TestCase
             2 |
             3 | line 3
               | ^^^^^^
-            OUT, $printer->print($reader->read(new StringContent("line 1\n\nline 3"), 3, 12, 0)));
+            OUT, $printer->print($reader->read(new StringSource("line 1\n\nline 3"), 3, 12, 0)));
     }
 
     #[TestDox('The error message is printed above the source code')]

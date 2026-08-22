@@ -107,6 +107,26 @@ final class ErrorPrinterTest extends TestCase
                 ->withMessage('Something went wrong'));
     }
 
+    #[TestDox('The source code of a virtual file is read from the source rather than from the file it is named after')]
+    public function testPrintsContentOfAVirtualFileNamedAfterARealOne(): void
+    {
+        $pathname = \tempnam(\sys_get_temp_dir(), 'phplrt-printer-');
+
+        if ($pathname === false || \file_put_contents($pathname, "another\ncontent\n") === false) {
+            self::fail('Unable to create a temporary source file');
+        }
+
+        try {
+            $actual = (string) new ErrorPrinter()
+                ->print(VirtualSource::createFromString($pathname, self::SOURCE), 18, 4);
+
+            self::assertStringContainsString('second line', $actual);
+            self::assertStringNotContainsString('content', $actual);
+        } finally {
+            @\unlink($pathname);
+        }
+    }
+
     #[TestDox('The name of the file may be given instead of the one the source tells')]
     public function testPrintsGivenPathname(): void
     {

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Tests\Snippet\Reader;
 
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Exception\ErrorInfoResult;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
-use Phplrt\Exception\Snippet\Exception\SourceNotReadableException;
-use Phplrt\Exception\Snippet\Reader\Content\FileContent;
-use Phplrt\Exception\Snippet\Reader\Content\StringContent;
 use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\Tests\TestCase;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -342,7 +342,7 @@ final class SourceLineReaderTest extends TestCase
     #[TestDox('Reading a non-existent file is not allowed')]
     public function testReadsNonExistentFile(): void
     {
-        $this->expectException(SourceNotReadableException::class);
+        $this->expectException(SourceExceptionInterface::class);
 
         self::readFile(__DIR__ . '/non-existent-file.txt', 0);
     }
@@ -350,7 +350,7 @@ final class SourceLineReaderTest extends TestCase
     #[TestDox('Reading a directory instead of a file is not allowed')]
     public function testReadsDirectory(): void
     {
-        $this->expectException(SourceNotReadableException::class);
+        $this->expectException(SourceExceptionInterface::class);
 
         self::readFile(__DIR__, 0);
     }
@@ -368,7 +368,7 @@ final class SourceLineReaderTest extends TestCase
         int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
     ): array {
         return new SourceLineReader()
-            ->read(new StringContent($code), $offset, $length, $lines);
+            ->read(new StringSource($code), $offset, $length, $lines);
     }
 
     /**
@@ -376,7 +376,7 @@ final class SourceLineReaderTest extends TestCase
      * @param int<0, max> $length
      * @param int<0, max> $lines
      * @return array<int<1, max>, SourceLine>
-     * @throws SourceNotReadableException
+     * @throws SourceExceptionInterface
      */
     private static function readFile(
         string $pathname,
@@ -385,7 +385,7 @@ final class SourceLineReaderTest extends TestCase
         int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
     ): array {
         return new SourceLineReader()
-            ->read(new FileContent($pathname), $offset, $length, $lines);
+            ->read(new FileSource($pathname), $offset, $length, $lines);
     }
 
     /**

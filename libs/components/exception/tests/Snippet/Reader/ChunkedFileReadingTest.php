@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Tests\Snippet\Reader;
 
-use Phplrt\Exception\Snippet\Reader\Content\FileContent;
-use Phplrt\Exception\Snippet\Reader\Content\StringContent;
 use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Tests\TestCase;
+use Phplrt\Position\PositionFactory;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
@@ -22,11 +23,11 @@ final class ChunkedFileReadingTest extends TestCase
     #[TestDox('A file larger than the chunk size is read by chunks')]
     public function testReadsFileByChunks(): void
     {
-        $reader = new SourceLineReader();
+        $reader = new SourceLineReader(new PositionFactory(4), chunkSize: 4);
         $pathname = self::createFile(self::SOURCE);
 
         try {
-            $content = new FileContent($pathname, chunkSize: 4, sliceSize: 8);
+            $source = new FileSource($pathname);
 
             self::assertSame([
                 ' #2@7: line 2',
@@ -35,7 +36,7 @@ final class ChunkedFileReadingTest extends TestCase
                 '>#5@28:1-7: line 5',
                 '>#6@35:1-4: line 6',
                 ' #7@42: line 7',
-            ], self::describe($reader->read($content, 23, 15, 2)));
+            ], self::describe($reader->read($source, 23, 15, 2)));
         } finally {
             @\unlink($pathname);
         }
@@ -44,7 +45,7 @@ final class ChunkedFileReadingTest extends TestCase
     #[TestDox('Reading any fragment of any file by chunks is equivalent to reading it as a whole')]
     public function testChunkedFileReadingIsEquivalentToTheWholeOne(): void
     {
-        $reader = new SourceLineReader();
+        $reader = new SourceLineReader(new PositionFactory(4), chunkSize: 4);
 
         \mt_srand(0x0C0F_FEE0);
 
@@ -57,13 +58,8 @@ final class ChunkedFileReadingTest extends TestCase
                     foreach ([0, 1, 3] as $lines) {
                         foreach ([0, 5, 21] as $length) {
                             self::assertSame(
-                                self::describe($reader->read(new StringContent($code), $offset, $length, $lines)),
-                                self::describe($reader->read(
-                                    new FileContent($pathname, chunkSize: 4, sliceSize: 8),
-                                    $offset,
-                                    $length,
-                                    $lines,
-                                )),
+                                self::describe($reader->read(new StringSource($code), $offset, $length, $lines)),
+                                self::describe($reader->read(new FileSource($pathname), $offset, $length, $lines)),
                                 \sprintf(
                                     'Invalid snippet of the %s file at offset %d of length %d',
                                     \var_export($code, true),
