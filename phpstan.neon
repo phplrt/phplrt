@@ -12,7 +12,10 @@ includes:
   # Contracts
   - libs/contracts/lexer/phpstan.neon
   - libs/contracts/parser/phpstan.neon
+  - libs/contracts/position/phpstan.neon
+  - libs/contracts/position-factory/phpstan.neon
   - libs/contracts/source/phpstan.neon
+  - libs/contracts/source-factory/phpstan.neon
 parameters:
   level: max
   strictRules:
