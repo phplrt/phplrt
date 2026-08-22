@@ -64,7 +64,7 @@ final class SourceReadingTest extends TestCase
         $factory = new PositionFactory();
         $source = new ResourceSource($this->createNonSeekableResource(self::CODE));
 
-        $position = $factory->createAtEnding($source);
+        $position = $factory->createFromOffset($source, \PHP_INT_MAX);
 
         self::assertSame(3, $position->line);
         self::assertSame(6, $position->column);

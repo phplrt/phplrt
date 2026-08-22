@@ -13,15 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class PositionFactoryTest extends TestCase
 {
-    public function testStartingPointsAtTheFirstLineAndColumn(): void
-    {
-        $position = new PositionFactory()->createAtStarting();
-
-        self::assertSame(PositionInterface::MIN_LINE, $position->line);
-        self::assertSame(PositionInterface::MIN_COLUMN, $position->column);
-    }
-
-    public function testStartingReadsNothing(): void
+    public function testZeroOffsetReadsNothing(): void
     {
         $factory = new PositionFactory();
 
@@ -34,11 +26,11 @@ final class PositionFactoryTest extends TestCase
     }
 
     #[DataProvider('sourceAndChunkSizeProvider')]
-    public function testEndingPointsAfterTheLastByte(string $code, int $chunkSize): void
+    public function testUnreachableOffsetPointsAfterTheLastByte(string $code, int $chunkSize): void
     {
         $factory = new PositionFactory($chunkSize);
 
-        $position = $factory->createAtEnding(new StringSource($code));
+        $position = $factory->createFromOffset(new StringSource($code), \PHP_INT_MAX);
 
         self::assertSame(self::calculateLine($code, \strlen($code)), $position->line);
         self::assertSame(self::calculateColumn($code, \strlen($code)), $position->column);

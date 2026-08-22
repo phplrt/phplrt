@@ -54,56 +54,31 @@ final readonly class PositionFactory implements PositionFactoryInterface
         $this->chunkSize = $chunkSize;
     }
 
-    public function createAtStarting(): Position
-    {
-        return new Position();
-    }
-
     /**
      * @throws NotRewindableException When the source has already given a part
      *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    public function createAtEnding(ReadableInterface $source): Position
-    {
-        return $this->calculatePosition($source, null);
-    }
-
-    /**
-     * @throws NotRewindableException When the source has already given a part
-     *         of its data away and cannot be rewound
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
-     */
-    public function createFromOffset(ReadableInterface $source, int $offset = 0): Position
+    public function createFromOffset(ReadableInterface $source, int $offset): Position
     {
         // The beginning of any source is known in advance, so there is
         // nothing to read in order to find it out.
         if ($offset <= 0) {
-            return $this->createAtStarting();
+            return new Position();
         }
 
         return $this->calculatePosition($source, $offset);
     }
 
     /**
-     * Returns the offset in bytes from the beginning of the source to the
-     * given position.
-     *
-     * A position pointing beyond the end of its line is corrected to the end
-     * of it, and the one pointing beyond the end of the source is corrected
-     * to the end of the source.
-     *
-     * @api
-     *
      * @return int<0, max>
      * @throws NotRewindableException When the source has already given a part
      *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    public function calculateOffset(ReadableInterface $source, PositionInterface $position): int
+    public function createOffsetFromPosition(ReadableInterface $source, PositionInterface $position): int
     {
         $line = \max(PositionInterface::MIN_LINE, $position->line);
         $column = \max(PositionInterface::MIN_COLUMN, $position->column);
@@ -122,7 +97,7 @@ final readonly class PositionFactory implements PositionFactoryInterface
         // points at.
         $remaining = $column - PositionInterface::MIN_COLUMN;
 
-        foreach ($this->read($source) as $chunk) {
+        foreach ($this->read($source, \PHP_INT_MAX) as $chunk) {
             $length = \strlen($chunk);
             $index = 0;
 
@@ -164,42 +139,28 @@ final readonly class PositionFactory implements PositionFactoryInterface
     }
 
     /**
-     * Reads the source from its beginning up to the given number of bytes or
-     * up to the end of it in case of no limit.
+     * Reads the source from its beginning up to the given number of bytes,
+     * or up to the end of it in case there is less data than that.
      *
-     * @param int<1, max>|null $limit
+     * @param int<1, max> $limit
      * @throws NotRewindableException When the source has already given a part
      *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    private function calculatePosition(ReadableInterface $source, ?int $limit): Position
+    private function calculatePosition(ReadableInterface $source, int $limit): Position
     {
         $line = PositionInterface::MIN_LINE;
         $column = PositionInterface::MIN_COLUMN;
 
-        // The number of bytes that have been read.
-        $read = 0;
-
-        foreach ($this->read($source) as $chunk) {
-            if ($limit !== null && $read + \strlen($chunk) > $limit) {
-                $chunk = \substr($chunk, 0, $limit - $read);
-            }
-
-            $length = \strlen($chunk);
+        foreach ($this->read($source, $limit) as $chunk) {
             $delimiter = \strrpos($chunk, self::LINE_DELIMITER);
 
             if ($delimiter === false) {
-                $column += $length;
+                $column += \strlen($chunk);
             } else {
                 $line += \substr_count($chunk, self::LINE_DELIMITER);
-                $column = $length - $delimiter;
-            }
-
-            $read += $length;
-
-            if ($limit !== null && $read >= $limit) {
-                break;
+                $column = \strlen($chunk) - $delimiter;
             }
         }
 
@@ -207,56 +168,68 @@ final readonly class PositionFactory implements PositionFactoryInterface
     }
 
     /**
-     * Returns the data of the source in chunks, starting at the beginning
-     * of it.
+     * Returns the data of the source in chunks, starting at the beginning of
+     * it and stopping at the given number of bytes or at the end of the
+     * source, whichever comes first.
      *
+     * @param int<1, max> $limit
      * @return iterable<mixed, string>
      * @throws NotRewindableException When the source has already given a part
      *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    private function read(ReadableInterface $source): iterable
+    private function read(ReadableInterface $source, int $limit): iterable
     {
         if ($source->isSeekable) {
-            return $this->readRewound($source);
+            return $this->readRewound($source, $limit);
         }
 
         if ($source->offset !== 0) {
             throw NotRewindableException::becauseSourceIsConsumed($source->offset);
         }
 
-        return $this->readForward($source);
+        return $this->readForward($source, $limit);
     }
 
     /**
      * Reads the source from its beginning and gives it back at the position
      * it has been taken at.
      *
+     * @param int<1, max> $limit
      * @return iterable<mixed, string>
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    private function readRewound(ReadableInterface $source): iterable
+    private function readRewound(ReadableInterface $source, int $limit): iterable
     {
         $restore = $source->offset;
         $source->offset = 0;
 
         try {
-            yield from $this->readForward($source);
+            yield from $this->readForward($source, $limit);
         } finally {
             $source->offset = $restore;
         }
     }
 
     /**
+     * @param int<1, max> $limit
      * @return iterable<mixed, string>
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
-    private function readForward(ReadableStreamInterface $source): iterable
+    private function readForward(ReadableStreamInterface $source, int $limit): iterable
     {
-        while (($chunk = $source->read($this->chunkSize)) !== '') {
+        // Nothing beyond the limit is taken out of the source, so the last
+        // chunk is the one the limit falls into.
+        for ($rest = $limit; $rest >= 1; $rest -= \strlen($chunk)) {
+            $chunk = $source->read(\min($this->chunkSize, $rest));
+
+            if ($chunk === '') {
+                break;
+            }
+
             yield $chunk;
         }
     }

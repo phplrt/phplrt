@@ -50,10 +50,9 @@ final class CreateFromOffsetTest extends TestCase
         $source = new StringSource($code);
 
         $position = $factory->createFromOffset($source, \PHP_INT_MAX);
-        $expected = $factory->createAtEnding($source);
 
-        self::assertSame($expected->line, $position->line);
-        self::assertSame($expected->column, $position->column);
+        self::assertSame(self::calculateLine($code, \strlen($code)), $position->line);
+        self::assertSame(self::calculateColumn($code, \strlen($code)), $position->column);
     }
 
     #[DataProvider('sourceProvider')]

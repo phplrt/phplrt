@@ -19,26 +19,13 @@ class CompatibilityTest extends TestCase
     public function testPositionFactoryCompatibility(): void
     {
         new class () implements PositionFactoryInterface {
-            public function createAtStarting(): PositionInterface
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-
-            public function createAtEnding(ReadableInterface $source): PositionInterface
-            {
-                throw new \LogicException('Declared to be compiled rather than called');
-            }
-
             public function createFromOffset(ReadableInterface $source, int $offset = 0): PositionInterface
             {
                 throw new \LogicException('Declared to be compiled rather than called');
             }
 
-            public function createFromPosition(
-                ReadableInterface $source,
-                int $line = PositionInterface::MIN_LINE,
-                int $column = PositionInterface::MIN_COLUMN,
-            ): PositionInterface {
+            public function createOffsetFromPosition(ReadableInterface $source, PositionInterface $position): int
+            {
                 throw new \LogicException('Declared to be compiled rather than called');
             }
         };

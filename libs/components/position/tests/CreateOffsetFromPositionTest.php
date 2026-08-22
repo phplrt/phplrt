@@ -9,7 +9,7 @@ use Phplrt\Position\PositionFactory;
 use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-final class CalculateOffsetTest extends TestCase
+final class CreateOffsetFromPositionTest extends TestCase
 {
     #[DataProvider('sourceAndChunkSizeProvider')]
     public function testEveryOffsetIsRestoredFromItsPosition(string $code, int $chunkSize): void
@@ -22,7 +22,7 @@ final class CalculateOffsetTest extends TestCase
 
             self::assertSame(
                 $offset,
-                $factory->calculateOffset($source, $position),
+                $factory->createOffsetFromPosition($source, $position),
                 \sprintf('Offset %d of %d', $offset, $length),
             );
         }
@@ -33,9 +33,9 @@ final class CalculateOffsetTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond\nthird");
 
-        self::assertSame(5, $factory->calculateOffset($source, new Position(1, 100)));
-        self::assertSame(12, $factory->calculateOffset($source, new Position(2, 100)));
-        self::assertSame(18, $factory->calculateOffset($source, new Position(3, 100)));
+        self::assertSame(5, $factory->createOffsetFromPosition($source, new Position(1, 100)));
+        self::assertSame(12, $factory->createOffsetFromPosition($source, new Position(2, 100)));
+        self::assertSame(18, $factory->createOffsetFromPosition($source, new Position(3, 100)));
     }
 
     public function testLineBeyondTheEndOfTheSourcePointsAtTheEndOfIt(): void
@@ -43,7 +43,7 @@ final class CalculateOffsetTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond");
 
-        self::assertSame(12, $factory->calculateOffset($source, new Position(100, 1)));
+        self::assertSame(12, $factory->createOffsetFromPosition($source, new Position(100, 1)));
     }
 
     #[DataProvider('chunkSizeProvider')]
@@ -52,9 +52,9 @@ final class CalculateOffsetTest extends TestCase
         $factory = new PositionFactory($chunkSize);
         $source = new StringSource("first\n\nthird\nfourth");
 
-        self::assertSame(0, $factory->calculateOffset($source, new Position(1, 1)));
-        self::assertSame(6, $factory->calculateOffset($source, new Position(2, 1)));
-        self::assertSame(7, $factory->calculateOffset($source, new Position(3, 1)));
-        self::assertSame(13, $factory->calculateOffset($source, new Position(4, 1)));
+        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position(1, 1)));
+        self::assertSame(6, $factory->createOffsetFromPosition($source, new Position(2, 1)));
+        self::assertSame(7, $factory->createOffsetFromPosition($source, new Position(3, 1)));
+        self::assertSame(13, $factory->createOffsetFromPosition($source, new Position(4, 1)));
     }
 }
