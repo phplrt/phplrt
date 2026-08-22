@@ -218,7 +218,7 @@ readonly class Lexer implements LexerInterface
     final public function lex(ReadableInterface $source, int $offset = 0): iterable
     {
         // Invariant against the callers not covered by static analysis.
-        if ($offset < 0) { // @phpstan-ignore smaller.alwaysFalse
+        if ($offset < 0) {
             throw new \InvalidArgumentException('Offset cannot be negative');
         }
 

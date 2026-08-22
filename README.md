@@ -210,6 +210,7 @@ Every component is published on its own, so you can install only what you use.
 | Package                 | What it does                                              |
 |-------------------------|-----------------------------------------------------------|
 | `phplrt/source`         | Reads source code from files, strings and streams         |
+| `phplrt/position`       | Turns a byte offset into the line and column it points at |
 | `phplrt/lexer`          | Splits source code into tokens                            |
 | `phplrt/parser`         | Recognizes tokens against a grammar and builds a result   |
 | `phplrt/exception`      | Renders errors with a snippet of the code around them     |

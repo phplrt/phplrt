@@ -1,0 +1,57 @@
+{
+    "name": "phplrt/position",
+    "type": "library",
+    "description": "The phplrt position package",
+    "license": "MIT",
+    "keywords": ["analyzing", "position", "line", "column", "offset", "source", "location"],
+    "homepage": "https://github.com/phplrt",
+    "support": {
+        "issues": "https://github.com/phplrt/phplrt/issues",
+        "source": "https://github.com/phplrt/position"
+    },
+    "authors": [
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "phplrt/position-contracts": "^4.0",
+        "phplrt/position-factory-contracts": "^4.0",
+        "phplrt/source-contracts": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phplrt\\Position\\": "src"
+        }
+    },
+    "require-dev": {
+        "phplrt/source": "^4.0",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^13.2"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phplrt\\Position\\Tests\\": "tests"
+        }
+    },
+    "provide": {
+        "phplrt/position-contracts-implementation": "^4.0",
+        "phplrt/position-factory-contracts-implementation": "^4.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.x-dev",
+            "dev-main": "4.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

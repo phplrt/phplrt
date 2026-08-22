@@ -1,0 +1,6 @@
+parameters:
+  level: max
+  fileExtensions:
+    - php
+  paths:
+    - src
