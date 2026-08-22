@@ -20,11 +20,21 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
      */
     private int $position = 0;
 
+    public string $content {
+        get {
+            $result = \substr($this->source, $this->position);
+
+            $this->position = \strlen($this->source);
+
+            return $result;
+        }
+    }
+
     /**
      * @var int<0, max>
      */
     public int $size {
-        get => \strlen($this->content);
+        get => \strlen($this->source);
     }
 
     /**
@@ -47,7 +57,10 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
     }
 
     public function __construct(
-        public readonly string $content = '',
+        /**
+         * The source code this object is built over
+         */
+        private readonly string $source = '',
     ) {}
 
     /**
@@ -76,7 +89,7 @@ class StringSource extends Readable implements FiniteStreamInterface, SeekableSt
             throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
         }
 
-        $result = \substr($this->content, $this->position, $bytes);
+        $result = \substr($this->source, $this->position, $bytes);
 
         $this->position += \strlen($result);
 

@@ -44,14 +44,12 @@ class FileSource extends Readable implements FileInterface
         get => $this->reader->isEof;
     }
 
-    public private(set) string $content {
+    public string $content {
         /**
          * @throws NotFoundException When the file does not exist
          * @throws NotReadableException When the file cannot be opened or read
          */
-        // The file is read over again rather than through the cursor of this
-        // source, which is somewhere in the middle of it by then.
-        get => $this->content ??= $this->open()->content;
+        get => $this->reader->content;
     }
 
     /**
