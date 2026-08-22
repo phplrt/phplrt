@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         colors="true"
+         backupGlobals="true"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory="vendor/.cache.phpunit"
+>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="memory_limit" value="-1"/>
+        <env name="NO_COLOR" value="1"/>
+    </php>
+
+    <testsuites>
+        <testsuite name="library">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage/>
+
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
+</phpunit>
