@@ -17,7 +17,8 @@
     ],
     "require": {
         "php": "^8.4",
-        "phplrt/source-contracts": "^4.0"
+        "phplrt/position": "^4.0",
+        "phplrt/source": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -27,7 +28,6 @@
     "require-dev": {
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "phplrt/source": "^4.0",
         "phpunit/phpunit": "^13.2",
         "phpstan/phpstan": "^2.2"
     },
