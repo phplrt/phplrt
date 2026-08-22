@@ -8,6 +8,7 @@ includes:
   - libs/components/lexer-builder/phpstan.neon
   - libs/components/parser/phpstan.neon
   - libs/components/parser-builder/phpstan.neon
+  - libs/components/position/phpstan.neon
   - libs/components/source/phpstan.neon
   # Contracts
   - libs/contracts/lexer/phpstan.neon
@@ -23,7 +24,15 @@ parameters:
   fileExtensions:
     - php
   tmpDir: vendor/.cache.phpstan
+  treatPhpDocTypesAsCertain: false
+  # Other checks
   reportUnmatchedIgnoredErrors: true
   reportAlwaysTrueInLastCondition: false
   ignoreErrors:
+    # Design By Contract assertions should not affect the statistical analysis
+    # - identifier: if.alwaysTrue
+    # - identifier: if.alwaysFalse
+    # - identifier: booleanNot.alwaysTrue
+    # - identifier: booleanNot.alwaysFalse
     - identifier: instanceof.alwaysTrue
+    #  - identifier: instanceof.alwaysFalse
