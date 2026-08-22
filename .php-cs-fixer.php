@@ -12,6 +12,7 @@ const DIR_INCLUDE = [
     __DIR__ . '/libs/components/lexer-builder/src',
     __DIR__ . '/libs/components/parser/src',
     __DIR__ . '/libs/components/parser-builder/src',
+    __DIR__ . '/libs/components/position/src',
     __DIR__ . '/libs/components/source/src',
     // Contracts
     __DIR__ . '/libs/contracts/lexer/src',
