@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Printer\Renderer;
 
-use Phplrt\Exception\PrintableError;
 use Phplrt\Exception\Printer\Level;
+use Phplrt\Exception\Printer\PrintableError;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\SourceLine;
 

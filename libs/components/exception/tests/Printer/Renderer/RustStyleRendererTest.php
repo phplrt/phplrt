@@ -6,7 +6,7 @@ namespace Phplrt\Exception\Tests\Printer\Renderer;
 
 use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
 use Phplrt\Exception\Analysis\FailureInterval;
-use Phplrt\Exception\PrintableError;
+use Phplrt\Exception\Printer\PrintableError;
 use Phplrt\Exception\Printer\Level;
 use Phplrt\Exception\Printer\Renderer\AnsiRustStyleRenderer;
 use Phplrt\Exception\Printer\Renderer\RawRustStyleRenderer;

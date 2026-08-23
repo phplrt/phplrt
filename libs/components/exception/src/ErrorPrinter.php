@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Exception;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Exception\Printer\PrintableError;
 use Phplrt\Exception\Printer\Renderer\RendererInterface;
 use Phplrt\Exception\Printer\Renderer\RustStyleRenderer;
 

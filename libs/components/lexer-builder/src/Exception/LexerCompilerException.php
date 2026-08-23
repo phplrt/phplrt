@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder\Exception;
 
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Exception\ErrorPrinter;
 use Phplrt\Lexer\Builder\Definition\SourceReference;
 

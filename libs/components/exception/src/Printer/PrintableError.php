@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception;
+namespace Phplrt\Exception\Printer;
 
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
@@ -10,8 +10,8 @@ use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
 use Phplrt\Exception\Analysis\FailureInterval;
-use Phplrt\Exception\Printer\Level;
 use Phplrt\Exception\Printer\Renderer\RendererInterface;
+use Phplrt\Exception\SnippetReader;
 
 /**
  * The error along with the fragment of the source code it occurred in, ready

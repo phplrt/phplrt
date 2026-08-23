@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Exception;
 
-use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
-use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface as ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\ErrorPrinter;
-use Phplrt\Exception\PrintableError;
 
 /**
  * An error of the grammar being compiled, at the place the grammar says it.
@@ -49,56 +46,14 @@ abstract class CompilerRuntimeException extends CompilerException
         );
     }
 
-    /**
-     * Describes every error of the chain that points at a fragment of a source
-     * code, in the order the errors have been thrown.
-     *
-     * A grammar is read in three layers and every one of them says where it
-     * has failed in its own way: a lexer fails on a token, a parser fails on a
-     * token and may span as far as the rule it has failed on, and a compiler
-     * fails on a fragment of a grammar that has been read from no token at
-     * all.
-     *
-     * @return iterable<array-key, PrintableError>
-     */
-    private function backtrace(): iterable
-    {
-        $printer = new ErrorPrinter();
-        $current = $this;
-
-        do {
-            // A grammar error is written down rather than read from a token,
-            // so the place of it is known to the exception alone.
-            if ($current instanceof self) {
-                yield $printer->print($current)
-                    ->withSource($current->source)
-                    ->withInterval($current->offset, $current->length ?? 0);
-
-                continue;
-            }
-
-            if ($current instanceof ParserRuntimeExceptionInterface
-                || $current instanceof LexerRuntimeExceptionInterface) {
-                yield $printer->print($current);
-            }
-        } while (($current = $current->getPrevious()) !== null);
-    }
-
     public function __toString(): string
     {
-        if (!\class_exists(ErrorPrinter::class)) {
-            return parent::__toString();
-        }
-
         try {
-            return \implode("\n", [
-                ...$this->backtrace(),
-                \sprintf('  thrown in %s on line %d', $this->file, $this->line),
-                $this->getTraceAsString(),
-            ]);
+            return (string) new ErrorPrinter()
+                ->print($this)
+                ->withSource($this->source)
+                ->withInterval($this->offset, $this->length ?? 0);
         } catch (\Throwable) {
-            // The grammar the error occurred in is gone, so there is nothing
-            // left to show around it.
             return parent::__toString();
         }
     }

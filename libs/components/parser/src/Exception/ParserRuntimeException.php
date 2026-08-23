@@ -8,7 +8,6 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface as ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\ErrorPrinter;
-use Phplrt\Exception\PrintableError;
 
 abstract class ParserRuntimeException extends ParserException implements
     ParserRuntimeExceptionInterface

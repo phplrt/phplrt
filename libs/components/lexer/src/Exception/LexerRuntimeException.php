@@ -8,7 +8,6 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\ErrorPrinter;
-use Phplrt\Exception\PrintableError;
 
 abstract class LexerRuntimeException extends LexerException implements
     RuntimeExceptionInterface
