@@ -35,7 +35,7 @@ final class ResourceSourceTest extends TestCase
         self::assertSame($content, $source->content);
     }
 
-    public function testContentPropertyReadsFromWhereTheStreamHasBeenLeft(): void
+    public function testSourceBeginsWhereTheStreamHasBeenLeft(): void
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
@@ -45,8 +45,9 @@ final class ResourceSourceTest extends TestCase
 
         // A stream that has already been read in part is the source of what
         // is left of it
-        self::assertSame(5, $source->offset);
         self::assertSame('content', $source->content);
+        self::assertSame('content', $source->read(0, 1024));
+        self::assertSame('tent', $source->read(3, 1024));
     }
 
     public function testUriPropertyWithFileStream(): void
@@ -119,21 +120,7 @@ final class ResourceSourceTest extends TestCase
         new ResourceSource(\fopen('php://output', 'wb'));
     }
 
-    public function testReadsFromWhereTheStreamHasBeenLeft(): void
-    {
-        $stream = \fopen('php://memory', 'rb+');
-        \fwrite($stream, 'test content');
-        \fseek($stream, 5);
-
-        $source = new ResourceSource($stream);
-
-        self::assertSame(5, $source->offset);
-        self::assertSame('content', $source->read(1024));
-        self::assertSame(12, $source->offset);
-        self::assertTrue($source->isEof);
-    }
-
-    public function testContentIsWhatIsLeftAfterReading(): void
+    public function testContentIsTheWholeSource(): void
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
@@ -141,16 +128,14 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('test', $source->read(4));
+        self::assertSame('test', $source->read(0, 4));
 
-        // Taking the content out leaves the cursor where it has been
-        self::assertSame(' content', $source->content);
-        self::assertSame(' content', $source->content);
-        self::assertSame(4, $source->offset);
-        self::assertFalse($source->isEof);
+        // Reading a part of the source leaves the source itself as it is
+        self::assertSame('test content', $source->content);
+        self::assertSame('test content', $source->content);
     }
 
-    public function testReadingIsNotAffectedByCheckingForTheEnd(): void
+    public function testReadsInAnArbitraryOrder(): void
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
@@ -158,15 +143,12 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertFalse($source->isEof);
-        self::assertSame('test', $source->read(4));
-        self::assertSame(4, $source->offset);
-
-        self::assertFalse($source->isEof);
-        self::assertSame(' content', $source->content);
+        self::assertSame(' content', $source->read(4, 1024));
+        self::assertSame('test', $source->read(0, 4));
+        self::assertSame(' content', $source->read(4, 1024));
     }
 
-    public function testMovesToAnArbitraryPosition(): void
+    public function testReadsNothingBeyondTheEnd(): void
     {
         $stream = \fopen('php://memory', 'rb+');
         \fwrite($stream, 'test content');
@@ -174,31 +156,11 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertTrue($source->isSeekable);
-        self::assertSame('test', $source->read(4));
-
-        $source->offset = 0;
-
-        self::assertSame(0, $source->offset);
-        self::assertSame('test', $source->read(4));
+        self::assertSame('', $source->read(12, 1024));
+        self::assertSame('', $source->read(1024, 1024));
     }
 
-    public function testMovingForgetsWhatHasBeenPeekedAt(): void
-    {
-        $stream = \fopen('php://memory', 'rb+');
-        \fwrite($stream, 'test content');
-        \rewind($stream);
-
-        $source = new ResourceSource($stream);
-
-        self::assertFalse($source->isEof);
-
-        $source->offset = 5;
-
-        self::assertSame('content', $source->read(1024));
-    }
-
-    public function testNonSeekableStreamCannotBeMoved(): void
+    public function testNonSeekableStreamIsReadInAnArbitraryOrder(): void
     {
         $stream = $this->createNonSeekableResource('test content');
 
@@ -207,10 +169,24 @@ final class ResourceSourceTest extends TestCase
 
             self::assertFalse($source->isSeekable);
 
-            $this->expectException(LogicException::class);
-            $this->expectExceptionMessage('does not support offset');
+            self::assertSame(' content', $source->read(4, 1024));
+            self::assertSame('test', $source->read(0, 4));
+            self::assertSame('', $source->read(1024, 1024));
+        } finally {
+            \fclose($stream);
+        }
+    }
 
-            $source->offset = 5;
+    public function testNonSeekableStreamIsReadableMoreThanOnce(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $source = new ResourceSource($stream);
+
+            self::assertSame('test content', $source->content);
+            self::assertSame('test content', $source->content);
+            self::assertSame('test', $source->read(0, 4));
         } finally {
             \fclose($stream);
         }
@@ -222,7 +198,16 @@ final class ResourceSourceTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
 
-        $source->read(0);
+        $source->read(0, 0);
+    }
+
+    public function testFailsInCaseOfNegativeOffset(): void
+    {
+        $source = new ResourceSource(\fopen('php://memory', 'rb+'));
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $source->read(-1, 1024);
     }
 
     public function testReadingKeepsTheResourceOpen(): void
@@ -231,7 +216,7 @@ final class ResourceSourceTest extends TestCase
         \fwrite($stream, 'test content');
 
         $source = new ResourceSource($stream);
-        $source->read(1024);
+        $source->read(0, 1024);
         unset($source);
 
         // The resource belongs to whoever has passed it in
@@ -258,24 +243,6 @@ final class ResourceSourceTest extends TestCase
         self::assertIsClosedResource($stream);
     }
 
-    public function testNonSeekableStreamIsReadableOnce(): void
-    {
-        $stream = $this->createNonSeekableResource('test content');
-
-        try {
-            $source = new ResourceSource($stream);
-
-            self::assertSame('test content', $source->content);
-
-            $this->expectException(NotReadableException::class);
-            $this->expectExceptionMessage('can be read only once');
-
-            $source->content;
-        } finally {
-            \fclose($stream);
-        }
-    }
-
     public function testFailsInCaseOfClosedResource(): void
     {
         $stream = \fopen('php://memory', 'rb+');
@@ -300,18 +267,16 @@ final class ResourceSourceTest extends TestCase
 
         \fclose($stream);
 
-        foreach (['isEof', 'content'] as $property) {
-            try {
-                $source->$property;
-                self::fail(\sprintf('Reading $%s did not report the closed resource', $property));
-            } catch (NotCreatableException $e) {
-                self::assertStringContainsString('from closed resource type', $e->getMessage());
-            }
+        try {
+            $source->content;
+            self::fail('Reading $content did not report the closed resource');
+        } catch (NotCreatableException $e) {
+            self::assertStringContainsString('from closed resource type', $e->getMessage());
         }
 
         $this->expectException(NotCreatableException::class);
 
-        $source->read(4);
+        $source->read(0, 4);
     }
 
     public function testSerializationWithFileStream(): void
@@ -329,15 +294,15 @@ final class ResourceSourceTest extends TestCase
             self::assertInstanceOf(ResourceSource::class, $unserialized);
             self::assertSame($this->temp, $unserialized->uri);
 
-            // The position the source is at survives along with it
-            self::assertSame(3, $unserialized->offset);
+            // The position the source begins at survives along with it
             self::assertSame('t content', $unserialized->content);
+            self::assertSame('t co', $unserialized->read(0, 4));
         } finally {
             \fclose($stream);
         }
     }
 
-    public function testSerializationKeepsWhatHasAlreadyBeenRead(): void
+    public function testSerializationIsNotAffectedByReading(): void
     {
         \file_put_contents($this->temp, 'test content');
 
@@ -346,14 +311,13 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame('test', $source->read(4));
+            self::assertSame('test', $source->read(0, 4));
 
             $unserialized = \unserialize(\serialize($source));
 
             self::assertInstanceOf(ResourceSource::class, $unserialized);
-            self::assertSame(4, $unserialized->offset);
-            self::assertSame(' content', $unserialized->read(1024));
-            self::assertTrue($unserialized->isEof);
+            self::assertSame('test content', $unserialized->content);
+            self::assertSame(' content', $unserialized->read(4, 1024));
         } finally {
             \fclose($stream);
         }

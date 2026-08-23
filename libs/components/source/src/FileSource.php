@@ -27,37 +27,6 @@ class FileSource extends Readable implements FileInterface
         get => $this->reader ??= $this->open();
     }
 
-    /**
-     * @var int<0, max>
-     */
-    public int $offset {
-        /**
-         * @throws NotReadableException When the file cannot be opened for reading
-         */
-        get => $this->reader->offset;
-
-        /**
-         * @throws NotReadableException When the file cannot be opened for reading
-         */
-        set {
-            $this->reader->offset = $value;
-        }
-    }
-
-    public bool $isSeekable {
-        /**
-         * @throws NotReadableException When the file cannot be opened for reading
-         */
-        get => $this->reader->isSeekable;
-    }
-
-    public bool $isEof {
-        /**
-         * @throws NotReadableException When the file cannot be opened or read
-         */
-        get => $this->reader->isEof;
-    }
-
     public string $content {
         /**
          * @throws NotFoundException When the file does not exist
@@ -158,9 +127,9 @@ class FileSource extends Readable implements FileInterface
     /**
      * @throws NotReadableException When the file cannot be opened or read
      */
-    public function read(int $bytes): string
+    public function read(int $offset, int $bytes): string
     {
-        return $this->reader->read($bytes);
+        return $this->reader->read($offset, $bytes);
     }
 
     /**

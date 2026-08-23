@@ -69,20 +69,19 @@ final class FileSourceTest extends TestCase
         self::assertSame($content, $file->content);
     }
 
-    public function testContentIsWhatIsLeftFromTheCursor(): void
+    public function testContentIsTheWholeFile(): void
     {
         \file_put_contents($this->temp, 'test content');
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('test', $file->read(4));
+        self::assertSame('test', $file->read(0, 4));
 
-        // Taking the content out leaves the cursor where it has been
-        self::assertSame(' content', $file->content);
-        self::assertSame(' content', $file->content);
-        self::assertSame(4, $file->offset);
+        // Reading a part of the file leaves the source itself as it is
+        self::assertSame('test content', $file->content);
+        self::assertSame('test content', $file->content);
 
-        self::assertSame(' content', $file->read(1024));
+        self::assertSame(' content', $file->read(4, 1024));
     }
 
     public function testTheFileIsGivenUpAlongWithTheSource(): void
@@ -142,10 +141,7 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame(0, $file->offset);
-        self::assertSame($content, $file->read(1024));
-        self::assertSame(12, $file->offset);
-        self::assertTrue($file->isEof);
+        self::assertSame($content, $file->read(0, 1024));
     }
 
     public function testReadsByChunks(): void
@@ -154,23 +150,19 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('test', $file->read(4));
-        self::assertSame(4, $file->offset);
-        self::assertSame(' content', $file->read(1024));
+        self::assertSame('test', $file->read(0, 4));
+        self::assertSame(' content', $file->read(4, 1024));
     }
 
-    public function testMovesToAnArbitraryPosition(): void
+    public function testReadsInAnArbitraryOrder(): void
     {
         \file_put_contents($this->temp, 'test content');
 
         $file = new FileSource($this->temp);
 
-        self::assertTrue($file->isSeekable);
-        self::assertSame('test', $file->read(4));
-
-        $file->offset = 0;
-
-        self::assertSame('test', $file->read(4));
+        self::assertSame('content', $file->read(5, 1024));
+        self::assertSame('test', $file->read(0, 4));
+        self::assertSame('content', $file->read(5, 1024));
     }
 
     public function testDoesNotOpenTheFileUntilItIsRead(): void
@@ -183,7 +175,7 @@ final class FileSourceTest extends TestCase
 
         self::assertCount($before, \get_resources('stream'));
 
-        $file->read(1);
+        $file->read(0, 1);
 
         self::assertCount($before + 1, \get_resources('stream'));
     }
@@ -195,7 +187,7 @@ final class FileSourceTest extends TestCase
         $before = \count(\get_resources('stream'));
 
         $file = new FileSource($this->temp);
-        $file->read(1);
+        $file->read(0, 1);
         unset($file);
 
         self::assertCount($before, \get_resources('stream'));
@@ -207,6 +199,6 @@ final class FileSourceTest extends TestCase
 
         $this->expectException(NotReadableException::class);
 
-        $file->read(1024);
+        $file->read(0, 1024);
     }
 }

@@ -90,7 +90,6 @@ final class NamedConstructorsTest extends TestCase
 
         self::assertSame('virtual.txt', $source->pathname);
         self::assertSame('', $source->content);
-        self::assertTrue($source->isEof);
     }
 
     public function testVirtualSourceFromResourceStream(): void

@@ -30,10 +30,8 @@ final class VirtualSourceTest extends TestCase
     {
         $source = new VirtualSource('virtual/file.php', new StringSource('test content'));
 
-        self::assertSame(0, $source->offset);
-        self::assertSame('test content', $source->read(1024));
-        self::assertSame(12, $source->offset);
-        self::assertTrue($source->isEof);
+        self::assertSame('test content', $source->read(0, 1024));
+        self::assertSame('content', $source->read(5, 1024));
     }
 
     public function testWrapsAFileOfItsOwn(): void
@@ -67,6 +65,6 @@ final class VirtualSourceTest extends TestCase
         $source = new VirtualSource('virtual/file.php', new StringSource());
 
         self::assertSame('', $source->content);
-        self::assertTrue($source->isEof);
+        self::assertSame('', $source->read(0, 1024));
     }
 }

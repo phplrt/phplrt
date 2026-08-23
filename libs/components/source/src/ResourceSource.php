@@ -12,9 +12,12 @@ use Phplrt\Source\Exception\NotReadableException;
 /**
  * Implementing a readable object that references to a resource stream
  *
- * A stream that can be rewound is the source of everything it holds, no matter
- * where it has been left at. The one that cannot be rewound is the source of
- * what is still left in it, and is therefore readable only once.
+ * The source begins where the stream has been left at the moment it has been
+ * given away, so a stream that has already been read in part is the source of
+ * what is left in it.
+ *
+ * A stream that cannot be rewound keeps in memory everything it has given
+ * away, which is what makes such a source readable in an arbitrary order.
  *
  * @phpstan-type StreamMetaType array{
  *     timed_out: bool,
@@ -35,24 +38,29 @@ use Phplrt\Source\Exception\NotReadableException;
 class ResourceSource extends Readable
 {
     /**
+     * The number of bytes taken out of a stream at once while it is being
+     * kept in memory.
+     *
+     * @var int<1, max>
+     */
+    private const int CHUNK_SIZE = 65536;
+
+    /**
+     * The position of the stream this source begins at.
+     *
      * @var int<0, max>
      */
-    private int $position = 0;
+    private readonly int $base;
 
     /**
-     * The byte that has already been read out of the resource in order to
-     * find out whether the end has been reached.
-     *
-     * The resource is left at the position of this source plus the length of
-     * this string.
+     * The data of a stream that cannot be rewound.
      */
-    private string $peeked = '';
+    private string $memory = '';
 
     /**
-     * Whether the content of a stream that cannot be rewound has already been
-     * taken out of it.
+     * Whether the stream that cannot be rewound has been read to its end.
      */
-    private bool $isConsumed = false;
+    private bool $isMemoryComplete = false;
 
     /**
      * The resource this source reads from.
@@ -78,51 +86,15 @@ class ResourceSource extends Readable
          * @throws NotReadableException When the stream cannot be read
          */
         get {
-            $this->consume();
+            if (!$this->isSeekable) {
+                $this->remember(0, \PHP_INT_MAX);
+
+                return $this->memory;
+            }
+
+            $this->seek(0);
 
             return $this->takeRest();
-        }
-    }
-
-    /**
-     * @var int<0, max>
-     */
-    public int $offset {
-        get => $this->position;
-
-        /**
-         * @throws InvalidArgumentException When the position is negative
-         * @throws LogicException When the stream cannot be moved to an
-         *         arbitrary position
-         */
-        set {
-            // Invariant against the callers not covered by static analysis.
-            if ($value < 0) {
-                throw InvalidArgumentException::becauseOffsetIsNegative($value);
-            }
-
-            if (!$this->isSeekable) {
-                throw LogicException::becauseStreamIsNotSeekable($this->uri ?? $this->mode);
-            }
-
-            // The resource is put where this source is on the next reading of
-            // it, so the byte peeked at the old position is given up here.
-            $this->peeked = '';
-            $this->position = $value;
-        }
-    }
-
-    public bool $isEof {
-        /**
-         * @throws NotCreatableException When the resource has been closed from the outside
-         * @throws NotReadableException When the stream cannot be read
-         */
-        get {
-            if ($this->peeked !== '') {
-                return false;
-            }
-
-            return ($this->peeked = $this->fetch(1)) === '';
         }
     }
 
@@ -183,11 +155,7 @@ class ResourceSource extends Readable
             throw NotReadableException::becauseStreamIsNotReadable($this->uri ?? $this->mode);
         }
 
-        // The source begins where the resource has been left at, so a resource
-        // that has already been read in part is the source of what is left.
-        if ($this->isSeekable) {
-            $this->position = \max(0, (int) @\ftell($stream));
-        }
+        $this->base = $this->isSeekable ? \max(0, (int) @\ftell($stream)) : 0;
     }
 
     /**
@@ -201,51 +169,71 @@ class ResourceSource extends Readable
     }
 
     /**
-     * @throws InvalidArgumentException When the number of bytes is not positive
+     * @throws InvalidArgumentException When the offset is negative or the
+     *         number of bytes is not positive
      * @throws NotCreatableException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read
      */
-    public function read(int $bytes): string
+    public function read(int $offset, int $bytes): string
     {
-        // Invariant against the callers not covered by static analysis.
+        // Invariants against the callers not covered by static analysis.
+        if ($offset < 0) {
+            throw InvalidArgumentException::becauseOffsetIsNegative($offset);
+        }
+
         if ($bytes < 1) {
             throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
         }
 
-        $peeked = $this->peeked;
+        if (!$this->isSeekable) {
+            $this->remember($offset, $bytes);
 
-        // The byte that has been peeked at is a part of the result, so only
-        // the rest of the requested data is read out of the resource. It is
-        // given up after the reading, which is what tells the resource where
-        // this source actually is.
-        if ($peeked === '') {
-            $result = $this->fetch($bytes);
-        } elseif ($bytes === 1) {
-            $result = $peeked;
-        } else {
-            $result = $peeked . $this->fetch($bytes - 1);
+            return \substr($this->memory, $offset, $bytes);
         }
 
-        $this->peeked = '';
-        $this->position += \strlen($result);
+        $this->seek($offset);
 
-        return $result;
+        return $this->fetch($bytes);
     }
 
     /**
-     * Reads everything the resource has left, including the byte that has
-     * been peeked at.
+     * Takes the data of a stream that cannot be rewound out of it and keeps
+     * it, up to the position the given fragment ends at.
+     *
+     * @param int<0, max> $offset
+     * @param int<1, max> $bytes
+     * @throws NotCreatableException When the resource has been closed from the outside
+     * @throws NotReadableException When the stream cannot be read
+     */
+    private function remember(int $offset, int $bytes): void
+    {
+        // A fragment reaching beyond what an integer holds is the whole of
+        // whatever the stream has.
+        $required = $offset > \PHP_INT_MAX - $bytes
+            ? \PHP_INT_MAX
+            : $offset + $bytes;
+
+        while (!$this->isMemoryComplete && ($rest = $required - \strlen($this->memory)) >= 1) {
+            $chunk = $this->fetch(\min(self::CHUNK_SIZE, $rest));
+
+            if ($chunk === '') {
+                $this->isMemoryComplete = true;
+
+                return;
+            }
+
+            $this->memory .= $chunk;
+        }
+    }
+
+    /**
+     * Reads everything the stream has left in it.
      *
      * @throws NotCreatableException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read
      */
     private function takeRest(): string
     {
-        $this->synchronize();
-
-        $peeked = $this->peeked;
-        $this->peeked = '';
-
         \error_clear_last();
 
         $result = @\stream_get_contents($this->resource);
@@ -254,19 +242,11 @@ class ResourceSource extends Readable
             throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
         }
 
-        $result = $peeked . $result;
-
-        // A stream that can be rewound is put back where this source is on the
-        // next reading of it. The one that cannot is left at its very end.
-        if (!$this->isSeekable) {
-            $this->position += \strlen($result);
-        }
-
         return $result;
     }
 
     /**
-     * Reads the given number of bytes out of the resource at the position it
+     * Reads the given number of bytes out of the stream at the position it
      * currently is at.
      *
      * @param int<1, max> $bytes
@@ -275,8 +255,6 @@ class ResourceSource extends Readable
      */
     private function fetch(int $bytes): string
     {
-        $this->synchronize();
-
         \error_clear_last();
 
         $result = @\fread($this->resource, $bytes);
@@ -289,42 +267,21 @@ class ResourceSource extends Readable
     }
 
     /**
-     * Hands the resource the position this source is at, which the resource
-     * is not necessarily left at: it may have been given away at some other
-     * one, and taking the whole content out moves it to the end.
+     * Moves the stream to the given position of this source, which the stream
+     * is not necessarily left at: reading through it moves it elsewhere.
      *
+     * @param int<0, max> $offset
      * @throws NotCreatableException When the resource has been closed from the outside
      */
-    private function synchronize(): void
+    private function seek(int $offset): void
     {
-        if (!$this->isSeekable) {
-            return;
-        }
-
-        $expected = $this->position + \strlen($this->peeked);
+        $expected = $offset > \PHP_INT_MAX - $this->base
+            ? \PHP_INT_MAX
+            : $this->base + $offset;
 
         if (\ftell($this->resource) !== $expected) {
             @\fseek($this->resource, $expected);
         }
-    }
-
-    /**
-     * Tells that the content of the stream is about to be taken out of it,
-     * which a stream that cannot be rewound only survives once.
-     *
-     * @throws NotReadableException When the stream has already been read out
-     */
-    private function consume(): void
-    {
-        if ($this->isSeekable) {
-            return;
-        }
-
-        if ($this->isConsumed) {
-            throw NotReadableException::becauseStreamIsAlreadyRead($this->uri ?? $this->mode);
-        }
-
-        $this->isConsumed = true;
     }
 
     /**
@@ -390,7 +347,7 @@ class ResourceSource extends Readable
      * @return array{
      *     uri: non-empty-string,
      *     mode: non-empty-string,
-     *     offset: int<0, max>,
+     *     base: int<0, max>,
      * }
      * @throws LogicException When the stream does not have a URI
      */
@@ -403,7 +360,7 @@ class ResourceSource extends Readable
         return [
             'uri' => $this->uri,
             'mode' => $this->mode,
-            'offset' => $this->position,
+            'base' => $this->base,
         ];
     }
 
@@ -413,12 +370,12 @@ class ResourceSource extends Readable
      * @param array{
      *     uri: non-empty-string,
      *     mode: non-empty-string,
-     *     offset: int<0, max>,
+     *     base: int<0, max>,
      *     ...
      * } $data
      * @throws NotReadableException When the stream cannot be opened
      * @throws LogicException When the stream cannot be moved to the position
-     *         the source is at
+     *         the source begins at
      */
     public function __unserialize(array $data): void
     {
@@ -436,11 +393,11 @@ class ResourceSource extends Readable
         $this->isLocal = \stream_is_local($data['uri']);
         $this->isSeekable = \stream_get_meta_data($stream)['seekable'];
 
-        if ($data['offset'] > 0 && !$this->isSeekable) {
+        if ($data['base'] > 0 && !$this->isSeekable) {
             throw LogicException::becauseStreamIsNotSeekable($data['uri']);
         }
 
-        $this->position = $data['offset'];
+        $this->base = $data['base'];
 
         // The stream has been opened here rather than passed in, so this
         // object is the one to close it.

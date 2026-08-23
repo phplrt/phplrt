@@ -13,36 +13,8 @@ use Phplrt\Source\Exception\InvalidArgumentException;
  */
 class StringSource extends Readable
 {
-    /**
-     * @var int<0, max>
-     */
-    private int $position = 0;
-
     public string $content {
-        get => \substr($this->source, $this->position);
-    }
-
-    /**
-     * @var int<0, max>
-     */
-    public int $offset {
-        get => $this->position;
-        set {
-            // Invariant against the callers not covered by static analysis.
-            if ($value < 0) {
-                throw InvalidArgumentException::becauseOffsetIsNegative($value);
-            }
-
-            $this->position = $value;
-        }
-    }
-
-    public bool $isSeekable {
-        get => true;
-    }
-
-    public bool $isEof {
-        get => $this->position >= \strlen($this->source);
+        get => $this->source;
     }
 
     public function __construct(
@@ -69,19 +41,20 @@ class StringSource extends Readable
     }
 
     /**
-     * @throws InvalidArgumentException When the number of bytes is not positive
+     * @throws InvalidArgumentException When the offset is negative or the
+     *         number of bytes is not positive
      */
-    public function read(int $bytes): string
+    public function read(int $offset, int $bytes): string
     {
-        // Invariant against the callers not covered by static analysis.
+        // Invariants against the callers not covered by static analysis.
+        if ($offset < 0) {
+            throw InvalidArgumentException::becauseOffsetIsNegative($offset);
+        }
+
         if ($bytes < 1) {
             throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
         }
 
-        $result = \substr($this->source, $this->position, $bytes);
-
-        $this->position += \strlen($result);
-
-        return $result;
+        return \substr($this->source, $offset, $bytes);
     }
 }

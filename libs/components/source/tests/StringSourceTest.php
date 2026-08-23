@@ -25,43 +25,49 @@ final class StringSourceTest extends TestCase
         self::assertSame($content, $source->content);
     }
 
+    public function testContentIsTheWholeSource(): void
+    {
+        $content = 'test content';
+        $source = new StringSource($content);
+
+        self::assertSame('test', $source->read(0, 4));
+
+        // Reading a part of the source leaves the source itself as it is
+        self::assertSame($content, $source->content);
+        self::assertSame($content, $source->content);
+    }
+
     public function testReadsTheWholeContent(): void
     {
         $content = 'test content';
         $source = new StringSource($content);
 
-        self::assertSame(0, $source->offset);
-        self::assertSame($content, $source->read(1024));
-        self::assertSame(12, $source->offset);
-        self::assertTrue($source->isEof);
+        self::assertSame($content, $source->read(0, 1024));
     }
 
     public function testReadsByChunks(): void
     {
         $source = new StringSource('test content');
 
-        self::assertSame('test', $source->read(4));
-        self::assertSame(4, $source->offset);
-        self::assertSame(' content', $source->read(1024));
+        self::assertSame('test', $source->read(0, 4));
+        self::assertSame(' content', $source->read(4, 1024));
     }
 
-    public function testMovesBackwards(): void
-    {
-        $content = 'test content';
-        $source = new StringSource($content);
-
-        $source->read(1024);
-        $source->offset = 0;
-
-        self::assertSame($content, $source->read(1024));
-    }
-
-    public function testReadsFromTheGivenOffset(): void
+    public function testReadsInAnArbitraryOrder(): void
     {
         $source = new StringSource('test content');
-        $source->offset = 5;
 
-        self::assertSame('content', $source->read(1024));
+        self::assertSame('content', $source->read(5, 1024));
+        self::assertSame('test', $source->read(0, 4));
+        self::assertSame('content', $source->read(5, 1024));
+    }
+
+    public function testReadsNothingBeyondTheEnd(): void
+    {
+        $source = new StringSource('test content');
+
+        self::assertSame('', $source->read(12, 1024));
+        self::assertSame('', $source->read(1024, 1024));
     }
 
     public function testFailsInCaseOfNegativeOffset(): void
@@ -70,14 +76,14 @@ final class StringSourceTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
 
-        $source->offset = -1;
+        $source->read(-1, 1024);
     }
 
     public function testFailsInCaseOfNonPositiveReadSize(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new StringSource('test content')->read(0);
+        new StringSource('test content')->read(0, 0);
     }
 
     public function testReadingDoesNotOpenAnyResource(): void
@@ -86,7 +92,7 @@ final class StringSourceTest extends TestCase
 
         $before = \count(\get_resources('stream'));
 
-        $source->read(1024);
+        $source->read(0, 1024);
 
         self::assertCount($before, \get_resources('stream'));
     }
@@ -96,7 +102,6 @@ final class StringSourceTest extends TestCase
         $source = new StringSource('');
 
         self::assertSame('', $source->content);
-        self::assertTrue($source->isEof);
-        self::assertSame('', $source->read(1024));
+        self::assertSame('', $source->read(0, 1024));
     }
 }
