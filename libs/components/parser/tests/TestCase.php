@@ -16,6 +16,28 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase
 {
     /**
+     * Creates a resource stream that cannot be rewound and already holds the
+     * given content.
+     *
+     * @return resource
+     */
+    protected static function createNonSeekableResource(string $content = '')
+    {
+        $pair = @\stream_socket_pair(\STREAM_PF_INET, \STREAM_SOCK_STREAM, \STREAM_IPPROTO_IP);
+
+        if ($pair === false) {
+            self::markTestSkipped('The platform does not support socket pairs');
+        }
+
+        [$read, $write] = $pair;
+
+        \fwrite($write, $content);
+        \fclose($write);
+
+        return $read;
+    }
+
+    /**
      * Describes the given grammar the same way the parser compiler does.
      *
      * @param list<RuleInterface> $grammar

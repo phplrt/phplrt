@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Position\Tests;
 
-use Phplrt\Position\Exception\NotRewindableException;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\ResourceSource;
@@ -15,35 +14,32 @@ final class SourceReadingTest extends TestCase
 {
     private const string CODE = "first\nsecond\nthird";
 
-    public function testSeekableSourceIsGivenBackAtItsPosition(): void
+    public function testSourceIsReadFromItsBeginning(): void
     {
         $factory = new PositionFactory(1);
         $source = new StringSource(self::CODE);
-        $source->offset = 8;
 
         $position = $factory->createFromOffset($source, 7);
 
         self::assertSame(2, $position->line);
         self::assertSame(2, $position->column);
-        self::assertSame(8, $source->offset);
-        self::assertSame('cond', $source->read(4));
+        self::assertSame('econd', $source->read(7, 5));
     }
 
-    public function testFileIsReadWithoutMovingItsCursor(): void
+    public function testFileIsReadInAnArbitraryOrder(): void
     {
         \file_put_contents($this->temp, self::CODE);
 
         $factory = new PositionFactory(1);
         $source = new FileSource($this->temp);
 
-        self::assertSame('first', $source->read(5));
+        self::assertSame('first', $source->read(0, 5));
 
         $position = $factory->createFromOffset($source, 13);
 
         self::assertSame(3, $position->line);
         self::assertSame(1, $position->column);
-        self::assertSame(5, $source->offset);
-        self::assertSame("\nsecond", $source->read(7));
+        self::assertSame("\nsecond", $source->read(5, 7));
     }
 
     public function testVirtualFileIsReadFromItsOwnSource(): void
@@ -59,7 +55,7 @@ final class SourceReadingTest extends TestCase
         self::assertSame(1, $position->column);
     }
 
-    public function testNonSeekableSourceIsReadWhereItIs(): void
+    public function testNonSeekableSourceIsReadFromItsBeginning(): void
     {
         $factory = new PositionFactory();
         $source = new ResourceSource($this->createNonSeekableResource(self::CODE));
@@ -70,16 +66,16 @@ final class SourceReadingTest extends TestCase
         self::assertSame(6, $position->column);
     }
 
-    public function testFailsInCaseOfNonSeekableSourceIsAlreadyRead(): void
+    public function testNonSeekableSourceIsReadAfterAPartOfItHasBeenTaken(): void
     {
         $factory = new PositionFactory();
         $source = new ResourceSource($this->createNonSeekableResource(self::CODE));
 
-        self::assertSame('first', $source->read(5));
+        self::assertSame('first', $source->read(0, 5));
 
-        $this->expectException(NotRewindableException::class);
-        $this->expectExceptionCode(NotRewindableException::CODE_SOURCE_CONSUMED);
+        $position = $factory->createFromOffset($source, 7);
 
-        $factory->createFromOffset($source, 7);
+        self::assertSame(2, $position->line);
+        self::assertSame(2, $position->column);
     }
 }

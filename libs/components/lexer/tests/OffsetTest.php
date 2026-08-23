@@ -46,6 +46,24 @@ final class OffsetTest extends TestCase
         self::assertTokensMatchSource($source, $lexer->lex(StringSource::createFromString($source), 4));
     }
 
+    #[TestDox('Token offsets stay absolute after a part of the source has been read')]
+    public function testOffsetsRemainAbsoluteAfterThePartialReadingOfTheSource(): void
+    {
+        $lexer = self::createWordsLexer();
+        $source = StringSource::createFromString('one two three');
+
+        // Taking a part of the source out of it does not change what the
+        // source is
+        $source->read(0, 4);
+
+        self::assertSame([
+            'T_NAME(one)@0',
+            'T_NAME(two)@4',
+            'T_NAME(three)@8',
+            'EndOfInput()@13',
+        ], self::describe($lexer->lex($source)));
+    }
+
     #[TestDox('An offset equal to the source length produces only the terminal token')]
     public function testOffsetEqualToSourceLengthProducesOnlyTheTerminalToken(): void
     {

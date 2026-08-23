@@ -8,18 +8,10 @@ use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Contracts\Source\ReadableStreamInterface;
 use Phplrt\Position\Exception\InvalidArgumentException;
-use Phplrt\Position\Exception\NotRewindableException;
 
 /**
  * Calculates positions by counting the line delimiters the source holds.
- *
- * The source is read from its beginning, which a source that can be rewound
- * survives untouched: it is left at the position it has been given at. The
- * one that cannot be rewound is left at the end of the data that has been
- * read out of it, and the one that has already given a part of its data away
- * is not accepted at all.
  */
 final readonly class PositionFactory implements PositionFactoryInterface
 {
@@ -55,8 +47,6 @@ final readonly class PositionFactory implements PositionFactoryInterface
     }
 
     /**
-     * @throws NotRewindableException When the source has already given a part
-     *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
@@ -73,8 +63,6 @@ final readonly class PositionFactory implements PositionFactoryInterface
 
     /**
      * @return int<0, max>
-     * @throws NotRewindableException When the source has already given a part
-     *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
@@ -143,8 +131,6 @@ final readonly class PositionFactory implements PositionFactoryInterface
      * or up to the end of it in case there is less data than that.
      *
      * @param int<1, max> $limit
-     * @throws NotRewindableException When the source has already given a part
-     *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
@@ -174,61 +160,21 @@ final readonly class PositionFactory implements PositionFactoryInterface
      *
      * @param int<1, max> $limit
      * @return iterable<mixed, string>
-     * @throws NotRewindableException When the source has already given a part
-     *         of its data away and cannot be rewound
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data
      */
     private function read(ReadableInterface $source, int $limit): iterable
     {
-        if ($source->isSeekable) {
-            return $this->readRewound($source, $limit);
-        }
-
-        if ($source->offset !== 0) {
-            throw NotRewindableException::becauseSourceIsConsumed($source->offset);
-        }
-
-        return $this->readForward($source, $limit);
-    }
-
-    /**
-     * Reads the source from its beginning and gives it back at the position
-     * it has been taken at.
-     *
-     * @param int<1, max> $limit
-     * @return iterable<mixed, string>
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
-     */
-    private function readRewound(ReadableInterface $source, int $limit): iterable
-    {
-        $restore = $source->offset;
-        $source->offset = 0;
-
-        try {
-            yield from $this->readForward($source, $limit);
-        } finally {
-            $source->offset = $restore;
-        }
-    }
-
-    /**
-     * @param int<1, max> $limit
-     * @return iterable<mixed, string>
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
-     */
-    private function readForward(ReadableStreamInterface $source, int $limit): iterable
-    {
         // Nothing beyond the limit is taken out of the source, so the last
         // chunk is the one the limit falls into.
-        for ($rest = $limit; $rest >= 1; $rest -= \strlen($chunk)) {
-            $chunk = $source->read(\min($this->chunkSize, $rest));
+        for ($offset = 0, $rest = $limit; $rest >= 1; $rest -= \strlen($chunk)) {
+            $chunk = $source->read($offset, \min($this->chunkSize, $rest));
 
             if ($chunk === '') {
                 break;
             }
+
+            $offset += \strlen($chunk);
 
             yield $chunk;
         }

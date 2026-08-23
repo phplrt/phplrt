@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Syntax\PP3;
 
 \interface_exists(\Phplrt\Contracts\Source\Exception\SourceExceptionInterface::class);
-\interface_exists(\Phplrt\Contracts\Source\ReadableStreamInterface::class);
 \interface_exists(\Phplrt\Contracts\Source\ReadableInterface::class);
 \interface_exists(\Phplrt\Contracts\Source\FileInterface::class);
 \interface_exists(\Phplrt\Contracts\Lexer\ChannelInterface::class);

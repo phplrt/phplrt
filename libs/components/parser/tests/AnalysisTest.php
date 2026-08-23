@@ -19,6 +19,7 @@ use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
 use Phplrt\Parser\Tests\Stub\ArithmeticLexer;
+use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -55,6 +56,22 @@ final class AnalysisTest extends TestCase
 
         self::assertInstanceOf(FailureResult::class, $actual);
         self::assertSame('T_PLUS', $actual->token->name);
+    }
+
+    #[TestDox('A source that cannot be rewound is read like any other')]
+    public function testSourceThatCannotBeRewoundIsRead(): void
+    {
+        $stream = self::createNonSeekableResource('1 + 2 + 3');
+
+        try {
+            // The analysis takes the source out twice: once into tokens and
+            // once into the result
+            $actual = self::createParser()->analyze(new ResourceSource($stream));
+
+            self::assertInstanceOf(SuccessfulResult::class, $actual);
+        } finally {
+            \fclose($stream);
+        }
     }
 
     #[TestDox('Nothing about a source makes the analysis throw')]

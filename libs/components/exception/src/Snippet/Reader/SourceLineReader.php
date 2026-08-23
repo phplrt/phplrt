@@ -10,7 +10,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Position\PositionFactory;
-use Phplrt\Source\StringSource;
 
 /**
  * Reads the lines of the source code around the captured (error) fragment.
@@ -57,14 +56,7 @@ final readonly class SourceLineReader
      */
     public function read(ReadableInterface $source, int $offset, int $length, int $lines): array
     {
-        $source = $this->rewindable($source);
-        $restore = $source->offset;
-
-        try {
-            return $this->readLines($source, \max(0, $offset), \max(0, $length), \max(0, $lines));
-        } finally {
-            $source->offset = $restore;
-        }
+        return $this->readLines($source, \max(0, $offset), \max(0, $length), \max(0, $lines));
     }
 
     /**
@@ -182,12 +174,10 @@ final readonly class SourceLineReader
      */
     private function readAt(ReadableInterface $source, int $from, int $length): string
     {
-        $source->offset = $from;
-
         $result = '';
 
         while (($rest = $length - \strlen($result)) > 0) {
-            $chunk = $source->read(\min($this->chunkSize, $rest));
+            $chunk = $source->read($from + \strlen($result), \min($this->chunkSize, $rest));
 
             if ($chunk === '') {
                 break;
@@ -211,10 +201,9 @@ final readonly class SourceLineReader
      */
     private function walk(ReadableInterface $source, int $from): iterable
     {
-        $source->offset = $from;
-
         $buffer = '';
         $start = $from;
+        $at = $from;
         $isEof = false;
 
         while (true) {
@@ -222,8 +211,9 @@ final readonly class SourceLineReader
 
             if ($anchor === false) {
                 if (!$isEof) {
-                    $chunk = $source->read($this->chunkSize);
+                    $chunk = $source->read($at, $this->chunkSize);
                     $isEof = $chunk === '';
+                    $at += \strlen($chunk);
                     $buffer .= $chunk;
 
                     continue;
@@ -246,22 +236,6 @@ final readonly class SourceLineReader
             $start += $anchor + 1;
             $buffer = \substr($buffer, $anchor + 1);
         }
-    }
-
-    /**
-     * Returns the source the lines can be read from in an arbitrary order.
-     *
-     * @throws SourceExceptionInterface
-     */
-    private function rewindable(ReadableInterface $source): ReadableInterface
-    {
-        // A source that can only be read forwards is taken as a whole, which
-        // is the only chance of reading it more than once.
-        if (!$source->isSeekable) {
-            return new StringSource($source->content);
-        }
-
-        return $source;
     }
 
     /**
