@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Snippet;
 
+use Phplrt\Exception\Analysis\FailureInterval;
+
 /**
  * A line of the source code containing a part of the captured (error) fragment.
  */
@@ -18,22 +20,14 @@ final readonly class CapturedSourceLine extends SourceLine
         int $offset,
         string $value,
         /**
-         * The 1-based column of the first captured character of the line.
+         * The part of the captured fragment this line contains, counted in
+         * bytes from the beginning of the line.
          *
-         * @var int<1, max>
-         */
-        public int $startColumn,
-        /**
-         * The number of columns captured on the line, counted from
-         * {@see $startColumn}.
-         *
-         * A line the fragment only passes through captures no column of its
-         * own, which is how a fragment spanning several lines is told from one
+         * A line the fragment only passes through contains no bytes of it,
+         * which is how a fragment spanning several lines is told from one
          * pointing at a position.
-         *
-         * @var int<0, max>
          */
-        public int $width,
+        public FailureInterval $captured,
     ) {
         parent::__construct($number, $offset, $value);
     }
