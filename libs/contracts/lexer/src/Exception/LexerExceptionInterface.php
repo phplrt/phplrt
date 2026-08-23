@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Lexer\Exception;
 
 /**
- * Occurs in case of any errors in lexical analysis
+ * An error of the lexical analysis.
+ *
+ * Every exception thrown by a lexer MUST implement this interface.
  */
 interface LexerExceptionInterface extends \Throwable {}

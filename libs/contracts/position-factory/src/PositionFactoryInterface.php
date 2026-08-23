@@ -8,34 +8,35 @@ use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Calculates {@see PositionInterface} objects over a source.
+ * Converts the offsets inside a source into the positions and back.
  */
 interface PositionFactoryInterface
 {
     /**
-     * Creates a position of the given offset within the source.
+     * Creates the position of the given offset inside the given source.
      *
-     * An offset pointing beyond the end of the source is corrected to the
-     * end of it.
+     * An offset beyond the end of the source MUST be corrected to the end
+     * of it.
      *
      * @param int<0, max> $offset the offset in bytes from the beginning of
      *        the source
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
+     * @return PositionInterface the position of the given offset
+     * @throws SourceExceptionInterface if the data of the given source cannot
+     *         be read
      */
     public function createFromOffset(ReadableInterface $source, int $offset): PositionInterface;
 
     /**
-     * Creates the offset in bytes from the beginning of the source the given
-     * position points at.
+     * Creates the offset in bytes from the beginning of the given source the
+     * given position points at.
      *
-     * A position pointing beyond the end of its own line is corrected to the
-     * end of that line, and the one pointing beyond the end of the source is
+     * A position beyond the end of its own line MUST be corrected to the end
+     * of that line, and a position beyond the end of the source MUST be
      * corrected to the end of the source.
      *
-     * @return int<0, max>
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
+     * @return int<0, max> the offset the given position points at
+     * @throws SourceExceptionInterface if the data of the given source cannot
+     *         be read
      */
     public function createOffsetFromPosition(ReadableInterface $source, PositionInterface $position): int;
 }

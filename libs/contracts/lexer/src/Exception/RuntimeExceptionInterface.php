@@ -8,20 +8,20 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * An exception that occurs after starting the lexical analysis and indicates
- * problems in the analyzed source.
+ * An error that occurs after the lexical analysis has been started and
+ * indicates a problem in the analyzed source.
  */
 interface RuntimeExceptionInterface extends LexerExceptionInterface
 {
     /**
-     * Gets the source object in which the error occurred.
+     * The source the error occurred in.
      */
     public ReadableInterface $source {
         get;
     }
 
     /**
-     * Gets the token on which the error occurred.
+     * The token the error occurred on.
      */
     public TokenInterface $token {
         get;

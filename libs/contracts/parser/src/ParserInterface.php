@@ -9,25 +9,23 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * An interface that implements methods for parsing source code.
+ * Converts a source into the result of its syntax analysis.
  *
  * @template TResult of mixed = mixed
  */
 interface ParserInterface
 {
     /**
-     * Parses sources into an abstract source tree (AST) or list of AST nodes.
+     * Performs syntax analysis of the given source and returns its result.
      *
-     * The shape of the result is defined by the parser: an implementation is
-     * allowed to return any value the analyzed source is converted into.
+     * The shape of the result is defined by the implementation, which MAY
+     * return any value the analyzed source is converted into, like an
+     * abstract syntax tree (AST) or a list of its nodes.
      *
-     * @return TResult
-     * @throws ParserExceptionInterface an error occurs before source processing
-     *         starts, when the given source cannot be recognized or if the
-     *         parser settings contain errors
-     * @throws RuntimeExceptionInterface an exception that occurs after
-     *         starting the parsing and indicates problems in the analyzed
-     *         source
+     * @return TResult the result of the analysis
+     * @throws ParserExceptionInterface if the given source cannot be
+     *         recognized or the parser settings contain errors
+     * @throws RuntimeExceptionInterface if the analyzed source contains errors
      */
     public function parse(ReadableInterface $source): mixed;
 }

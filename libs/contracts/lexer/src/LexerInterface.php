@@ -9,26 +9,22 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * An interface that is an abstract implementation of a lexer.
+ * Converts a source into the tokens it consists of.
  */
 interface LexerInterface
 {
     /**
-     * Returns a set of token objects from the passed source.
+     * Performs lexical analysis of the given source and returns its tokens.
      *
-     * @psalm-immutable This method may not be pure, but it does not change
-     *                  the internal state of the lexer and can be used in
-     *                  asynchronous and parallel computing.
+     * An implementation MUST NOT change its own state during the analysis, so
+     * that the same lexer can be used in asynchronous and parallel computing.
      *
-     * @param int<0, max> $offset the offset in bytes relative to which to
-     *        begin lexical analysis
-     * @return iterable<array-key, TokenInterface> list of analyzed tokens
-     * @throws LexerExceptionInterface an error occurs before source processing
-     *         starts, when the given source cannot be recognized or if the
-     *         lexer settings contain errors
-     * @throws RuntimeExceptionInterface an exception that occurs after
-     *         starting the lexical analysis and indicates problems in the
-     *         analyzed source
+     * @param int<0, max> $offset the offset in bytes from the beginning of the
+     *        source the analysis starts at
+     * @return iterable<array-key, TokenInterface> the analyzed tokens
+     * @throws LexerExceptionInterface if the given source cannot be recognized
+     *         or the lexer settings contain errors
+     * @throws RuntimeExceptionInterface if the analyzed source contains errors
      */
     public function lex(ReadableInterface $source, int $offset = 0): iterable;
 }

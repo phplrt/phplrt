@@ -7,25 +7,25 @@ namespace Phplrt\Contracts\Position;
 /**
  * A human-readable location inside a source.
  *
- * Note: Implementations MUST guarantee:
- *   - {@see $line} is one-based, so that the first line of a source
- *     is {@see MIN_LINE}
- *   - {@see $column} is one-based and counted within its own {@see $line},
- *     so that the beginning of every line is {@see MIN_COLUMN}
+ * The line of a position MUST be counted from the beginning of the source and
+ * the column MUST be counted from the beginning of its own line, both starting
+ * at one.
  *
- * @readonly An implementation MUST be immutable.
+ * An implementation MUST be immutable.
+ *
+ * @readonly
  */
 interface PositionInterface
 {
     /**
-     * Minimal allowed line number.
+     * The minimal line number a position is allowed to have.
      *
      * @var int<1, max>
      */
     public const int MIN_LINE = 1;
 
     /**
-     * Minimal allowed column number.
+     * The minimal column number a position is allowed to have.
      *
      * @var int<1, max>
      */
@@ -41,8 +41,7 @@ interface PositionInterface
     }
 
     /**
-     * The number of the column within its own {@see $line} the position
-     * points at.
+     * The number of the column within its own line the position points at.
      *
      * @var int<1, max>
      */

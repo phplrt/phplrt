@@ -5,39 +5,43 @@ declare(strict_types=1);
 namespace Phplrt\Contracts\Lexer;
 
 /**
- * The basic set of token channels.
+ * The basic set of the token channels.
  *
- * If you need your own channel, you can define your own instance
- * by implementing the {@see ChannelInterface} interface.
+ * An implementation MAY mark a token with a channel of its own, which MUST
+ * NOT be a member of this set.
  */
 enum Channel implements ChannelInterface
 {
     /**
-     * Default token channel name.
+     * The channel of the significant tokens.
      */
     case Default;
 
     /**
-     * Hidden tokens channel name.
-     *
-     * All tokens in this channel should be ignored.
+     * The channel of the tokens that MUST be ignored.
      */
     case Hidden;
 
     /**
-     * A channel marking a token as unrecognized
+     * The channel of the tokens that have not been recognized.
      */
     case Unknown;
 
     /**
-     * This token's type corresponds to a terminal token and can only be
-     * singular in the entire token stream.
+     * The channel of the terminal token.
+     *
+     * A stream MUST contain at most one token of this channel.
      */
     case EndOfInput;
 
+    /**
+     * The channel of the significant tokens.
+     */
     public const self DEFAULT = self::Default;
 
     /**
+     * Returns every channel of this set, indexed by its own name.
+     *
      * @return non-empty-array<non-empty-string, Channel>
      */
     public static function names(): array

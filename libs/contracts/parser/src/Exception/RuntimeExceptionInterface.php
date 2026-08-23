@@ -8,32 +8,31 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * An exception that occurs after starting the parsing and indicates
- * problems in the analyzed source.
+ * An error that occurs after the syntax analysis has been started and
+ * indicates a problem in the analyzed source.
  */
 interface RuntimeExceptionInterface extends ParserExceptionInterface
 {
     /**
-     * Gets the source object in which the error occurred.
+     * The source the error occurred in.
      */
     public ReadableInterface $source {
         get;
     }
 
     /**
-     * Gets the token on which the error occurred.
+     * The token the error occurred on.
      */
     public TokenInterface $token {
         get;
     }
 
     /**
-     * The size of the source fragment the parser error occurred in, in bytes.
+     * The size of the source fragment the error occurred in, in bytes, or
+     * {@see null} in case the size is not known.
      *
-     * A parser fails on a token and may span as far as the rule it has failed
-     * on, which is what this tells apart from the token itself. If the size is
-     * not specified ({@see null}), that of the token ({@see TokenInterface::$size})
-     * can be used instead.
+     * The fragment starts at the offset of the token the error occurred on and
+     * MAY be as large as the whole grammar rule the analysis has failed on.
      *
      * @var int<0, max>|null
      */
