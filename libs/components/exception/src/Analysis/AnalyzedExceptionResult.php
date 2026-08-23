@@ -11,7 +11,7 @@ use Phplrt\Contracts\Source\ReadableInterface;
  * Everything that is known about an error: what has been thrown, the source
  * the error refers to and the place inside that source.
  */
-final readonly class ExceptionInfo
+final readonly class AnalyzedExceptionResult
 {
     public function __construct(
         /**
@@ -33,7 +33,7 @@ final readonly class ExceptionInfo
          * The fragment of the source the error occurred in, or {@see null} in
          * case the error tells nothing about the size of it.
          */
-        public ?Interval $interval = null,
+        public ?FailureInterval $interval = null,
         /**
          * The information about the error that has led to this one, or
          * {@see null} in case there is none.

@@ -9,8 +9,17 @@ namespace Phplrt\Exception\Analysis;
  *
  * A fragment of no length is the position it starts at.
  */
-final readonly class Interval
+final class FailureInterval
 {
+    /**
+     * Gets the end offset in bytes of the failure interval.
+     *
+     * @var int<0, max>
+     */
+    public int $endsAt {
+        get => $this->offset + $this->length;
+    }
+
     public function __construct(
         /**
          * The offset in bytes from the beginning of the source the fragment
@@ -18,12 +27,12 @@ final readonly class Interval
          *
          * @var int<0, max>
          */
-        public int $offset,
+        public readonly int $offset,
         /**
          * The size of the fragment, in bytes.
          *
          * @var int<0, max>
          */
-        public int $length = 0,
+        public readonly int $length = 0,
     ) {}
 }

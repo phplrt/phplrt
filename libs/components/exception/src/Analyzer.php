@@ -10,8 +10,8 @@ use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\Analysis\ExceptionInfo;
-use Phplrt\Exception\Analysis\Interval;
+use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
+use Phplrt\Exception\Analysis\FailureInterval;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\FileSource;
@@ -34,7 +34,7 @@ final readonly class Analyzer
      * @throws SourceExceptionInterface in case the data of the source an
      *         error occurred in cannot be read
      */
-    public function analyze(\Throwable $e): ExceptionInfo
+    public function analyze(\Throwable $e): AnalyzedExceptionResult
     {
         // collect exception inheritance chain
         $chain = [];
@@ -56,12 +56,12 @@ final readonly class Analyzer
      * @throws SourceExceptionInterface in case the data of the source the
      *         given error occurred in cannot be read
      */
-    private function describe(\Throwable $e, ?ExceptionInfo $previous = null): ExceptionInfo
+    private function describe(\Throwable $e, ?AnalyzedExceptionResult $previous = null): AnalyzedExceptionResult
     {
         $source = $this->createSource($e);
         $interval = $this->createInterval($e);
 
-        return new ExceptionInfo(
+        return new AnalyzedExceptionResult(
             exception: $e,
             source: $source,
             position: $this->createPosition($e, $source, $interval),
@@ -91,17 +91,17 @@ final readonly class Analyzer
      * Returns the fragment of the source the given error occurred in, or
      * {@see null} in case the error tells nothing about the size of it.
      */
-    private function createInterval(\Throwable $e): ?Interval
+    private function createInterval(\Throwable $e): ?FailureInterval
     {
         if ($e instanceof ParserRuntimeExceptionInterface) {
-            return new Interval(
+            return new FailureInterval(
                 offset: $e->token->offset,
                 length: \max(0, $e->length ?? $e->token->size),
             );
         }
 
         if ($e instanceof LexerRuntimeExceptionInterface) {
-            return new Interval(
+            return new FailureInterval(
                 offset: $e->token->offset,
                 length: $e->token->size,
             );
@@ -116,7 +116,7 @@ final readonly class Analyzer
      * @throws SourceExceptionInterface in case the data of the given source
      *         cannot be read
      */
-    private function createPosition(\Throwable $e, ReadableInterface $source, ?Interval $interval): PositionInterface
+    private function createPosition(\Throwable $e, ReadableInterface $source, ?FailureInterval $interval): PositionInterface
     {
         if ($interval !== null) {
             return $this->positions->createFromOffset(
