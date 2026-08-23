@@ -14,8 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'check', description: 'Compile the passed grammar', aliases: ['validate'], usages: [
-    './resources/grammar.pp',
+#[AsCommand(name: 'check', description: 'Check the passed grammar', aliases: ['validate'], usages: [
     './resources/grammar.pp2',
     './resources/grammar.pp3',
 ])]
