@@ -197,6 +197,42 @@ abstract readonly class RustStyleRenderer implements RendererInterface
             . $this->printError(\str_repeat(self::UNDERLINE, $end - $begin), $level);
     }
 
+    private function printHeaderTitle(FailureResult $error): string
+    {
+        $result = $error->level->value;
+
+        if ($error->class !== '') {
+            $result = \sprintf('%s[%s]', $result, $this->getClassName($error->class));
+        }
+
+        if ($error->message !== '') {
+            $result .= ': ' . $error->message;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<SourceLine> $lines
+     * @param int<1, max> $digits
+     */
+    private function tryPrintHeaderPathname(FailureResult $error, array $lines, int $digits): ?string
+    {
+        if (!$error->source instanceof FileInterface) {
+            return null;
+        }
+
+        $pathname = $error->source->pathname;
+
+        if (($normalized = \realpath($pathname)) !== false) {
+            $pathname = $normalized;
+        }
+
+        return $this->printFrame(\str_repeat(' ', $digits) . self::ARROW)
+            . $pathname
+            . $this->printPosition($lines);
+    }
+
     /**
      * @param list<SourceLine> $lines
      * @param int<1, max> $digits
@@ -204,36 +240,10 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      */
     private function printHeader(FailureResult $error, array $lines, int $digits): array
     {
-        $result = [];
-        $level = $error->level;
+        $result = [$this->printHeaderTitle($error)];
 
-        // An error telling nothing about itself is printed as the source code
-        // fragment alone
-        if ($error->message !== '') {
-            $name = $error->class === ''
-                ? $level->value
-                : \sprintf('%s[%s]', $level->value, $this->getClassName($error->class));
-
-            $result[] = $this->printError($name, $level) . ': ' . $error->message;
-        }
-
-        // Only a source that belongs to a file can be referred to by its
-        // name, be the file a real one or not
-        $source = $error->source;
-        $pathname = null;
-
-        if ($source instanceof FileInterface) {
-            $pathname = $source->pathname;
-
-            if (($normalizedPathname = \realpath($pathname)) !== false) {
-                $pathname = $normalizedPathname;
-            }
-        }
-
-        if ($pathname !== null) {
-            $result[] = $this->printFrame(\str_repeat(' ', $digits) . self::ARROW)
-                . $pathname
-                . $this->printPosition($lines);
+        if (($pathname = $this->tryPrintHeaderPathname($error, $lines, $digits)) !== null) {
+            $result[] = $pathname;
         }
 
         return $result;
