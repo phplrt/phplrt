@@ -24,10 +24,11 @@ while (dirname($directory) !== $directory) {
 
 $version = null;
 try {
-    $version = InstalledVersions::getVersion('phplrt/compiler');
-} finally {
-    $version ??= 'dev-master';
+    $version = InstalledVersions::getPrettyVersion('phplrt/compiler')
+        ?? InstalledVersions::getPrettyVersion('phplrt/phplrt');
+} catch (\Throwable) {
+    /* skip on error */
 }
 
 define('PHPLRT_NAME', 'phplrt');
-define('PHPLRT_VERSION', $version);
+define('PHPLRT_VERSION', $version ?? 'dev-master');
