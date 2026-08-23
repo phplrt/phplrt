@@ -4,61 +4,46 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception;
 
-use Phplrt\Contracts\Source\FileInterface;
-use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\Printer\ErrorInfo;
-use Phplrt\Exception\Printer\PrinterInterface;
-use Phplrt\Exception\Printer\RustStylePrinter;
-use Phplrt\Exception\Snippet\Reader\SourceLineReader;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Exception\Printer\Renderer\RendererInterface;
+use Phplrt\Exception\Printer\Renderer\RustStyleRenderer;
 
 /**
  * Prints an error along with the fragment of the source code it occurred in.
  *
- * Everything the source itself tells about the error is taken from it: where
- * the fragment is written down and what the source is called, so the only
- * thing left to the caller is what the error is about.
+ * Everything the error tells about itself is taken from it: the source, the
+ * place inside that source, the message and the name of the error, so there
+ * is nothing left for the caller to describe.
  */
 final readonly class ErrorPrinter
 {
-    private SourceLineReader $reader;
+    private RendererInterface $renderer;
 
+    /**
+     * @param RendererInterface|null $renderer the renderer turning the errors
+     *        into the strings, or {@see null} in case the decision belongs to
+     *        the output itself
+     */
     public function __construct(
-        private PrinterInterface $printer = new RustStylePrinter(),
+        ?RendererInterface $renderer = null,
+        private Analyzer $analyzer = new Analyzer(),
+        private SnippetReader $reader = new SnippetReader(),
     ) {
-        $this->reader = new SourceLineReader();
+        $this->renderer = $renderer ?? RustStyleRenderer::createDefault();
     }
 
     /**
-     * Returns the error occurred at the given position of the given source,
-     * described by nothing but the source itself.
+     * Returns the given error described by everything it tells about itself.
      *
-     * @param int<0, max> $offset the byte offset of the fragment the error
-     *        occurred in
-     * @param int<0, max> $length the size of that fragment in bytes
+     * @throws SourceExceptionInterface in case the data of the source the
+     *         error occurred in cannot be read
      */
-    public function print(ReadableInterface $source, int $offset, int $length = 0): ErrorInfoResult
+    public function print(\Throwable $e): PrintableError
     {
-        $pathname = null;
-
-        // Only a source that belongs to a file can be referred to by its
-        // name, be the file a real one or not
-        if ($source instanceof FileInterface) {
-            $pathname = \realpath($source->pathname);
-
-            if ($pathname === false) {
-                $pathname = $source->pathname;
-            }
-        }
-
-        return new ErrorInfoResult(
+        return new PrintableError(
             reader: $this->reader,
-            printer: $this->printer,
-            source: $source,
-            offset: $offset,
-            length: $length,
-            info: new ErrorInfo(
-                pathname: $pathname,
-            ),
+            renderer: $this->renderer,
+            error: $this->analyzer->analyze($e),
         );
     }
 }

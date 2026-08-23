@@ -2,36 +2,56 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Printer\Internal\Style;
+namespace Phplrt\Exception\Printer\Renderer;
+
+use Phplrt\Exception\Printer\Level;
 
 /**
- * Decides how the output is decorated in case the caller has no opinion on it.
- *
- * The decision is made the way the other command line tools make it: the
- * escape sequences are printed only while the output is a terminal that has
- * not been asked to stay plain.
- *
- * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Phplrt\Exception
+ * Prints the diagnostics decorated by the ANSI escape sequences supported by
+ * the terminals.
  */
-final readonly class StyleFactory
+final readonly class AnsiRustStyleRenderer extends RustStyleRenderer
 {
     /**
-     * @param bool|null $colors {@see true} to decorate the output by the
-     *        escape sequences, {@see false} to keep it plain or {@see null}
-     *        to decide it by the output itself
+     * @var non-empty-string
      */
-    public static function create(?bool $colors = null): StyleInterface
-    {
-        return ($colors ?? self::isSupported())
-            ? new AnsiStyle()
-            : new PlainStyle();
-    }
+    private const string DELIMITER = '␤';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_ERROR = '31';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_WARNING = '33';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_DEBUG = '1';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_DIMMED = '90';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string SEQUENCE_FRAME = '94';
 
     /**
      * Returns {@see true} in case the output understands the escape sequences.
+     *
+     * The decision is made the way the other command line tools make it: the
+     * escape sequences are printed only while the output is a terminal that
+     * has not been asked to stay plain.
+     *
+     * @api
      */
-    private static function isSupported(): bool
+    public static function isSupported(): bool
     {
         // https://no-color.org
         if (self::findEnv('NO_COLOR') !== null) {
@@ -54,6 +74,25 @@ final readonly class StyleFactory
         }
 
         return \PHP_OS_FAMILY !== 'Windows' || self::isSupportedByWindows();
+    }
+
+    protected function printError(string $value, Level $level): string
+    {
+        return $this->wrap($value, match ($level) {
+            Level::Error => self::SEQUENCE_ERROR,
+            Level::Warning => self::SEQUENCE_WARNING,
+            Level::Debug => self::SEQUENCE_DEBUG,
+        });
+    }
+
+    protected function printFrame(string $value): string
+    {
+        return $this->wrap($value, self::SEQUENCE_FRAME);
+    }
+
+    protected function printDelimiter(): string
+    {
+        return $this->wrap(self::DELIMITER, self::SEQUENCE_DIMMED);
     }
 
     /**
@@ -87,5 +126,13 @@ final readonly class StyleFactory
         $result = \getenv($name);
 
         return $result === false || $result === '' ? null : $result;
+    }
+
+    /**
+     * @param non-empty-string $sequence
+     */
+    private function wrap(string $value, string $sequence): string
+    {
+        return $value === '' ? '' : \sprintf("\e[%sm%s\e[0m", $sequence, $value);
     }
 }

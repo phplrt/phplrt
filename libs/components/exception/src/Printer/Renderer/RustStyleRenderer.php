@@ -1,0 +1,362 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Phplrt\Exception\Printer\Renderer;
+
+use Phplrt\Exception\PrintableError;
+use Phplrt\Exception\Printer\Level;
+use Phplrt\Exception\Snippet\CapturedSourceLine;
+use Phplrt\Exception\Snippet\SourceLine;
+
+/**
+ * Renders the lines of the source code in the way similar to the Rust
+ * compiler diagnostics: every line is prefixed by its number and every
+ * captured fragment is underlined below the line containing it.
+ *
+ * A line is printed as long as it is, so the output is as wide as the widest
+ * line of the source code it contains.
+ */
+abstract readonly class RustStyleRenderer implements RendererInterface
+{
+    /**
+     * @var non-empty-string
+     */
+    private const string GUTTER = ' | ';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string ARROW = '--> ';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string UNDERLINE = '^';
+
+    /**
+     * Creates the renderer the output understands: a terminal that has not
+     * been asked to stay plain gets the colors, anything else gets the plain
+     * text.
+     *
+     * @api
+     */
+    public static function createDefault(): self
+    {
+        return AnsiRustStyleRenderer::isSupported()
+            ? new AnsiRustStyleRenderer()
+            : new RawRustStyleRenderer();
+    }
+
+    public function render(iterable $snippets, PrintableError $error): string
+    {
+        $lines = $this->toArray($snippets);
+        $digits = $this->calculateNumberWidth($lines);
+
+        $level = $error->level ?? Level::DEFAULT;
+
+        $result = $this->printHeader($error, $level, $lines, $digits);
+
+        $captured = $this->findCapturedIndex($lines);
+        $last = \array_key_last($lines);
+
+        foreach ($lines as $index => $line) {
+            foreach ($this->printLine($line, $digits, $level, $index === $captured, $index !== $last) as $row) {
+                $result[] = $row;
+            }
+        }
+
+        $result[] = $error->error->exception->getTraceAsString();
+
+        return \implode("\n", $result);
+    }
+
+    /**
+     * Prints the part of the output telling about the error of the given
+     * severity.
+     */
+    abstract protected function printError(string $value, Level $level): string;
+
+    /**
+     * Prints the frame around the source code: the numbers of the lines, the
+     * gutter separating them from the code and the arrow pointing at the
+     * location of the error.
+     */
+    abstract protected function printFrame(string $value): string;
+
+    /**
+     * Prints the visible end of a line, or an empty string in case the end of
+     * a line is not shown at all.
+     */
+    abstract protected function printDelimiter(): string;
+
+    /**
+     * @param int<1, max> $digits
+     * @param bool $begins the captured fragment starts inside the line
+     * @param bool $closed the line is closed by a delimiter
+     * @return list<string>
+     */
+    private function printLine(SourceLine $line, int $digits, Level $level, bool $begins, bool $closed): array
+    {
+        [$from, $to] = $this->calculateFragment($line);
+
+        $result = [$this->printRow(
+            (string) $line->number,
+            $digits,
+            $this->highlight($line->value, $from, $to, $level),
+            $closed ? $this->printDelimiter() : '',
+        )];
+
+        if (!$line instanceof CapturedSourceLine) {
+            return $result;
+        }
+
+        // The fragment of a zero length points at a position instead of the
+        // characters, so it is marked only on the line it starts on
+        $underline = $this->printUnderline($from, $to, $begins && $from === $to, $level);
+
+        if ($underline !== null) {
+            $result[] = $this->printRow('', $digits, $underline, '');
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int<1, max> $digits
+     */
+    private function printRow(string $number, int $digits, string $value, string $delimiter): string
+    {
+        $frame = \str_pad($number, $digits, ' ', \STR_PAD_LEFT) . self::GUTTER;
+
+        if ($delimiter === '') {
+            $value = \rtrim($value);
+
+            // Nothing follows the gutter, so it ends the row itself
+            if ($value === '') {
+                $frame = \rtrim($frame);
+            }
+        }
+
+        return $this->printFrame($frame) . $value . $delimiter;
+    }
+
+    /**
+     * @param int<0, max> $begin
+     * @param int<0, max> $end
+     * @param bool $points the underline marks a position instead of the characters
+     */
+    private function printUnderline(int $begin, int $end, bool $points, Level $level): ?string
+    {
+        // A line containing no characters of the fragment has nothing
+        // to underline
+        if ($end <= $begin) {
+            if (!$points) {
+                return null;
+            }
+
+            $end = $begin + 1;
+        }
+
+        return \str_repeat(' ', $begin)
+            . $this->printError(\str_repeat(self::UNDERLINE, $end - $begin), $level);
+    }
+
+    /**
+     * @param list<SourceLine> $lines
+     * @param int<1, max> $digits
+     * @return list<string>
+     */
+    private function printHeader(PrintableError $error, Level $level, array $lines, int $digits): array
+    {
+        $result = [];
+
+        $message = $error->message ?? '';
+        $class = $error->class ?? '';
+
+        // An error telling nothing about itself is printed as the source code
+        // fragment alone
+        if ($message !== '') {
+            $name = $class === ''
+                ? $level->value
+                : \sprintf('%s[%s]', $level->value, $this->getClassName($class));
+
+            $result[] = $this->printError($name, $level) . ': ' . $message;
+        }
+
+        $pathname = $error->pathname;
+
+        if ($pathname !== null) {
+            $result[] = $this->printFrame(\str_repeat(' ', $digits) . self::ARROW)
+                . $pathname
+                . $this->printPosition($lines);
+        }
+
+        if ($result !== [] && $lines !== []) {
+            $result[] = $this->printFrame(\str_repeat(' ', $digits) . \rtrim(self::GUTTER));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the name of the class without the namespace it belongs to, so
+     * that a long namespace does not take the room the message needs.
+     */
+    private function getClassName(string $class): string
+    {
+        $offset = \strrpos($class, '\\');
+
+        return $offset === false ? $class : \substr($class, $offset + 1);
+    }
+
+    /**
+     * Returns the position of the captured fragment inside the source code.
+     *
+     * @param list<SourceLine> $lines
+     */
+    private function printPosition(array $lines): string
+    {
+        foreach ($lines as $line) {
+            if ($line instanceof CapturedSourceLine) {
+                return \sprintf(
+                    ':%d:%d',
+                    $line->number,
+                    $this->calculateOffset($line->value, $line->captured->offset) + 1,
+                );
+            }
+        }
+
+        return $lines === [] ? '' : \sprintf(':%d:1', $lines[0]->number);
+    }
+
+    /**
+     * @param int<0, max> $begin
+     * @param int<0, max> $end
+     */
+    private function highlight(string $value, int $begin, int $end, Level $level): string
+    {
+        $length = $this->calculateLength($value);
+        $begin = \min($begin, $length);
+        $end = \min($end, $length);
+
+        if ($end <= $begin) {
+            return $value;
+        }
+
+        return $this->slice($value, 0, $begin)
+            . $this->printError($this->slice($value, $begin, \max(0, $end - $begin)), $level)
+            . $this->slice($value, $end, \max(0, $length - $end));
+    }
+
+    /**
+     * @param iterable<mixed, SourceLine> $snippets
+     * @return list<SourceLine>
+     */
+    private function toArray(iterable $snippets): array
+    {
+        return $snippets instanceof \Traversable
+            ? \iterator_to_array($snippets, false)
+            : \array_values($snippets);
+    }
+
+    /**
+     * Returns the offset of the first line containing the captured fragment.
+     *
+     * @param list<SourceLine> $lines
+     */
+    private function findCapturedIndex(array $lines): ?int
+    {
+        return \array_find_key($lines, static fn(SourceLine $line): bool => $line instanceof CapturedSourceLine);
+    }
+
+    /**
+     * @param list<SourceLine> $lines
+     * @return int<1, max>
+     */
+    private function calculateNumberWidth(array $lines): int
+    {
+        $result = 1;
+
+        foreach ($lines as $line) {
+            $result = \max($result, \strlen((string) $line->number));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array{int<0, max>, int<0, max>} the boundaries of the captured
+     *         fragment inside the line, in characters
+     */
+    private function calculateFragment(SourceLine $line): array
+    {
+        if (!$line instanceof CapturedSourceLine) {
+            return [0, 0];
+        }
+
+        $captured = $line->captured;
+
+        return [
+            $this->calculateOffset($line->value, $captured->offset),
+            $this->calculateOffset($line->value, $captured->endsAt),
+        ];
+    }
+
+    /**
+     * Returns the number of characters located before the given byte offset
+     * of the value.
+     *
+     * @param int<0, max> $offset
+     * @return int<0, max>
+     */
+    private function calculateOffset(string $value, int $offset): int
+    {
+        return $this->calculateLength(\substr($value, 0, $offset));
+    }
+
+    /**
+     * Returns the number of characters of the given value.
+     *
+     * @return int<0, max>
+     */
+    private function calculateLength(string $value): int
+    {
+        if (\function_exists('\\grapheme_strlen')) {
+            $result = \grapheme_strlen($value);
+
+            if (\is_int($result)) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_strlen')) {
+            return \mb_strlen($value);
+        }
+
+        return \strlen($value);
+    }
+
+    /**
+     * Returns the given number of characters located at the given offset.
+     *
+     * @param int<0, max> $offset
+     * @param int<0, max> $length
+     */
+    private function slice(string $value, int $offset, int $length): string
+    {
+        if (\function_exists('\\grapheme_substr')) {
+            $result = \grapheme_substr($value, $offset, $length);
+
+            if ($result !== false) {
+                return $result;
+            }
+        }
+
+        if (\function_exists('\\mb_substr')) {
+            return \mb_substr($value, $offset, $length);
+        }
+
+        return \substr($value, $offset, $length);
+    }
+}

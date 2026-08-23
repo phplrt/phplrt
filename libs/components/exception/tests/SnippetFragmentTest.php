@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Tests\Snippet\Reader;
+namespace Phplrt\Exception\Tests;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
-use Phplrt\Exception\ErrorInfoResult;
+use Phplrt\Exception\Analysis\FailureInterval;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
-use Phplrt\Exception\Snippet\Reader\SourceLineReader;
 use Phplrt\Exception\Snippet\SourceLine;
-use Phplrt\Exception\Tests\TestCase;
+use Phplrt\Exception\SnippetReader;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -17,7 +16,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestDox;
 
 #[Group('phplrt/exception')]
-final class SourceLineReaderTest extends TestCase
+final class SnippetFragmentTest extends TestCase
 {
     /**
      * Each line of the source is 6 bytes long, so with a single-byte
@@ -34,7 +33,7 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame([
             ' #2@7: line 2',
             ' #3@14: line 3',
-            '>#4@21:3-3: line 4',
+            '>#4@21:2-2: line 4',
             ' #5@28: line 5',
             ' #6@35: line 6',
         ], self::describe(self::readString(code: self::SOURCE, offset: 23, lines: 2)));
@@ -52,7 +51,7 @@ final class SourceLineReaderTest extends TestCase
     public function testReadsOnlyTheCapturedLine(): void
     {
         self::assertSame([
-            '>#4@21:3-3: line 4',
+            '>#4@21:2-2: line 4',
         ], self::describe(self::readString(self::SOURCE, 23, 0, 0)));
     }
 
@@ -105,7 +104,7 @@ final class SourceLineReaderTest extends TestCase
     public function testOmitsLinesBeforeTheBeginningOfSource(): void
     {
         self::assertSame([
-            '>#1@0:4-4: line 1',
+            '>#1@0:3-3: line 1',
             ' #2@7: line 2',
             ' #3@14: line 3',
         ], self::describe(self::readString(self::SOURCE, 3, 0, 2)));
@@ -117,7 +116,7 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame([
             ' #5@28: line 5',
             ' #6@35: line 6',
-            '>#7@42:4-4: line 7',
+            '>#7@42:3-3: line 7',
         ], self::describe(self::readString(self::SOURCE, 45, 0, 2)));
     }
 
@@ -125,7 +124,7 @@ final class SourceLineReaderTest extends TestCase
     public function testReadsSingleLineSource(): void
     {
         self::assertSame([
-            '>#1@0:4-4: line 1',
+            '>#1@0:3-3: line 1',
         ], self::describe(self::readString('line 1', 3, 0, 2)));
     }
 
@@ -139,8 +138,8 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame(1, $actual[1]->number);
         self::assertSame(0, $actual[1]->offset);
         self::assertSame('', $actual[1]->value);
-        self::assertSame(1, $actual[1]->startColumn);
-        self::assertSame(0, $actual[1]->width);
+        self::assertSame(0, $actual[1]->captured->offset);
+        self::assertSame(0, $actual[1]->captured->length);
     }
 
     #[TestDox('The trailing delimiter of the source produces an empty last line')]
@@ -148,7 +147,7 @@ final class SourceLineReaderTest extends TestCase
     {
         self::assertSame([
             ' #1@0: line 1',
-            '>#2@7:1-1: ',
+            '>#2@7:0-0: ',
         ], self::describe(self::readString("line 1\n", 7, 0, 2)));
     }
 
@@ -165,7 +164,7 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame([
             \sprintf(' #1@%d: line 1', 0),
             \sprintf(' #2@%d: line 2', $size),
-            \sprintf('>#3@%d:1-1: line 3', $size * 2),
+            \sprintf('>#3@%d:0-0: line 3', $size * 2),
         ], self::describe(self::readString($source, $size * 2, 0, 2)));
     }
 
@@ -184,9 +183,9 @@ final class SourceLineReaderTest extends TestCase
         self::assertSame([
             ' #2@7: line 2',
             ' #3@14: line 3',
-            '>#4@21:3-7: line 4',
-            '>#5@28:1-7: line 5',
-            '>#6@35:1-4: line 6',
+            '>#4@21:2-6: line 4',
+            '>#5@28:0-6: line 5',
+            '>#6@35:0-3: line 6',
             ' #7@42: line 7',
         ], self::describe(self::readString(self::SOURCE, 23, 15, 2)));
     }
@@ -195,9 +194,9 @@ final class SourceLineReaderTest extends TestCase
     public function testReadsLinesAfterTheEndOfFragment(): void
     {
         self::assertSame([
-            '>#1@0:3-7: line 1',
-            '>#2@7:1-7: line 2',
-            '>#3@14:1-4: line 3',
+            '>#1@0:2-6: line 1',
+            '>#2@7:0-6: line 2',
+            '>#3@14:0-3: line 3',
             ' #4@21: line 4',
         ], self::describe(self::readString(self::SOURCE, 2, 15, 1)));
     }
@@ -206,12 +205,12 @@ final class SourceLineReaderTest extends TestCase
     public function testFragmentEndingAtTheBeginningOfLineDoesNotCaptureIt(): void
     {
         self::assertSame([
-            '>#4@21:1-7: line 4',
+            '>#4@21:0-6: line 4',
         ], self::describe(self::readString(self::SOURCE, 21, 7, 0)));
 
         self::assertSame([
-            '>#4@21:1-7: line 4',
-            '>#5@28:1-2: line 5',
+            '>#4@21:0-6: line 4',
+            '>#5@28:0-1: line 5',
         ], self::describe(self::readString(self::SOURCE, 21, 8, 0)));
     }
 
@@ -225,36 +224,36 @@ final class SourceLineReaderTest extends TestCase
 
             foreach ($actual as $line) {
                 if ($line instanceof CapturedSourceLine) {
-                    self::assertSame(0, $line->width);
+                    self::assertSame(0, $line->captured->length);
                 }
             }
         }
     }
 
-    #[TestDox('The captured columns point to the boundaries of the fragment')]
-    public function testCapturedColumnsPointToTheFragmentBoundaries(): void
+    #[TestDox('The captured interval points to the boundaries of the fragment')]
+    public function testCapturedIntervalPointsToTheFragmentBoundaries(): void
     {
         $source = "line 1\nline 2";
 
         foreach (self::readString($source, 2, 8, 0) as $line) {
             self::assertInstanceOf(CapturedSourceLine::class, $line);
 
-            $captured = \substr($line->value, $line->startColumn - 1, $line->width);
+            $captured = \substr($line->value, $line->captured->offset, $line->captured->length);
 
             self::assertSame($line->number === 1 ? 'ne 1' : 'lin', $captured);
         }
     }
 
-    #[TestDox('The captured column points to the character located at the captured offset')]
-    public function testCapturedColumnPointsToTheCapturedOffset(): void
+    #[TestDox('The captured interval starts at the character located at the captured offset')]
+    public function testCapturedIntervalStartsAtTheCapturedOffset(): void
     {
         for ($offset = 0, $length = \strlen(self::SOURCE); $offset < $length; ++$offset) {
-            $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, $offset, 0, 2));
+            $line = self::findFirstCapturedLine(self::readString(self::SOURCE, $offset, 0, 2));
 
             self::assertSame(
                 self::SOURCE[$offset],
-                self::SOURCE[$captured->offset + $captured->startColumn - 1],
-                \sprintf('The column of the offset %d is expected to point to the same character', $offset),
+                self::SOURCE[$line->offset + $line->captured->offset],
+                \sprintf('The interval of the offset %d is expected to start at the same character', $offset),
             );
         }
     }
@@ -262,39 +261,39 @@ final class SourceLineReaderTest extends TestCase
     #[TestDox('An offset pointing to the delimiter belongs to the preceding line')]
     public function testOffsetInsideDelimiterBelongsToThePrecedingLine(): void
     {
-        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, 6, 0, 0));
+        $line = self::findFirstCapturedLine(self::readString(self::SOURCE, 6, 0, 0));
 
-        self::assertSame(1, $captured->number);
-        self::assertSame(7, $captured->startColumn);
+        self::assertSame(1, $line->number);
+        self::assertSame(6, $line->captured->offset);
     }
 
-    #[TestDox('The column never exceeds the length of the line')]
-    public function testColumnNeverExceedsTheLengthOfTheLine(): void
+    #[TestDox('The captured offset never exceeds the length of the line')]
+    public function testCapturedOffsetNeverExceedsTheLengthOfTheLine(): void
     {
         // The offset points to the "\n" of the "\r\n" delimiter.
-        $captured = self::findFirstCapturedLine(self::readString("line 1\r\nline 2", 7, 0, 0));
+        $line = self::findFirstCapturedLine(self::readString("line 1\r\nline 2", 7, 0, 0));
 
-        self::assertSame(1, $captured->number);
-        self::assertSame(7, $captured->startColumn);
-        self::assertSame(0, $captured->width);
+        self::assertSame(1, $line->number);
+        self::assertSame(6, $line->captured->offset);
+        self::assertSame(0, $line->captured->length);
     }
 
     #[TestDox('A negative offset is reduced to the beginning of the source')]
     public function testNegativeOffsetIsReducedToTheBeginningOfSource(): void
     {
-        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, -42, 0, 0));
+        $line = self::findFirstCapturedLine(self::readString(self::SOURCE, -42, 0, 0));
 
-        self::assertSame(1, $captured->number);
-        self::assertSame(1, $captured->startColumn);
+        self::assertSame(1, $line->number);
+        self::assertSame(0, $line->captured->offset);
     }
 
     #[TestDox('An offset outside the source is reduced to the end of the source')]
     public function testOverflowedOffsetIsReducedToTheEndOfSource(): void
     {
-        $captured = self::findFirstCapturedLine(self::readString(self::SOURCE, 42_000, 0, 0));
+        $line = self::findFirstCapturedLine(self::readString(self::SOURCE, 42_000, 0, 0));
 
-        self::assertSame(7, $captured->number);
-        self::assertSame(7, $captured->startColumn);
+        self::assertSame(7, $line->number);
+        self::assertSame(6, $line->captured->offset);
     }
 
     #[TestDox('A negative length is reduced to an empty fragment')]
@@ -319,8 +318,8 @@ final class SourceLineReaderTest extends TestCase
     public function testOverflowedLengthCapturesTheTrailingEmptyLine(): void
     {
         self::assertSame([
-            '>#1@0:1-7: line 1',
-            '>#2@7:1-1: ',
+            '>#1@0:0-6: line 1',
+            '>#2@7:0-0: ',
         ], self::describe(self::readString("line 1\n", 0, 42_000, 0)));
     }
 
@@ -365,10 +364,10 @@ final class SourceLineReaderTest extends TestCase
         string $code,
         int $offset,
         int $length = 0,
-        int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
+        int $lines = SnippetReader::DEFAULT_LINES_AROUND,
     ): array {
-        return new SourceLineReader()
-            ->read(new StringSource($code), $offset, $length, $lines);
+        return new SnippetReader()
+            ->fragment(new StringSource($code), new FailureInterval($offset, $length), $lines);
     }
 
     /**
@@ -382,10 +381,10 @@ final class SourceLineReaderTest extends TestCase
         string $pathname,
         int $offset,
         int $length = 0,
-        int $lines = ErrorInfoResult::DEFAULT_LINES_AROUND,
+        int $lines = SnippetReader::DEFAULT_LINES_AROUND,
     ): array {
-        return new SourceLineReader()
-            ->read(new FileSource($pathname), $offset, $length, $lines);
+        return new SnippetReader()
+            ->fragment(new FileSource($pathname), new FailureInterval($offset, $length), $lines);
     }
 
     /**
@@ -478,8 +477,8 @@ final class SourceLineReaderTest extends TestCase
                     '>#%d@%d:%d-%d: %s',
                     $i + 1,
                     $start,
-                    self::calculateColumn($offset, $start, $value),
-                    self::calculateColumn($end, $start, $value),
+                    self::calculateOffset($offset, $start, $value),
+                    self::calculateOffset($end, $start, $value),
                     $value,
                 )
                 : \sprintf(' #%d@%d: %s', $i + 1, $start, $value);
@@ -489,11 +488,11 @@ final class SourceLineReaderTest extends TestCase
     }
 
     /**
-     * @return int<1, max>
+     * @return int<0, max>
      */
-    private static function calculateColumn(int $offset, int $start, string $value): int
+    private static function calculateOffset(int $offset, int $start, string $value): int
     {
-        return \max(1, \min($offset - $start + 1, \strlen($value) + 1));
+        return \max(0, \min($offset - $start, \strlen($value)));
     }
 
     /**

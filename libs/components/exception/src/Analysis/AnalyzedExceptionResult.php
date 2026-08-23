@@ -40,4 +40,20 @@ final readonly class AnalyzedExceptionResult
          */
         public ?self $previous = null,
     ) {}
+
+    /**
+     * Creates a new instance with one or more overrides.
+     *
+     * ```
+     * $result = $result->with(
+     *     source: new FileSource(...),
+     *     position: new Position(),
+     * );
+     * ```
+     */
+    public function with(mixed ...$parameters): self
+    {
+        /** @phpstan-ignore argument.type */
+        return new self(...[...\get_object_vars($this), ...$parameters]);
+    }
 }

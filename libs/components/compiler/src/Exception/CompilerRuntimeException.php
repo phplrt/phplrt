@@ -7,8 +7,8 @@ namespace Phplrt\Compiler\Exception;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface as ParserRuntimeExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\ErrorInfoResult;
 use Phplrt\Exception\ErrorPrinter;
+use Phplrt\Exception\PrintableError;
 
 /**
  * An error of the grammar being compiled, at the place the grammar says it.
@@ -59,49 +59,29 @@ abstract class CompilerRuntimeException extends CompilerException
      * fails on a fragment of a grammar that has been read from no token at
      * all.
      *
-     * @return iterable<array-key, ErrorInfoResult>
+     * @return iterable<array-key, PrintableError>
      */
     private function backtrace(): iterable
     {
+        $printer = new ErrorPrinter();
         $current = $this;
 
         do {
+            // A grammar error is written down rather than read from a token,
+            // so the place of it is known to the exception alone.
             if ($current instanceof self) {
-                yield self::describe($current, $current->source, $current->offset, $current->length ?? 0);
+                yield $printer->print($current)
+                    ->withSource($current->source)
+                    ->withInterval($current->offset, $current->length ?? 0);
 
                 continue;
             }
 
-            if ($current instanceof ParserRuntimeExceptionInterface) {
-                $token = $current->token;
-
-                yield self::describe($current, $current->source, $token->offset, $current->length ?? $token->size);
-
-                continue;
-            }
-
-            if ($current instanceof LexerRuntimeExceptionInterface) {
-                $token = $current->token;
-
-                yield self::describe($current, $current->source, $token->offset, $token->size);
+            if ($current instanceof ParserRuntimeExceptionInterface
+                || $current instanceof LexerRuntimeExceptionInterface) {
+                yield $printer->print($current);
             }
         } while (($current = $current->getPrevious()) !== null);
-    }
-
-    /**
-     * @param int<0, max> $offset
-     * @param int<0, max> $length
-     */
-    private static function describe(
-        \Throwable $error,
-        ReadableInterface $source,
-        int $offset,
-        int $length,
-    ): ErrorInfoResult {
-        return new ErrorPrinter()
-            ->print($source, $offset, $length)
-            ->withMessage($error->getMessage())
-            ->withClass($error::class);
     }
 
     public function __toString(): string

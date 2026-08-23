@@ -24,8 +24,8 @@ abstract class TestCase extends BaseTestCase
                     '>#%d@%d:%d-%d: %s',
                     $line->number,
                     $line->offset,
-                    $line->startColumn,
-                    $line->startColumn + $line->width,
+                    $line->captured->offset,
+                    $line->captured->endsAt,
                     $line->value,
                 )
                 : \sprintf(' #%d@%d: %s', $line->number, $line->offset, $line->value);

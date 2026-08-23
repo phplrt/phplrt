@@ -7,8 +7,8 @@ namespace Phplrt\Lexer\Exception;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\ErrorInfoResult;
 use Phplrt\Exception\ErrorPrinter;
+use Phplrt\Exception\PrintableError;
 
 abstract class LexerRuntimeException extends LexerException implements
     RuntimeExceptionInterface
@@ -33,42 +33,12 @@ abstract class LexerRuntimeException extends LexerException implements
         );
     }
 
-    /**
-     * @return iterable<array-key, ErrorInfoResult>
-     */
-    private function backtrace(): iterable
-    {
-        $current = $this;
-
-        do {
-            if (!$current instanceof RuntimeExceptionInterface) {
-                continue;
-            }
-
-            $token = $current->token;
-
-            yield new ErrorPrinter()
-                ->print($current->source, $token->offset, $token->size)
-                ->withMessage($current->getMessage())
-                ->withClass($current::class);
-        } while (($current = $current->getPrevious()) !== null);
-    }
-
     public function __toString(): string
     {
-        if (!\class_exists(ErrorPrinter::class)) {
-            return parent::__toString();
-        }
-
         try {
-            return \implode("\n", [
-                ...$this->backtrace(),
-                \sprintf('  thrown in %s on line %d', $this->file, $this->line),
-                $this->getTraceAsString(),
-            ]);
+            return (string) new ErrorPrinter()
+                ->print($this);
         } catch (\Throwable) {
-            // The source code the error occurred in is gone, so there is
-            // nothing left to show around it.
             return parent::__toString();
         }
     }
