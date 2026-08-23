@@ -42,7 +42,6 @@ final class GrammarCompileCommand extends Command
 
         $this->addOption(
             name: 'namespace',
-            shortcut: 'ns',
             mode: InputOption::VALUE_OPTIONAL,
             description: 'The namespace name of the generated parser',
             suggestedValues: ['App\\Parser'],
@@ -161,7 +160,7 @@ final class GrammarCompileCommand extends Command
         ->generate();
 
         foreach ($this->getClassImports($input) as $import) {
-            $assembly->withClassImport($import);
+            $assembly = $assembly->withClassImport($import);
         }
 
         $assembly
