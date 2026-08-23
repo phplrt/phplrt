@@ -6,15 +6,38 @@ namespace Phplrt\Contracts\Source;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
-interface ReadableInterface extends ReadableStreamInterface
+/**
+ * An arbitrary source code, the data of which can be read in any order.
+ */
+interface ReadableInterface
 {
     /**
-     * Gets the source content as string
+     * The whole content of the source.
      *
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data and/or convert it to a string
+     * Repeated readings MUST give the same data back.
      */
     public string $content {
+        /**
+         * @throws SourceExceptionInterface if the data of the source cannot be
+         *         read and/or converted to a string
+         */
         get;
     }
+
+    /**
+     * Reads at most the given number of bytes located at the given offset,
+     * counted in bytes from the beginning of the source.
+     *
+     * An offset at or beyond the end of the source MUST give an empty string
+     * back, and an offset with less data left after it than has been asked for
+     * MUST give back everything there is.
+     *
+     * @param int<0, max> $offset the offset in bytes from the beginning of the
+     *        source the reading starts at
+     * @param int<1, max> $bytes the maximal number of bytes to read
+     * @return string the data that has been read
+     * @throws SourceExceptionInterface if the data of the source cannot
+     *         be read
+     */
+    public function read(int $offset, int $bytes): string;
 }

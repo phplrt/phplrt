@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 return [
     Phplrt\Contracts\Source\Exception\SourceExceptionInterface::class,
-    Phplrt\Contracts\Source\ReadableStreamInterface::class,
     Phplrt\Contracts\Source\ReadableInterface::class,
     Phplrt\Contracts\Source\FileInterface::class,
 ];
