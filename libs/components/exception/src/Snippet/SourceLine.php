@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Snippet;
 
+use Phplrt\Contracts\Position\PositionInterface;
+
 /**
  * A single line of the source code.
  */
 readonly class SourceLine
 {
+    /**
+     * The minimal number a line is allowed to have.
+     *
+     * @var int<1, max>
+     */
+    public const int MIN_NUMBER = PositionInterface::MIN_LINE;
+
     public function __construct(
         /**
          * The line number, starting from 1.

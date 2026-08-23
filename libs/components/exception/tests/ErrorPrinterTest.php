@@ -107,13 +107,13 @@ final class ErrorPrinterTest extends TestCase
         self::assertStringContainsString("2 | second line\n  | ^^^^^^", $actual);
     }
 
-    #[TestDox('An error covering no fragment underlines the whole line it occurred on')]
+    #[TestDox('An error covering no fragment points at the place it occurred at')]
     public function testPrintsWithoutTheInterval(): void
     {
         $actual = self::print(self::createError(message: ''), static fn($printed) => $printed
             ->withoutInterval());
 
-        self::assertStringContainsString("2 | second line\n  | ^^^^^^^^^^^", $actual);
+        self::assertStringContainsString("2 | second line\n  |        ^", $actual);
     }
 
     #[TestDox('The severity of the error is printed along with its message')]

@@ -10,7 +10,8 @@ use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Analysis\FailureInterval;
 use Phplrt\Exception\Analysis\FailureResult;
-use Phplrt\Exception\Snippet\CapturedSourceLine;
+use Phplrt\Exception\Snippet\Internal\CapturedFragment;
+use Phplrt\Exception\Snippet\Internal\LineReader;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
@@ -36,36 +37,31 @@ final readonly class SnippetReader
     public const int DEFAULT_CHUNK_SIZE = 8192;
 
     /**
-     * @var non-empty-string
+     * The reader of the lines the source consists of.
      */
-    private const string DELIMITER_ANCHOR = "\n";
+    private LineReader $lines;
 
     /**
-     * @var non-empty-string
+     * @param int<1, max> $chunkSize the number of bytes read at once
      */
-    private const string DELIMITER_EXTRA = "\r";
-
     public function __construct(
         /**
          * The factory telling which line of the source a fragment starts on
          * and where a line of it begins.
          */
         private PositionFactoryInterface $positions = new PositionFactory(),
-        /**
-         * The number of bytes read at once.
-         *
-         * @var int<1, max>
-         */
-        private int $chunkSize = self::DEFAULT_CHUNK_SIZE,
-    ) {}
+        int $chunkSize = self::DEFAULT_CHUNK_SIZE,
+    ) {
+        $this->lines = new LineReader($chunkSize);
+    }
 
     /**
      * Returns the lines of the source the given error occurred in, indexed by
      * their own numbers.
      *
      * The lines holding the fragment of the error are the captured ones, and
-     * an error that covers no fragment captures the position it has been
-     * thrown at.
+     * an error that covers no fragment captures the place it has been thrown
+     * at.
      *
      * @param int<0, max> $lines the number of lines read before and after
      *        the fragment
@@ -77,32 +73,9 @@ final readonly class SnippetReader
     {
         return $this->fragment(
             $info->source,
-            $info->interval ?? $this->createLineInterval($info->source, $info->position),
+            $info->interval ?? $this->createIntervalAt($info->source, $info->position),
             $lines,
         );
-    }
-
-    /**
-     * Returns the whole line the given position points at.
-     *
-     * An error that covers no fragment of the source tells nothing but the
-     * line it occurred on, so the line itself is the fragment of it.
-     *
-     * @throws SourceExceptionInterface in case the data of the given source
-     *         cannot be read
-     */
-    private function createLineInterval(ReadableInterface $source, PositionInterface $position): FailureInterval
-    {
-        $offset = $this->positions->createOffsetFromPosition($source, new Position($position->line));
-
-        // A column beyond the end of its own line is corrected to that end,
-        // so the widest one there is measures the line.
-        $end = $this->positions->createOffsetFromPosition(
-            $source,
-            new Position($position->line, \PHP_INT_MAX),
-        );
-
-        return new FailureInterval($offset, \max(0, $end - $offset));
     }
 
     /**
@@ -120,119 +93,107 @@ final readonly class SnippetReader
         FailureInterval $fragment,
         int $lines = self::DEFAULT_LINES_AROUND,
     ): array {
-        // Invariants against the callers not covered by static analysis.
-        $offset = \max(0, $fragment->offset);
-        $length = \max(0, $fragment->length);
+        $fragment = $this->normalize($fragment);
         $lines = \max(0, $lines);
 
-        $number = $this->positions->createFromOffset($source, $offset)->line;
-        $first = \max(PositionInterface::MIN_LINE, $number - $lines);
+        $captured = new CapturedFragment(
+            $fragment,
+            $this->positions->createFromOffset($source, $fragment->offset)->line,
+        );
+
+        $first = \max(SourceLine::MIN_NUMBER, $captured->number - $lines);
+
+        return $this->select(
+            $this->lines->read($source, $this->findLineOffset($source, $first), $first),
+            $captured,
+            $lines,
+        );
+    }
+
+    /**
+     * Returns the given fragment with everything a caller may have got wrong
+     * corrected, which static analysis does not cover.
+     */
+    private function normalize(FailureInterval $fragment): FailureInterval
+    {
+        $offset = \max(0, $fragment->offset);
+
         // The end of the fragment is saturated instead of overflowing.
-        $end = $offset + \max(0, \min($length, \PHP_INT_MAX - $offset));
+        return new FailureInterval(
+            offset: $offset,
+            length: \max(0, \min($fragment->length, \PHP_INT_MAX - $offset)),
+        );
+    }
 
-        $from = $this->positions->createOffsetFromPosition($source, new Position($first));
+    /**
+     * Returns the fragment of the source an error covering none of its own
+     * occurred in.
+     *
+     * A position pointing at a column of its own tells where exactly the
+     * error is, and the fragment is that very place. The beginning of a line
+     * tells nothing but the line, so the whole line is the fragment.
+     *
+     * @throws SourceExceptionInterface in case the data of the given source
+     *         cannot be read
+     */
+    private function createIntervalAt(ReadableInterface $source, PositionInterface $position): FailureInterval
+    {
+        $offset = $this->positions->createOffsetFromPosition($source, $position);
 
+        if ($position->column !== PositionInterface::MIN_COLUMN) {
+            return new FailureInterval($offset);
+        }
+
+        // A column beyond the end of its own line is corrected to that end,
+        // so the widest one there is measures the line.
+        $end = $this->positions->createOffsetFromPosition(
+            $source,
+            new Position($position->line, \PHP_INT_MAX),
+        );
+
+        return new FailureInterval($offset, \max(0, $end - $offset));
+    }
+
+    /**
+     * Returns the offset the given line of the given source starts at.
+     *
+     * @param int<1, max> $number
+     * @return int<0, max>
+     * @throws SourceExceptionInterface in case the data of the given source
+     *         cannot be read
+     */
+    private function findLineOffset(ReadableInterface $source, int $number): int
+    {
+        return $this->positions->createOffsetFromPosition($source, new Position($number));
+    }
+
+    /**
+     * Returns the lines holding the given fragment along with the given
+     * number of the lines that follow them.
+     *
+     * @param iterable<mixed, SourceLine> $lines
+     * @param int<0, max> $trailing
+     * @return array<int<1, max>, SourceLine>
+     */
+    private function select(iterable $lines, CapturedFragment $captured, int $trailing): array
+    {
         $result = [];
-        $current = $first;
-        $trailing = $lines;
 
-        foreach ($this->walk($source, $from) as [$start, $value]) {
-            // The line the fragment starts on is captured no matter how long
-            // the fragment is, while a fragment ending right at the beginning
-            // of a line leaves that line out.
-            $isCaptured = $current === $number
-                || ($current > $number && $start < $end);
+        foreach ($lines as $line) {
+            if ($captured->contains($line)) {
+                $result[$line->number] = $captured->capture($line);
 
-            if (!$isCaptured && $current > $number && $trailing-- === 0) {
+                continue;
+            }
+
+            // Nothing but the lines asked for is read after the fragment.
+            if ($line->number > $captured->number && $trailing-- === 0) {
                 break;
             }
 
-            $result[$current] = $isCaptured
-                ? $this->createCapturedLine($current, $start, $value, $offset, $end)
-                : new SourceLine($current, $start, $value);
-
-            ++$current;
+            $result[$line->number] = $line;
         }
 
         return $result;
-    }
-
-    /**
-     * @param int<1, max> $number
-     * @param int<0, max> $start
-     * @param int<0, max> $offset
-     * @param int<0, max> $end
-     */
-    private function createCapturedLine(
-        int $number,
-        int $start,
-        string $value,
-        int $offset,
-        int $end,
-    ): CapturedSourceLine {
-        $from = $this->calculateOffset($offset, $start, $value);
-
-        return new CapturedSourceLine($number, $start, $value, new FailureInterval(
-            offset: $from,
-            // The fragment may well begin on an earlier line, in which case
-            // it captures this one from its very first byte
-            length: \max(0, $this->calculateOffset($end, $start, $value) - $from),
-        ));
-    }
-
-    /**
-     * Reads the source line by line, starting at the given offset.
-     *
-     * A line ends wherever its delimiter is, and the data left after the last
-     * delimiter is the line the source ends with.
-     *
-     * @param int<0, max> $from
-     * @return iterable<mixed, array{int<0, max>, string}>
-     * @throws SourceExceptionInterface
-     */
-    private function walk(ReadableInterface $source, int $from): iterable
-    {
-        $buffer = '';
-        $start = $from;
-        $at = $from;
-
-        while (($chunk = $source->read($at, $this->chunkSize)) !== '') {
-            $at += \strlen($chunk);
-            $buffer .= $chunk;
-
-            // The line the buffer ends with is not closed by a delimiter yet,
-            // so it waits for the data that follows it.
-            $closed = \explode(self::DELIMITER_ANCHOR, $buffer);
-            $buffer = \array_pop($closed);
-
-            foreach ($closed as $value) {
-                yield [$start, \str_ends_with($value, self::DELIMITER_EXTRA)
-                    ? \substr($value, 0, -1)
-                    : $value];
-
-                $start = \max(0, $start + \strlen($value) + 1);
-            }
-        }
-
-        // The source ends without a delimiter, so whatever is left of it is
-        // the last line, the "\r" of which belongs to the line rather than
-        // closes it.
-        yield [$start, $buffer];
-    }
-
-    /**
-     * Returns the offset of the given position of the source inside the line
-     * starting at the given offset, counted in bytes from the beginning of
-     * that line.
-     *
-     * A position outside the line is corrected to the nearest end of it.
-     *
-     * @param int<0, max> $offset
-     * @param int<0, max> $start
-     * @return int<0, max>
-     */
-    private function calculateOffset(int $offset, int $start, string $value): int
-    {
-        return \max(0, \min($offset - $start, \strlen($value)));
     }
 }
