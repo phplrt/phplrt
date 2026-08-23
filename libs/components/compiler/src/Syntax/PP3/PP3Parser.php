@@ -8,6 +8,21 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Syntax\PP3;
 
+\interface_exists(\Phplrt\Contracts\Source\Exception\SourceExceptionInterface::class);
+\interface_exists(\Phplrt\Contracts\Source\ReadableStreamInterface::class);
+\interface_exists(\Phplrt\Contracts\Source\ReadableInterface::class);
+\interface_exists(\Phplrt\Contracts\Source\FileInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\ChannelInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\TokenInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\LexerInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface::class);
+\interface_exists(\Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface::class);
+\enum_exists(\Phplrt\Contracts\Lexer\Channel::class);
+\class_exists(\Phplrt\Contracts\Lexer\UserDefinedChannel::class);
+\interface_exists(\Phplrt\Contracts\Parser\ParserInterface::class);
+\interface_exists(\Phplrt\Contracts\Parser\Exception\ParserExceptionInterface::class);
+\interface_exists(\Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface::class);
+
 /**
  * @template TResult of mixed = mixed
  *

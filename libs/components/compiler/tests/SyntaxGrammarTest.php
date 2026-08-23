@@ -56,12 +56,11 @@ final class SyntaxGrammarTest extends TestCase
         string $namespace,
         string $class,
     ): void {
-        $expected = new Compiler()
+        $expected = (string) new Compiler()
             ->load(FileSource::createFromPathname($grammar))
             ->generate()
             ->withNamespaceName($namespace)
-            ->withClassName($class)
-            ->__toString();
+            ->withClassName($class);
 
         self::assertSame(
             \file_get_contents($pathname),

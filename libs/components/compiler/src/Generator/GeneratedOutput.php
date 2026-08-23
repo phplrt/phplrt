@@ -30,6 +30,14 @@ final readonly class GeneratedOutput implements \Stringable
          * The place the code is written into.
          */
         private OutputContext $context = new OutputContext(),
+        /**
+         * Finds the contracts the code loads before it refers to them.
+         */
+        private ContractsPreloader $contracts = new ContractsPreloader(),
+        /**
+         * Whether the contracts of the runtime are loaded by the code itself.
+         */
+        private bool $preloadContracts = true,
     ) {}
 
     /**
@@ -39,7 +47,7 @@ final readonly class GeneratedOutput implements \Stringable
      */
     public function withNamespaceName(?string $namespace): self
     {
-        return new self($this->result, $this->generator, new OutputContext(
+        return $this->withContext(new OutputContext(
             namespace: $namespace,
             imports: $this->context->imports,
             class: $this->context->class,
@@ -56,7 +64,7 @@ final readonly class GeneratedOutput implements \Stringable
      */
     public function withClassName(?string $class): self
     {
-        return new self($this->result, $this->generator, new OutputContext(
+        return $this->withContext(new OutputContext(
             namespace: $this->context->namespace,
             imports: $this->context->imports,
             class: $class,
@@ -73,11 +81,37 @@ final readonly class GeneratedOutput implements \Stringable
      */
     public function withClassImport(string $class, ?string $as = null): self
     {
-        return new self($this->result, $this->generator, new OutputContext(
+        return $this->withContext(new OutputContext(
             namespace: $this->context->namespace,
             imports: [...$this->context->imports, new ClassImport($class, $as)],
             class: $this->context->class,
         ));
+    }
+
+    /**
+     * Returns the output leaving the contracts of the runtime to be loaded the
+     * moment they are referred to.
+     */
+    public function withoutContractsPreloading(): self
+    {
+        return new self(
+            result: $this->result,
+            generator: $this->generator,
+            context: $this->context,
+            contracts: $this->contracts,
+            preloadContracts: false,
+        );
+    }
+
+    private function withContext(OutputContext $context): self
+    {
+        return new self(
+            result: $this->result,
+            generator: $this->generator,
+            context: $context,
+            contracts: $this->contracts,
+            preloadContracts: $this->preloadContracts,
+        );
     }
 
     /**
@@ -115,6 +149,12 @@ final readonly class GeneratedOutput implements \Stringable
      */
     public function __toString(): string
     {
-        return $this->generator->generate($this->result, $this->context);
+        $result = clone $this->context;
+
+        if ($this->preloadContracts) {
+            $result->includes = $this->contracts->createIncludes();
+        }
+
+        return $this->generator->generate($this->result, $result);
     }
 }

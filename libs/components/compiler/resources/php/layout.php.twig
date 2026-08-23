@@ -15,5 +15,11 @@ namespace {{ namespace }};
 use {{ import }};
 {% endfor %}
 {% endif %}
+{% if includes is not empty %}
+
+{% for include in includes %}
+\{{ include.type.value }}_exists(\{{ include.symbol }}::class);
+{% endfor %}
+{% endif %}
 
 {% block body %}{% endblock %}

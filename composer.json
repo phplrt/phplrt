@@ -19,6 +19,7 @@
     ],
     "require": {
         "php": "^8.4",
+        "composer-runtime-api": "^2.2",
         "ext-json": "*",
         "ext-pcre": "*",
         "laminas/laminas-code": "^4.17",

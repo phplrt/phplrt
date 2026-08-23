@@ -30,7 +30,6 @@ final readonly class CompilerResult implements \Stringable
      */
     public function __toString(): string
     {
-        return new GeneratedOutput($this)
-            ->__toString();
+        return (string) new GeneratedOutput($this);
     }
 }

@@ -77,6 +77,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
             $generated = $this->twig->render(self::TEMPLATE_ENTRYPOINT, [
                 'namespace' => $context->namespace,
                 'imports' => $context->imports,
+                'includes' => $context->includes,
                 'class' => $context->class,
                 'lexer' => $result->lexer,
                 'parser' => $result->parser,
