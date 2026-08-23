@@ -31,7 +31,7 @@ class LexerCompilerException extends \Exception
             $result = new ErrorPrinter()
                 ->print($this);
 
-            if ($this->context !== null) {
+            if ($context !== null) {
                 $result = $result
                     ->withSource($context->source)
                     ->withInterval($context->offset, $context->length);

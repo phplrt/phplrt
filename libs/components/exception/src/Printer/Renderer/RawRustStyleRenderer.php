@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Printer\Renderer;
 
-use Phplrt\Exception\Printer\Level;
+use Phplrt\Exception\Analysis\FailureLevel;
 
 /**
  * Prints the diagnostics as a plain text, without any decorations.
  */
 final readonly class RawRustStyleRenderer extends RustStyleRenderer
 {
-    protected function printError(string $value, Level $level): string
+    protected function printError(string $value, FailureLevel $level): string
     {
         return $value;
     }

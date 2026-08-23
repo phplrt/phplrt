@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Exception\Tests;
 
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Exception\Analysis\FailureLevel;
 use Phplrt\Exception\Analyzer;
 use Phplrt\Exception\Tests\Stub\FilelessExceptionStub;
 use Phplrt\Exception\Tests\Stub\LexerRuntimeExceptionStub;
@@ -25,12 +26,27 @@ final class AnalyzerTest extends TestCase
      */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4";
 
-    #[TestDox('The original error is given back as is')]
-    public function testExceptionIsGivenBack(): void
+    #[TestDox('The name and the message of the error are taken from it')]
+    public function testNameAndMessageAreGivenBack(): void
     {
-        $expected = new \LogicException('Something went wrong');
+        $result = new Analyzer()->analyze(new \LogicException('Something went wrong'));
 
-        self::assertSame($expected, new Analyzer()->analyze($expected)->exception);
+        self::assertSame(\LogicException::class, $result->class);
+        self::assertSame('Something went wrong', $result->message);
+    }
+
+    #[TestDox('The severity of an error telling nothing about it is the default one')]
+    public function testSeverityOfArbitraryExceptionIsTheDefaultOne(): void
+    {
+        self::assertSame(FailureLevel::DEFAULT, new Analyzer()->analyze(new \LogicException())->level);
+    }
+
+    #[TestDox('The severity an error tells about itself is taken from it')]
+    public function testSeverityIsTakenFromTheError(): void
+    {
+        $result = new Analyzer()->analyze(new \ErrorException('', severity: \E_USER_WARNING));
+
+        self::assertSame(FailureLevel::Warning, $result->level);
     }
 
     #[TestDox('An error that refers to no source is located in the file it has been thrown from')]
@@ -174,11 +190,11 @@ final class AnalyzerTest extends TestCase
         self::assertNull($info->interval);
 
         self::assertNotNull($info->previous);
-        self::assertSame($outer, $info->previous->exception);
+        self::assertSame(ParserRuntimeExceptionStub::class, $info->previous->class);
         self::assertSame(4, $info->previous->position->line);
 
         self::assertNotNull($info->previous->previous);
-        self::assertSame($inner, $info->previous->previous->exception);
+        self::assertSame(LexerRuntimeExceptionStub::class, $info->previous->previous->class);
         self::assertSame(2, $info->previous->previous->position->line);
 
         self::assertNull($info->previous->previous->previous);
@@ -196,13 +212,13 @@ final class AnalyzerTest extends TestCase
         $info = new Analyzer()->analyze($exception);
 
         for ($i = 999; $i > 0; --$i) {
-            self::assertSame('#' . $i, $info->exception->getMessage());
+            self::assertSame('#' . $i, $info->message);
             self::assertNotNull($info->previous);
 
             $info = $info->previous;
         }
 
-        self::assertSame('#0', $info->exception->getMessage());
+        self::assertSame('#0', $info->message);
         self::assertNull($info->previous);
     }
 }

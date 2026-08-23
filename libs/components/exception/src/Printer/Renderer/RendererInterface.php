@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Printer\Renderer;
 
-use Phplrt\Exception\Printer\PrintableError;
-use Phplrt\Exception\Snippet\SourceLine;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Exception\Analysis\FailureResult;
 
 /**
- * Turns an error along with the lines of the source code it occurred in into
- * a string.
+ * Turns everything that is known about an error into a string.
  */
 interface RendererInterface
 {
     /**
      * Returns the printed representation of the given error.
      *
-     * @param iterable<mixed, SourceLine> $snippets the lines of the source
-     *        code printed along with the error
+     * @param \Throwable $e the error the information has been built out of
+     * @throws SourceExceptionInterface in case the data of the source the
+     *         error occurred in cannot be read
      */
-    public function render(iterable $snippets, PrintableError $error): string;
+    public function render(FailureResult $error, \Throwable $e): string;
 }

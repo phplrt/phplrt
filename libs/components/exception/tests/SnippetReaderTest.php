@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Tests;
 
-use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Exception\Analyzer;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\SnippetReader;
@@ -59,13 +59,14 @@ final class SnippetReaderTest extends TestCase
         ))));
     }
 
-    #[TestDox('An error that covers no fragment captures the beginning of its own line')]
+    #[TestDox('An error that covers no fragment captures the whole line it occurred on')]
     public function testReadsTheLineOfAnErrorWithoutFragment(): void
     {
         // An error that knows nothing but the line it occurred on is what
         // the analysis of an arbitrary exception gives back.
-        $info = new AnalyzedExceptionResult(
-            exception: new \LogicException(),
+        $info = new FailureResult(
+            class: \LogicException::class,
+            message: '',
             source: new StringSource(self::SOURCE),
             position: new Position(line: 4),
         );
@@ -73,7 +74,7 @@ final class SnippetReaderTest extends TestCase
         self::assertSame([
             ' #2@7: line 2',
             ' #3@14: line 3',
-            '>#4@21:0-0: line 4',
+            '>#4@21:0-6: line 4',
             ' #5@28: line 5',
             ' #6@35: line 6',
         ], self::describe(new SnippetReader()->read($info)));

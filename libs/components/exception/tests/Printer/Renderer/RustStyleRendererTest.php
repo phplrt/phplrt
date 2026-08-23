@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Tests\Printer\Renderer;
 
-use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
 use Phplrt\Exception\Analysis\FailureInterval;
-use Phplrt\Exception\Printer\PrintableError;
-use Phplrt\Exception\Printer\Level;
+use Phplrt\Exception\Analysis\FailureLevel;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Exception\Printer\Renderer\AnsiRustStyleRenderer;
 use Phplrt\Exception\Printer\Renderer\RawRustStyleRenderer;
+use Phplrt\Exception\Printer\Renderer\RendererInterface;
 use Phplrt\Exception\Printer\Renderer\RustStyleRenderer;
-use Phplrt\Exception\Snippet\CapturedSourceLine;
-use Phplrt\Exception\Snippet\SourceLine;
-use Phplrt\Exception\SnippetReader;
-use Phplrt\Exception\Tests\Stub\FilelessExceptionStub;
 use Phplrt\Exception\Tests\TestCase;
 use Phplrt\Position\Position;
+use Phplrt\Position\PositionFactory;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -41,7 +38,7 @@ final class RustStyleRendererTest extends TestCase
               |   ^^
             5 | line 5
             6 | line 6
-            OUT, self::render(self::read(23, 2, 2)));
+            OUT, self::render(self::createFailure(self::SOURCE, 23, 2)));
     }
 
     #[TestDox('The line numbers are aligned to the widest one')]
@@ -56,7 +53,7 @@ final class RustStyleRendererTest extends TestCase
                | ^^^^^^^
             11 | line 11
             12 | line 12
-            OUT, self::render(self::read(63, 7, 2, $source)));
+            OUT, self::render(self::createFailure($source, 63, 7)));
     }
 
     #[TestDox('The multi-byte characters are underlined as single ones')]
@@ -70,7 +67,7 @@ final class RustStyleRendererTest extends TestCase
         self::assertSame(<<<'OUT'
             1 | Hello Вася
               |       ^^^^
-            OUT, self::render([new CapturedSourceLine(1, 0, $value, new FailureInterval($offset, \strlen('Вася')))]));
+            OUT, self::render(self::createFailure($value, $offset, \strlen('Вася'))));
     }
 
     #[TestDox('An empty fragment is underlined by a single character')]
@@ -79,13 +76,14 @@ final class RustStyleRendererTest extends TestCase
         self::assertSame(<<<'OUT'
             1 | line 1
               |    ^
-            OUT, self::render([new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(3, 0))]));
+            OUT, self::render(self::createFailure('line 1', 3, 0)));
     }
 
     #[TestDox('Every line of a multi-line fragment is underlined')]
     public function testUnderlinesEveryLineOfTheFragment(): void
     {
         self::assertSame(<<<'OUT'
+            2 | line 2
             3 | line 3
             4 | line 4
               |      ^
@@ -94,7 +92,7 @@ final class RustStyleRendererTest extends TestCase
             6 | line 6
               | ^^^^
             7 | line 7
-            OUT, self::render(self::read(26, 13, 1)));
+            OUT, self::render(self::createFailure(self::SOURCE, 26, 13)));
     }
 
     #[TestDox('A line is printed as long as it is')]
@@ -105,36 +103,12 @@ final class RustStyleRendererTest extends TestCase
         self::assertSame(
             '1 | ' . $value . "\n"
             . '  | ' . \str_repeat(' ', 200) . '^^^^^',
-            self::render([new CapturedSourceLine(1, 0, $value, new FailureInterval(200, 5))]),
+            self::render(self::createFailure($value, 200, 5)),
         );
-    }
-
-    #[TestDox('The lines without a captured fragment are printed as is')]
-    public function testPrintsLinesWithoutTheCapturedFragment(): void
-    {
-        self::assertSame(<<<'OUT'
-            1 | line 1
-            2 | line 2
-            OUT, self::render([new SourceLine(1, 0, 'line 1'), new SourceLine(2, 7, 'line 2')]));
     }
 
     #[TestDox('The empty line is printed without the trailing whitespaces')]
     public function testPrintsEmptyLine(): void
-    {
-        self::assertSame("1 |\n2 | line 2", self::render([
-            new SourceLine(1, 0, ''),
-            new SourceLine(2, 1, 'line 2'),
-        ]));
-    }
-
-    #[TestDox('The empty list of lines is printed as an empty string')]
-    public function testPrintsEmptyList(): void
-    {
-        self::assertSame('', self::render([]));
-    }
-
-    #[TestDox('The line without characters of the fragment is not underlined')]
-    public function testDoesNotUnderlineLineWithoutCharactersOfTheFragment(): void
     {
         self::assertSame(<<<'OUT'
             1 | line 1
@@ -142,7 +116,7 @@ final class RustStyleRendererTest extends TestCase
             2 |
             3 | line 3
               | ^^^^^^
-            OUT, self::render(self::read(3, 12, 0, "line 1\n\nline 3")));
+            OUT, self::render(self::createFailure("line 1\n\nline 3", 3, 12)));
     }
 
     #[TestDox('The error message is printed above the source code')]
@@ -150,13 +124,13 @@ final class RustStyleRendererTest extends TestCase
     {
         self::assertSame(<<<'OUT'
             error: Unexpected token
-              |
-            1 | line 1
-              |    ^^^
-            OUT, self::render(
-            [new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(3, 3))],
-            self::createPrintable(message: 'Unexpected token'),
-        ));
+            2 | line 2
+            3 | line 3
+            4 | line 4
+              |   ^^
+            5 | line 5
+            6 | line 6
+            OUT, self::render(self::createFailure(self::SOURCE, 23, 2, message: 'Unexpected token')));
     }
 
     #[TestDox('The error location is printed above the source code')]
@@ -164,18 +138,21 @@ final class RustStyleRendererTest extends TestCase
     {
         self::assertSame(<<<'OUT'
             error[LogicException]: Unexpected token
-              --> /app/example.php:42:4
-               |
-            42 | line 1
-               |    ^^^
-            OUT, self::render(
-            [new CapturedSourceLine(42, 0, 'line 1', new FailureInterval(3, 3))],
-            self::createPrintable(
-                message: 'Unexpected token',
-                pathname: '/app/example.php',
-                class: \LogicException::class,
-            ),
-        ));
+             --> /app/example.php:4:3
+            2 | line 2
+            3 | line 3
+            4 | line 4
+              |   ^^
+            5 | line 5
+            6 | line 6
+            OUT, self::render(self::createFailure(
+            self::SOURCE,
+            23,
+            2,
+            message: 'Unexpected token',
+            class: \LogicException::class,
+            pathname: '/app/example.php',
+        )));
     }
 
     #[TestDox('The column of the error location is counted in characters')]
@@ -188,13 +165,14 @@ final class RustStyleRendererTest extends TestCase
 
         self::assertSame(<<<'OUT'
              --> /app/example.php:1:8
-              |
             1 | Привет Вася
               |        ^^^^
-            OUT, self::render(
-            [new CapturedSourceLine(1, 0, $value, new FailureInterval($offset, \strlen('Вася')))],
-            self::createPrintable(pathname: '/app/example.php'),
-        ));
+            OUT, self::render(self::createFailure(
+            $value,
+            $offset,
+            \strlen('Вася'),
+            pathname: '/app/example.php',
+        )));
     }
 
     #[TestDox('The class the error is named by is printed without the namespace it belongs to')]
@@ -202,25 +180,19 @@ final class RustStyleRendererTest extends TestCase
     {
         self::assertSame(<<<'OUT'
             error[UnexpectedTokenException]: Something went wrong
-              |
-            1 | line 1
+            2 | line 2
+            3 | line 3
+            4 | line 4
               | ^^^^
-            OUT, self::render(
-            [new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(0, 4))],
-            self::createPrintable(
-                message: 'Something went wrong',
-                class: 'Phplrt\Parser\Exception\UnexpectedTokenException',
-            ),
-        ));
-    }
-
-    #[TestDox('The error information is printed without the source code')]
-    public function testPrintsErrorInformationWithoutSourceCode(): void
-    {
-        self::assertSame(
-            'error: Unexpected end of input',
-            self::render([], self::createPrintable(message: 'Unexpected end of input')),
-        );
+            5 | line 5
+            6 | line 6
+            OUT, self::render(self::createFailure(
+            self::SOURCE,
+            21,
+            4,
+            message: 'Something went wrong',
+            class: 'Phplrt\Parser\Exception\UnexpectedTokenException',
+        )));
     }
 
     #[TestDox('The severity of the error is printed instead of the default one')]
@@ -228,25 +200,50 @@ final class RustStyleRendererTest extends TestCase
     {
         self::assertSame(<<<'OUT'
             warning: Unused variable
-              |
-            1 | line 1
+            2 | line 2
+            3 | line 3
+            4 | line 4
               | ^^^^
-            OUT, self::render(
-            [new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(0, 4))],
-            self::createPrintable(message: 'Unused variable', level: Level::Warning),
-        ));
+            5 | line 5
+            6 | line 6
+            OUT, self::render(self::createFailure(
+            self::SOURCE,
+            21,
+            4,
+            message: 'Unused variable',
+            level: FailureLevel::Warning,
+        )));
+    }
+
+    #[TestDox('An error covering no fragment underlines the whole line it occurred on')]
+    public function testPrintsErrorWithoutFragment(): void
+    {
+        self::assertSame(<<<'OUT'
+            error: Unexpected end of input
+            1 | line 1
+              | ^^^^^^
+            2 | line 2
+            3 | line 3
+            OUT, self::render(self::createFailure(self::SOURCE, message: 'Unexpected end of input')));
+    }
+
+    #[TestDox('The stack trace of the error closes the output')]
+    public function testPrintsStackTrace(): void
+    {
+        $e = new \LogicException();
+
+        self::assertStringEndsWith(
+            "\n" . $e->getTraceAsString(),
+            new RawRustStyleRenderer()->render(self::createFailure(self::SOURCE, 23, 2), $e),
+        );
     }
 
     #[TestDox('The plain renderer prints no escape sequences')]
     public function testRawRendererPrintsNoEscapeSequences(): void
     {
-        self::assertStringNotContainsString("\e", self::renderExample(new RawRustStyleRenderer()));
-    }
-
-    #[TestDox('The ANSI renderer prints the escape sequences')]
-    public function testAnsiRendererPrintsEscapeSequences(): void
-    {
-        self::assertStringContainsString("\e", self::renderExample(new AnsiRustStyleRenderer()));
+        self::assertStringNotContainsString("\e", self::render(
+            self::createFailure('line 1', 2, 2, message: 'Oops'),
+        ));
     }
 
     /**
@@ -254,42 +251,41 @@ final class RustStyleRendererTest extends TestCase
      */
     #[TestDox('The severity, the captured fragment and its underline are highlighted')]
     #[DataProvider('levelsDataProvider')]
-    public function testHighlightsError(Level $level, string $sequence): void
+    public function testHighlightsError(FailureLevel $level, string $sequence): void
     {
         self::assertSame(
             \sprintf("\e[%1\$sm%2\$s\e[0m: Oops\n", $sequence, $level->value)
-            . "\e[94m  |\e[0m\n"
             . \sprintf("\e[94m1 | \e[0mli\e[%smne\e[0m 1\n", $sequence)
             . \sprintf("\e[94m  | \e[0m  \e[%sm^^\e[0m", $sequence),
-            new AnsiRustStyleRenderer()->render(
-                [new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(2, 2))],
-                self::createPrintable(message: 'Oops', level: $level),
+            self::render(
+                self::createFailure('line 1', 2, 2, message: 'Oops', level: $level),
+                new AnsiRustStyleRenderer(),
             ),
         );
     }
 
     /**
-     * @return iterable<non-empty-string, array{Level, non-empty-string}>
+     * @return iterable<non-empty-string, array{FailureLevel, non-empty-string}>
      */
     public static function levelsDataProvider(): iterable
     {
-        yield 'error' => [Level::Error, '31'];
-        yield 'warning' => [Level::Warning, '33'];
-        yield 'debug' => [Level::Debug, '1'];
+        yield 'error' => [FailureLevel::Error, '31'];
+        yield 'warning' => [FailureLevel::Warning, '33'];
+        yield 'debug' => [FailureLevel::Debug, '1'];
     }
 
     #[TestDox('The line delimiters are highlighted along with the source code')]
     public function testHighlightsLineDelimiters(): void
     {
         self::assertSame(
-            "\e[94m1 | \e[0mline 1\e[90m␤\e[0m\n"
+            "\e[94m1 | \e[0m\e[31ml\e[0mine 1\e[90m␤\e[0m\n"
+            . "\e[94m  | \e[0m\e[31m^\e[0m\n"
             . "\e[94m2 | \e[0m\e[90m␤\e[0m\n"
             . "\e[94m3 | \e[0mline 3",
-            new AnsiRustStyleRenderer()->render([
-                new SourceLine(1, 0, 'line 1'),
-                new SourceLine(2, 7, ''),
-                new SourceLine(3, 8, 'line 3'),
-            ], self::createPrintable()),
+            self::render(
+                self::createFailure("line 1\n\nline 3", 0, 1),
+                new AnsiRustStyleRenderer(),
+            ),
         );
     }
 
@@ -309,59 +305,49 @@ final class RustStyleRendererTest extends TestCase
     }
 
     /**
-     * @param iterable<mixed, SourceLine> $lines
+     * Returns the diagnostics of the given error without the stack trace
+     * closing them, which belongs to the test the error is created in.
      */
-    private static function render(iterable $lines, ?PrintableError $error = null): string
+    private static function render(FailureResult $error, ?RendererInterface $renderer = null): string
     {
-        return new RawRustStyleRenderer()->render($lines, $error ?? self::createPrintable());
-    }
+        $e = new \LogicException();
 
-    private static function renderExample(RustStyleRenderer $renderer): string
-    {
-        return $renderer->render(
-            [new CapturedSourceLine(1, 0, 'line 1', new FailureInterval(2, 2))],
-            self::createPrintable(message: 'Oops'),
-        );
+        $result = ($renderer ?? new RawRustStyleRenderer())->render($error, $e);
+
+        return \rtrim(\substr($result, 0, -\strlen($e->getTraceAsString())), "\n");
     }
 
     /**
-     * Returns the error the given information is printed for, the analysis of
-     * which is of no interest to the renderer itself.
-     */
-    private static function createPrintable(
-        string $message = '',
-        ?string $pathname = null,
-        string $class = '',
-        Level $level = Level::Error,
-    ): PrintableError {
-        return new PrintableError(
-            reader: new SnippetReader(),
-            renderer: new RawRustStyleRenderer(),
-            // The error belongs to no file of its own, so the pathname is
-            // printed only in case the source it occurred in is named
-            error: new AnalyzedExceptionResult(
-                exception: new FilelessExceptionStub(),
-                source: $pathname === null
-                    ? StringSource::createEmpty()
-                    : VirtualSource::createFromString($pathname, ''),
-                position: new Position(),
-            ),
-            message: $message,
-            class: $class,
-            level: $level,
-        );
-    }
-
-    /**
-     * @param int<0, max> $offset
+     * Returns the error that occurred in the given fragment of the given
+     * source code, or at the beginning of it in case no fragment is given.
+     *
+     * @param int<0, max>|null $offset
      * @param int<0, max> $length
-     * @param int<0, max> $lines
-     * @return array<int<1, max>, SourceLine>
+     * @param non-empty-string|null $pathname
      */
-    private static function read(int $offset, int $length, int $lines, string $code = self::SOURCE): array
-    {
-        return new SnippetReader()
-            ->fragment(new StringSource($code), new FailureInterval($offset, $length), $lines);
+    private static function createFailure(
+        string $code,
+        ?int $offset = null,
+        int $length = 0,
+        string $message = '',
+        string $class = '',
+        ?string $pathname = null,
+        FailureLevel $level = FailureLevel::Error,
+    ): FailureResult {
+        $source = $pathname === null
+            ? StringSource::createFromString($code)
+            : VirtualSource::createFromString($pathname, $code);
+
+        return new FailureResult(
+            class: $class,
+            message: $message,
+            source: $source,
+            position: $offset === null
+                ? new Position()
+                : new PositionFactory()->createFromOffset($source, $offset),
+            level: $level,
+            interval: $offset === null ? null : new FailureInterval($offset, $length),
+        );
     }
 
     /**

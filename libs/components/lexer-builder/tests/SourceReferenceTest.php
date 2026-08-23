@@ -103,7 +103,7 @@ final class SourceReferenceTest extends TestCase
             $lexer->build();
         } catch (CompilationFailedException $e) {
             self::assertNull($e->context);
-            self::assertStringStartsWith(CompilationFailedException::class, (string) $e);
+            self::assertStringStartsWith('error[CompilationFailedException]: ', (string) $e);
 
             return;
         }

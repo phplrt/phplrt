@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Exception\Printer;
+namespace Phplrt\Exception\Analysis;
 
 /**
  * The severity of the error.
  */
-enum Level: string
+enum FailureLevel: string
 {
     case Error = 'error';
     case Warning = 'warning';

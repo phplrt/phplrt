@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Printer\Renderer;
 
-use Phplrt\Exception\Printer\Level;
+use Phplrt\Exception\Analysis\FailureLevel;
 
 /**
  * Prints the diagnostics decorated by the ANSI escape sequences supported by
@@ -76,12 +76,12 @@ final readonly class AnsiRustStyleRenderer extends RustStyleRenderer
         return \PHP_OS_FAMILY !== 'Windows' || self::isSupportedByWindows();
     }
 
-    protected function printError(string $value, Level $level): string
+    protected function printError(string $value, FailureLevel $level): string
     {
         return $this->wrap($value, match ($level) {
-            Level::Error => self::SEQUENCE_ERROR,
-            Level::Warning => self::SEQUENCE_WARNING,
-            Level::Debug => self::SEQUENCE_DEBUG,
+            FailureLevel::Error => self::SEQUENCE_ERROR,
+            FailureLevel::Warning => self::SEQUENCE_WARNING,
+            FailureLevel::Debug => self::SEQUENCE_DEBUG,
         });
     }
 

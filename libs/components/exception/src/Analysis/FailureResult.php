@@ -8,16 +8,22 @@ use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Everything that is known about an error: what has been thrown, the source
- * the error refers to and the place inside that source.
+ * Everything that is known about an error: what it says about itself, the
+ * source it refers to and the place inside that source.
  */
-final readonly class AnalyzedExceptionResult
+final readonly class FailureResult
 {
     public function __construct(
         /**
-         * The error the information is about.
+         * The name identifying the error, like the class of an exception, or
+         * an empty string in case the error is known under no name.
          */
-        public \Throwable $exception,
+        public string $class,
+        /**
+         * The message describing the error, or an empty string in case the
+         * error describes itself by nothing.
+         */
+        public string $message,
         /**
          * The source the error occurred in, which is the file the error has
          * been thrown from in case the error refers to no source of its own.
@@ -29,6 +35,10 @@ final readonly class AnalyzedExceptionResult
          * known about the error.
          */
         public PositionInterface $position,
+        /**
+         * The severity of the error.
+         */
+        public FailureLevel $level = FailureLevel::DEFAULT,
         /**
          * The fragment of the source the error occurred in, or {@see null} in
          * case the error tells nothing about the size of it.

@@ -205,7 +205,9 @@ final class AnalysisTest extends TestCase
      */
     private static function describeError(UnexpectedTokenException $error): string
     {
-        return \explode("\n  thrown in ", (string) $error)[0];
+        // The stack trace closing the report tells where the error has been
+        // raised, which is not what the report itself is about.
+        return \explode("\n#0 ", (string) $error)[0];
     }
 
     #[TestDox('The error an analysis reports is thrown as it is')]

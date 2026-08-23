@@ -8,8 +8,8 @@ use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
 use Phplrt\Exception\Analysis\FailureInterval;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Position\Position;
@@ -73,16 +73,36 @@ final readonly class SnippetReader
      * @throws SourceExceptionInterface in case the data of the source cannot
      *         be read
      */
-    public function read(AnalyzedExceptionResult $info, int $lines = self::DEFAULT_LINES_AROUND): array
+    public function read(FailureResult $info, int $lines = self::DEFAULT_LINES_AROUND): array
     {
-        // An error that covers no fragment of the source tells nothing but
-        // the line it occurred on, so the fragment of it is the empty one
-        // starting at that line.
-        $fragment = $info->interval ?? new FailureInterval(
-            offset: $this->positions->createOffsetFromPosition($info->source, $info->position),
+        return $this->fragment(
+            $info->source,
+            $info->interval ?? $this->createLineInterval($info->source, $info->position),
+            $lines,
+        );
+    }
+
+    /**
+     * Returns the whole line the given position points at.
+     *
+     * An error that covers no fragment of the source tells nothing but the
+     * line it occurred on, so the line itself is the fragment of it.
+     *
+     * @throws SourceExceptionInterface in case the data of the given source
+     *         cannot be read
+     */
+    private function createLineInterval(ReadableInterface $source, PositionInterface $position): FailureInterval
+    {
+        $offset = $this->positions->createOffsetFromPosition($source, new Position($position->line));
+
+        // A column beyond the end of its own line is corrected to that end,
+        // so the widest one there is measures the line.
+        $end = $this->positions->createOffsetFromPosition(
+            $source,
+            new Position($position->line, \PHP_INT_MAX),
         );
 
-        return $this->fragment($info->source, $fragment, $lines);
+        return new FailureInterval($offset, \max(0, $end - $offset));
     }
 
     /**

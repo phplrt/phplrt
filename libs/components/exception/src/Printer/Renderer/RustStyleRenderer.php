@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Printer\Renderer;
 
-use Phplrt\Exception\Printer\Level;
-use Phplrt\Exception\Printer\PrintableError;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Exception\Analysis\FailureLevel;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\SourceLine;
+use Phplrt\Exception\SnippetReader;
 
 /**
  * Renders the lines of the source code in the way similar to the Rust
@@ -34,6 +37,13 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      */
     private const string UNDERLINE = '^';
 
+    public function __construct(
+        /**
+         * The reader of the source code lines the error is printed along with.
+         */
+        private SnippetReader $reader = new SnippetReader(),
+    ) {}
+
     /**
      * Creates the renderer the output understands: a terminal that has not
      * been asked to stay plain gets the colors, anything else gets the plain
@@ -48,25 +58,50 @@ abstract readonly class RustStyleRenderer implements RendererInterface
             : new RawRustStyleRenderer();
     }
 
-    public function render(iterable $snippets, PrintableError $error): string
+    public function render(FailureResult $error, \Throwable $e): string
     {
-        $lines = $this->toArray($snippets);
+        $result = [];
+
+        // Every error that has led to this one is drawn above it, so the
+        // innermost one comes first and the error itself closes the report
+        for ($current = $error; $current !== null; $current = $current->previous) {
+            try {
+                $result[] = $this->printFailure($current);
+            } catch (SourceExceptionInterface) {
+                // The source code an error refers to is gone, so there is
+                // nothing to show around it and it is left out of the report
+                // instead of taking the rest of it down.
+            }
+        }
+
+        $result = \array_reverse($result);
+        $result[] = $e->getTraceAsString();
+
+        return \implode("\n", $result);
+    }
+
+    /**
+     * Returns the fragment of the source code the given error occurred in,
+     * along with everything the error tells about itself.
+     *
+     * @throws SourceExceptionInterface in case the data of the source cannot
+     *         be read
+     */
+    private function printFailure(FailureResult $error): string
+    {
+        $lines = \array_values($this->reader->read($error));
         $digits = $this->calculateNumberWidth($lines);
 
-        $level = $error->level ?? Level::DEFAULT;
-
-        $result = $this->printHeader($error, $level, $lines, $digits);
+        $result = $this->printHeader($error, $lines, $digits);
 
         $captured = $this->findCapturedIndex($lines);
         $last = \array_key_last($lines);
 
         foreach ($lines as $index => $line) {
-            foreach ($this->printLine($line, $digits, $level, $index === $captured, $index !== $last) as $row) {
+            foreach ($this->printLine($line, $digits, $error->level, $index === $captured, $index !== $last) as $row) {
                 $result[] = $row;
             }
         }
-
-        $result[] = $error->error->exception->getTraceAsString();
 
         return \implode("\n", $result);
     }
@@ -75,7 +110,7 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      * Prints the part of the output telling about the error of the given
      * severity.
      */
-    abstract protected function printError(string $value, Level $level): string;
+    abstract protected function printError(string $value, FailureLevel $level): string;
 
     /**
      * Prints the frame around the source code: the numbers of the lines, the
@@ -96,7 +131,7 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      * @param bool $closed the line is closed by a delimiter
      * @return list<string>
      */
-    private function printLine(SourceLine $line, int $digits, Level $level, bool $begins, bool $closed): array
+    private function printLine(SourceLine $line, int $digits, FailureLevel $level, bool $begins, bool $closed): array
     {
         [$from, $to] = $this->calculateFragment($line);
 
@@ -146,7 +181,7 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      * @param int<0, max> $end
      * @param bool $points the underline marks a position instead of the characters
      */
-    private function printUnderline(int $begin, int $end, bool $points, Level $level): ?string
+    private function printUnderline(int $begin, int $end, bool $points, FailureLevel $level): ?string
     {
         // A line containing no characters of the fragment has nothing
         // to underline
@@ -167,33 +202,38 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      * @param int<1, max> $digits
      * @return list<string>
      */
-    private function printHeader(PrintableError $error, Level $level, array $lines, int $digits): array
+    private function printHeader(FailureResult $error, array $lines, int $digits): array
     {
         $result = [];
-
-        $message = $error->message ?? '';
-        $class = $error->class ?? '';
+        $level = $error->level;
 
         // An error telling nothing about itself is printed as the source code
         // fragment alone
-        if ($message !== '') {
-            $name = $class === ''
+        if ($error->message !== '') {
+            $name = $error->class === ''
                 ? $level->value
-                : \sprintf('%s[%s]', $level->value, $this->getClassName($class));
+                : \sprintf('%s[%s]', $level->value, $this->getClassName($error->class));
 
-            $result[] = $this->printError($name, $level) . ': ' . $message;
+            $result[] = $this->printError($name, $level) . ': ' . $error->message;
         }
 
-        $pathname = $error->pathname;
+        // Only a source that belongs to a file can be referred to by its
+        // name, be the file a real one or not
+        $source = $error->source;
+        $pathname = null;
+
+        if ($source instanceof FileInterface) {
+            $pathname = $source->pathname;
+
+            if (($normalizedPathname = \realpath($pathname)) !== false) {
+                $pathname = $normalizedPathname;
+            }
+        }
 
         if ($pathname !== null) {
             $result[] = $this->printFrame(\str_repeat(' ', $digits) . self::ARROW)
                 . $pathname
                 . $this->printPosition($lines);
-        }
-
-        if ($result !== [] && $lines !== []) {
-            $result[] = $this->printFrame(\str_repeat(' ', $digits) . \rtrim(self::GUTTER));
         }
 
         return $result;
@@ -234,7 +274,7 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      * @param int<0, max> $begin
      * @param int<0, max> $end
      */
-    private function highlight(string $value, int $begin, int $end, Level $level): string
+    private function highlight(string $value, int $begin, int $end, FailureLevel $level): string
     {
         $length = $this->calculateLength($value);
         $begin = \min($begin, $length);
@@ -247,17 +287,6 @@ abstract readonly class RustStyleRenderer implements RendererInterface
         return $this->slice($value, 0, $begin)
             . $this->printError($this->slice($value, $begin, \max(0, $end - $begin)), $level)
             . $this->slice($value, $end, \max(0, $length - $end));
-    }
-
-    /**
-     * @param iterable<mixed, SourceLine> $snippets
-     * @return list<SourceLine>
-     */
-    private function toArray(iterable $snippets): array
-    {
-        return $snippets instanceof \Traversable
-            ? \iterator_to_array($snippets, false)
-            : \array_values($snippets);
     }
 
     /**

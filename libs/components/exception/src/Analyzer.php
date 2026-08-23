@@ -10,8 +10,9 @@ use Phplrt\Contracts\Position\PositionFactoryInterface;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use Phplrt\Exception\Analysis\AnalyzedExceptionResult;
 use Phplrt\Exception\Analysis\FailureInterval;
+use Phplrt\Exception\Analysis\FailureLevel;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\FileSource;
@@ -34,7 +35,7 @@ final readonly class Analyzer
      * @throws SourceExceptionInterface in case the data of the source an
      *         error occurred in cannot be read
      */
-    public function analyze(\Throwable $e): AnalyzedExceptionResult
+    public function analyze(\Throwable $e): FailureResult
     {
         // collect exception inheritance chain
         $chain = [];
@@ -56,15 +57,17 @@ final readonly class Analyzer
      * @throws SourceExceptionInterface in case the data of the source the
      *         given error occurred in cannot be read
      */
-    private function describe(\Throwable $e, ?AnalyzedExceptionResult $previous = null): AnalyzedExceptionResult
+    private function describe(\Throwable $e, ?FailureResult $previous = null): FailureResult
     {
         $source = $this->createSource($e);
         $interval = $this->createInterval($e);
 
-        return new AnalyzedExceptionResult(
-            exception: $e,
+        return new FailureResult(
+            class: $e::class,
+            message: $e->getMessage(),
             source: $source,
             position: $this->createPosition($e, $source, $interval),
+            level: FailureLevel::fromException($e),
             interval: $interval,
             previous: $previous,
         );

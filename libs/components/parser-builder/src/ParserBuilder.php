@@ -417,15 +417,18 @@ final class ParserBuilder
      */
     public function build(LexerBuilderResult $lexer): ParserBuilderResult
     {
-        $building = new ParserBuildingContextTransformer()->transform($this);
+        $building = new ParserBuildingContextTransformer()
+            ->transform($this);
 
         $this->process($building, $lexer);
 
-        $result = new ParserResultContextTransformer()->transform($building, $lexer);
+        $result = new ParserResultContextTransformer()
+            ->transform($building, $lexer);
 
         $this->analyze($result);
 
-        return new ParserBuilderResultTransformer()->transform($result);
+        return new ParserBuilderResultTransformer()
+            ->transform($result);
     }
 
     /**

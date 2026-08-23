@@ -28,7 +28,6 @@ final readonly class ErrorPrinter
     public function __construct(
         ?RendererInterface $renderer = null,
         private Analyzer $analyzer = new Analyzer(),
-        private SnippetReader $reader = new SnippetReader(),
     ) {
         $this->renderer = $renderer ?? RustStyleRenderer::createDefault();
     }
@@ -42,9 +41,9 @@ final readonly class ErrorPrinter
     public function print(\Throwable $e): PrintableError
     {
         return new PrintableError(
-            reader: $this->reader,
-            renderer: $this->renderer,
-            error: $this->analyzer->analyze($e),
+            $this->renderer,
+            $this->analyzer->analyze($e),
+            $e,
         );
     }
 }
