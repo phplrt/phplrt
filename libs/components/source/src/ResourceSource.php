@@ -85,25 +85,6 @@ class ResourceSource extends Readable
     }
 
     /**
-     * @var int<0, max>|null
-     */
-    public ?int $size {
-        /**
-         * @throws NotCreatableException When the resource has been closed from the outside
-         * @throws NotReadableException When the stream cannot be read
-         */
-        get {
-            if (!$this->isSeekable) {
-                return $this->isEof ? $this->position : null;
-            }
-
-            $info = @\fstat($this->resource);
-
-            return $info === false ? null : \max(0, $info['size']);
-        }
-    }
-
-    /**
      * @var int<0, max>
      */
     public int $offset {

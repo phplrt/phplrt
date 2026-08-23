@@ -12,19 +12,6 @@ use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 interface ReadableStreamInterface
 {
     /**
-     * Gets the number of bytes that have been read out of the source, or
-     * {@see null} in case the end of it has not been reached yet.
-     *
-     * @var int<0, max>|null
-     *
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
-     */
-    public ?int $size {
-        get;
-    }
-
-    /**
      * Gets or moves the position the next read starts at, counted in bytes
      * from the beginning of the source.
      *

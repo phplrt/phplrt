@@ -23,7 +23,6 @@ class CompatibilityTest extends TestCase
             public string $pathname;
 
             public string $content;
-            public ?int $size;
             public int $offset;
             public bool $isSeekable;
             public bool $isEof;
@@ -45,7 +44,6 @@ class CompatibilityTest extends TestCase
     {
         new class () implements ReadableInterface {
             public string $content;
-            public ?int $size;
             public int $offset;
             public bool $isSeekable;
             public bool $isEof;
@@ -66,7 +64,6 @@ class CompatibilityTest extends TestCase
     public function testReadableStreamCompatibility(): void
     {
         new class () implements ReadableStreamInterface {
-            public ?int $size;
             public int $offset;
             public bool $isSeekable;
             public bool $isEof;

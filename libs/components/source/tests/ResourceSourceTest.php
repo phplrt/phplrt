@@ -49,16 +49,6 @@ final class ResourceSourceTest extends TestCase
         self::assertSame('content', $source->content);
     }
 
-    public function testSizeProperty(): void
-    {
-        $stream = \fopen('php://memory', 'rb+');
-        \fwrite($stream, 'test content');
-
-        $source = new ResourceSource($stream);
-
-        self::assertSame(12, $source->size);
-    }
-
     public function testUriPropertyWithFileStream(): void
     {
         \file_put_contents($this->temp, 'test content');
@@ -268,26 +258,6 @@ final class ResourceSourceTest extends TestCase
         self::assertIsClosedResource($stream);
     }
 
-    public function testNonSeekableStreamHasNoSizeUntilItEnds(): void
-    {
-        $stream = $this->createNonSeekableResource('test content');
-
-        try {
-            $source = new ResourceSource($stream);
-
-            self::assertFalse($source->isSeekable);
-            self::assertNull($source->size);
-
-            self::assertSame('test content', $source->read(1024));
-
-            // The number of bytes that did arrive is known once the end has
-            // been reached
-            self::assertSame(12, $source->size);
-        } finally {
-            \fclose($stream);
-        }
-    }
-
     public function testNonSeekableStreamIsReadableOnce(): void
     {
         $stream = $this->createNonSeekableResource('test content');
@@ -330,7 +300,7 @@ final class ResourceSourceTest extends TestCase
 
         \fclose($stream);
 
-        foreach (['size', 'isEof', 'content'] as $property) {
+        foreach (['isEof', 'content'] as $property) {
             try {
                 $source->$property;
                 self::fail(\sprintf('Reading $%s did not report the closed resource', $property));

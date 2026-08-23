@@ -25,13 +25,6 @@ class StringSource extends Readable
     /**
      * @var int<0, max>
      */
-    public int $size {
-        get => \strlen($this->source);
-    }
-
-    /**
-     * @var int<0, max>
-     */
     public int $offset {
         get => $this->position;
         set {
@@ -49,7 +42,7 @@ class StringSource extends Readable
     }
 
     public bool $isEof {
-        get => $this->position >= $this->size;
+        get => $this->position >= \strlen($this->source);
     }
 
     public function __construct(

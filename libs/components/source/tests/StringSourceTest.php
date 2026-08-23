@@ -25,13 +25,6 @@ final class StringSourceTest extends TestCase
         self::assertSame($content, $source->content);
     }
 
-    public function testSizeProperty(): void
-    {
-        $source = new StringSource('test content');
-
-        self::assertSame(12, $source->size);
-    }
-
     public function testReadsTheWholeContent(): void
     {
         $content = 'test content';
@@ -103,7 +96,6 @@ final class StringSourceTest extends TestCase
         $source = new StringSource('');
 
         self::assertSame('', $source->content);
-        self::assertSame(0, $source->size);
         self::assertTrue($source->isEof);
         self::assertSame('', $source->read(1024));
     }

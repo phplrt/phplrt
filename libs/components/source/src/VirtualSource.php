@@ -27,16 +27,6 @@ class VirtualSource extends Readable implements FileInterface
     }
 
     /**
-     * @var int<0, max>|null
-     *
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data
-     */
-    public ?int $size {
-        get => $this->source->size;
-    }
-
-    /**
      * @var int<0, max>
      */
     public int $offset {
