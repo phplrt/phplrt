@@ -32,6 +32,7 @@ final class RustStyleRendererTest extends TestCase
     public function testPrintsLinesWithTheUnderlinedFragment(): void
     {
         self::assertSame(<<<'OUT'
+            error
             2 | line 2
             3 | line 3
             4 | line 4
@@ -47,6 +48,7 @@ final class RustStyleRendererTest extends TestCase
         $source = \implode("\n", \array_map(static fn(int $i): string => 'line ' . $i, \range(1, 12)));
 
         self::assertSame(<<<'OUT'
+            error
              8 | line 8
              9 | line 9
             10 | line 10
@@ -65,6 +67,7 @@ final class RustStyleRendererTest extends TestCase
         self::assertIsInt($offset);
 
         self::assertSame(<<<'OUT'
+            error
             1 | Hello Вася
               |       ^^^^
             OUT, self::render(self::createFailure($value, $offset, \strlen('Вася'))));
@@ -74,6 +77,7 @@ final class RustStyleRendererTest extends TestCase
     public function testUnderlinesEmptyFragment(): void
     {
         self::assertSame(<<<'OUT'
+            error
             1 | line 1
               |    ^
             OUT, self::render(self::createFailure('line 1', 3, 0)));
@@ -83,6 +87,7 @@ final class RustStyleRendererTest extends TestCase
     public function testUnderlinesEveryLineOfTheFragment(): void
     {
         self::assertSame(<<<'OUT'
+            error
             2 | line 2
             3 | line 3
             4 | line 4
@@ -101,7 +106,8 @@ final class RustStyleRendererTest extends TestCase
         $value = \str_repeat('a', 200) . 'ERROR';
 
         self::assertSame(
-            '1 | ' . $value . "\n"
+            "error\n"
+            . '1 | ' . $value . "\n"
             . '  | ' . \str_repeat(' ', 200) . '^^^^^',
             self::render(self::createFailure($value, 200, 5)),
         );
@@ -111,6 +117,7 @@ final class RustStyleRendererTest extends TestCase
     public function testPrintsEmptyLine(): void
     {
         self::assertSame(<<<'OUT'
+            error
             1 | line 1
               |    ^^^
             2 |
@@ -164,6 +171,7 @@ final class RustStyleRendererTest extends TestCase
         self::assertIsInt($offset);
 
         self::assertSame(<<<'OUT'
+            error
              --> /app/example.php:1:8
             1 | Привет Вася
               |        ^^^^
@@ -278,7 +286,8 @@ final class RustStyleRendererTest extends TestCase
     public function testHighlightsLineDelimiters(): void
     {
         self::assertSame(
-            "\e[94m1 | \e[0m\e[31ml\e[0mine 1\e[90m␤\e[0m\n"
+            "\e[31merror\e[0m\n"
+            . "\e[94m1 | \e[0m\e[31ml\e[0mine 1\e[90m␤\e[0m\n"
             . "\e[94m  | \e[0m\e[31m^\e[0m\n"
             . "\e[94m2 | \e[0m\e[90m␤\e[0m\n"
             . "\e[94m3 | \e[0mline 3",

@@ -102,17 +102,18 @@ final readonly class SnippetReader
         );
 
         $first = \max(SourceLine::MIN_NUMBER, $captured->number - $lines);
+        $from = $this->findLineOffset($source, $first);
 
         return $this->select(
-            $this->lines->read($source, $this->findLineOffset($source, $first), $first),
-            $captured,
-            $lines,
+            lines: $this->lines->read($source, $from, $first),
+            captured: $captured,
+            trailing: $lines,
         );
     }
 
     /**
-     * Returns the given fragment with everything a caller may have got wrong
-     * corrected, which static analysis does not cover.
+     * Returns the given fragment with the values static analysis does not
+     * cover corrected.
      */
     private function normalize(FailureInterval $fragment): FailureInterval
     {
@@ -126,12 +127,8 @@ final readonly class SnippetReader
     }
 
     /**
-     * Returns the fragment of the source an error covering none of its own
-     * occurred in.
-     *
-     * A position pointing at a column of its own tells where exactly the
-     * error is, and the fragment is that very place. The beginning of a line
-     * tells nothing but the line, so the whole line is the fragment.
+     * Returns the whole line the given position starts at, or that very place
+     * in case the position points at a column of its own.
      *
      * @throws SourceExceptionInterface in case the data of the given source
      *         cannot be read

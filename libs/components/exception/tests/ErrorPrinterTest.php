@@ -40,10 +40,13 @@ final class ErrorPrinterTest extends TestCase
             OUT, self::print(self::createError()));
     }
 
-    #[TestDox('An error that tells no message is printed without one')]
+    #[TestDox('An error that tells no message is printed under its severity and name alone')]
     public function testPrintsErrorWithoutMessage(): void
     {
-        self::assertStringStartsNotWith('error', self::print(self::createError(message: '')));
+        self::assertStringStartsWith(
+            "error[ParserRuntimeExceptionStub]\n",
+            self::print(self::createError(message: '')),
+        );
     }
 
     #[TestDox('The source code of a virtual file is read from the source rather than from the file it is named after')]
@@ -170,7 +173,7 @@ final class ErrorPrinterTest extends TestCase
         $described = $result->withMessage('Something went wrong');
 
         self::assertNotSame($result, $described);
-        self::assertStringStartsNotWith('error', (string) $result);
+        self::assertStringStartsWith("error[ParserRuntimeExceptionStub]\n", (string) $result);
         self::assertStringStartsWith('error[ParserRuntimeExceptionStub]: Something went wrong', (string) $described);
     }
 

@@ -199,11 +199,13 @@ abstract readonly class RustStyleRenderer implements RendererInterface
 
     private function printHeaderTitle(FailureResult $error): string
     {
-        $result = $error->level->value;
+        $name = $error->level->value;
 
         if ($error->class !== '') {
-            $result = \sprintf('%s[%s]', $result, $this->getClassName($error->class));
+            $name = \sprintf('%s[%s]', $name, $this->getClassName($error->class));
         }
+
+        $result = $this->printError($name, $error->level);
 
         if ($error->message !== '') {
             $result .= ': ' . $error->message;

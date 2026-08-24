@@ -39,7 +39,8 @@ final readonly class CapturedFragment
         // fragment is, while a fragment ending right at the beginning of a
         // line leaves that line out.
         return $line->number === $this->number
-            || ($line->number > $this->number
+            || (
+                $line->number > $this->number
                 && $line->offset < $this->fragment->endsAt
             );
     }
@@ -61,9 +62,7 @@ final readonly class CapturedFragment
 
     /**
      * Returns the offset of the given position of the source inside the given
-     * line, counted in bytes from the beginning of that line.
-     *
-     * A position outside the line is corrected to the nearest end of it.
+     * line, corrected to the nearest end of it.
      *
      * @param int<0, max> $offset
      * @return int<0, max>
