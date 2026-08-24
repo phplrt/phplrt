@@ -14,9 +14,11 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Contracts\Source\SourceFactoryInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Parser;
+use Phplrt\Source\SourceFactory;
 
 final class Compiler
 {
@@ -37,12 +39,16 @@ final class Compiler
      */
     private array $loaded = [];
 
+    private readonly SourceFactoryInterface $sources;
+
     public function __construct(
         /**
          * Tells which format a grammar is written in and reads it.
          */
         private readonly SyntaxLoaderRegistry $loaders = new SyntaxLoaderRegistry(),
+        ?SourceFactoryInterface $sources = null,
     ) {
+        $this->sources = $sources ?? SourceFactory::createDefault();
         $this->parser = new ParserBuilder();
         $this->lexer = new LexerBuilder();
         $this->loader = new ReferenceLoader($this, $this->loaders);
@@ -57,8 +63,10 @@ final class Compiler
      *         recognized
      * @throws SourceExceptionInterface in case of the grammar cannot be read
      */
-    public function load(ReadableInterface $source): self
+    public function load(mixed $source): self
     {
+        $source = $this->sources->create($source);
+
         if (!$this->markAsLoaded($source)) {
             return $this;
         }

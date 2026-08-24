@@ -6,11 +6,13 @@ namespace Phplrt\Compiler\Syntax\PP3;
 
 use Phplrt\Compiler\Compiler\SharedTokenLexerCompilerPass;
 use Phplrt\Compiler\Exception\CompilerRuntimeException;
+use Phplrt\Compiler\Exception\DuplicateFragmentException;
 use Phplrt\Compiler\Exception\EmptyLexerException;
 use Phplrt\Compiler\Exception\UnsupportedPragmaException;
 use Phplrt\Compiler\Exception\UnsupportedPragmaValueException;
 use Phplrt\Compiler\Exception\UnsupportedTokenActionException;
 use Phplrt\Compiler\Node\Declaration\Declaration;
+use Phplrt\Compiler\Node\Declaration\FragmentDeclaration;
 use Phplrt\Compiler\Node\Declaration\LexerDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
 use Phplrt\Compiler\Node\Declaration\TokenAction;
@@ -128,7 +130,36 @@ final class PP3Loader extends PPLoader
             return;
         }
 
+        if ($declaration instanceof FragmentDeclaration) {
+            $this->loadFragment($declaration, $source, $lexer);
+
+            return;
+        }
+
         parent::loadDeclaration($declaration, $source, $parser, $lexer);
+    }
+
+    /**
+     * Reads a piece of an expression the grammar has named.
+     *
+     * A piece belongs to the lexer as a whole rather than to the state it is
+     * declared in, so an expression of any state is written with it.
+     *
+     * @throws DuplicateFragmentException
+     */
+    private function loadFragment(
+        FragmentDeclaration $declaration,
+        ReadableInterface $source,
+        LexerBuilder $lexer,
+    ): void {
+        $name = $declaration->name;
+
+        if (isset($lexer->fragments[$name])) {
+            throw DuplicateFragmentException::becauseFragmentIsDeclaredTwice($source, $declaration);
+        }
+
+        $lexer->addFragment($name, $declaration->pattern)
+            ->setSource($source, $declaration->offset, $declaration->length);
     }
 
     /**
@@ -168,14 +199,17 @@ final class PP3Loader extends PPLoader
             return;
         }
 
-        /**
-         * A token belonging to every state is not added to any of them yet:
-         * which states there are is only known once every grammar has been
-         * read, so the declaration waits until the lexer is built.
-         */
         $definition = new RegexTokenDefinition($declaration->pattern, $declaration->name);
         $definition->setHidden($declaration->isHidden);
         $definition->setSource($source, $declaration->offset, $declaration->length);
+
+        /**
+         * The initial state is the one every grammar has, so the token joins
+         * it where it is declared and is read in that order. The states of
+         * their own are only all known once every grammar has been read, so
+         * they are given a copy while the lexer is built.
+         */
+        $lexer->addToken($definition);
 
         SharedTokenLexerCompilerPass::of($lexer)
             ->addToken($definition);

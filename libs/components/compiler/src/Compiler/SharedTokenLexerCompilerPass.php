@@ -54,10 +54,6 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
             return;
         }
 
-        foreach ($this->tokens as $definition) {
-            $context->tokens[] = $definition;
-        }
-
         /** @var \SplObjectStorage<LexerBuilder, null> $visited */
         $visited = new \SplObjectStorage();
 

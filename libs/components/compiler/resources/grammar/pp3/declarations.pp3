@@ -10,6 +10,7 @@
 
 Declaration
   : TokenDeclaration()
+  | FragmentDeclaration()
   | PragmaDeclaration()
   | IncludeDeclaration()
   | LexerDeclaration()
@@ -120,6 +121,63 @@ TokenDeclaration -> {
 }
   : <T_TOKEN>
   | <T_SKIP>
+  ;
+
+/**
+ * A named piece of an expression, like:
+ *  - %fragment DIGIT [0-9]
+ *
+ *  The declaration is read by the very lexer a token declaration is read by,
+ *  so it arrives here as the same parts. A piece belongs to no state and does
+ *  nothing to the reading, so the parts saying either of those are reported
+ *  where they are written.
+ */
+FragmentDeclaration -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
+
+    $name = null;
+    $pattern = null;
+
+    foreach ($children->children as $part) {
+        switch ($part->name) {
+            case 'T_NAME':
+                if ($name !== null) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
+                }
+
+                $name = $part->value;
+
+                break;
+
+            case 'T_PATTERN':
+                if ($pattern !== null) {
+                    throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
+                }
+
+                $pattern = $part->value;
+
+                break;
+
+            case 'T_STATE':
+            case 'T_ACTIONS':
+                throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
+        }
+    }
+
+    // A declaration written of anything but a name and an expression describes
+    // no piece at all
+    if ($name === null || $name === '' || $pattern === null || $pattern === '') {
+        throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $children);
+    }
+
+    return new \Phplrt\Compiler\Node\Declaration\FragmentDeclaration(
+        name: $name,
+        pattern: $pattern,
+        offset: $children->offset,
+        length: $children->size,
+    );
+}
+  : <T_FRAGMENT>
   ;
 
 /**

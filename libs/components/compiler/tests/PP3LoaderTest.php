@@ -378,6 +378,23 @@ final class PP3LoaderTest extends TestCase
         self::assertContains('T_WHITESPACE', $nested->names);
     }
 
+    #[TestDox('A token declared for every state is read by the initial one in the order it is declared in')]
+    public function testSharedTokenKeepsItsOrder(): void
+    {
+        $result = $this->build(<<<'PP3'
+            %token T_FIRST   a
+            %skip  *:T_SHARED  \s++
+            %token T_LAST    b
+
+            A : <T_FIRST> ;
+            PP3);
+
+        self::assertSame(
+            ['T_FIRST', 'T_SHARED', 'T_LAST'],
+            \array_values($result->lexer->names),
+        );
+    }
+
     #[TestDox('A token declared for every state reaches a state declared after it')]
     public function testSharedTokenReachesALaterState(): void
     {
