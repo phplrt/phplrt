@@ -12,6 +12,7 @@ class NotReadableException extends NotAccessibleException
 {
     final public const int CODE_FILE_READING = 0x01;
     final public const int CODE_STREAM_READING = 0x02;
+    final public const int CODE_STREAM_REWINDING = 0x03;
 
     /**
      * @psalm-taint-sink file $filename
@@ -32,5 +33,16 @@ class NotReadableException extends NotAccessibleException
         $message = 'The stream "%s" is not open for reading';
 
         return new self(\sprintf($message, $stream), self::CODE_STREAM_READING, $prev);
+    }
+
+    /**
+     * @param non-empty-string $stream
+     */
+    public static function becauseStreamCannotBeRewound(string $stream, ?\Throwable $prev = null): self
+    {
+        $message = 'The stream "%s" cannot be rewound, so everything located before '
+            . 'the position it is at has already been given away';
+
+        return new self(\sprintf($message, $stream), self::CODE_STREAM_REWINDING, $prev);
     }
 }

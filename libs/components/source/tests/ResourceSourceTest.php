@@ -9,6 +9,8 @@ use Phplrt\Source\Exception\LogicException;
 use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotReadableException;
 use Phplrt\Source\ResourceSource;
+use Phplrt\Source\StringSource;
+use Phplrt\Source\VirtualSource;
 
 final class ResourceSourceTest extends TestCase
 {
@@ -157,7 +159,7 @@ final class ResourceSourceTest extends TestCase
         self::assertSame('', $source->read(1024, 1024));
     }
 
-    public function testNonSeekableStreamIsReadInAnArbitraryOrder(): void
+    public function testNonSeekableStreamIsReadForwards(): void
     {
         $stream = $this->createNonSeekableResource('test content');
 
@@ -166,15 +168,33 @@ final class ResourceSourceTest extends TestCase
 
             self::assertFalse($source->isSeekable);
 
-            self::assertSame(' content', $source->read(4, 1024));
             self::assertSame('test', $source->read(0, 4));
+            self::assertSame('content', $source->read(5, 1024));
             self::assertSame('', $source->read(1024, 1024));
         } finally {
             \fclose($stream);
         }
     }
 
-    public function testNonSeekableStreamIsReadableMoreThanOnce(): void
+    public function testNonSeekableStreamCannotBeReadBackwards(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $source = new ResourceSource($stream);
+
+            self::assertSame(' content', $source->read(4, 1024));
+
+            $this->expectException(NotReadableException::class);
+            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+
+            $source->read(0, 4);
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testNonSeekableStreamContentIsReadableMoreThanOnce(): void
     {
         $stream = $this->createNonSeekableResource('test content');
 
@@ -183,7 +203,100 @@ final class ResourceSourceTest extends TestCase
 
             self::assertSame('test content', $source->content);
             self::assertSame('test content', $source->content);
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testNonSeekableStreamContentIsUnavailableAfterAPartOfItHasBeenTaken(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $source = new ResourceSource($stream);
+
             self::assertSame('test', $source->read(0, 4));
+
+            $this->expectException(NotReadableException::class);
+            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+
+            $source->content;
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testNonSeekableStreamIsReadInAnArbitraryOrderOnceTakenOver(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $taken = new ResourceSource($stream)->toSeekableSource();
+
+            self::assertSame('test content', $taken->content);
+            self::assertSame('test', $taken->read(0, 4));
+            self::assertSame('content', $taken->read(5, 1024));
+            self::assertSame('test', $taken->read(0, 4));
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testTakenOverNonSeekableStreamIsNoLongerReadByOffset(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            $source = new ResourceSource($stream);
+            $source->toSeekableSource();
+
+            self::assertSame('test content', $source->content);
+
+            $this->expectException(NotReadableException::class);
+            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+
+            $source->read(0, 4);
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testTakenOverSeekableStreamIsStillReadByOffset(): void
+    {
+        $stream = \fopen('php://memory', 'rb+');
+        \fwrite($stream, 'test content');
+        \rewind($stream);
+
+        $source = new ResourceSource($stream);
+        $source->toSeekableSource();
+
+        self::assertSame('test', $source->read(0, 4));
+        self::assertSame(' content', $source->read(4, 1024));
+    }
+
+    public function testTakenOverStreamWithoutUriBecomesAStringSource(): void
+    {
+        $stream = $this->createNonSeekableResource('test content');
+
+        try {
+            self::assertInstanceOf(StringSource::class, new ResourceSource($stream)->toSeekableSource());
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testTakenOverStreamWithUriBecomesAVirtualSource(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $stream = \fopen($this->temp, 'rb');
+
+        try {
+            $taken = new ResourceSource($stream)->toSeekableSource();
+
+            self::assertInstanceOf(VirtualSource::class, $taken);
+            self::assertSame($this->temp, $taken->pathname);
+            self::assertSame('test content', $taken->content);
         } finally {
             \fclose($stream);
         }
