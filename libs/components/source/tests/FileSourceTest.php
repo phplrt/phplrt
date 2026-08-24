@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\Exception\NotFoundException;
-use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Exception\FileNotFoundException;
 use Phplrt\Source\FileSource;
 
 final class FileSourceTest extends TestCase
@@ -101,7 +100,7 @@ final class FileSourceTest extends TestCase
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(NotFoundException::class);
+        $this->expectException(FileNotFoundException::class);
 
         $file->content;
     }
@@ -110,7 +109,7 @@ final class FileSourceTest extends TestCase
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(NotFoundException::class);
+        $this->expectException(FileNotFoundException::class);
 
         $file->size;
     }
@@ -119,7 +118,7 @@ final class FileSourceTest extends TestCase
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(NotFoundException::class);
+        $this->expectException(FileNotFoundException::class);
 
         $file->modifiedAt;
     }
@@ -192,11 +191,11 @@ final class FileSourceTest extends TestCase
         self::assertCount($before, \get_resources('stream'));
     }
 
-    public function testReadingThrowsWhenFileNotReadable(): void
+    public function testReadingThrowsWhenFileNotFound(): void
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(NotReadableException::class);
+        $this->expectException(FileNotFoundException::class);
 
         $file->read(0, 1024);
     }

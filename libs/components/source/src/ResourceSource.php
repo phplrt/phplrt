@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\Exception\InvalidArgumentException;
-use Phplrt\Source\Exception\LogicException;
+use Phplrt\Source\Exception\ClosedStreamException;
+use Phplrt\Source\Exception\NegativeOffsetException;
+use Phplrt\Source\Exception\NonPositiveBytesCountException;
 use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Exception\OffsetOutOfRangeException;
+use Phplrt\Source\Exception\StreamNotOpenedException;
+use Phplrt\Source\Exception\StreamNotReadableException;
+use Phplrt\Source\Exception\StreamNotRewindableException;
+use Phplrt\Source\Exception\StreamNotSeekableException;
+use Phplrt\Source\Exception\StreamNotSerializableException;
+use Phplrt\Source\Exception\StreamReadingException;
 
 /**
  * Implementing a readable object that references to a resource stream
@@ -47,11 +55,11 @@ class ResourceSource extends Readable
      */
     private mixed $stream {
         /**
-         * @throws NotCreatableException When the resource has been closed from the outside
+         * @throws ClosedStreamException When the resource has been closed from the outside
          */
         get {
             if (!\is_resource($this->stream)) {
-                throw NotCreatableException::becauseSourceIs('closed resource');
+                throw ClosedStreamException::becauseStreamIsClosed();
             }
 
             return $this->stream;
@@ -60,7 +68,7 @@ class ResourceSource extends Readable
 
     public private(set) string $content {
         /**
-         * @throws NotCreatableException When the stream has been closed from the outside
+         * @throws ClosedStreamException When the stream has been closed from the outside
          * @throws NotReadableException When the stream cannot be read, or cannot
          *         be rewound and has already been read past the position the
          *         source begins at
@@ -95,7 +103,8 @@ class ResourceSource extends Readable
     /**
      * @param resource $stream
      * @throws NotCreatableException When the given value is not a resource stream
-     * @throws NotReadableException When the resource stream is not open for reading
+     * @throws StreamNotReadableException When the resource stream is not open
+     *         for reading
      */
     public function __construct(
         mixed $stream,
@@ -123,7 +132,7 @@ class ResourceSource extends Readable
         $this->isSeekable = $metadata['seekable'];
 
         if (!\str_contains($this->mode, 'r') && !\str_contains($this->mode, '+')) {
-            throw NotReadableException::becauseStreamIsNotReadable($this->uri ?? $this->mode);
+            throw StreamNotReadableException::becauseStreamIsNotReadable($this->uri ?? $this->mode);
         }
 
         $this->initial = \max(0, (int) @\ftell($stream));
@@ -140,10 +149,11 @@ class ResourceSource extends Readable
     }
 
     /**
-     * @throws InvalidArgumentException When the offset is negative or points
-     *         beyond what an integer holds, or the number of bytes is not
-     *         positive
-     * @throws NotCreatableException When the resource has been closed from the outside
+     * @throws NegativeOffsetException When the offset is negative
+     * @throws NonPositiveBytesCountException When the number of bytes is not positive
+     * @throws OffsetOutOfRangeException When the offset points beyond what an
+     *         integer holds
+     * @throws ClosedStreamException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read or cannot be
      *         rewound to the given offset
      */
@@ -151,15 +161,15 @@ class ResourceSource extends Readable
     {
         // Invariants against the callers not covered by static analysis.
         if ($offset < 0) {
-            throw InvalidArgumentException::becauseOffsetIsNegative($offset);
+            throw NegativeOffsetException::becauseOffsetIsNegative($offset);
         }
 
         if ($bytes < 1) {
-            throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
+            throw NonPositiveBytesCountException::becauseBytesCountIsNotPositive($bytes);
         }
 
         if ($offset > \PHP_INT_MAX - $this->initial) {
-            throw InvalidArgumentException::becauseOffsetIsOutOfRange($offset, $this->initial);
+            throw OffsetOutOfRangeException::becauseOffsetIsOutOfRange($offset, $this->initial);
         }
 
         $this->seek($this->initial + $offset);
@@ -180,7 +190,7 @@ class ResourceSource extends Readable
      *
      * @return StringSource|VirtualSource a virtual file in case the stream has
      *         a URI, or a plain string source otherwise
-     * @throws NotCreatableException When the stream has been closed from the outside
+     * @throws ClosedStreamException When the stream has been closed from the outside
      * @throws NotReadableException When the stream cannot be read, or cannot be
      *         rewound and has already been read past the position the source
      *         begins at
@@ -199,7 +209,7 @@ class ResourceSource extends Readable
     /**
      * Reads the whole data of the source.
      *
-     * @throws NotCreatableException When the resource has been closed from the outside
+     * @throws ClosedStreamException When the resource has been closed from the outside
      * @throws NotReadableException When the stream cannot be read, or cannot be
      *         rewound to the position the source begins at
      */
@@ -212,7 +222,7 @@ class ResourceSource extends Readable
         $result = @\stream_get_contents($this->stream);
 
         if ($result === false) {
-            throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
+            throw StreamReadingException::becauseInternalErrorOccurs(\error_get_last());
         }
 
         return $result;
@@ -223,8 +233,8 @@ class ResourceSource extends Readable
      * currently is at.
      *
      * @param int<1, max> $bytes
-     * @throws NotCreatableException When the resource has been closed from the outside
-     * @throws NotReadableException When the stream cannot be read
+     * @throws ClosedStreamException When the resource has been closed from the outside
+     * @throws StreamReadingException When the stream cannot be read
      */
     private function fetch(int $bytes): string
     {
@@ -233,7 +243,7 @@ class ResourceSource extends Readable
         $result = @\fread($this->stream, $bytes);
 
         if ($result === false) {
-            throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
+            throw StreamReadingException::becauseInternalErrorOccurs(\error_get_last());
         }
 
         return $result;
@@ -244,9 +254,11 @@ class ResourceSource extends Readable
      * not necessarily left at: reading through it moves it elsewhere.
      *
      * @param int<0, max> $offset
-     * @throws NotCreatableException When the resource has been closed from the outside
-     * @throws NotReadableException When the stream cannot be rewound to the
-     *         given position
+     * @throws ClosedStreamException When the resource has been closed from the outside
+     * @throws StreamNotRewindableException When the stream cannot be rewound to
+     *         the given position
+     * @throws StreamReadingException When the stream cannot be read through to
+     *         the given position
      */
     private function seek(int $offset): void
     {
@@ -266,7 +278,7 @@ class ResourceSource extends Readable
         //       gone, so it only ever moves forwards, which is done by
         //       reading through it.
         if ($offset < $current) {
-            throw NotReadableException::becauseStreamCannotBeRewound($this->uri ?? $this->mode);
+            throw StreamNotRewindableException::becauseStreamCannotBeRewound($this->uri ?? $this->mode);
         }
 
         for ($rest = $offset - $current; $rest >= 1; $rest -= \strlen($chunk)) {
@@ -288,12 +300,12 @@ class ResourceSource extends Readable
      *     mode: non-empty-string,
      *     initial: int<0, max>,
      * }
-     * @throws LogicException When the stream does not have a URI
+     * @throws StreamNotSerializableException When the stream does not have a URI
      */
     public function __serialize(): array
     {
         if ($this->uri === null) {
-            throw LogicException::becauseStreamHasNoUri($this->mode);
+            throw StreamNotSerializableException::becauseStreamHasNoUri($this->mode);
         }
 
         return [
@@ -312,9 +324,9 @@ class ResourceSource extends Readable
      *     initial: int<0, max>,
      *     ...
      * } $data
-     * @throws NotReadableException When the stream cannot be opened
-     * @throws LogicException When the stream cannot be moved to the position
-     *         the source begins at
+     * @throws StreamNotOpenedException When the stream cannot be opened
+     * @throws StreamNotSeekableException When the stream cannot be moved to the
+     *         position the source begins at
      */
     public function __unserialize(array $data): void
     {
@@ -323,7 +335,7 @@ class ResourceSource extends Readable
         $stream = @\fopen($data['uri'], $data['mode']);
 
         if ($stream === false) {
-            throw NotReadableException::becauseInternalErrorOccurs(\error_get_last());
+            throw StreamNotOpenedException::becauseStreamCannotBeOpened($data['uri'], \error_get_last());
         }
 
         $this->stream = $stream;
@@ -333,7 +345,7 @@ class ResourceSource extends Readable
         $this->isSeekable = \stream_get_meta_data($stream)['seekable'];
 
         if ($data['initial'] > 0 && !$this->isSeekable) {
-            throw LogicException::becauseStreamIsNotSeekable($data['uri']);
+            throw StreamNotSeekableException::becauseStreamIsNotSeekable($data['uri']);
         }
 
         $this->initial = $data['initial'];
@@ -351,7 +363,7 @@ class ResourceSource extends Readable
 
         try {
             \fclose($this->stream);
-        } catch (NotCreatableException) {
+        } catch (ClosedStreamException) {
             // Note: The stream has been closed from the outside, so there is
             //       nothing left for this object to give up.
         }

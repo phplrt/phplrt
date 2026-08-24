@@ -7,7 +7,8 @@ namespace Phplrt\Source\Exception;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 
 /**
- * An argument that a source cannot accept.
+ * A failure of a source: what it refers to cannot be reached, or the data of
+ * it cannot be taken out.
  */
-abstract class InvalidArgumentException extends \InvalidArgumentException implements
+abstract class RuntimeException extends \RuntimeException implements
     SourceExceptionInterface {}

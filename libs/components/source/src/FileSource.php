@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Phplrt\Source;
 
 use Phplrt\Contracts\Source\FileInterface;
+use Phplrt\Source\Exception\FileNotFoundException;
+use Phplrt\Source\Exception\FileNotReadableException;
+use Phplrt\Source\Exception\InvalidArgumentException;
 use Phplrt\Source\Exception\NotCreatableException;
-use Phplrt\Source\Exception\NotFoundException;
 use Phplrt\Source\Exception\NotReadableException;
 
 /**
@@ -21,15 +23,15 @@ class FileSource extends Readable implements FileInterface
      */
     private ResourceSource $reader {
         /**
-         * @throws NotFoundException When the file does not exist
-         * @throws NotReadableException When the file cannot be opened for reading
+         * @throws FileNotFoundException When the file does not exist
+         * @throws FileNotReadableException When the file cannot be opened for reading
          */
         get => $this->reader ??= $this->open();
     }
 
     public string $content {
         /**
-         * @throws NotFoundException When the file does not exist
+         * @throws FileNotFoundException When the file does not exist
          * @throws NotReadableException When the file cannot be opened or read
          */
         get => $this->reader->content;
@@ -42,8 +44,8 @@ class FileSource extends Readable implements FileInterface
      */
     public int $size {
         /**
-         * @throws NotFoundException When the file does not exist
-         * @throws NotReadableException When the file cannot be read
+         * @throws FileNotFoundException When the file does not exist
+         * @throws FileNotReadableException When the file cannot be read
          */
         get {
             $size = @\filesize($this->pathname);
@@ -63,8 +65,8 @@ class FileSource extends Readable implements FileInterface
      */
     public int $modifiedAt {
         /**
-         * @throws NotFoundException When the file does not exist
-         * @throws NotReadableException When the file cannot be read
+         * @throws FileNotFoundException When the file does not exist
+         * @throws FileNotReadableException When the file cannot be read
          */
         get {
             $time = @\filemtime($this->pathname);
@@ -125,6 +127,10 @@ class FileSource extends Readable implements FileInterface
     }
 
     /**
+     * @throws InvalidArgumentException When the offset is negative or points
+     *         beyond what an integer holds, or the number of bytes is not
+     *         positive
+     * @throws FileNotFoundException When the file does not exist
      * @throws NotReadableException When the file cannot be opened or read
      */
     public function read(int $offset, int $bytes): string
@@ -136,8 +142,8 @@ class FileSource extends Readable implements FileInterface
      * Takes the file over: from here on it belongs to this source, which
      * holds it against being written to until it is given up again.
      *
-     * @throws NotFoundException When the file does not exist
-     * @throws NotReadableException When the file cannot be opened for reading
+     * @throws FileNotFoundException When the file does not exist
+     * @throws FileNotReadableException When the file cannot be opened for reading
      */
     private function open(): ResourceSource
     {
@@ -162,9 +168,9 @@ class FileSource extends Readable implements FileInterface
     private function createAccessFailure(): NotReadableException
     {
         if (!$this->isExists) {
-            return NotFoundException::becauseFileNotFound($this->pathname);
+            return FileNotFoundException::becauseFileNotFound($this->pathname);
         }
 
-        return NotReadableException::becauseFileNotReadable($this->pathname);
+        return FileNotReadableException::becauseFileNotReadable($this->pathname);
     }
 }

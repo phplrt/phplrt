@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\Exception\InvalidArgumentException;
+use Phplrt\Source\Exception\NegativeOffsetException;
+use Phplrt\Source\Exception\NonPositiveBytesCountException;
 use Phplrt\Source\StringSource;
 
 final class StringSourceTest extends TestCase
@@ -73,14 +74,14 @@ final class StringSourceTest extends TestCase
     {
         $source = new StringSource('test content');
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NegativeOffsetException::class);
 
         $source->read(-1, 1024);
     }
 
     public function testFailsInCaseOfNonPositiveReadSize(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NonPositiveBytesCountException::class);
 
         new StringSource('test content')->read(0, 0);
     }

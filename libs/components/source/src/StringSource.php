@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Source;
 
-use Phplrt\Source\Exception\InvalidArgumentException;
+use Phplrt\Source\Exception\NegativeOffsetException;
+use Phplrt\Source\Exception\NonPositiveBytesCountException;
 
 /**
  * Implementing a readable object that references a source code as a string value
@@ -41,18 +42,18 @@ class StringSource extends Readable
     }
 
     /**
-     * @throws InvalidArgumentException When the offset is negative or the
-     *         number of bytes is not positive
+     * @throws NegativeOffsetException When the offset is negative
+     * @throws NonPositiveBytesCountException When the number of bytes is not positive
      */
     public function read(int $offset, int $bytes): string
     {
         // Invariants against the callers not covered by static analysis.
         if ($offset < 0) {
-            throw InvalidArgumentException::becauseOffsetIsNegative($offset);
+            throw NegativeOffsetException::becauseOffsetIsNegative($offset);
         }
 
         if ($bytes < 1) {
-            throw InvalidArgumentException::becauseBytesCountIsNotPositive($bytes);
+            throw NonPositiveBytesCountException::becauseBytesCountIsNotPositive($bytes);
         }
 
         return \substr($this->source, $offset, $bytes);

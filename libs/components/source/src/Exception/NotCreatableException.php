@@ -7,9 +7,9 @@ namespace Phplrt\Source\Exception;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
- * Error that occurs when a {@see ReadableInterface} object cannot be created
+ * A reference is of a kind that no source is built out of.
  */
-class NotCreatableException extends NotAccessibleException
+final class NotCreatableException extends RuntimeException
 {
     /**
      * @param non-empty-string $type

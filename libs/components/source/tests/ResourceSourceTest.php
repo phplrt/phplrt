@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use Phplrt\Source\Exception\InvalidArgumentException;
-use Phplrt\Source\Exception\LogicException;
-use Phplrt\Source\Exception\NotCreatableException;
-use Phplrt\Source\Exception\NotReadableException;
+use Phplrt\Source\Exception\ClosedStreamException;
+use Phplrt\Source\Exception\NegativeOffsetException;
+use Phplrt\Source\Exception\NonPositiveBytesCountException;
+use Phplrt\Source\Exception\StreamNotReadableException;
+use Phplrt\Source\Exception\StreamNotRewindableException;
+use Phplrt\Source\Exception\StreamNotSerializableException;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
@@ -114,7 +116,7 @@ final class ResourceSourceTest extends TestCase
 
     public function testFailsInCaseOfWriteOnlyStream(): void
     {
-        $this->expectException(NotReadableException::class);
+        $this->expectException(StreamNotReadableException::class);
         $this->expectExceptionMessage('is not open for reading');
 
         new ResourceSource(\fopen('php://output', 'wb'));
@@ -185,8 +187,7 @@ final class ResourceSourceTest extends TestCase
 
             self::assertSame(' content', $source->read(4, 1024));
 
-            $this->expectException(NotReadableException::class);
-            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+            $this->expectException(StreamNotRewindableException::class);
 
             $source->read(0, 4);
         } finally {
@@ -217,8 +218,7 @@ final class ResourceSourceTest extends TestCase
 
             self::assertSame('test', $source->read(0, 4));
 
-            $this->expectException(NotReadableException::class);
-            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+            $this->expectException(StreamNotRewindableException::class);
 
             $source->content;
         } finally {
@@ -252,8 +252,7 @@ final class ResourceSourceTest extends TestCase
 
             self::assertSame('test content', $source->content);
 
-            $this->expectException(NotReadableException::class);
-            $this->expectExceptionCode(NotReadableException::CODE_STREAM_REWINDING);
+            $this->expectException(StreamNotRewindableException::class);
 
             $source->read(0, 4);
         } finally {
@@ -306,7 +305,7 @@ final class ResourceSourceTest extends TestCase
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NonPositiveBytesCountException::class);
 
         $source->read(0, 0);
     }
@@ -315,7 +314,7 @@ final class ResourceSourceTest extends TestCase
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NegativeOffsetException::class);
 
         $source->read(-1, 1024);
     }
@@ -360,8 +359,8 @@ final class ResourceSourceTest extends TestCase
 
         \fclose($stream);
 
-        $this->expectException(NotCreatableException::class);
-        $this->expectExceptionMessage('from closed resource type');
+        $this->expectException(ClosedStreamException::class);
+        $this->expectExceptionMessage('closed from the outside');
 
         $source->content;
     }
@@ -379,11 +378,11 @@ final class ResourceSourceTest extends TestCase
         try {
             $source->content;
             self::fail('Reading $content did not report the closed resource');
-        } catch (NotCreatableException $e) {
-            self::assertStringContainsString('from closed resource type', $e->getMessage());
+        } catch (ClosedStreamException $e) {
+            self::assertStringContainsString('closed from the outside', $e->getMessage());
         }
 
-        $this->expectException(NotCreatableException::class);
+        $this->expectException(ClosedStreamException::class);
 
         $source->read(0, 4);
     }
@@ -438,7 +437,7 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            $this->expectException(LogicException::class);
+            $this->expectException(StreamNotSerializableException::class);
 
             \serialize($source);
         } finally {
