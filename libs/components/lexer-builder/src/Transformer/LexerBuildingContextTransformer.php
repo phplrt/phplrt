@@ -21,6 +21,7 @@ final readonly class LexerBuildingContextTransformer
     {
         return new LexerBuildingContext(
             tokens: \array_values($builder->tokens),
+            fragments: $builder->fragments,
             lexers: $builder->lexers,
             flags: $builder->flags,
             isEmbedded: $builder->isEmbedded,

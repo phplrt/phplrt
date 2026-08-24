@@ -12,6 +12,7 @@ use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\SubgroupConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
+use Phplrt\Lexer\Builder\Compiler\FragmentResolutionLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\Compiler\RegexDuplicationLexerCompilerPass;
@@ -21,6 +22,7 @@ use Phplrt\Lexer\Builder\Compiler\TokenNameDuplicationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TokenNameValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\TransitionValidationLexerCompilerPass;
 use Phplrt\Lexer\Builder\Compiler\UnreachableLexerCompilerPass;
+use Phplrt\Lexer\Builder\Definition\FragmentDefinition;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
@@ -36,7 +38,8 @@ final class LexerBuilder
 {
     /**
      * Brings the lexer to the form the rest of the passes expect: the lexers
-     * that cannot be entered are dropped.
+     * that cannot be entered are dropped, and what a token definition refers
+     * to is written into it.
      */
     public const int PASS_PRIORITY_NORMALIZE = 0;
 
@@ -83,6 +86,13 @@ final class LexerBuilder
     ];
 
     /**
+     * A map of name and the piece of an expression it stands for.
+     *
+     * @var array<non-empty-string, FragmentDefinition>
+     */
+    public private(set) array $fragments = [];
+
+    /**
      * A map of name and the lexer reading the fragment it stands for.
      *
      * @var array<non-empty-string, self|EmbeddedLexerInterface>
@@ -114,6 +124,7 @@ final class LexerBuilder
              */
             self::PASS_PRIORITY_NORMALIZE => [
                 new UnreachableLexerCompilerPass(),
+                new FragmentResolutionLexerCompilerPass(),
             ],
             self::PASS_PRIORITY_CHECK => [
                 new TokenNameDuplicationLexerCompilerPass(),
@@ -199,6 +210,45 @@ final class LexerBuilder
                 break;
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Adds the piece of an expression that the expressions of the tokens refer
+     * to by the given name.
+     *
+     * A piece recognizes nothing on its own: an expression referring to it is
+     * written with that piece instead of the reference while the lexer is
+     * being built.
+     *
+     * For example,
+     * ```php
+     * $builder->addFragment('DIGIT', '[0-9]');
+     * $builder->addPattern('(?&DIGIT)++(\.(?&DIGIT)++)?', 'T_NUMBER');
+     * ```
+     *
+     * @api
+     *
+     * @param non-empty-string $name
+     * @param non-empty-string $pattern
+     */
+    public function addFragment(string $name, string $pattern): FragmentDefinition
+    {
+        return $this->fragments[$name] = new FragmentDefinition($name, $pattern);
+    }
+
+    /**
+     * Removes the piece of an expression added under the given name.
+     *
+     * @api
+     *
+     * @param non-empty-string $name
+     * @return $this
+     */
+    public function removeFragment(string $name): self
+    {
+        unset($this->fragments[$name]);
 
         return $this;
     }

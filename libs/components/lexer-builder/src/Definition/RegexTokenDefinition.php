@@ -11,12 +11,30 @@ final class RegexTokenDefinition extends TokenDefinition
      */
     public function __construct(
         /**
+         * The expression the token is recognized by.
+         *
          * @var non-empty-string
          */
-        public readonly string $regex,
+        public string $regex,
         ?string $name = null,
     ) {
         parent::__construct($name);
+    }
+
+    /**
+     * Updates the expression the token is recognized by and returns itself as
+     * the fluent interface.
+     *
+     * @api
+     *
+     * @param non-empty-string $regex
+     * @return $this
+     */
+    public function setRegex(string $regex): self
+    {
+        $this->regex = $regex;
+
+        return $this;
     }
 
     protected function printValue(): string

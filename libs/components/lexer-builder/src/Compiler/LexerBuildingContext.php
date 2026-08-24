@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Compiler;
 
+use Phplrt\Lexer\Builder\Definition\FragmentDefinition;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
@@ -25,6 +26,12 @@ final class LexerBuildingContext
          * @var list<TokenDefinition>
          */
         public array $tokens = [],
+        /**
+         * A map of name and the piece of an expression it stands for.
+         *
+         * @var array<non-empty-string, FragmentDefinition>
+         */
+        public array $fragments = [],
         /**
          * A map of name and the lexer reading the fragment it stands for.
          *
