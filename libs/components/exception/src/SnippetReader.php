@@ -71,41 +71,28 @@ final readonly class SnippetReader
      */
     public function read(FailureResult $info, int $lines = self::DEFAULT_LINES_AROUND): array
     {
-        return $this->fragment(
-            $info->source,
-            $info->interval ?? $this->createIntervalAt($info->source, $info->position),
-            $lines,
-        );
-    }
-
-    /**
-     * Returns the lines of the given source holding the given fragment of it,
-     * indexed by their own numbers.
-     *
-     * @param int<0, max> $lines the number of lines read before and after
-     *        the fragment
-     * @return array<int<1, max>, SourceLine>
-     * @throws SourceExceptionInterface in case the data of the source cannot
-     *         be read
-     */
-    public function fragment(
-        ReadableInterface $source,
-        FailureInterval $fragment,
-        int $lines = self::DEFAULT_LINES_AROUND,
-    ): array {
-        $fragment = $this->normalize($fragment);
         $lines = \max(0, $lines);
 
+        $fragment = $this->normalize(
+            fragment: $info->interval
+                ?? $this->createIntervalAt($info->source, $info->position)
+        );
+
+        $position = $this->positions->createFromOffset(
+            source: $info->source,
+            offset: $fragment->offset,
+        );
+
         $captured = new CapturedFragment(
-            $fragment,
-            $this->positions->createFromOffset($source, $fragment->offset)->line,
+            fragment: $fragment,
+            number: $position->line,
         );
 
         $first = \max(SourceLine::MIN_NUMBER, $captured->number - $lines);
-        $from = $this->findLineOffset($source, $first);
+        $from = $this->findLineOffset($info->source, $first);
 
         return $this->select(
-            lines: $this->lines->read($source, $from, $first),
+            lines: $this->lines->read($info->source, $from, $first),
             captured: $captured,
             trailing: $lines,
         );
@@ -144,11 +131,14 @@ final readonly class SnippetReader
         // A column beyond the end of its own line is corrected to that end,
         // so the widest one there is measures the line.
         $end = $this->positions->createOffsetFromPosition(
-            $source,
-            new Position($position->line, \PHP_INT_MAX),
+            source: $source,
+            position: new Position($position->line, \PHP_INT_MAX),
         );
 
-        return new FailureInterval($offset, \max(0, $end - $offset));
+        return new FailureInterval(
+            offset: $offset,
+            length: \max(0, $end - $offset),
+        );
     }
 
     /**
