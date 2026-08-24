@@ -23,4 +23,12 @@ final class ExceptionTest extends TestCase
     {
         self::assertTrue(\is_subclass_of($class, SourceExceptionInterface::class));
     }
+
+    #[DataProvider('exceptionDataProvider')]
+    public function testStandsForOneSituationAlone(string $class): void
+    {
+        $reflection = new \ReflectionClass($class);
+
+        self::assertTrue($reflection->isAbstract() || $reflection->isFinal());
+    }
 }
