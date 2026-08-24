@@ -41,12 +41,10 @@ final readonly class TraceReducer
         private array $merged,
         int $rule,
         ReadableInterface $source,
-        string $content,
     ) {
         $this->context = new Context(
             rule: $rule,
             source: $source,
-            content: $content,
             token: null,
         );
     }

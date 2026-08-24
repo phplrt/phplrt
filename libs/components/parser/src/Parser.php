@@ -8,14 +8,12 @@ use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
-use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Analysis\Mode;
 use Phplrt\Parser\Analysis\Result\FailureResult;
 use Phplrt\Parser\Analysis\Result\PartialResult;
 use Phplrt\Parser\Analysis\Result\SuccessfulResult;
 use Phplrt\Parser\Exception\ParserRuntimeException;
-use Phplrt\Parser\Exception\ParserSourceException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
@@ -97,7 +95,6 @@ readonly class Parser implements ParserInterface
      * @return ($mode is Mode::Tolerant
      *      ? (SuccessfulResult<TResult>|FailureResult)
      *      : (SuccessfulResult<null>|FailureResult))
-     * @throws ParserSourceException in case of the source cannot be read
      * @throws LexerExceptionInterface in case of the source cannot be read into
      *         tokens
      * @throws LexerRuntimeExceptionInterface in case of the source contains
@@ -146,7 +143,6 @@ readonly class Parser implements ParserInterface
 
     /**
      * @return ($mode is Mode::SyntaxCheck ? null : TResult)
-     * @throws ParserSourceException in case of the source cannot be read
      */
     private function reduce(ReadableInterface $source, TracingResult $result, Mode $mode): mixed
     {
@@ -154,13 +150,7 @@ readonly class Parser implements ParserInterface
             return null;
         }
 
-        try {
-            $content = $source->content;
-        } catch (SourceExceptionInterface $e) {
-            throw ParserSourceException::becauseSourceIsNotReadable($e);
-        }
-
-        return $this->reducers->createReducer($source, $content)
+        return $this->reducers->createReducer($source)
             ->reduce($result);
     }
 

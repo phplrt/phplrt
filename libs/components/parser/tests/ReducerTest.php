@@ -135,7 +135,7 @@ final class ReducerTest extends TestCase
         self::assertSame([1, 2], $parser->parse(StringSource::createFromString('1 + 2')));
     }
 
-    #[TestDox('The context contains the rule, the source code and the last recognized token')]
+    #[TestDox('The context contains the rule, the source and the last recognized token')]
     public function testContext(): void
     {
         $contexts = [];
@@ -152,7 +152,7 @@ final class ReducerTest extends TestCase
 
         self::assertCount(1, $contexts);
         self::assertSame(self::RULE_EXPRESSION, $contexts[0]->rule);
-        self::assertSame('1 + 2', $contexts[0]->content);
+        self::assertSame('1 + 2', $contexts[0]->source->content);
         self::assertSame('2', $contexts[0]->token?->value);
     }
 

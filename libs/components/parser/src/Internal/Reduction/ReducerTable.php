@@ -68,18 +68,13 @@ final readonly class ReducerTable
         return $result;
     }
 
-    /**
-     * @param string $content the source code that has already been read out of
-     *        the source object
-     */
-    public function createReducer(ReadableInterface $source, string $content): TraceReducer
+    public function createReducer(ReadableInterface $source): TraceReducer
     {
         return new TraceReducer(
             reducers: $this->reducers,
             merged: $this->merged,
             rule: $this->rule,
             source: $source,
-            content: $content,
         );
     }
 }

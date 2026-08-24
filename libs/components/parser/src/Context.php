@@ -25,10 +25,6 @@ final class Context
          */
         public readonly ReadableInterface $source,
         /**
-         * The source code of the {@see $source}, already read.
-         */
-        public readonly string $content,
-        /**
          * The last token recognized before the rule was completed or "null"
          * in case the rule contains no tokens at all.
          */

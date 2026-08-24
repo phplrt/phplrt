@@ -623,12 +623,13 @@ readonly class PP2Parser extends \Phplrt\Parser\Parser
         \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
 
         $read = $children->children;
-        $open = $read[0] ?? null;
-        $close = $read[\count($read) - 1] ?? null;
+        $code = '';
 
-        $code = $open === null || $close === null
-            ? ''
-            : \substr($ctx->content, $open->offset + $open->size, $close->offset - $open->offset - $open->size);
+        // Note: The braces are the first and the last of the tokens read, so
+        //       everything between them is the code itself.
+        for ($i = 1, $last = \count($read) - 1; $i < $last; ++$i) {
+            $code .= $read[$i]->value;
+        }
 
         $lines = \explode("\n", $code);
 

@@ -78,7 +78,7 @@ class PP2Loader implements SyntaxLoaderInterface
      */
     private const array REDUCER_VARIABLES = [
         '$source' => '$ctx->source',
-        '$content' => '$ctx->content',
+        '$content' => '$ctx->source->content',
         '$token' => '$ctx->token',
         '$offset' => '$ctx->token->offset',
         '$rule' => '$ctx->rule',
