@@ -15,7 +15,7 @@ use Phplrt\Compiler\Node\Declaration\LexerDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
 use Phplrt\Compiler\Node\Declaration\TokenAction;
 use Phplrt\Compiler\Node\Declaration\TokenDeclaration;
-use Phplrt\Compiler\Syntax\PP2\PP2Loader;
+use Phplrt\Compiler\Syntax\Common\PPLoader;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
@@ -34,7 +34,7 @@ use Phplrt\Parser\Builder\ParserBuilder;
  * state it ends up in, and configures the compilation by the settings of the
  * grammar rather than by the code calling it.
  */
-final class PP3Loader extends PP2Loader
+final class PP3Loader extends PPLoader
 {
     /**
      * The name of the state a token belonging to every state is declared with.
@@ -180,7 +180,7 @@ final class PP3Loader extends PP2Loader
         SharedTokenLexerCompilerPass::of($lexer)
             ->addToken($definition);
 
-        $this->loadAction($definition, $declaration, static::STATE_DEFAULT, $source);
+        $this->loadAction($definition, $declaration, self::STATE_DEFAULT, $source);
     }
 
     /**
@@ -239,7 +239,7 @@ final class PP3Loader extends PP2Loader
     ): void {
         $name = $declaration->name;
 
-        if ($name === static::PRAGMA_ROOT) {
+        if ($name === self::PRAGMA_ROOT) {
             $this->loadRootPragma($declaration, $source, $parser);
 
             return;

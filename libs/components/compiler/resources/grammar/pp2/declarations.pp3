@@ -3,8 +3,8 @@
  *  Declarations Of The PP2 Format
  * -----------------------------------------------------------------------------
  *
- *  Everything a grammar file of this format is written of, apart from the
- *  directives both formats share.
+ *  Everything a grammar file of this format is written of, apart from its
+ *  directives.
  *
  */
 

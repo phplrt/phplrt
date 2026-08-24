@@ -3,8 +3,8 @@
  *  Reducers
  * -----------------------------------------------------------------------------
  *
- *  What a rule is turned into once it has been recognized, written as a block
- *  of PHP code. Both formats spell it exactly the same way.
+ *  What a rule is turned into once it has been recognized, written as a
+ *  block of PHP code.
  *
  */
 

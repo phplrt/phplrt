@@ -18,15 +18,12 @@
  *
  */
 
-%include grammar/lexemes            // The tokens both formats read alike
-%include grammar/pp3/lexemes        // The tokens of this format
-
-%include grammar/directives         // %pragma, %include
+%include grammar/pp3/lexemes        // The tokens this format reads
+%include grammar/pp3/directives     // %pragma, %include
 %include grammar/pp3/declarations   // %token, %lexer, a rule of the parser
-%include grammar/reducers           // -> { ... }
-%include grammar/statements         // What a rule recognizes
-%include grammar/pp3/statements     // &Number(), !Number()
-%include grammar/quantifiers        // How many times a statement repeats
+%include grammar/pp3/reducers       // -> { ... }
+%include grammar/pp3/statements     // What a rule recognizes
+%include grammar/pp3/quantifiers    // How many times a statement repeats
 
 %pragma root Grammar
 
