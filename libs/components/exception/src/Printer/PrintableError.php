@@ -20,8 +20,6 @@ use Phplrt\Exception\Printer\Renderer\RendererInterface;
  * Everything the error is described by comes from its own analysis and MAY be
  * replaced afterward, one thing at a time, while the source code is read only
  * at the moment the whole thing is turned into a string.
- *
- * @internal the object is created by the {@see ErrorPrinter}
  */
 final readonly class PrintableError implements \Stringable
 {
