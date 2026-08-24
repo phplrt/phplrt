@@ -222,7 +222,7 @@ class ResourceSource extends Readable
         $result = @\stream_get_contents($this->stream);
 
         if ($result === false) {
-            throw StreamReadingException::becauseInternalErrorOccurs(\error_get_last());
+            throw StreamReadingException::becauseStreamCannotBeRead(\error_get_last());
         }
 
         return $result;
@@ -243,7 +243,7 @@ class ResourceSource extends Readable
         $result = @\fread($this->stream, $bytes);
 
         if ($result === false) {
-            throw StreamReadingException::becauseInternalErrorOccurs(\error_get_last());
+            throw StreamReadingException::becauseStreamCannotBeRead(\error_get_last());
         }
 
         return $result;

@@ -18,7 +18,7 @@ final class StreamReadingException extends NotReadableException
      * @param array|null $error the error the engine has left behind
      * @phpstan-param PhpErrorType|null $error
      */
-    public static function becauseInternalErrorOccurs(?array $error, ?\Throwable $prev = null): self
+    public static function becauseStreamCannotBeRead(?array $error, ?\Throwable $prev = null): self
     {
         $reason = PhpError::toThrowable($error, $prev);
 
