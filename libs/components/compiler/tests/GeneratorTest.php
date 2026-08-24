@@ -26,9 +26,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class GeneratorTest extends TestCase
 {
-    /**
-     * @var list<non-empty-string>
-     */
     private array $files = [];
 
     protected function tearDown(): void
@@ -95,8 +92,6 @@ final class GeneratorTest extends TestCase
     {
         $code = (string) $this->compile('states.pp2')->generate();
 
-        // The token is named by nothing, so there is no constant standing
-        // for it
         self::assertStringContainsString('new \\Phplrt\\Parser\\Grammar\\Lexeme(2, false)', $code);
     }
 
@@ -256,11 +251,6 @@ final class GeneratorTest extends TestCase
             ->withClassName('App\\Parser');
     }
 
-    /**
-     * Reads the grammar of the given file and runs the parser generated of it.
-     *
-     * @param non-empty-string $name
-     */
     private function generate(string $name): ParserInterface
     {
         $pathname = $this->createPathname();
@@ -276,9 +266,6 @@ final class GeneratorTest extends TestCase
         return $parser;
     }
 
-    /**
-     * @param non-empty-string $name
-     */
     private function compile(string $name): Compiler
     {
         return new Compiler()
@@ -299,9 +286,6 @@ final class GeneratorTest extends TestCase
         return new GeneratedOutput(new CompilerResult($result, $parser->build($result)));
     }
 
-    /**
-     * @return non-empty-string
-     */
     private function createPathname(): string
     {
         $pathname = \sys_get_temp_dir() . '/phplrt-' . \bin2hex(\random_bytes(8)) . '.php';

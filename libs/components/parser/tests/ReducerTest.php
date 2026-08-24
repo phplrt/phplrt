@@ -35,7 +35,6 @@ final class ReducerTest extends TestCase
     #[TestDox('The tokens of the rules that are not kept are omitted')]
     public function testOmitsTokensThatAreNotKept(): void
     {
-        // The "+" and "-" lexemes of the grammar are not kept
         $actual = self::createParser()->parse(StringSource::createFromString('1 + 2'));
 
         self::assertCount(2, self::describe($actual));
@@ -209,14 +208,8 @@ final class ReducerTest extends TestCase
 
     private const int RULE_OPERATOR = 5;
 
-    /**
-     * Expression := ("+" | "-")? Number (("+" | "-") Number)*
-     *
-     * @return list<RuleInterface>
-     */
     private static function createGrammar(): array
     {
-        /** @var list<RuleInterface> */
         return [
             self::RULE_EXPRESSION => new Concatenation([self::RULE_SIGN, self::RULE_NUMBER, self::RULE_TAIL]),
             self::RULE_NUMBER => new Lexeme(ArithmeticLexer::T_NUMBER),
@@ -229,9 +222,6 @@ final class ReducerTest extends TestCase
         ];
     }
 
-    /**
-     * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
-     */
     private static function createParser(array $reducers = []): Parser
     {
         $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION, $reducers);
@@ -247,9 +237,6 @@ final class ReducerTest extends TestCase
         );
     }
 
-    /**
-     * @return list<string>
-     */
     private static function describe(mixed $result): array
     {
         self::assertIsList($result);

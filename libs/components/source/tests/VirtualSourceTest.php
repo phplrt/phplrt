@@ -43,7 +43,6 @@ final class VirtualSourceTest extends TestCase
             autoclose: true,
         ));
 
-        // The pathname is virtual, while everything read comes from the file
         self::assertSame('virtual/file.php', $source->pathname);
         self::assertSame('test content', $source->content);
     }
@@ -55,7 +54,6 @@ final class VirtualSourceTest extends TestCase
             new StringSource('test content'),
         ));
 
-        // The outermost name is the one an error points at
         self::assertSame('outer.php', $source->pathname);
         self::assertSame('test content', $source->content);
     }

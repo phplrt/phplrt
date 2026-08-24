@@ -16,16 +16,8 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/parser-compiler')]
 final class SourceReferenceTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string SOURCE = "%token T_NUMBER \\d++\n\nRoot : ;\n";
 
-    /**
-     * The offset the "Root" rule is written at.
-     *
-     * @var int<0, max>
-     */
     private const int RULE_OFFSET = 22;
 
     #[TestDox('A definition refers to the source it has been written in')]

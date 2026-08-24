@@ -17,9 +17,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/parser')]
 final class UnexpectedTokenExceptionTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string SOURCE = "first line\nsecond line\nthird line";
 
     #[TestDox('The source the error occurred in is available')]

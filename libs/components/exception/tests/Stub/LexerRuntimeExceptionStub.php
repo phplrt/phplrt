@@ -8,9 +8,6 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
-/**
- * A lexical error that has occurred on a token of a source.
- */
 final class LexerRuntimeExceptionStub extends \RuntimeException implements RuntimeExceptionInterface
 {
     public function __construct(

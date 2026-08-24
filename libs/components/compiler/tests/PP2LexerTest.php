@@ -18,19 +18,10 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class PP2LexerTest extends TestCase
 {
-    /**
-     * The grammar describing the format, which is where the lexer of it comes
-     * from.
-     *
-     * @var non-empty-string
-     */
     private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
 
     private static ?LexerInterface $lexer = null;
 
-    /**
-     * @return list<TokenInterface>
-     */
     private static function tokenize(string $source): array
     {
         $lexer = self::$lexer ??= new Compiler()
@@ -50,9 +41,6 @@ final class PP2LexerTest extends TestCase
         return $result;
     }
 
-    /**
-     * @return list<string>
-     */
     private static function describeTokens(string $source): array
     {
         $result = [];
@@ -64,9 +52,6 @@ final class PP2LexerTest extends TestCase
         return $result;
     }
 
-    /**
-     * @return list<list<string>>
-     */
     private static function describeCaptures(string $source): array
     {
         $result = [];

@@ -22,9 +22,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * Reads the arithmetic expressions, like "1 + 2 - 3".
-     */
     protected static function createLexerBuilder(): LexerBuilder
     {
         $lexer = new LexerBuilder();
@@ -47,12 +44,6 @@ abstract class TestCase extends BaseTestCase
         return $result->toParser($lexer);
     }
 
-    /**
-     * Returns the values of every token of the result, no matter how deep it
-     * is nested.
-     *
-     * @return list<string>
-     */
     protected static function collectValues(mixed $value): array
     {
         if ($value instanceof TokenInterface) {
@@ -74,9 +65,6 @@ abstract class TestCase extends BaseTestCase
         return $result;
     }
 
-    /**
-     * @return list<string>
-     */
     protected static function describe(ParserBuilderResult $result): array
     {
         $output = [];
@@ -105,9 +93,6 @@ abstract class TestCase extends BaseTestCase
         };
     }
 
-    /**
-     * @param non-empty-string $name
-     */
     protected static function findRule(ParserBuilder $builder, string $name): mixed
     {
         foreach ($builder->rules as $rule) {

@@ -9,9 +9,6 @@ use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 
-/**
- * The constructors the documentation builds every source through.
- */
 final class NamedConstructorsTest extends TestCase
 {
     public function testFileSourceFromPathname(): void
@@ -70,7 +67,6 @@ final class NamedConstructorsTest extends TestCase
         $source = ResourceSource::createFromResource($stream);
         unset($source);
 
-        // The resource belongs to whoever has opened it
         self::assertIsResource($stream);
 
         \fclose($stream);

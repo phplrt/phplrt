@@ -9,9 +9,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class ExceptionTest extends TestCase
 {
-    /**
-     * @return iterable<non-empty-string, array{class-string}>
-     */
     public static function exceptionDataProvider(): iterable
     {
         foreach (\glob(__DIR__ . '/../src/Exception/*.php') ?: [] as $pathname) {

@@ -32,9 +32,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class PP3LoaderTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string PATHNAME = '/app/grammar.pp3';
 
     private LexerBuilder $lexer;
@@ -100,8 +97,6 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        // The predicate reads nothing, so the "a" is still there to be read
-        // and never reaches the rule twice
         self::assertSame(2, $parser->parse(StringSource::createFromString('ab')));
     }
 
@@ -330,8 +325,6 @@ final class PP3LoaderTest extends TestCase
 
         $parser = $result->parser->toParser($result->lexer->toLexer());
 
-        // The value is read as it is written, so the "+" of a regular
-        // expression is only a plus sign here
         self::assertSame(3, $parser->parse(StringSource::createFromString('1+2')));
     }
 
@@ -363,7 +356,6 @@ final class PP3LoaderTest extends TestCase
             B : "+" <T_NUMBER> ;
             PP3);
 
-        // The named token and the single one both rules have declared
         self::assertCount(2, $this->lexer->tokens);
     }
 
@@ -533,9 +525,6 @@ final class PP3LoaderTest extends TestCase
         return $compiler->getParser();
     }
 
-    /**
-     * @return list<mixed>
-     */
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP3Loader()

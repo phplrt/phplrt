@@ -28,8 +28,6 @@ final class CompilerTest extends TestCase
             $tokens[] = $token->name;
         }
 
-        // The lexemes are referred to from two grammars at once and are read
-        // exactly once
         self::assertSame(['T_NUMBER', 'T_PLUS', 'T_WHITESPACE'], $tokens);
         self::assertSame('Expression', $compiler->parser->initial?->printReference());
     }
@@ -91,9 +89,6 @@ final class CompilerTest extends TestCase
         self::assertSame('T_NUMBER', $compiler->lexer->tokens[0]->name);
     }
 
-    /**
-     * @param non-empty-string $name
-     */
     private function load(string $name): Compiler
     {
         $compiler = new Compiler();

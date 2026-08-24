@@ -71,8 +71,6 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond");
 
-        // A position of an implementation that does not hold the one-based
-        // invariant of the contract.
         $position = new class () implements PositionInterface {
             public int $line = 0;
             public int $column = -100;

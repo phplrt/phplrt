@@ -8,10 +8,6 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-/**
- * A token made of nothing but the fragment of the source it has been read
- * from.
- */
 final class TokenStub implements TokenInterface
 {
     public int $size {
@@ -19,9 +15,6 @@ final class TokenStub implements TokenInterface
     }
 
     public function __construct(
-        /**
-         * @var int<0, max>
-         */
         public readonly int $offset = self::MIN_OFFSET,
         public readonly string $value = '',
         public readonly int $id = 0,

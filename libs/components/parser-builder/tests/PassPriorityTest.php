@@ -42,10 +42,6 @@ final class PassPriorityTest extends TestCase
         );
         $parser->addCompilerPass(self::createCompilerPass($order, 'check'));
 
-        /**
-         * The priority has not been used yet, so the pass is appended to the
-         * list and may only be processed first while the list is sorted.
-         */
         $parser->addCompilerPass(
             self::createCompilerPass($order, 'custom'),
             ParserBuilder::PASS_PRIORITY_NORMALIZE - 1,
@@ -131,17 +127,9 @@ final class PassPriorityTest extends TestCase
         ));
     }
 
-    /**
-     * @param list<string> $order
-     * @param non-empty-string $name
-     */
     private static function createCompilerPass(array &$order, string $name): ParserCompilerPassInterface
     {
         return new class ($order, $name) implements ParserCompilerPassInterface {
-            /**
-             * @param list<string> $order
-             * @param non-empty-string $name
-             */
             public function __construct(
                 private array &$order,
                 private readonly string $name,
@@ -154,17 +142,9 @@ final class PassPriorityTest extends TestCase
         };
     }
 
-    /**
-     * @param list<string> $order
-     * @param non-empty-string $name
-     */
     private static function createAnalysisPass(array &$order, string $name): ParserAnalysisPassInterface
     {
         return new class ($order, $name) implements ParserAnalysisPassInterface {
-            /**
-             * @param list<string> $order
-             * @param non-empty-string $name
-             */
             public function __construct(
                 private array &$order,
                 private readonly string $name,

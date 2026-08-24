@@ -17,9 +17,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class TokenStreamTest extends TestCase
 {
-    /**
-     * @param iterable<mixed, ChannelInterface> $skip
-     */
     private static function createExpressionLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {

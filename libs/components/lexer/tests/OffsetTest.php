@@ -52,8 +52,6 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = StringSource::createFromString('one two three');
 
-        // Taking a part of the source out of it does not change what the
-        // source is
         $source->read(0, 4);
 
         self::assertSame([

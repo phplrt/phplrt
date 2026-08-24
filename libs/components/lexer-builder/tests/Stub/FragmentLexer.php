@@ -10,10 +10,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
-/**
- * Reads the source up to the closing bracket and stops there, the way a lexer
- * embedded into a grammar is expected to behave.
- */
 final readonly class FragmentLexer implements LexerInterface
 {
     public const int T_FRAGMENT = 100;

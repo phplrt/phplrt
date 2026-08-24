@@ -19,12 +19,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class SnippetReaderTest extends TestCase
 {
-    /**
-     * Each line of the source is 6 bytes long, so with a single-byte
-     * delimiter the line number N starts at offset N - 1 multiplied by 7.
-     *
-     * @var non-empty-string
-     */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     #[TestDox('A lexical error captures the fragment its own token has been read from')]
@@ -62,8 +56,6 @@ final class SnippetReaderTest extends TestCase
     #[TestDox('An error that covers no fragment captures the whole line it occurred on')]
     public function testReadsTheLineOfAnErrorWithoutFragment(): void
     {
-        // An error that knows nothing but the line it occurred on is what
-        // the analysis of an arbitrary exception gives back.
         $info = new FailureResult(
             class: \LogicException::class,
             message: '',
@@ -119,9 +111,6 @@ final class SnippetReaderTest extends TestCase
         ))));
     }
 
-    /**
-     * @return array<int<1, max>, SourceLine>
-     */
     private static function read(\Throwable $e, ?int $lines = null): array
     {
         $info = new Analyzer()->analyze($e);

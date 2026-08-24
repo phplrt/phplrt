@@ -20,12 +20,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class EmbeddedLexerTest extends TestCase
 {
-    /**
-     * Reads the names written outside of the quotes, while everything between
-     * them is read by a lexer of its own.
-     *
-     * @param iterable<mixed, ChannelInterface> $skip
-     */
     private static function createStringLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
@@ -39,10 +33,6 @@ final class EmbeddedLexerTest extends TestCase
         }, $skip);
     }
 
-    /**
-     * Reads the fragment up to the closing bracket, the way a lexer written by
-     * hand is expected to behave.
-     */
     private static function createForeignLexer(): LexerInterface
     {
         return new class implements LexerInterface {
@@ -72,9 +62,6 @@ final class EmbeddedLexerTest extends TestCase
         };
     }
 
-    /**
-     * @param iterable<mixed, ChannelInterface> $skip
-     */
     private static function createHostLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
@@ -204,8 +191,6 @@ final class EmbeddedLexerTest extends TestCase
     {
         $lexer = self::createStringLexer();
 
-        // The trailing space is read but not reported, so the token that has
-        // entered the embedded lexer stays the last one on the list
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('"hello" ')), false);
         $embedding = $tokens[0];
 

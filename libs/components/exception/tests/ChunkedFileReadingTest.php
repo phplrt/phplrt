@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Phplrt\Exception\Tests;
 
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Analysis\FailureInterval;
+use Phplrt\Exception\Analysis\FailureResult;
+use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\SnippetReader;
+use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
@@ -15,9 +19,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class ChunkedFileReadingTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     #[TestDox('A file larger than the chunk size is read by chunks')]
@@ -36,7 +37,7 @@ final class ChunkedFileReadingTest extends TestCase
                 '>#5@28:0-6: line 5',
                 '>#6@35:0-3: line 6',
                 ' #7@42: line 7',
-            ], self::describe($reader->fragment($source, new FailureInterval(23, 15), 2)));
+            ], self::describe(self::read($reader, $source, new FailureInterval(23, 15), 2)));
         } finally {
             @\unlink($pathname);
         }
@@ -60,8 +61,8 @@ final class ChunkedFileReadingTest extends TestCase
                             $fragment = new FailureInterval(\max(0, $offset), $length);
 
                             self::assertSame(
-                                self::describe($reader->fragment(new StringSource($code), $fragment, $lines)),
-                                self::describe($reader->fragment(new FileSource($pathname), $fragment, $lines)),
+                                self::describe(self::read($reader, new StringSource($code), $fragment, $lines)),
+                                self::describe(self::read($reader, new FileSource($pathname), $fragment, $lines)),
                                 \sprintf(
                                     'Invalid snippet of the %s file at offset %d of length %d',
                                     \var_export($code, true),
@@ -78,6 +79,21 @@ final class ChunkedFileReadingTest extends TestCase
         }
     }
 
+    private static function read(
+        SnippetReader $reader,
+        ReadableInterface $source,
+        FailureInterval $fragment,
+        int $lines,
+    ): array {
+        return $reader->read(new FailureResult(
+            class: '',
+            message: '',
+            source: $source,
+            position: new Position(),
+            interval: $fragment,
+        ), $lines);
+    }
+
     private static function createRandomCode(): string
     {
         $alphabet = ['a', 'bb', 'ccc', "\n", "\r\n", "\n\r", "\r", ' '];
@@ -91,9 +107,6 @@ final class ChunkedFileReadingTest extends TestCase
         return $result;
     }
 
-    /**
-     * @return non-empty-string
-     */
     private static function createFile(string $content): string
     {
         $pathname = \tempnam(\sys_get_temp_dir(), 'phplrt-snippet-');

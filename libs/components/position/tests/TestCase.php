@@ -16,11 +16,6 @@ abstract class TestCase extends BaseTestCase
             . \uniqid('phplrt_test_', true) . '.txt';
     }
 
-    /**
-     * The source code samples every calculation is checked against.
-     *
-     * @return iterable<non-empty-string, array{string}>
-     */
     public static function sourceProvider(): iterable
     {
         yield 'empty' => [''];
@@ -34,12 +29,6 @@ abstract class TestCase extends BaseTestCase
         yield 'utf-8' => ["привет\nмир\n"];
     }
 
-    /**
-     * The numbers of bytes read at once, including the ones splitting the
-     * source code in the middle of a line.
-     *
-     * @return iterable<non-empty-string, array{int<1, max>}>
-     */
     public static function chunkSizeProvider(): iterable
     {
         yield '1 byte' => [1];
@@ -48,9 +37,6 @@ abstract class TestCase extends BaseTestCase
         yield 'default' => [65536];
     }
 
-    /**
-     * @return iterable<non-empty-string, array{string, int<1, max>}>
-     */
     public static function sourceAndChunkSizeProvider(): iterable
     {
         foreach (self::sourceProvider() as $source => [$code]) {
@@ -60,23 +46,11 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * The line number the given offset of the source code is located at.
-     *
-     * @param int<0, max> $offset
-     * @return int<1, max>
-     */
     protected static function calculateLine(string $code, int $offset): int
     {
         return \substr_count(\substr($code, 0, $offset), "\n") + 1;
     }
 
-    /**
-     * The column number the given offset of the source code is located at.
-     *
-     * @param int<0, max> $offset
-     * @return int<1, max>
-     */
     protected static function calculateColumn(string $code, int $offset): int
     {
         $head = \substr($code, 0, $offset);
@@ -87,12 +61,6 @@ abstract class TestCase extends BaseTestCase
             : \strlen($head) - $delimiter;
     }
 
-    /**
-     * Creates a resource stream that cannot be rewound and already holds the
-     * given content.
-     *
-     * @return resource
-     */
     protected function createNonSeekableResource(string $content = '')
     {
         $pair = @\stream_socket_pair(\STREAM_PF_INET, \STREAM_SOCK_STREAM, \STREAM_IPPROTO_IP);

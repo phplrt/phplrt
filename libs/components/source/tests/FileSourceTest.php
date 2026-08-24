@@ -77,7 +77,6 @@ final class FileSourceTest extends TestCase
 
         self::assertSame('test', $file->read(0, 4));
 
-        // Reading a part of the file leaves the source itself as it is
         self::assertSame('test content', $file->content);
         self::assertSame('test content', $file->content);
 

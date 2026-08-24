@@ -15,9 +15,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/parser-compiler')]
 final class PredicateTest extends TestCase
 {
-    /**
-     * Reads a number or a plus, but only where the predicate allows it.
-     */
     private static function createParserFor(bool $isExpected): ParserInterface
     {
         $lexer = self::createLexerBuilder();
@@ -48,7 +45,6 @@ final class PredicateTest extends TestCase
     {
         $parser = self::createParserFor(true);
 
-        // The number would be read twice in case of the predicate consumed it
         self::assertCount(1, self::collectValues($parser->parse(StringSource::createFromString('1'))));
     }
 

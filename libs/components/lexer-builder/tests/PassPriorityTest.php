@@ -42,10 +42,6 @@ final class PassPriorityTest extends TestCase
         );
         $lexer->addCompilerPass(self::createPass($order, 'check'));
 
-        /**
-         * The priority has not been used yet, so the pass is appended to the
-         * list and may only be processed first while the list is sorted.
-         */
         $lexer->addCompilerPass(
             self::createPass($order, 'custom'),
             LexerBuilder::PASS_PRIORITY_NORMALIZE - 1,
@@ -123,17 +119,9 @@ final class PassPriorityTest extends TestCase
         ));
     }
 
-    /**
-     * @param list<string> $order
-     * @param non-empty-string $name
-     */
     private static function createPass(array &$order, string $name): LexerCompilerPassInterface
     {
         return new class ($order, $name) implements LexerCompilerPassInterface {
-            /**
-             * @param list<string> $order
-             * @param non-empty-string $name
-             */
             public function __construct(
                 private array &$order,
                 private readonly string $name,
@@ -146,17 +134,9 @@ final class PassPriorityTest extends TestCase
         };
     }
 
-    /**
-     * @param list<string> $order
-     * @param non-empty-string $name
-     */
     private static function createAnalysisPass(array &$order, string $name): LexerAnalysisPassInterface
     {
         return new class ($order, $name) implements LexerAnalysisPassInterface {
-            /**
-             * @param list<string> $order
-             * @param non-empty-string $name
-             */
             public function __construct(
                 private array &$order,
                 private readonly string $name,

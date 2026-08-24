@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Phplrt\Exception\Tests;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
+use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Analysis\FailureInterval;
+use Phplrt\Exception\Analysis\FailureResult;
 use Phplrt\Exception\Snippet\CapturedSourceLine;
 use Phplrt\Exception\Snippet\SourceLine;
 use Phplrt\Exception\SnippetReader;
+use Phplrt\Position\Position;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -18,13 +21,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class SnippetFragmentTest extends TestCase
 {
-    /**
-     * Each line of the source is 6 bytes long, so with a single-byte
-     * delimiter the line number {@see $number} starts at offset
-     * {@see $number} - 1 multiplied by 7.
-     *
-     * @var non-empty-string
-     */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     #[TestDox('Reads the captured line along with N lines before and after it')]
@@ -151,9 +147,6 @@ final class SnippetFragmentTest extends TestCase
         ], self::describe(self::readString("line 1\n", 7, 0, 2)));
     }
 
-    /**
-     * @param non-empty-string $delimiter
-     */
     #[TestDox('The lines are separated by any of the supported delimiters')]
     #[DataProvider('delimitersDataProvider')]
     public function testSupportedDelimiters(string $delimiter): void
@@ -168,9 +161,6 @@ final class SnippetFragmentTest extends TestCase
         ], self::describe(self::readString($source, $size * 2, 0, 2)));
     }
 
-    /**
-     * @return iterable<non-empty-string, array{non-empty-string}>
-     */
     public static function delimitersDataProvider(): iterable
     {
         yield 'LF' => ["\n"];
@@ -270,7 +260,6 @@ final class SnippetFragmentTest extends TestCase
     #[TestDox('The captured offset never exceeds the length of the line')]
     public function testCapturedOffsetNeverExceedsTheLengthOfTheLine(): void
     {
-        // The offset points to the "\n" of the "\r\n" delimiter.
         $line = self::findFirstCapturedLine(self::readString("line 1\r\nline 2", 7, 0, 0));
 
         self::assertSame(1, $line->number);
@@ -354,43 +343,35 @@ final class SnippetFragmentTest extends TestCase
         self::readFile(__DIR__, 0);
     }
 
-    /**
-     * @param int<0, max> $offset
-     * @param int<0, max> $length
-     * @param int<0, max> $lines
-     * @return array<int<1, max>, SourceLine>
-     */
     private static function readString(
         string $code,
         int $offset,
         int $length = 0,
         int $lines = SnippetReader::DEFAULT_LINES_AROUND,
     ): array {
-        return new SnippetReader()
-            ->fragment(new StringSource($code), new FailureInterval($offset, $length), $lines);
+        return self::read(new StringSource($code), $offset, $length, $lines);
     }
 
-    /**
-     * @param int<0, max> $offset
-     * @param int<0, max> $length
-     * @param int<0, max> $lines
-     * @return array<int<1, max>, SourceLine>
-     * @throws SourceExceptionInterface
-     */
     private static function readFile(
         string $pathname,
         int $offset,
         int $length = 0,
         int $lines = SnippetReader::DEFAULT_LINES_AROUND,
     ): array {
-        return new SnippetReader()
-            ->fragment(new FileSource($pathname), new FailureInterval($offset, $length), $lines);
+        return self::read(new FileSource($pathname), $offset, $length, $lines);
     }
 
-    /**
-     * @param iterable<mixed, SourceLine> $lines
-     * @return list<int<1, max>>
-     */
+    private static function read(ReadableInterface $source, int $offset, int $length, int $lines): array
+    {
+        return new SnippetReader()->read(new FailureResult(
+            class: '',
+            message: '',
+            source: $source,
+            position: new Position(),
+            interval: new FailureInterval($offset, $length),
+        ), $lines);
+    }
+
     private static function getCapturedLineNumbers(iterable $lines): array
     {
         $result = [];
@@ -404,9 +385,6 @@ final class SnippetFragmentTest extends TestCase
         return $result;
     }
 
-    /**
-     * @param iterable<mixed, SourceLine> $lines
-     */
     private static function findFirstCapturedLine(iterable $lines): CapturedSourceLine
     {
         foreach ($lines as $line) {
@@ -431,20 +409,12 @@ final class SnippetFragmentTest extends TestCase
         return $result;
     }
 
-    /**
-     * The reference implementation of the reader based on splitting the whole
-     * source code by the supported delimiters.
-     *
-     * @param int<0, max> $lines
-     * @return list<string>
-     */
     private static function split(string $code, int $offset, int $length, int $lines): array
     {
         $size = \strlen($code);
         $offset = \max(0, \min($offset, $size));
         $end = $offset + \max(0, $length);
 
-        /** @var list<array{string, int<0, max>}>|false $parts */
         $parts = \preg_split('/\r\n|\n/', $code, -1, \PREG_SPLIT_OFFSET_CAPTURE);
 
         if ($parts === false) {
@@ -487,17 +457,11 @@ final class SnippetFragmentTest extends TestCase
         return $result;
     }
 
-    /**
-     * @return int<0, max>
-     */
     private static function calculateOffset(int $offset, int $start, string $value): int
     {
         return \max(0, \min($offset - $start, \strlen($value)));
     }
 
-    /**
-     * @return non-empty-string
-     */
     private static function createSourceFile(string $content): string
     {
         $pathname = \tempnam(\sys_get_temp_dir(), 'phplrt-snippet-');

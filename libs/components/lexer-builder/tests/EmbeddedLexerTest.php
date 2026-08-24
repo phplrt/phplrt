@@ -18,10 +18,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer-builder')]
 final class EmbeddedLexerTest extends TestCase
 {
-    /**
-     * Reads the names written outside of the brackets, while everything
-     * between them is read by a lexer of its own.
-     */
     private static function createBuilder(): LexerBuilder
     {
         $builder = new LexerBuilder();
@@ -35,11 +31,6 @@ final class EmbeddedLexerTest extends TestCase
         return $builder;
     }
 
-    /**
-     * Returns the name and the value of every token the lexer reads.
-     *
-     * @return list<string>
-     */
     private static function tokenize(LexerInterface $lexer, string $source): array
     {
         $result = [];

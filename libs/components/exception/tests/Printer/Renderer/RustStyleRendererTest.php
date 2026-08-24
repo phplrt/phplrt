@@ -23,9 +23,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class RustStyleRendererTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     #[TestDox('Every line is prefixed by its number and the captured one is underlined')]
@@ -254,9 +251,6 @@ final class RustStyleRendererTest extends TestCase
         ));
     }
 
-    /**
-     * @param non-empty-string $sequence
-     */
     #[TestDox('The severity, the captured fragment and its underline are highlighted')]
     #[DataProvider('levelsDataProvider')]
     public function testHighlightsError(FailureLevel $level, string $sequence): void
@@ -272,9 +266,6 @@ final class RustStyleRendererTest extends TestCase
         );
     }
 
-    /**
-     * @return iterable<non-empty-string, array{FailureLevel, non-empty-string}>
-     */
     public static function levelsDataProvider(): iterable
     {
         yield 'error' => [FailureLevel::Error, '31'];
@@ -301,7 +292,6 @@ final class RustStyleRendererTest extends TestCase
     #[TestDox('The output asked to stay plain is rendered as a plain text')]
     public function testDefaultRendererOfThePlainOutput(): void
     {
-        // The "NO_COLOR" variable is set by the configuration of the tests
         self::assertInstanceOf(RawRustStyleRenderer::class, RustStyleRenderer::createDefault());
     }
 
@@ -313,10 +303,6 @@ final class RustStyleRendererTest extends TestCase
         });
     }
 
-    /**
-     * Returns the diagnostics of the given error without the stack trace
-     * closing them, which belongs to the test the error is created in.
-     */
     private static function render(FailureResult $error, ?RendererInterface $renderer = null): string
     {
         $e = new \LogicException();
@@ -326,14 +312,6 @@ final class RustStyleRendererTest extends TestCase
         return \rtrim(\substr($result, 0, -\strlen($e->getTraceAsString())), "\n");
     }
 
-    /**
-     * Returns the error that occurred in the given fragment of the given
-     * source code, or at the beginning of it in case no fragment is given.
-     *
-     * @param int<0, max>|null $offset
-     * @param int<0, max> $length
-     * @param non-empty-string|null $pathname
-     */
     private static function createFailure(
         string $code,
         ?int $offset = null,
@@ -359,12 +337,6 @@ final class RustStyleRendererTest extends TestCase
         );
     }
 
-    /**
-     * Runs the callback with the given environment variables, restoring
-     * everything it has changed afterwards.
-     *
-     * @param array<non-empty-string, string|null> $variables
-     */
     private static function withEnv(array $variables, \Closure $then): void
     {
         $previous = [];

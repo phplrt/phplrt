@@ -16,12 +16,6 @@ use Phplrt\Source\VirtualSource;
 use Phplrt\Source\VirtualStreamingFile;
 use PHPUnit\Framework\Attributes\Group;
 
-/**
- * The names the sources were known under before they have been renamed.
- *
- * Note: Removing any of these is allowed ONLY when updating a MAJOR version
- *       of the package.
- */
 #[Group('deprecated')]
 final class DeprecatedAliasesTest extends TestCase
 {
@@ -73,8 +67,6 @@ final class DeprecatedAliasesTest extends TestCase
 
     public function testASourceBuiltUnderTheNewNameMatchesTheOldOne(): void
     {
-        // An alias is the very same class rather than a child of it, so code
-        // that has not been updated yet keeps recognizing what it is given.
         $source = SourceFactory::createDefault()
             ->create('2 + 2');
 

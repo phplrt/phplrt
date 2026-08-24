@@ -71,7 +71,6 @@ final class CreateFromOffsetTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\r\nsecond");
 
-        // The "\r" byte is the last character of the first line.
         self::assertSame(1, $factory->createFromOffset($source, 5)->line);
         self::assertSame(6, $factory->createFromOffset($source, 5)->column);
 

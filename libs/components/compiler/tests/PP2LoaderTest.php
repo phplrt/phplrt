@@ -27,9 +27,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class PP2LoaderTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string PATHNAME = '/app/grammar.pp2';
 
     private LexerBuilder $lexer;
@@ -312,9 +309,6 @@ final class PP2LoaderTest extends TestCase
         self::assertSame(24, $references[0]->length);
     }
 
-    /**
-     * @return list<GrammarReference>
-     */
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
         $result = new PP2Loader()
@@ -323,11 +317,6 @@ final class PP2LoaderTest extends TestCase
         return \iterator_to_array($result, false);
     }
 
-    /**
-     * Returns the fragment of the grammar the given definition has been read
-     * from, so that the position it refers to is compared the way it is
-     * written.
-     */
     private function readSource(string $source, TokenDefinition|RuleDefinition|null $definition): string
     {
         $context = $definition?->context;

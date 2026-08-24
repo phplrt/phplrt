@@ -18,9 +18,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class ChannelTest extends TestCase
 {
-    /**
-     * @param iterable<mixed, ChannelInterface> $skip
-     */
     private static function createAnnotatedLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
@@ -30,10 +27,6 @@ final class ChannelTest extends TestCase
         }, $skip);
     }
 
-    /**
-     * @param iterable<mixed, TokenInterface> $tokens
-     * @return array<non-empty-string, ChannelInterface>
-     */
     private static function channels(iterable $tokens): array
     {
         $result = [];

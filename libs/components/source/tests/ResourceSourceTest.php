@@ -43,8 +43,6 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        // A stream that has already been read in part is the source of what
-        // is left of it
         self::assertSame('content', $source->content);
         self::assertSame('content', $source->read(0, 1024));
         self::assertSame('tent', $source->read(3, 1024));
@@ -130,7 +128,6 @@ final class ResourceSourceTest extends TestCase
 
         self::assertSame('test', $source->read(0, 4));
 
-        // Reading a part of the source leaves the source itself as it is
         self::assertSame('test content', $source->content);
         self::assertSame('test content', $source->content);
     }
@@ -219,7 +216,6 @@ final class ResourceSourceTest extends TestCase
         $source->read(0, 1024);
         unset($source);
 
-        // The resource belongs to whoever has passed it in
         self::assertIsResource($stream);
     }
 
@@ -294,7 +290,6 @@ final class ResourceSourceTest extends TestCase
             self::assertInstanceOf(ResourceSource::class, $unserialized);
             self::assertSame($this->temp, $unserialized->uri);
 
-            // The position the source begins at survives along with it
             self::assertSame('t content', $unserialized->content);
             self::assertSame('t co', $unserialized->read(0, 4));
         } finally {

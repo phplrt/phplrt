@@ -44,8 +44,6 @@ final class SourceReadingTest extends TestCase
 
     public function testVirtualFileIsReadFromItsOwnSource(): void
     {
-        // The pathname of a virtual file is not the one of a real file, so
-        // the source it has been built over is the only data available.
         $factory = new PositionFactory();
         $source = VirtualSource::createFromString('example.txt', self::CODE);
 

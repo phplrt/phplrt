@@ -15,16 +15,8 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class SyntaxGrammarTest extends TestCase
 {
-    /**
-     * The command bringing a parser back in line with its grammar.
-     *
-     * @var non-empty-string
-     */
     private const string BUILD_SCRIPT = 'composer dev:syntax';
 
-    /**
-     * @return iterable<non-empty-string, array{non-empty-string, non-empty-string, non-empty-string, non-empty-string}>
-     */
     public static function formatsDataProvider(): iterable
     {
         yield 'pp2' => [
@@ -42,12 +34,6 @@ final class SyntaxGrammarTest extends TestCase
         ];
     }
 
-    /**
-     * @param non-empty-string $grammar
-     * @param non-empty-string $pathname
-     * @param non-empty-string $namespace
-     * @param non-empty-string $class
-     */
     #[DataProvider('formatsDataProvider')]
     #[TestDox('The parser of a format is what the grammar describing it compiles into')]
     public function testGeneratedParserMatchesTheGrammar(

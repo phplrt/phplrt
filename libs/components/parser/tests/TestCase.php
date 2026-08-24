@@ -15,12 +15,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * Creates a resource stream that cannot be rewound and already holds the
-     * given content.
-     *
-     * @return resource
-     */
     protected static function createNonSeekableResource(string $content = '')
     {
         $pair = @\stream_socket_pair(\STREAM_PF_INET, \STREAM_SOCK_STREAM, \STREAM_IPPROTO_IP);
@@ -37,13 +31,6 @@ abstract class TestCase extends BaseTestCase
         return $read;
     }
 
-    /**
-     * Describes the given grammar the same way the parser compiler does.
-     *
-     * @param list<RuleInterface> $grammar
-     * @param int<0, max> $initial
-     * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
-     */
     protected static function analyze(array $grammar, int $initial, array $reducers = []): ParserResultContext
     {
         $context = new ParserResultContext($grammar, $initial, \array_map(

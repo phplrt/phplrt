@@ -32,16 +32,12 @@ final class AnalysisTest extends TestCase
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('1 + 2 + 3'));
 
-        // A source read in full has nothing to report, which is what the
-        // class of the result says and the only thing it can say
         self::assertInstanceOf(SuccessfulResult::class, $actual);
     }
 
     #[TestDox('A source the grammar reads only in part is partial')]
     public function testIncompleteSourceIsPartial(): void
     {
-        // The trailing operator opens an iteration the grammar cannot finish,
-        // so the whole iteration is given back
         $actual = self::createParser()->analyze(StringSource::createFromString('1 + 2 +'));
 
         self::assertInstanceOf(PartialResult::class, $actual);
@@ -64,8 +60,6 @@ final class AnalysisTest extends TestCase
         $stream = self::createNonSeekableResource('1 + 2 + 3');
 
         try {
-            // The analysis takes the source out twice: once into tokens and
-            // once into the result
             $actual = self::createParser()->analyze(new ResourceSource($stream));
 
             self::assertInstanceOf(SuccessfulResult::class, $actual);
@@ -156,12 +150,9 @@ final class AnalysisTest extends TestCase
 
         self::assertInstanceOf(PartialResult::class, $actual);
 
-        // The fragment ends before the operator that opens an iteration the
-        // grammar cannot finish
         self::assertSame('T_PLUS', $actual->token->name);
         self::assertSame(6, $actual->token->offset);
 
-        // ...while what is wrong is the operand that never came after it
         $error = $actual->error;
 
         self::assertSame(Channel::EndOfInput, $error->token->channel);
@@ -189,8 +180,6 @@ final class AnalysisTest extends TestCase
                 self::assertSame($e->getMessage(), $error->getMessage());
                 self::assertSame($e->token->offset, $error->token->offset);
 
-                // The place an error has been raised at belongs to the trace
-                // rather than to the report, and the two are raised apart
                 self::assertSame(
                     self::describeError($e),
                     self::describeError($error),
@@ -200,13 +189,8 @@ final class AnalysisTest extends TestCase
         }
     }
 
-    /**
-     * Returns the report of the given error without the trace behind it.
-     */
     private static function describeError(UnexpectedTokenException $error): string
     {
-        // The stack trace closing the report tells where the error has been
-        // raised, which is not what the report itself is about.
         return \explode("\n#0 ", (string) $error)[0];
     }
 
@@ -226,8 +210,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('The expected tokens are told without the lookahead tables as well')]
     public function testExpectedTokensWithoutLookaheadTables(): void
     {
-        // The tokens a rule may begin with are read off the lookahead table,
-        // which a parser is allowed to be given none of
         $parser = new Parser(
             lexer: new ArithmeticLexer(),
             grammar: self::createGrammar(),
@@ -243,8 +225,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('A parser that has not been told how to name the tokens says nothing about them')]
     public function testExpectedTokensOfAParserThatCannotNameThem(): void
     {
-        // How to name a token is written down by the compiler, and a parser is
-        // allowed to be given none of it
         $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION);
 
         $parser = new Parser(
@@ -260,15 +240,12 @@ final class AnalysisTest extends TestCase
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
-        // Better to say nothing than to offer a number the reader has no way
-        // of turning back into a token
         self::assertSame('Syntax error, unexpected "+" (T_PLUS)', $actual->error->getMessage());
     }
 
     #[TestDox('The tokens of the rules failing alongside each other are told together')]
     public function testExpectedTokensOfSiblingRules(): void
     {
-        /** @var list<RuleInterface> $grammar */
         $grammar = [
             0 => new Alternation([1, 2]),
             1 => new Lexeme(ArithmeticLexer::T_PLUS),
@@ -294,8 +271,6 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        // Told in the order of their identifiers, which is how the report
-        // collects them
         $expected = 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected';
 
         foreach (['with' => $withTables, 'without' => $withoutTables] as $name => $parser) {
@@ -313,13 +288,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('The tokens of the alternatives never entered are told all the same')]
     public function testExpectedTokensOfAlternativesNeverEntered(): void
     {
-        /**
-         * Neither alternative is a terminal, so the tokens they may begin with
-         * are known from the tables alone, and the tables are what keeps them
-         * from being entered on a token that is neither.
-         *
-         * @var list<RuleInterface> $grammar
-         */
         $grammar = [
             0 => new Alternation([1, 2]),
             1 => new Concatenation([3]),
@@ -344,8 +312,6 @@ final class AnalysisTest extends TestCase
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
-        // Told in the order of their identifiers, which is how the report
-        // collects them
         self::assertSame(
             'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected',
             $actual->error->getMessage(),
@@ -355,13 +321,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('An alternation that has recognized none of its alternatives tells the tokens of them all')]
     public function testExpectedTokensOfAnAlternationRecognizingNothing(): void
     {
-        /**
-         * The first alternative may begin with a minus and refuses to read one,
-         * so a minus is what makes the alternation try it, and nothing else,
-         * and what makes it fail without a word about itself.
-         *
-         * @var list<RuleInterface> $grammar
-         */
         $grammar = [
             0 => new Alternation([1, 2]),
             1 => new Concatenation([3, 4]),
@@ -386,8 +345,6 @@ final class AnalysisTest extends TestCase
 
         self::assertInstanceOf(FailureResult::class, $actual);
 
-        // Told in the order of their identifiers, which is how the report
-        // collects them
         self::assertSame(
             'Syntax error, unexpected "-" (T_MINUS), one of T_PLUS, T_MINUS expected',
             $actual->error->getMessage(),
@@ -397,7 +354,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('A grammar reading nothing but a repetition reads an empty fragment')]
     public function testEmptyFragmentIsRead(): void
     {
-        /** @var list<RuleInterface> $grammar */
         $grammar = [
             0 => new Repetition(1),
             1 => new Lexeme(ArithmeticLexer::T_NUMBER),
@@ -425,7 +381,6 @@ final class AnalysisTest extends TestCase
     #[TestDox('An empty source is a success in case the grammar reads nothing of it')]
     public function testEmptySourceMayBeSuccessful(): void
     {
-        /** @var list<RuleInterface> $grammar */
         $grammar = [
             0 => new Repetition(1),
             1 => new Lexeme(ArithmeticLexer::T_NUMBER),
@@ -455,14 +410,8 @@ final class AnalysisTest extends TestCase
 
     private const int RULE_OPERATOR = 4;
 
-    /**
-     * Expression := Number (("+" | "-") Number)*
-     *
-     * @return list<RuleInterface>
-     */
     private static function createGrammar(): array
     {
-        /** @var list<RuleInterface> */
         return [
             self::RULE_EXPRESSION => new Concatenation([self::RULE_NUMBER, 2]),
             self::RULE_NUMBER => new Lexeme(ArithmeticLexer::T_NUMBER),
@@ -474,12 +423,6 @@ final class AnalysisTest extends TestCase
         ];
     }
 
-    /**
-     * How an error has to name the tokens of the lexer above, which is what a
-     * compiler writes down for a generated parser.
-     *
-     * @return array<int, non-empty-string>
-     */
     private static function createExpectations(): array
     {
         return [
@@ -489,9 +432,6 @@ final class AnalysisTest extends TestCase
         ];
     }
 
-    /**
-     * @param array<int<0, max>, callable(Context, mixed): mixed> $reducers
-     */
     private static function createParser(array $reducers = []): Parser
     {
         $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION, $reducers);

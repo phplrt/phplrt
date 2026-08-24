@@ -14,9 +14,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * @return list<string>
-     */
     protected static function describe(string $source): array
     {
         $result = [];
@@ -69,9 +66,6 @@ abstract class TestCase extends BaseTestCase
         };
     }
 
-    /**
-     * @param non-empty-list<Statement\Statement> $statements
-     */
     private static function describeChildren(array $statements, string $delimiter): string
     {
         $result = [];

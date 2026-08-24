@@ -20,12 +20,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/lexer')]
 final class GroupCaptureTest extends TestCase
 {
-    /**
-     * Reads the declarations whose parts are captured by the subgroups of a
-     * single token definition.
-     *
-     * @param iterable<mixed, ChannelInterface> $skip
-     */
     private static function createLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
     {
         return self::lexer(static function (LexerBuilder $lexer): void {
@@ -35,12 +29,6 @@ final class GroupCaptureTest extends TestCase
         }, $skip);
     }
 
-    /**
-     * Returns what the subgroups have captured for every token that has
-     * captured something.
-     *
-     * @return list<list<string>>
-     */
     private static function findCaptures(LexerInterface $lexer, string $source): array
     {
         $result = [];

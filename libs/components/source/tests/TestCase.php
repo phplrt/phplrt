@@ -16,12 +16,6 @@ abstract class TestCase extends BaseTestCase
             . \uniqid('phplrt_test_', true) . '.txt';
     }
 
-    /**
-     * Creates a resource stream that cannot be rewound and already holds the
-     * given content.
-     *
-     * @return resource
-     */
     protected function createNonSeekableResource(string $content = '')
     {
         $pair = @\stream_socket_pair(\STREAM_PF_INET, \STREAM_SOCK_STREAM, \STREAM_IPPROTO_IP);

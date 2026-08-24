@@ -22,14 +22,8 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/compiler')]
 final class ContractsPreloadTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string GRAMMAR_PATHNAME = __DIR__ . '/resources/grammar.pp2';
 
-    /**
-     * @var list<non-empty-string>
-     */
     private array $files = [];
 
     protected function tearDown(): void
@@ -205,18 +199,11 @@ final class ContractsPreloadTest extends TestCase
         self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
     }
 
-    /**
-     * @return list<SymbolInclude>
-     */
     private static function createIncludes(): array
     {
         return new ContractsPreloader()->createIncludes();
     }
 
-    /**
-     * @param non-empty-string $symbol
-     * @return list<non-empty-string>
-     */
     private static function findDependenciesOf(string $symbol): array
     {
         return [
@@ -232,9 +219,6 @@ final class ContractsPreloadTest extends TestCase
             ->generate();
     }
 
-    /**
-     * @return non-empty-string
-     */
     private function createPathname(): string
     {
         $pathname = \sys_get_temp_dir() . '/phplrt-' . \bin2hex(\random_bytes(8)) . '.php';

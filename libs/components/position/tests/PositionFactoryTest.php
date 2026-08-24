@@ -17,8 +17,6 @@ final class PositionFactoryTest extends TestCase
     {
         $factory = new PositionFactory();
 
-        // An unreadable file is enough of a source for the position that is
-        // known in advance.
         $position = $factory->createFromOffset(new FileSource($this->temp), 0);
 
         self::assertSame(PositionInterface::MIN_LINE, $position->line);

@@ -32,7 +32,6 @@ final class StringSourceTest extends TestCase
 
         self::assertSame('test', $source->read(0, 4));
 
-        // Reading a part of the source leaves the source itself as it is
         self::assertSame($content, $source->content);
         self::assertSame($content, $source->content);
     }

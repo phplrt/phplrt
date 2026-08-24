@@ -85,7 +85,6 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        // The "Operator" rule is referred to by its name from the "Tail" rule
         self::assertCount(7, $result->grammar);
         self::assertSame('3: Concatenation(4, 1)', self::describe($result)[3]);
     }
@@ -196,9 +195,6 @@ final class ParserBuilderTest extends TestCase
         self::createParserWithReducer('return $children');
     }
 
-    /**
-     * @param non-empty-string $code
-     */
     private static function createParserWithReducer(string $code): ParserInterface
     {
         $lexer = self::createLexerBuilder();
@@ -221,7 +217,6 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        // The expression begins with a number
         self::assertSame([1 => true], $result->lookahead[0]);
     }
 
@@ -230,8 +225,6 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        // The tail of the expression is optional, so whatever comes after the
-        // expression suits it, operator or not
         self::assertNull($result->lookahead[2]);
         self::assertNotNull($result->lookahead[0], 'The expression requires a number');
     }
@@ -320,8 +313,6 @@ final class ParserBuilderTest extends TestCase
     {
         $lexer = self::createLexerBuilder();
 
-        // Value := Sum | T_NUMBER
-        // Sum   := T_NUMBER "+" Value
         $parser = new ParserBuilder();
 
         $value = $parser->addAlternation(name: 'Value');
@@ -341,10 +332,6 @@ final class ParserBuilderTest extends TestCase
             result: $parser->build($lexer->build()),
         );
 
-        /**
-         * The value of the sum is joined with the values above it everywhere
-         * but the initial rule, which has nothing to join it with.
-         */
         self::assertSame(['1', '2', '3'], self::collectValues($compiled->parse(StringSource::createFromString('1 + 2 + 3'))));
     }
 
@@ -373,9 +360,6 @@ final class ParserBuilderTest extends TestCase
         self::assertSame(['1', '2', '3'], $values);
     }
 
-    /**
-     * Expression := Number (("+" | "-") Number)*
-     */
     private static function createParserBuilder(): ParserBuilder
     {
         $parser = new ParserBuilder();
@@ -401,5 +385,4 @@ final class ParserBuilderTest extends TestCase
         return self::createParserBuilder()
             ->build(self::createLexerBuilder()->build());
     }
-
 }

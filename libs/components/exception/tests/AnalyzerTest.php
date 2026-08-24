@@ -18,12 +18,6 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class AnalyzerTest extends TestCase
 {
-    /**
-     * Each line of the source is 6 bytes long, so with a single-byte
-     * delimiter the line number N starts at offset N - 1 multiplied by 7.
-     *
-     * @var non-empty-string
-     */
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4";
 
     #[TestDox('The name and the message of the error are taken from it')]

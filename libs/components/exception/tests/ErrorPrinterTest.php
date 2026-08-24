@@ -17,14 +17,8 @@ use PHPUnit\Framework\Attributes\TestDox;
 #[Group('phplrt/exception')]
 final class ErrorPrinterTest extends TestCase
 {
-    /**
-     * @var non-empty-string
-     */
     private const string SOURCE = "first line\nsecond line\nthird line";
 
-    /**
-     * @var non-empty-string
-     */
     private const string PATHNAME = '/app/example.pp2';
 
     #[TestDox('The message and the class of the error are taken from the error itself')]
@@ -219,13 +213,6 @@ final class ErrorPrinterTest extends TestCase
         self::assertStringContainsString(\sprintf('--> %s:%d:1', __FILE__, $line), $actual);
     }
 
-    /**
-     * Returns the diagnostics of the given error without the stack trace
-     * closing them, which belongs to the test the error is created in.
-     *
-     * @param \Closure(\Phplrt\Exception\Printer\PrintableError):
-     *        \Phplrt\Exception\Printer\PrintableError|null $then
-     */
     private static function print(\Throwable $e, ?\Closure $then = null): string
     {
         $printed = new ErrorPrinter()->print($e);
@@ -235,10 +222,6 @@ final class ErrorPrinterTest extends TestCase
         return \rtrim(\substr($result, 0, -\strlen($e->getTraceAsString())), "\n");
     }
 
-    /**
-     * Returns an error that has occurred on the "line" word of the second
-     * line of the source.
-     */
     private static function createError(
         string $message = 'Something went wrong',
         ?ReadableInterface $source = null,
@@ -250,9 +233,6 @@ final class ErrorPrinterTest extends TestCase
         );
     }
 
-    /**
-     * @return non-empty-string
-     */
     private static function createSourceFile(string $content): string
     {
         $pathname = \tempnam(\sys_get_temp_dir(), 'phplrt-error-');

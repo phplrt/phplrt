@@ -16,11 +16,6 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * @param callable(LexerBuilder):void $definition
-     * @param iterable<mixed, ChannelInterface> $skip the channels the lexer
-     *        reads but does not report
-     */
     protected static function lexer(
         callable $definition,
         iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS,
@@ -33,10 +28,6 @@ abstract class TestCase extends BaseTestCase
             ->transform($builder->build());
     }
 
-    /**
-     * @param iterable<mixed, TokenInterface> $tokens
-     * @return list<string>
-     */
     protected static function describe(iterable $tokens): array
     {
         $result = [];
@@ -53,9 +44,6 @@ abstract class TestCase extends BaseTestCase
         return $result;
     }
 
-    /**
-     * @param iterable<mixed, TokenInterface> $tokens
-     */
     protected static function assertTokensMatchSource(string $source, iterable $tokens): void
     {
         foreach ($tokens as $token) {
@@ -71,9 +59,6 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    /**
-     * @param iterable<mixed, TokenInterface> $tokens
-     */
     protected static function assertTokensCoverSource(string $source, iterable $tokens): void
     {
         $expected = 0;
@@ -91,12 +76,6 @@ abstract class TestCase extends BaseTestCase
         self::assertSame(\strlen($source), $expected, 'The source is expected to be read in full');
     }
 
-    /**
-     * Returns the tokens along with the ones they carry.
-     *
-     * @param iterable<mixed, TokenInterface> $tokens
-     * @return list<string>
-     */
     protected static function describeTree(iterable $tokens, string $indent = ''): array
     {
         $result = [];
@@ -119,9 +98,6 @@ abstract class TestCase extends BaseTestCase
         return $result;
     }
 
-    /**
-     * @param iterable<mixed, TokenInterface> $tokens
-     */
     protected static function assertTerminatedStream(string $source, iterable $tokens): void
     {
         $tokens = \iterator_to_array($tokens, false);
