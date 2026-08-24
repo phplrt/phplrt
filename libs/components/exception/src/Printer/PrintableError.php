@@ -10,7 +10,6 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Exception\Analysis\FailureInterval;
 use Phplrt\Exception\Analysis\FailureLevel;
 use Phplrt\Exception\Analysis\FailureResult;
-use Phplrt\Exception\ErrorPrinter;
 use Phplrt\Exception\Printer\Renderer\RendererInterface;
 
 /**
