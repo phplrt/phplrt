@@ -30,7 +30,7 @@ final readonly class RegexDuplicationLexerCompilerPass implements
 
         foreach ($definitions as $definition) {
             $regex = match (true) {
-                $definition instanceof RegexTokenDefinition => \addcslashes($definition->regex, '/'),
+                $definition instanceof RegexTokenDefinition => \preg_quote($definition->regex, '/'),
                 $definition instanceof ValueTokenDefinition => \preg_quote($definition->value, '/'),
                 default => null,
             };
@@ -45,8 +45,8 @@ final readonly class RegexDuplicationLexerCompilerPass implements
             }
 
             throw new CompilationFailedException($definition, \sprintf(
-                'Another token definition %s with the same regex has already been defined previously',
-                $regex,
+                'Another token definition with the same regex /%s/ has already been defined previously',
+                \stripcslashes($regex),
             ));
         }
     }
