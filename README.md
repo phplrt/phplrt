@@ -133,7 +133,7 @@ rather than a requirement, so add it if you install them by hand.
 Reading a grammar file costs time, and the grammar does not change between
 requests. Once it is ready and tested, compile it into a PHP file and commit
 that file - after which the `phplrt/compiler` dependency is no longer needed
-(see https://phplrt.org/docs/installation#which-packages-do-i-actually-ship).
+(see https://phplrt.org/docs/guide/installation#which-packages-do-i-actually-ship).
 
 ```bash
 vendor/bin/phplrt compile grammar.pp3 src/CalculatorParser.php \
