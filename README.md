@@ -124,8 +124,7 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\VirtualSource;
 
 try {
-    // VirtualFile is a string that also has a name, so errors can name it
-    $parser->parse(new Virtual('expr.txt', "1 + 2\n3 + + 4\n"));
+    $parser->parse(VirtualSource::createFromString('expr.txt', "1 + 2\n3 + + 4\n"));
 } catch (UnexpectedTokenException $e) {
     echo $e;
 }
