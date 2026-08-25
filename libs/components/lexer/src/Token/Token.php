@@ -13,10 +13,10 @@ use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
  */
 class Token implements TokenInterface
 {
-    /** @phpstan-ignore-next-line : readonly annotation workaround */
-    public int $size {
-        get => $this->size ??= \strlen($this->value);
-    }
+    /**
+     * @var int<0, max>
+     */
+    public int $size;
 
     /**
      * @param int<0, max>|null $size
@@ -49,9 +49,7 @@ class Token implements TokenInterface
          */
         ?int $size = null,
     ) {
-        if ($size !== null) {
-            $this->size = $size;
-        }
+        $this->size = $size ?? \strlen($value);
     }
 
     public function __toString(): string
