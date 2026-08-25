@@ -53,39 +53,28 @@ what to build out of them. Here is one that adds numbers up:
 
 %skip  T_WHITESPACE  \s++
 
-%token T_NUMBER      \d++(?:\.\d++)?
-%token T_PLUS        \+
-%token T_MINUS       \-
+%token T_NUMBER  \d++
+%token T_PLUS    \+
 
 // Recognition starts from this rule
-%pragma root Expression
+%pragma root Sum
 
-Expression -> {
-    // A single operand: nothing to add up
-    if (!\is_array($children)) {
-        return $children;
-    }
-
-    $result = \array_shift($children);
-
-    while ($children !== []) {
-        $operator = \array_shift($children);
-        $operand = \array_shift($children);
-
-        $result = $operator->value === '+'
-            ? $result + $operand
-            : $result - $operand;
-    }
-
-    return $result;
-}
-  : Number() ((<T_PLUS> | <T_MINUS>) Number())*
+Sum -> { return \is_array($children) ? \array_sum($children) : $children; }
+  : Number() (::T_PLUS:: Number())*
   ;
 
-Number -> { return (float) $children->value; }
+Number -> { return (int) $children->value; }
   : <T_NUMBER>
   ;
 ```
+
+`<T_NUMBER>` reads a token and keeps it, `::T_PLUS::` reads one and throws it
+away, and `*` means "zero or more times". The `->` blocks are reducers - PHP
+that runs when the rule matches, turning what was read into a value.
+
+> The [Quick Start](https://phplrt.org/docs/guide/quick-start) builds a real
+> configuration format step by step, and the
+> [grammar syntax](https://phplrt.org/docs/basics/grammar) is described in full.
 
 ### Execution
 
