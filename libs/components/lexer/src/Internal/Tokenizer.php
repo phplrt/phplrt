@@ -142,6 +142,7 @@ final readonly class Tokenizer
                 $empty->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
                 $empty->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
                 $empty->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->size = $length;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
 
                 throw EmptyTokenException::becauseTokenIsEmpty($source, $empty);
             }
@@ -168,6 +169,7 @@ final readonly class Tokenizer
             $token->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
             $token->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->size = $length;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
 
             /**
              * The subgroups of all the token definitions share their numbers,
