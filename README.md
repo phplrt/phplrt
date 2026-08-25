@@ -37,7 +37,7 @@ composer require phplrt/runtime          # lexer, parser and sources
 composer require phplrt/compiler --dev   # reads grammars and generates code
 ```
 
-More detailed installation instructions [are here](https://phplrt.org/docs/installation).
+More detailed installation instructions [are here](https://phplrt.org/docs/guide/installation).
 
 ## Documentation
 
