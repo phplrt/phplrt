@@ -217,14 +217,15 @@ final class PP2LoaderTest extends TestCase
     #[TestDox('A reducer is given the variables it is written of')]
     public function testReducerVariablesAreDeclared(): void
     {
-        $this->load('A -> { return $token->offset === $offset; } : <T_A> ;');
+        $this->load('A -> { return $end === $offset + $length; } : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
         self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertStringContainsString("\$token = \$ctx->token;\n", $reducer->code);
-        self::assertStringContainsString("\$offset = \$ctx->token->offset;\n", $reducer->code);
-        self::assertStringEndsWith('return $token->offset === $offset;', $reducer->code);
+        self::assertStringContainsString("\$offset = \$ctx->begin;\n", $reducer->code);
+        self::assertStringContainsString("\$length = \$ctx->length;\n", $reducer->code);
+        self::assertStringContainsString("\$end = \$ctx->begin + \$ctx->length;\n", $reducer->code);
+        self::assertStringEndsWith('return $end === $offset + $length;', $reducer->code);
     }
 
     #[TestDox('A reducer is given nothing but the variables it is written of')]

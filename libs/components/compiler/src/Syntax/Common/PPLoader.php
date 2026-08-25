@@ -83,8 +83,10 @@ abstract class PPLoader implements SyntaxLoaderInterface
     private const array REDUCER_VARIABLES = [
         '$source' => '$ctx->source',
         '$content' => '$ctx->source->content',
-        '$token' => '$ctx->token',
-        '$offset' => '$ctx->token->offset',
+        '$begin' => '$ctx->begin',
+        '$offset' => '$ctx->begin',
+        '$length' => '$ctx->length',
+        '$end' => '$ctx->begin + $ctx->length',
         '$rule' => '$ctx->rule',
     ];
 
