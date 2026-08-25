@@ -170,9 +170,9 @@ final class ParserBuilderTest extends TestCase
     #[TestDox('A reducer defined as PHP code is given the state of the analysis')]
     public function testReducerAsPhpCodeContext(): void
     {
-        $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->token->value, $ctx->source->content];');
+        $parser = self::createParserWithReducer('return [$ctx->rule, $ctx->begin, $ctx->source->content];');
 
-        self::assertSame([0, '3', '1 + 2 + 3'], $parser->parse(StringSource::createFromString('1 + 2 + 3')));
+        self::assertSame([0, 0, '1 + 2 + 3'], $parser->parse(StringSource::createFromString('1 + 2 + 3')));
     }
 
     #[TestDox('A reducer defined as PHP code that refers to "$this" is unusable until it is bound')]
