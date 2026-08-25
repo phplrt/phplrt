@@ -136,7 +136,8 @@ that file - after which the `phplrt/compiler` dependency is no longer needed
 (see https://phplrt.org/docs/guide/installation#which-packages-do-i-actually-ship).
 
 ```bash
-vendor/bin/phplrt compile grammar.pp3 src/CalculatorParser.php \
+vendor/bin/phplrt compile grammar.pp3 \ 
+    src/CalculatorParser.php \
     --namespace='App\Calculator' \
     --class=CalculatorParser
 ```
