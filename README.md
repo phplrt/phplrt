@@ -45,11 +45,8 @@ More detailed installation instructions [are here](https://phplrt.org/docs/guide
 
 ## Quick Start
 
-First, we will describe the language in a grammar file. A grammar says which
-words the text is made of, how they may be arranged, and what to build out of
-them.
-
-> You can read more about the grammar syntax [here](https://phplrt.org/docs/compiler/grammar).
+A grammar says which words the text is made of, how they may be arranged, and
+what to build out of them. Here is one that adds numbers up:
 
 ```pp3
 // grammar.pp3
