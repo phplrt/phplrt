@@ -78,23 +78,22 @@ that runs when the rule matches, turning what was read into a value.
 
 ### Execution
 
-To quickly check what has been written, load the grammar and ask for a parser.
-The `->` blocks above run as the rules match, so what comes back is a number
-rather than a syntax tree.
+Load the grammar and ask for a parser. Because the reducers above run as the
+rules match, what comes back is a number rather than a syntax tree:
 
 ```php
 <?php
 
 use Phplrt\Compiler\Compiler;
-use Phplrt\Source\File;
-use Phplrt\Source\Source;
+use Phplrt\Source\FileSource;
+use Phplrt\Source\StringSource;
 
 $parser = new Compiler()
-    ->load(new File(__DIR__ . '/grammar.pp3'))
+    ->load(FileSource::createFromPathname(__DIR__ . '/grammar.pp3'))
     ->getParser();
 
-echo $parser->parse(new Source('2 + 2'));        // 4
-echo $parser->parse(new Source('10 - 4 + 1.5')); // 7.5
+echo $parser->parse(StringSource::createFromString('2 + 2'));     // 4
+echo $parser->parse(StringSource::createFromString('1 + 2 + 3')); // 6
 ```
 
 There is also `analyze()`, which reports what it made of a source instead of
