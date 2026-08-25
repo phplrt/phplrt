@@ -42,11 +42,7 @@ final readonly class TraceReducer
         int $rule,
         ReadableInterface $source,
     ) {
-        $this->context = new Context(
-            rule: $rule,
-            source: $source,
-            token: null,
-        );
+        $this->context = new Context($rule, $source);
     }
 
     public function reduce(TracingResult $trace): mixed
@@ -57,91 +53,127 @@ final readonly class TraceReducer
         $merged = $this->merged;
         $prototype = $this->context;
 
-        $children = [];
-        $stack = [];
+        /**
+         * The values built so far, the ones of a rule following the ones of
+         * the rule it belongs to.
+         *
+         * @var array<int, mixed> $values
+         */
+        $values = [];
+        $size = 0;
+
+        /**
+         * The place among the values each rule being read has started at,
+         * indexed by the number of rules it is nested into.
+         *
+         * @var array<int, int> $starts
+         */
+        $starts = [];
+
+        /**
+         * The position each rule being read has started at, indexed the same
+         * way, or "null" for a rule that has read nothing yet.
+         *
+         * @var array<int, int<0, max>|null> $begins
+         */
+        $begins = [];
+        $depth = 0;
+
+        $begin = null;
         $token = null;
 
         for ($i = 0, $length = $trace->length; $i < $length; ++$i) {
             $entry = $entries[$i];
 
             if (!\is_int($entry)) {
-                $children[] = $token = $entry;
+                $values[$size++] = $token = $entry;
+                // A rule starts at the first token it has read
+                $begin ??= $entry->offset;
 
                 continue;
             }
 
             if ($entry >= 0) {
-                $stack[] = $children;
-                $children = [];
+                $starts[$depth] = $size;
+                $begins[$depth] = $begin;
+                ++$depth;
+
+                $begin = null;
 
                 continue;
             }
 
             $rule = -$entry - 1;
+            $first = $begin;
 
-            if ($merged[$rule]) {
-                $result = $children;
+            // Note: The rule this one belongs to has read everything this one
+            //       has, so it starts at the very same position unless it has
+            //       read something of its own before
+            $begin = $begins[--$depth] ?? $first;
+            $start = $starts[$depth];
 
-                if (isset($children[1])) {
-                    foreach ($children as $child) {
-                        if (\is_array($child)) {
-                            $result = $this->merge($children);
-
-                            break;
-                        }
-                    }
-                } elseif (isset($children[0]) && \is_array($children[0])) {
-                    $result = $children[0];
-                }
-            } else {
+            $result = $merged[$rule]
+                ? self::merge($values, $start, $size)
                 // Any other rule contains a single value, which is passed
                 // through as is
-                $result = $children[0] ?? [];
-            }
+                : ($size > $start ? $values[$start] : []);
 
-            $children = \array_pop($stack) ?? [];
+            $size = $start;
             $reducer = $reducers[$rule] ?? null;
 
-            if ($reducer === null) {
-                $children[] = $result;
+            if ($reducer !== null) {
+                /**
+                 * Clone optimization: speeds up the creation of a new object:
+                 * faster than instantiation.
+                 */
+                $context = clone $prototype;
+                $context->rule = $rule;                 // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
 
-                continue;
+                if ($token !== null) {
+                    $to = $token->offset + $token->size;
+
+                    // A rule that has read nothing is empty at the position
+                    // the reading has reached
+                    $context->begin = $first ?? $to;    // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+                    $span = $first === null ? 0 : $to - $first;
+
+                    if ($span > 0) {
+                        $context->length = $span;       // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                    }
+                }
+
+                $result = $reducer($context, $result) ?? $result;
             }
 
-            /**
-             * Clone optimization: speeds up the creation of a new object:
-             * faster than instantiation.
-             */
-            $context = clone $prototype;
-
-            $context->rule = $rule;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-            $context->token = $token;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
-
-            $children[] = $reducer($context, $result) ?? $result;
+            $values[$size++] = $result;
         }
 
-        return $children[0] ?? [];
+        return $values[0] ?? [];
     }
 
     /**
-     * Unwraps the children of the nested rules into a single list.
+     * Returns the values of a sequence as a single list, the ones of a nested
+     * sequence among them.
      *
-     * @param list<mixed> $children
+     * @param array<int, mixed> $values
      * @return list<mixed>
      */
-    private function merge(array $children): array
+    private static function merge(array $values, int $from, int $to): array
     {
         $result = [];
 
-        foreach ($children as $child) {
-            if (!\is_array($child)) {
-                $result[] = $child;
+        for ($i = $from; $i < $to; ++$i) {
+            $value = $values[$i];
+
+            if (!\is_array($value)) {
+                $result[] = $value;
 
                 continue;
             }
 
-            foreach ($child as $value) {
-                $result[] = $value;
+            foreach ($value as $nested) {
+                $result[] = $nested;
             }
         }
 

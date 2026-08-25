@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser;
 
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
@@ -25,9 +24,20 @@ final class Context
          */
         public readonly ReadableInterface $source,
         /**
-         * The last token recognized before the rule was completed or "null"
-         * in case the rule contains no tokens at all.
+         * The position the rule starts at, counted in bytes from the beginning
+         * of the source.
+         *
+         * A rule containing no tokens starts at the position the reading of
+         * the source has reached.
+         *
+         * @var int<0, max>
          */
-        public ?TokenInterface $token,
+        public int $begin = 0,
+        /**
+         * The number of bytes the rule has been recognized from.
+         *
+         * @var int<0, max>
+         */
+        public int $length = 0,
     ) {}
 }
