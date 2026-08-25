@@ -135,7 +135,7 @@ final class ReducerTest extends TestCase
         self::assertSame([1, 2], $parser->parse(StringSource::createFromString('1 + 2')));
     }
 
-    #[TestDox('The context contains the rule, the source and the last recognized token')]
+    #[TestDox('The context contains the rule, the source and the position of the rule')]
     public function testContext(): void
     {
         $contexts = [];
@@ -153,7 +153,80 @@ final class ReducerTest extends TestCase
         self::assertCount(1, $contexts);
         self::assertSame(self::RULE_EXPRESSION, $contexts[0]->rule);
         self::assertSame('1 + 2', $contexts[0]->source->content);
-        self::assertSame('2', $contexts[0]->token?->value);
+        self::assertSame(0, $contexts[0]->begin);
+        self::assertSame(5, $contexts[0]->length);
+    }
+
+    #[TestDox('The context contains the position the rule has been recognized at')]
+    public function testContextPosition(): void
+    {
+        $positions = [];
+
+        $parser = self::createParser([
+            self::RULE_NUMBER => static function (Context $context, mixed $children) use (&$positions): mixed {
+                $positions[] = [$context->begin, $context->length];
+
+                return $children;
+            },
+        ]);
+
+        $parser->parse(StringSource::createFromString('1 + 22'));
+
+        self::assertSame([[0, 1], [4, 2]], $positions);
+    }
+
+    #[TestDox('The position of a rule covers every token it has recognized')]
+    public function testContextPositionOfSequence(): void
+    {
+        $positions = [];
+
+        $parser = self::createParser([
+            self::RULE_EXPRESSION => static function (Context $context, mixed $children) use (&$positions): mixed {
+                $positions[] = [$context->begin, $context->length];
+
+                return $children;
+            },
+        ]);
+
+        $parser->parse(StringSource::createFromString('1 + 22 - 3'));
+
+        self::assertSame([[0, 10]], $positions);
+    }
+
+    #[TestDox('The position of a rule omits the tokens it has not kept')]
+    public function testContextPositionOmitsTokensThatAreNotKept(): void
+    {
+        $positions = [];
+
+        $parser = self::createParser([
+            self::RULE_EXPRESSION => static function (Context $context, mixed $children) use (&$positions): mixed {
+                $positions[] = [$context->begin, $context->length];
+
+                return $children;
+            },
+        ]);
+
+        $parser->parse(StringSource::createFromString('-1'));
+
+        self::assertSame([[1, 1]], $positions);
+    }
+
+    #[TestDox('A rule containing no tokens is empty at the position the reading has reached')]
+    public function testContextPositionOfEmptyRule(): void
+    {
+        $positions = [];
+
+        $parser = self::createParser([
+            self::RULE_TAIL => static function (Context $context, mixed $children) use (&$positions): mixed {
+                $positions[] = [$context->begin, $context->length];
+
+                return $children;
+            },
+        ]);
+
+        $parser->parse(StringSource::createFromString('42'));
+
+        self::assertSame([[2, 0]], $positions);
     }
 
     #[TestDox('The result does not depend on the optional tables')]
