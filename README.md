@@ -146,7 +146,7 @@ The same thing from PHP, if you would rather do it from a build script:
 
 ```php
 new Compiler()
-    ->load(new File(__DIR__ . '/grammar.pp3'))
+    ->load(FileSource::createFromPathname(__DIR__ . '/grammar.pp3'))
     ->generate()
         ->withNamespaceName('App\Calculator')
         ->withClassName('CalculatorParser')
