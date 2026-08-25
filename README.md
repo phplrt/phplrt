@@ -164,7 +164,7 @@ readonly class CalculatorParser extends \Phplrt\Parser\Parser
 {
     public const int T_WHITESPACE = 0;
     public const int T_NUMBER = 1;
-    // ...
+    public const int T_PLUS = 2;
 
     public function __construct()
     {
@@ -173,7 +173,7 @@ readonly class CalculatorParser extends \Phplrt\Parser\Parser
 
     private static function reduceNumber(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return (float) $children->value;
+        return (int) $children->value;
     }
 }
 ```
@@ -184,7 +184,7 @@ runtime:
 ```php
 $parser = new App\Calculator\CalculatorParser();
 
-echo $parser->parse(new Source('2 + 2')); // 4
+echo $parser->parse(StringSource::createFromString('2 + 2')); // 4
 ```
 
 ## Packages
