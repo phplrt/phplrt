@@ -7,6 +7,8 @@ namespace Phplrt\Contracts\Lexer;
 /**
  * A tag a token or a group of tokens is marked with, so that these tokens can
  * be told apart from the rest of a stream.
+ *
+ * @readonly
  */
 interface ChannelInterface
 {
