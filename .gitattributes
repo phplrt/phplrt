@@ -15,4 +15,4 @@
 .php-cs-fixer.php export-ignore
 monorepo-builder.php export-ignore
 phpstan.neon export-ignore
-phpunit.xml export-ignore
+testo.php export-ignore

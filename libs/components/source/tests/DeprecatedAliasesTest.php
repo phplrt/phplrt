@@ -14,42 +14,45 @@ use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualFile;
 use Phplrt\Source\VirtualSource;
 use Phplrt\Source\VirtualStreamingFile;
-use PHPUnit\Framework\Attributes\Group;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('deprecated')]
+#[Test]
 final class DeprecatedAliasesTest extends TestCase
 {
     public function testFileIsAFileSource(): void
     {
         $source = new File($this->temp);
 
-        self::assertSame(FileSource::class, $source::class);
-        self::assertSame($this->temp, $source->pathname);
+        Assert::same($source::class, FileSource::class);
+        Assert::same($source->pathname, $this->temp);
     }
 
     public function testSourceIsAStringSource(): void
     {
         $source = new Source('2 + 2');
 
-        self::assertSame(StringSource::class, $source::class);
-        self::assertSame('2 + 2', $source->content);
+        Assert::same($source::class, StringSource::class);
+        Assert::same($source->content, '2 + 2');
     }
 
     public function testStreamIsAResourceSource(): void
     {
         $source = new Stream(\fopen('php://memory', 'rb+'), autoclose: true);
 
-        self::assertSame(ResourceSource::class, $source::class);
-        self::assertSame('', $source->content);
+        Assert::same($source::class, ResourceSource::class);
+        Assert::same($source->content, '');
     }
 
     public function testVirtualFileIsAVirtualSource(): void
     {
         $source = new VirtualFile('virtual.txt', StringSource::createFromString('2 + 2'));
 
-        self::assertSame(VirtualSource::class, $source::class);
-        self::assertSame('virtual.txt', $source->pathname);
-        self::assertSame('2 + 2', $source->content);
+        Assert::same($source::class, VirtualSource::class);
+        Assert::same($source->pathname, 'virtual.txt');
+        Assert::same($source->content, '2 + 2');
     }
 
     public function testVirtualStreamingFileIsAVirtualSource(): void
@@ -60,9 +63,9 @@ final class DeprecatedAliasesTest extends TestCase
 
         $source = new VirtualStreamingFile('virtual.txt', new ResourceSource($stream, autoclose: true));
 
-        self::assertSame(VirtualSource::class, $source::class);
-        self::assertSame('virtual.txt', $source->pathname);
-        self::assertSame('2 + 2', $source->content);
+        Assert::same($source::class, VirtualSource::class);
+        Assert::same($source->pathname, 'virtual.txt');
+        Assert::same($source->content, '2 + 2');
     }
 
     public function testASourceBuiltUnderTheNewNameMatchesTheOldOne(): void
@@ -70,6 +73,6 @@ final class DeprecatedAliasesTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create('2 + 2');
 
-        self::assertInstanceOf(Source::class, $source);
+        Assert::instanceOf($source, Source::class);
     }
 }

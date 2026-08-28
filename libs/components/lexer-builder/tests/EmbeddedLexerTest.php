@@ -12,10 +12,13 @@ use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Tests\Stub\FragmentLexer;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer-builder')]
+#[Test]
 final class EmbeddedLexerTest extends TestCase
 {
     private static function createBuilder(): LexerBuilder
@@ -44,7 +47,6 @@ final class EmbeddedLexerTest extends TestCase
         return $result;
     }
 
-    #[TestDox('A fragment is read by the lexer it has been declared with')]
     public function testLexerGivenAsInstance(): void
     {
         $builder = self::createBuilder();
@@ -53,15 +55,14 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = $builder->build()
             ->toLexer();
 
-        self::assertSame([
+        Assert::same(self::tokenize($lexer, 'a [x y] b'), [
             'T_NAME(a)',
             'T_OPEN([)',
             'T_CLOSE(])',
             'T_NAME(b)',
-        ], self::tokenize($lexer, 'a [x y] b'));
+        ]);
     }
 
-    #[TestDox('A lexer given as an instance is wrapped into a definition of its own')]
     public function testLexerInstanceIsWrapped(): void
     {
         $builder = self::createBuilder();
@@ -69,12 +70,11 @@ final class EmbeddedLexerTest extends TestCase
 
         $definition = $builder->addEmbeddedLexer('fragment', $lexer);
 
-        self::assertInstanceOf(RuntimeEmbeddedLexer::class, $definition);
-        self::assertSame($lexer, $definition->lexer);
-        self::assertSame(['fragment' => $definition], $builder->lexers);
+        Assert::instanceOf($definition, RuntimeEmbeddedLexer::class);
+        Assert::same($definition->lexer, $lexer);
+        Assert::same($builder->lexers, ['fragment' => $definition]);
     }
 
-    #[TestDox('A fragment is read by the lexer the code declared for it produces')]
     public function testLexerGivenAsCode(): void
     {
         $builder = self::createBuilder();
@@ -85,15 +85,14 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = $builder->build()
             ->toLexer();
 
-        self::assertSame([
+        Assert::same(self::tokenize($lexer, 'a [x y] b'), [
             'T_NAME(a)',
             'T_OPEN([)',
             'T_CLOSE(])',
             'T_NAME(b)',
-        ], self::tokenize($lexer, 'a [x y] b'));
+        ]);
     }
 
-    #[TestDox('A lexer that cannot be entered is removed')]
     public function testUnreachableLexerRemoval(): void
     {
         $builder = self::createBuilder();
@@ -102,10 +101,9 @@ final class EmbeddedLexerTest extends TestCase
 
         $result = $builder->build();
 
-        self::assertSame(['fragment'], \array_keys($result->lexers));
+        Assert::same(\array_keys($result->lexers), ['fragment']);
     }
 
-    #[TestDox('A name is taken by a single lexer, no matter how it has been declared')]
     public function testLexerNameIsUnique(): void
     {
         $builder = self::createBuilder();
@@ -114,11 +112,10 @@ final class EmbeddedLexerTest extends TestCase
             ->addValue(']', 'T_FRAGMENT_CLOSE')
             ->exit();
 
-        self::assertSame(['fragment'], \array_keys($builder->lexers));
-        self::assertInstanceOf(LexerBuilder::class, $builder->lexers['fragment']);
+        Assert::same(\array_keys($builder->lexers), ['fragment']);
+        Assert::instanceOf($builder->lexers['fragment'], LexerBuilder::class);
     }
 
-    #[TestDox('A token may hand the reading over to a lexer of its own')]
     public function testTransitionToEmbeddedLexer(): void
     {
         $builder = self::createBuilder();
@@ -126,30 +123,28 @@ final class EmbeddedLexerTest extends TestCase
 
         $result = $builder->build();
 
-        self::assertContains('fragment', $result->transitions);
+        Assert::contains($result->transitions, 'fragment');
     }
 
-    #[TestDox('A lexer declared as code that cannot be compiled is reported')]
     public function testMalformedLexerCode(): void
     {
         $builder = self::createBuilder();
         $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('new '));
 
-        $this->expectException(LexerCompilerException::class);
-        $this->expectExceptionMessageIsOrContains('The lexer "fragment" cannot be compiled: ');
+        Expect::exception(LexerCompilerException::class)
+        ->withMessageContaining('The lexer "fragment" cannot be compiled: ');
 
         $builder->build()
             ->toLexer();
     }
 
-    #[TestDox('A code that produces anything but a lexer is reported')]
     public function testLexerCodeProducingAnythingElse(): void
     {
         $builder = self::createBuilder();
         $builder->addEmbeddedLexer('fragment', new PhpCodeEmbeddedLexer('42'));
 
-        $this->expectException(LexerCompilerException::class);
-        $this->expectExceptionMessageIs(\sprintf(
+        Expect::exception(LexerCompilerException::class)
+        ->withMessage(\sprintf(
             'The lexer "fragment" must be an instance of %s, int given',
             LexerInterface::class,
         ));

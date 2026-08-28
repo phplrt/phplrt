@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Contracts\Position\Tests;
 
+use Testo\Assert;
+use Testo\Test;
+
+#[Test]
 final class PreloadTest extends TestCase
 {
     /**
@@ -25,13 +29,10 @@ final class PreloadTest extends TestCase
     {
         $symbols = $this->preload();
 
-        self::assertNotEmpty($symbols);
+        Assert::notBlank($symbols);
 
         foreach ($symbols as $symbol) {
-            self::assertTrue(
-                \interface_exists($symbol) || \class_exists($symbol),
-                \sprintf('The "%s" symbol does not exist', $symbol),
-            );
+            Assert::true(\interface_exists($symbol) || \class_exists($symbol), \sprintf('The "%s" symbol does not exist', $symbol));
         }
     }
 
@@ -39,7 +40,7 @@ final class PreloadTest extends TestCase
     {
         $symbols = $this->preload();
 
-        self::assertSame(\array_values(\array_unique($symbols)), $symbols);
+        Assert::same($symbols, \array_values(\array_unique($symbols)));
     }
 
     public function testOnlyOwnSymbolsAreReturned(): void
@@ -50,7 +51,7 @@ final class PreloadTest extends TestCase
         \sort($expected);
         \sort($actual);
 
-        self::assertSame($expected, $actual);
+        Assert::same($actual, $expected);
     }
 
     public function testEverySymbolIsPrecededByItsDependencies(): void
@@ -64,7 +65,7 @@ final class PreloadTest extends TestCase
                     continue;
                 }
 
-                self::assertContains($dependency, $declared, \sprintf(
+                Assert::contains($declared, $dependency, \sprintf(
                     'The "%s" symbol must be preceded by the "%s" symbol it depends on',
                     $symbol,
                     $dependency,
@@ -74,7 +75,7 @@ final class PreloadTest extends TestCase
             $declared[] = $symbol;
         }
 
-        self::assertSame($symbols, $declared);
+        Assert::same($declared, $symbols);
     }
 
     /**

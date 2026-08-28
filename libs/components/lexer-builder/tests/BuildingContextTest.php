@@ -8,13 +8,14 @@ use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer-compiler')]
+#[Test]
 final class BuildingContextTest extends TestCase
 {
-    #[TestDox('A pass rewriting the lexers does not affect the builder it has been called on')]
     public function testStatesAreIsolated(): void
     {
         $lexer = new LexerBuilder();
@@ -31,11 +32,10 @@ final class BuildingContextTest extends TestCase
 
         $lexer->build();
 
-        self::assertCount(1, $lexer->tokens);
-        self::assertSame(['string'], \array_keys($lexer->lexers));
+        Assert::count($lexer->tokens, 1);
+        Assert::same(\array_keys($lexer->lexers), ['string']);
     }
 
-    #[TestDox('A pass removing the lexers does not affect the builder it has been called on')]
     public function testRemovedStatesAreIsolated(): void
     {
         $lexer = new LexerBuilder();
@@ -51,11 +51,10 @@ final class BuildingContextTest extends TestCase
 
         $result = $lexer->build();
 
-        self::assertSame([], \array_keys($result->lexers), 'The state has been dropped from the result');
-        self::assertSame(['string'], \array_keys($lexer->lexers), 'The state is still defined by the builder');
+        Assert::same(\array_keys($result->lexers), [], 'The state has been dropped from the result');
+        Assert::same(\array_keys($lexer->lexers), ['string'], 'The state is still defined by the builder');
     }
 
-    #[TestDox('The token definitions are shared with the builder, so that a parser may refer to them')]
     public function testTokenDefinitionsAreShared(): void
     {
         $lexer = new LexerBuilder();
@@ -63,6 +62,6 @@ final class BuildingContextTest extends TestCase
 
         $result = $lexer->build();
 
-        self::assertSame(0, $result->findTokenId($number));
+        Assert::same($result->findTokenId($number), 0);
     }
 }

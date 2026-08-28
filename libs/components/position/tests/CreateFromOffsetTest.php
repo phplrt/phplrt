@@ -7,8 +7,11 @@ namespace Phplrt\Position\Tests;
 use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
+#[Test]
 final class CreateFromOffsetTest extends TestCase
 {
     #[DataProvider('sourceAndChunkSizeProvider')]
@@ -21,8 +24,8 @@ final class CreateFromOffsetTest extends TestCase
             $position = $factory->createFromOffset($source, $offset);
             $message = \sprintf('Offset %d of %d', $offset, $length);
 
-            self::assertSame(self::calculateLine($code, $offset), $position->line, $message);
-            self::assertSame(self::calculateColumn($code, $offset), $position->column, $message);
+            Assert::same($position->line, self::calculateLine($code, $offset), $message);
+            Assert::same($position->column, self::calculateColumn($code, $offset), $message);
         }
     }
 
@@ -38,8 +41,8 @@ final class CreateFromOffsetTest extends TestCase
             $position = $factory->createFromOffset($source, $offset);
             $message = \sprintf('Offset %d', $offset);
 
-            self::assertSame(self::calculateLine($code, $offset), $position->line, $message);
-            self::assertSame(self::calculateColumn($code, $offset), $position->column, $message);
+            Assert::same($position->line, self::calculateLine($code, $offset), $message);
+            Assert::same($position->column, self::calculateColumn($code, $offset), $message);
         }
     }
 
@@ -51,8 +54,8 @@ final class CreateFromOffsetTest extends TestCase
 
         $position = $factory->createFromOffset($source, \PHP_INT_MAX);
 
-        self::assertSame(self::calculateLine($code, \strlen($code)), $position->line);
-        self::assertSame(self::calculateColumn($code, \strlen($code)), $position->column);
+        Assert::same($position->line, self::calculateLine($code, \strlen($code)));
+        Assert::same($position->column, self::calculateColumn($code, \strlen($code)));
     }
 
     #[DataProvider('sourceProvider')]
@@ -62,8 +65,8 @@ final class CreateFromOffsetTest extends TestCase
 
         $position = $factory->createFromOffset(new StringSource($code), \PHP_INT_MIN);
 
-        self::assertSame(PositionInterface::MIN_LINE, $position->line);
-        self::assertSame(PositionInterface::MIN_COLUMN, $position->column);
+        Assert::same($position->line, PositionInterface::MIN_LINE);
+        Assert::same($position->column, PositionInterface::MIN_COLUMN);
     }
 
     public function testWindowsLineDelimiterBelongsToItsOwnLine(): void
@@ -71,13 +74,13 @@ final class CreateFromOffsetTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\r\nsecond");
 
-        self::assertSame(1, $factory->createFromOffset($source, 5)->line);
-        self::assertSame(6, $factory->createFromOffset($source, 5)->column);
+        Assert::same($factory->createFromOffset($source, 5)->line, 1);
+        Assert::same($factory->createFromOffset($source, 5)->column, 6);
 
-        self::assertSame(1, $factory->createFromOffset($source, 6)->line);
-        self::assertSame(7, $factory->createFromOffset($source, 6)->column);
+        Assert::same($factory->createFromOffset($source, 6)->line, 1);
+        Assert::same($factory->createFromOffset($source, 6)->column, 7);
 
-        self::assertSame(2, $factory->createFromOffset($source, 7)->line);
-        self::assertSame(1, $factory->createFromOffset($source, 7)->column);
+        Assert::same($factory->createFromOffset($source, 7)->line, 2);
+        Assert::same($factory->createFromOffset($source, 7)->column, 1);
     }
 }

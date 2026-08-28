@@ -7,7 +7,11 @@ namespace Phplrt\Source\Tests;
 use Phplrt\Source\Exception\NegativeOffsetException;
 use Phplrt\Source\Exception\NonPositiveBytesCountException;
 use Phplrt\Source\StringSource;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class StringSourceTest extends TestCase
 {
     public function testConstructor(): void
@@ -15,7 +19,7 @@ final class StringSourceTest extends TestCase
         $content = 'test content';
         $source = new StringSource($content);
 
-        self::assertSame($content, $source->content);
+        Assert::same($source->content, $content);
     }
 
     public function testContentProperty(): void
@@ -23,7 +27,7 @@ final class StringSourceTest extends TestCase
         $content = 'test content';
         $source = new StringSource($content);
 
-        self::assertSame($content, $source->content);
+        Assert::same($source->content, $content);
     }
 
     public function testContentIsTheWholeSource(): void
@@ -31,10 +35,10 @@ final class StringSourceTest extends TestCase
         $content = 'test content';
         $source = new StringSource($content);
 
-        self::assertSame('test', $source->read(0, 4));
+        Assert::same($source->read(0, 4), 'test');
 
-        self::assertSame($content, $source->content);
-        self::assertSame($content, $source->content);
+        Assert::same($source->content, $content);
+        Assert::same($source->content, $content);
     }
 
     public function testReadsTheWholeContent(): void
@@ -42,46 +46,46 @@ final class StringSourceTest extends TestCase
         $content = 'test content';
         $source = new StringSource($content);
 
-        self::assertSame($content, $source->read(0, 1024));
+        Assert::same($source->read(0, 1024), $content);
     }
 
     public function testReadsByChunks(): void
     {
         $source = new StringSource('test content');
 
-        self::assertSame('test', $source->read(0, 4));
-        self::assertSame(' content', $source->read(4, 1024));
+        Assert::same($source->read(0, 4), 'test');
+        Assert::same($source->read(4, 1024), ' content');
     }
 
     public function testReadsInAnArbitraryOrder(): void
     {
         $source = new StringSource('test content');
 
-        self::assertSame('content', $source->read(5, 1024));
-        self::assertSame('test', $source->read(0, 4));
-        self::assertSame('content', $source->read(5, 1024));
+        Assert::same($source->read(5, 1024), 'content');
+        Assert::same($source->read(0, 4), 'test');
+        Assert::same($source->read(5, 1024), 'content');
     }
 
     public function testReadsNothingBeyondTheEnd(): void
     {
         $source = new StringSource('test content');
 
-        self::assertSame('', $source->read(12, 1024));
-        self::assertSame('', $source->read(1024, 1024));
+        Assert::same($source->read(12, 1024), '');
+        Assert::same($source->read(1024, 1024), '');
     }
 
     public function testFailsInCaseOfNegativeOffset(): void
     {
         $source = new StringSource('test content');
 
-        $this->expectException(NegativeOffsetException::class);
+        Expect::exception(NegativeOffsetException::class);
 
         $source->read(-1, 1024);
     }
 
     public function testFailsInCaseOfNonPositiveReadSize(): void
     {
-        $this->expectException(NonPositiveBytesCountException::class);
+        Expect::exception(NonPositiveBytesCountException::class);
 
         new StringSource('test content')->read(0, 0);
     }
@@ -94,14 +98,14 @@ final class StringSourceTest extends TestCase
 
         $source->read(0, 1024);
 
-        self::assertCount($before, \get_resources('stream'));
+        Assert::count(\get_resources('stream'), $before);
     }
 
     public function testEmptyContent(): void
     {
         $source = new StringSource('');
 
-        self::assertSame('', $source->content);
-        self::assertSame('', $source->read(0, 1024));
+        Assert::same($source->content, '');
+        Assert::same($source->read(0, 1024), '');
     }
 }

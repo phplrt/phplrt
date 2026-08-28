@@ -11,31 +11,30 @@ use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class TokenTest extends TestCase
 {
-    #[TestDox('The terminal token uses a system (negative) identifier')]
     public function testTerminalTokenUsesASystemIdentifier(): void
     {
         $token = new EndOfInputToken(0);
 
-        self::assertLessThan(0, $token->id);
+        Assert::numeric($token->id)->lessThan(0);
     }
 
-    #[TestDox('The terminal token is empty and belongs to the end of input channel')]
     public function testTerminalTokenIsEmpty(): void
     {
         $token = new EndOfInputToken(42);
 
-        self::assertSame('', $token->value);
-        self::assertSame(42, $token->offset);
-        self::assertSame(Channel::EndOfInput, $token->channel);
+        Assert::same($token->value, '');
+        Assert::same($token->offset, 42);
+        Assert::same($token->channel, Channel::EndOfInput);
     }
 
-    #[TestDox('A significant token uses a non-negative identifier')]
     public function testSignificantTokensUseNonNegativeIdentifiers(): void
     {
         $lexer = self::createNamesLexer();
@@ -46,21 +45,20 @@ final class TokenTest extends TestCase
                 continue;
             }
 
-            self::assertGreaterThanOrEqual(0, $token->id, \sprintf(
+            Assert::numeric($token->id)->greaterThanOrEqual(0, \sprintf(
                 'A significant token %s is expected to use a non-negative identifier',
                 $token->name ?? '#' . $token->id,
             ));
         }
     }
 
-    #[TestDox('A token offset is never less than the minimal one')]
     public function testOffsetIsNeverLessThanTheMinimalOne(): void
     {
         $lexer = self::createNamesLexer();
         $source = 'word';
 
         foreach ($lexer->lex(StringSource::createFromString($source)) as $token) {
-            self::assertGreaterThanOrEqual(TokenInterface::MIN_OFFSET, $token->offset);
+            Assert::numeric($token->offset)->greaterThanOrEqual(TokenInterface::MIN_OFFSET);
         }
     }
 

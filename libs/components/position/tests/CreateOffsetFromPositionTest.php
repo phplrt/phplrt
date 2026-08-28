@@ -8,8 +8,11 @@ use Phplrt\Contracts\Position\PositionInterface;
 use Phplrt\Position\Position;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
+#[Test]
 final class CreateOffsetFromPositionTest extends TestCase
 {
     #[DataProvider('sourceAndChunkSizeProvider')]
@@ -21,11 +24,7 @@ final class CreateOffsetFromPositionTest extends TestCase
         for ($offset = 0, $length = \strlen($code); $offset <= $length; ++$offset) {
             $position = $factory->createFromOffset($source, $offset);
 
-            self::assertSame(
-                $offset,
-                $factory->createOffsetFromPosition($source, $position),
-                \sprintf('Offset %d of %d', $offset, $length),
-            );
+            Assert::same($factory->createOffsetFromPosition($source, $position), $offset, \sprintf('Offset %d of %d', $offset, $length));
         }
     }
 
@@ -34,9 +33,9 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond\nthird");
 
-        self::assertSame(5, $factory->createOffsetFromPosition($source, new Position(1, 100)));
-        self::assertSame(12, $factory->createOffsetFromPosition($source, new Position(2, 100)));
-        self::assertSame(18, $factory->createOffsetFromPosition($source, new Position(3, 100)));
+        Assert::same($factory->createOffsetFromPosition($source, new Position(1, 100)), 5);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(2, 100)), 12);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(3, 100)), 18);
     }
 
     public function testLineBeyondTheEndOfTheSourcePointsAtTheEndOfIt(): void
@@ -44,7 +43,7 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond");
 
-        self::assertSame(12, $factory->createOffsetFromPosition($source, new Position(100, 1)));
+        Assert::same($factory->createOffsetFromPosition($source, new Position(100, 1)), 12);
     }
 
     public function testGreatestPositionPointsAtTheEndOfTheSource(): void
@@ -54,7 +53,7 @@ final class CreateOffsetFromPositionTest extends TestCase
 
         $position = new Position(\PHP_INT_MAX, \PHP_INT_MAX);
 
-        self::assertSame(12, $factory->createOffsetFromPosition($source, $position));
+        Assert::same($factory->createOffsetFromPosition($source, $position), 12);
     }
 
     public function testEveryPositionOfAnEmptySourcePointsAtItsBeginning(): void
@@ -62,8 +61,8 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource();
 
-        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position()));
-        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position(50, 50)));
+        Assert::same($factory->createOffsetFromPosition($source, new Position()), 0);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(50, 50)), 0);
     }
 
     public function testPositionBelowTheMinimumPointsAtTheBeginning(): void
@@ -71,12 +70,12 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory();
         $source = new StringSource("first\nsecond");
 
-        $position = new class () implements PositionInterface {
+        $position = new class implements PositionInterface {
             public int $line = 0;
             public int $column = -100;
         };
 
-        self::assertSame(0, $factory->createOffsetFromPosition($source, $position));
+        Assert::same($factory->createOffsetFromPosition($source, $position), 0);
     }
 
     #[DataProvider('chunkSizeProvider')]
@@ -85,9 +84,9 @@ final class CreateOffsetFromPositionTest extends TestCase
         $factory = new PositionFactory($chunkSize);
         $source = new StringSource("first\n\nthird\nfourth");
 
-        self::assertSame(0, $factory->createOffsetFromPosition($source, new Position(1, 1)));
-        self::assertSame(6, $factory->createOffsetFromPosition($source, new Position(2, 1)));
-        self::assertSame(7, $factory->createOffsetFromPosition($source, new Position(3, 1)));
-        self::assertSame(13, $factory->createOffsetFromPosition($source, new Position(4, 1)));
+        Assert::same($factory->createOffsetFromPosition($source, new Position(1, 1)), 0);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(2, 1)), 6);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(3, 1)), 7);
+        Assert::same($factory->createOffsetFromPosition($source, new Position(4, 1)), 13);
     }
 }

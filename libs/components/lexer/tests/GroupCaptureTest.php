@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
@@ -14,10 +13,12 @@ use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class GroupCaptureTest extends TestCase
 {
     private static function createLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
@@ -42,25 +43,21 @@ final class GroupCaptureTest extends TestCase
         return $result;
     }
 
-    #[TestDox('A token whose definition has captured something carries what its subgroups have captured')]
     public function testCapturedSubgroups(): void
     {
-        self::assertSame([['string', 'T_A']], self::findCaptures(self::createLexer(), '%token string:T_A'));
+        Assert::same(self::findCaptures(self::createLexer(), '%token string:T_A'), [['string', 'T_A']]);
     }
 
-    #[TestDox('A subgroup that has captured nothing is still counted, so a capture keeps its own position')]
     public function testUnreachedSubgroupKeepsThePosition(): void
     {
-        self::assertSame([['', 'T_A']], self::findCaptures(self::createLexer(), '%token T_A'));
+        Assert::same(self::findCaptures(self::createLexer(), '%token T_A'), [['', 'T_A']]);
     }
 
-    #[TestDox('A token definition without subgroups captures nothing')]
     public function testTokenWithoutSubgroups(): void
     {
-        self::assertSame([], self::findCaptures(self::createLexer(), 'foo bar'));
+        Assert::same(self::findCaptures(self::createLexer(), 'foo bar'), []);
     }
 
-    #[TestDox('The captures do not change the fragment the token describes')]
     public function testCapturedTokenDescribesTheWholeFragment(): void
     {
         $lexer = self::createLexer(skip: []);
@@ -69,13 +66,12 @@ final class GroupCaptureTest extends TestCase
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
         $declaration = $tokens[2];
 
-        self::assertSame('T_TOKEN', $declaration->name);
-        self::assertSame('%token string:T_A', $declaration->value);
-        self::assertSame(4, $declaration->offset);
-        self::assertSame(\strlen($source) - 4, $declaration->size);
+        Assert::same($declaration->name, 'T_TOKEN');
+        Assert::same($declaration->value, '%token string:T_A');
+        Assert::same($declaration->offset, 4);
+        Assert::same($declaration->size, \strlen($source) - 4);
     }
 
-    #[TestDox('The captures do not change the way the source is covered by the stream')]
     public function testSourceIsCoveredByTheStream(): void
     {
         $lexer = self::createLexer(skip: []);
@@ -84,7 +80,6 @@ final class GroupCaptureTest extends TestCase
         self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
-    #[TestDox('A token entering an embedded lexer keeps what its own subgroups have captured')]
     public function testCapturesSurviveTheEmbedding(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -105,12 +100,11 @@ final class GroupCaptureTest extends TestCase
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('[note]hello')), false);
         $embedding = $tokens[0];
 
-        self::assertInstanceOf(TokenEmbedding::class, $embedding);
-        self::assertSame(['note'], $embedding->captures, 'The subgroups are kept');
-        self::assertSame('T_BODY', $embedding[0]->name, 'The embedded tokens are kept as well');
+        Assert::instanceOf($embedding, TokenEmbedding::class);
+        Assert::same($embedding->captures, ['note'], 'The subgroups are kept');
+        Assert::same($embedding[0]->name, 'T_BODY', 'The embedded tokens are kept as well');
     }
 
-    #[TestDox('A token that is not told how many subgroups it has captures nothing')]
     public function testTokenOutsideOfTheSubgroupTable(): void
     {
         $pattern = '/\G(?|(?:(?:%token\h++(\w++))(*MARK:0))|(?:(?:[a-z]++)(*MARK:1))|(?:(?:\s++)(*MARK:2)))/Ssum';
@@ -119,7 +113,7 @@ final class GroupCaptureTest extends TestCase
         $unknown = new Lexer($pattern, names: $names);
         $known = new Lexer($pattern, names: $names, subgroups: [0 => 1]);
 
-        self::assertSame([], self::findCaptures($unknown, '%token T_A foo'));
-        self::assertSame([['T_A']], self::findCaptures($known, '%token T_A foo'));
+        Assert::same(self::findCaptures($unknown, '%token T_A foo'), []);
+        Assert::same(self::findCaptures($known, '%token T_A foo'), [['T_A']]);
     }
 }

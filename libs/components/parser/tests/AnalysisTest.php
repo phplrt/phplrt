@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Tests;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Parser\Analysis\Result\FailureResult;
 use Phplrt\Parser\Analysis\Mode;
+use Phplrt\Parser\Analysis\Result\FailureResult;
 use Phplrt\Parser\Analysis\Result\PartialResult;
 use Phplrt\Parser\Analysis\Result\SuccessfulResult;
 use Phplrt\Parser\Context;
@@ -16,45 +16,45 @@ use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
-use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Parser;
 use Phplrt\Parser\Tests\Stub\ArithmeticLexer;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Assert\ExpectNoAssertions;
+use Testo\Data\DataSet;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser')]
+#[Test]
 final class AnalysisTest extends TestCase
 {
-    #[TestDox('A source the grammar describes in full is a success')]
     public function testCompleteSourceIsSuccessful(): void
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('1 + 2 + 3'));
 
-        self::assertInstanceOf(SuccessfulResult::class, $actual);
+        Assert::instanceOf($actual, SuccessfulResult::class);
     }
 
-    #[TestDox('A source the grammar reads only in part is partial')]
     public function testIncompleteSourceIsPartial(): void
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('1 + 2 +'));
 
-        self::assertInstanceOf(PartialResult::class, $actual);
-        self::assertSame('T_PLUS', $actual->token->name);
-        self::assertSame(6, $actual->token->offset);
+        Assert::instanceOf($actual, PartialResult::class);
+        Assert::same($actual->token->name, 'T_PLUS');
+        Assert::same($actual->token->offset, 6);
     }
 
-    #[TestDox('A source the grammar cannot begin to read is a failure')]
     public function testUnreadableSourceIsFailure(): void
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('+ 1'));
 
-        self::assertInstanceOf(FailureResult::class, $actual);
-        self::assertSame('T_PLUS', $actual->token->name);
+        Assert::instanceOf($actual, FailureResult::class);
+        Assert::same($actual->token->name, 'T_PLUS');
     }
 
-    #[TestDox('A source that cannot be rewound is read like any other')]
     public function testSourceThatCannotBeRewoundIsRead(): void
     {
         $stream = self::createNonSeekableResource('1 + 2 + 3');
@@ -62,25 +62,22 @@ final class AnalysisTest extends TestCase
         try {
             $actual = self::createParser()->analyze(new ResourceSource($stream));
 
-            self::assertInstanceOf(SuccessfulResult::class, $actual);
+            Assert::instanceOf($actual, SuccessfulResult::class);
         } finally {
             \fclose($stream);
         }
     }
 
-    #[TestDox('Nothing about a source makes the analysis throw')]
-    public function testAnalysisNeverThrows(): void
+    #[ExpectNoAssertions]
+    #[DataSet([''], 'empty')]
+    #[DataSet(['+'], 'operator only')]
+    #[DataSet(['1 + 2 +'], 'partial')]
+    #[DataSet(['1 + 2 + 3'], 'complete')]
+    public function testAnalysisNeverThrows(string $source): void
     {
-        $parser = self::createParser();
-
-        foreach (['', '+', '1 + 2 +', '1 + 2 + 3'] as $source) {
-            $parser->analyze(StringSource::createFromString($source));
-        }
-
-        $this->expectNotToPerformAssertions();
+        self::createParser()->analyze(StringSource::createFromString($source));
     }
 
-    #[TestDox('The value of a full analysis is built out of whatever has been recognized')]
     public function testFullModeBuildsTheValue(): void
     {
         $parser = self::createParser([
@@ -90,14 +87,13 @@ final class AnalysisTest extends TestCase
         $complete = $parser->analyze(StringSource::createFromString('1 + 2 + 3'), Mode::Tolerant);
         $partial = $parser->analyze(StringSource::createFromString('1 + 2 + 3 -'), Mode::Tolerant);
 
-        self::assertInstanceOf(SuccessfulResult::class, $complete);
-        self::assertInstanceOf(PartialResult::class, $partial);
+        Assert::instanceOf($complete, SuccessfulResult::class);
+        Assert::instanceOf($partial, PartialResult::class);
 
-        self::assertSame([1, 2, 3], $complete->value);
-        self::assertSame([1, 2, 3], $partial->value, 'The fragment is built the same way');
+        Assert::same($complete->value, [1, 2, 3]);
+        Assert::same($partial->value, [1, 2, 3], 'The fragment is built the same way');
     }
 
-    #[TestDox('A fast analysis builds nothing but reads the source the same way')]
     public function testFastModeBuildsNothing(): void
     {
         $reduced = false;
@@ -112,80 +108,73 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('1 + 2 + 3'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(SuccessfulResult::class, $actual);
-        self::assertNull($actual->value);
-        self::assertFalse($reduced, 'A fast analysis runs no reducer');
+        Assert::instanceOf($actual, SuccessfulResult::class);
+        Assert::null($actual->value);
+        Assert::false($reduced, 'A fast analysis runs no reducer');
     }
 
-    #[TestDox('The mode does not change how much of the source is read')]
-    public function testModeDoesNotChangeRecognition(): void
+    #[DataSet(['1 + 2 + 3'], 'complete')]
+    #[DataSet(['1 + 2 +'], 'partial')]
+    #[DataSet(['+ 1'], 'unexpected')]
+    #[DataSet([''], 'empty')]
+    public function testModeDoesNotChangeRecognition(string $source): void
     {
         $parser = self::createParser();
 
-        foreach (['1 + 2 + 3', '1 + 2 +', '+ 1', ''] as $source) {
-            self::assertSame(
-                $parser->analyze(StringSource::createFromString($source), Mode::Tolerant)::class,
-                $parser->analyze(StringSource::createFromString($source), Mode::SyntaxCheck)::class,
-                \sprintf('The source "%s" is expected to be read alike in both modes', $source),
-            );
-        }
+        Assert::same(
+            $parser->analyze(StringSource::createFromString($source), Mode::SyntaxCheck)::class,
+            $parser->analyze(StringSource::createFromString($source), Mode::Tolerant)::class,
+        );
     }
 
-    #[TestDox('A failure tells which tokens the grammar could read instead')]
     public function testFailureReportsExpectedTokens(): void
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('+ 1'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $actual);
+        Assert::instanceOf($actual, FailureResult::class);
 
         $error = $actual->error;
 
-        self::assertSame('Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected', $error->getMessage());
+        Assert::same($error->getMessage(), 'Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected');
     }
 
-    #[TestDox('A partial analysis stops where the fragment ends and reports where the reading broke')]
     public function testPartialReportsWhereTheReadingBroke(): void
     {
         $actual = self::createParser()->analyze(StringSource::createFromString('1 + 2 +'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(PartialResult::class, $actual);
+        Assert::instanceOf($actual, PartialResult::class);
 
-        self::assertSame('T_PLUS', $actual->token->name);
-        self::assertSame(6, $actual->token->offset);
+        Assert::same($actual->token->name, 'T_PLUS');
+        Assert::same($actual->token->offset, 6);
 
         $error = $actual->error;
 
-        self::assertSame(Channel::EndOfInput, $error->token->channel);
-        self::assertSame('Syntax error, unexpected end of input, T_NUMBER expected', $error->getMessage());
+        Assert::same($error->token->channel, Channel::EndOfInput);
+        Assert::same($error->getMessage(), 'Syntax error, unexpected end of input, T_NUMBER expected');
     }
 
-    #[TestDox('An analysis reports the very error an ordinary reading is rejected with')]
-    public function testAnalysisReportsTheErrorOfAnOrdinaryReading(): void
+    #[DataSet(['1 + 2 +'], 'partial')]
+    #[DataSet(['1 1'], 'consecutive numbers')]
+    #[DataSet(['+ 1'], 'leading operator')]
+    #[DataSet([''], 'empty')]
+    public function testAnalysisReportsTheErrorOfAnOrdinaryReading(string $source): void
     {
-        $parser = self::createParser();
+        $result = self::createParser()->analyze(StringSource::createFromString($source), Mode::SyntaxCheck);
 
-        foreach (['1 + 2 +', '1 1', '+ 1', ''] as $source) {
-            $result = $parser->analyze(StringSource::createFromString($source), Mode::SyntaxCheck);
+        Assert::notSame($result::class, SuccessfulResult::class);
 
-            self::assertNotSame(SuccessfulResult::class, $result::class);
+        try {
+            self::createParser()->parse(StringSource::createFromString($source));
 
-            try {
-                $parser->parse(StringSource::createFromString($source));
+            Assert::fail('The source is expected to be rejected');
+        } catch (UnexpectedTokenException $e) {
+            $error = $result->error;
 
-                self::fail(\sprintf('The source "%s" is expected to be rejected', $source));
-            } catch (UnexpectedTokenException $e) {
-                $error = $result->error;
+            Assert::same($error::class, $e::class);
+            Assert::same($error->getMessage(), $e->getMessage());
+            Assert::same($error->token->offset, $e->token->offset);
 
-                self::assertSame($e::class, $error::class);
-                self::assertSame($e->getMessage(), $error->getMessage());
-                self::assertSame($e->token->offset, $error->token->offset);
-
-                self::assertSame(
-                    self::describeError($e),
-                    self::describeError($error),
-                    'Both print the very same report',
-                );
-            }
+            Assert::same(self::describeError($error), self::describeError($e), 'Both print the very same report');
         }
     }
 
@@ -194,20 +183,18 @@ final class AnalysisTest extends TestCase
         return \explode("\n#0 ", (string) $error)[0];
     }
 
-    #[TestDox('The error an analysis reports is thrown as it is')]
     public function testTheReportedErrorIsThrowable(): void
     {
         $result = self::createParser()->analyze(StringSource::createFromString('+ 1'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $result);
+        Assert::instanceOf($result, FailureResult::class);
 
-        $this->expectException(UnexpectedTokenException::class);
-        $this->expectExceptionMessageIs('Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected');
+        Expect::exception(UnexpectedTokenException::class)
+        ->withMessage('Syntax error, unexpected "+" (T_PLUS), T_NUMBER expected');
 
         throw $result->error;
     }
 
-    #[TestDox('The expected tokens are told without the lookahead tables as well')]
     public function testExpectedTokensWithoutLookaheadTables(): void
     {
         $parser = new Parser(
@@ -219,10 +206,9 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('+ 1'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $actual);
+        Assert::instanceOf($actual, FailureResult::class);
     }
 
-    #[TestDox('A parser that has not been told how to name the tokens says nothing about them')]
     public function testExpectedTokensOfAParserThatCannotNameThem(): void
     {
         $analysis = self::analyze(self::createGrammar(), self::RULE_EXPRESSION);
@@ -238,12 +224,11 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('+ 1'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $actual);
+        Assert::instanceOf($actual, FailureResult::class);
 
-        self::assertSame('Syntax error, unexpected "+" (T_PLUS)', $actual->error->getMessage());
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "+" (T_PLUS)');
     }
 
-    #[TestDox('The tokens of the rules failing alongside each other are told together')]
     public function testExpectedTokensOfSiblingRules(): void
     {
         $grammar = [
@@ -276,16 +261,11 @@ final class AnalysisTest extends TestCase
         foreach (['with' => $withTables, 'without' => $withoutTables] as $name => $parser) {
             $actual = $parser->analyze(StringSource::createFromString('1'), Mode::SyntaxCheck);
 
-            self::assertInstanceOf(FailureResult::class, $actual);
-            self::assertSame(
-                $expected,
-                $actual->error->getMessage(),
-                \sprintf('Both branches are expected to be told %s the lookahead tables', $name),
-            );
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), $expected, \sprintf('Both branches are expected to be told %s the lookahead tables', $name));
         }
     }
 
-    #[TestDox('The tokens of the alternatives never entered are told all the same')]
     public function testExpectedTokensOfAlternativesNeverEntered(): void
     {
         $grammar = [
@@ -310,15 +290,11 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('1'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $actual);
+        Assert::instanceOf($actual, FailureResult::class);
 
-        self::assertSame(
-            'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected',
-            $actual->error->getMessage(),
-        );
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected');
     }
 
-    #[TestDox('An alternation that has recognized none of its alternatives tells the tokens of them all')]
     public function testExpectedTokensOfAnAlternationRecognizingNothing(): void
     {
         $grammar = [
@@ -343,15 +319,11 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('-'), Mode::SyntaxCheck);
 
-        self::assertInstanceOf(FailureResult::class, $actual);
+        Assert::instanceOf($actual, FailureResult::class);
 
-        self::assertSame(
-            'Syntax error, unexpected "-" (T_MINUS), one of T_PLUS, T_MINUS expected',
-            $actual->error->getMessage(),
-        );
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS), one of T_PLUS, T_MINUS expected');
     }
 
-    #[TestDox('A grammar reading nothing but a repetition reads an empty fragment')]
     public function testEmptyFragmentIsRead(): void
     {
         $grammar = [
@@ -373,12 +345,11 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createFromString('+ 1'));
 
-        self::assertInstanceOf(PartialResult::class, $actual);
-        self::assertSame([], $actual->value);
-        self::assertSame(0, $actual->token->offset, 'Nothing of the source has been read');
+        Assert::instanceOf($actual, PartialResult::class);
+        Assert::same($actual->value, []);
+        Assert::same($actual->token->offset, 0, 'Nothing of the source has been read');
     }
 
-    #[TestDox('An empty source is a success in case the grammar reads nothing of it')]
     public function testEmptySourceMayBeSuccessful(): void
     {
         $grammar = [
@@ -400,8 +371,8 @@ final class AnalysisTest extends TestCase
 
         $actual = $parser->analyze(StringSource::createEmpty());
 
-        self::assertInstanceOf(SuccessfulResult::class, $actual);
-        self::assertSame([], $actual->value);
+        Assert::instanceOf($actual, SuccessfulResult::class);
+        Assert::same($actual->value, []);
     }
 
     private const int RULE_EXPRESSION = 0;

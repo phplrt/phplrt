@@ -7,9 +7,15 @@
 /vendor
 /libs.old
 
+# Agent skills (auto-synced by testo/testo on composer update)
+/.agents
+
 # Testing
 /bench.php
 
 # Common
 .DS_Store
 Thumbs.db
+
+# php-cs-fixer
+/.php-cs-fixer.cache
