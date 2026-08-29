@@ -135,6 +135,11 @@
         "dev:merge": "monorepo-builder merge",
         "dev:syntax": "php libs/components/compiler/bin/build.php"
     },
+    "extra": {
+        "skills": {
+            "source": "skills"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
