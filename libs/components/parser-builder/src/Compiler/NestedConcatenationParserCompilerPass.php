@@ -89,6 +89,11 @@ final readonly class NestedConcatenationParserCompilerPass implements
                 $result[] = $inner;
             }
 
+            $context->logger->info('Concatenation {rule} has absorbed the nested {child}', [
+                'rule' => $rule->printReference(),
+                'child' => (string) $child,
+            ]);
+
             $joined[] = $child;
             $expanded = true;
         }

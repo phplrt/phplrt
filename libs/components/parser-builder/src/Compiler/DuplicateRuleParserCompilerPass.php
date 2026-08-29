@@ -52,6 +52,10 @@ final readonly class DuplicateRuleParserCompilerPass implements
                     continue;
                 }
 
+                $context->logger->info('Rule {rule} is merged with the equal one declared before it', [
+                    'rule' => (string) $rule,
+                ]);
+
                 $replacements->replace($rule, $original);
             }
 

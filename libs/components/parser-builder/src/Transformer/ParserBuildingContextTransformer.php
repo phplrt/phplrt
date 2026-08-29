@@ -40,6 +40,7 @@ final readonly class ParserBuildingContextTransformer
         return new ParserBuildingContext(
             initial: $initial === null ? null : $copies[$initial],
             rules: $rules,
+            logger: $builder->logger,
         );
     }
 }

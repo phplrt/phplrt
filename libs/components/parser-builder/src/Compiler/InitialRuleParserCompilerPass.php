@@ -22,5 +22,11 @@ final readonly class InitialRuleParserCompilerPass implements
         }
 
         $context->initial = $context->rules[0] ?? null;
+
+        if ($context->initial !== null) {
+            $context->logger->info('The analysis starts at the {rule} rule, which has been added first', [
+                'rule' => $context->initial->printReference(),
+            ]);
+        }
     }
 }

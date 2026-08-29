@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Compiler;
 
 use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Removes the rules that cannot be reached from the initial one.
@@ -20,10 +21,43 @@ final readonly class UnreachableRuleParserCompilerPass implements
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        if ($context->initial === null) {
+        $initial = $context->initial;
+
+        if ($initial === null) {
             return;
         }
 
-        $context->rules = $context->initial->collectRules();
+        $reachable = $initial->collectRules();
+
+        $this->report($context, $initial, $reachable);
+
+        $context->rules = $reachable;
+    }
+
+    /**
+     * @param non-empty-list<RuleDefinition> $reachable
+     */
+    private function report(
+        ParserBuildingContext $context,
+        RuleDefinition $initial,
+        array $reachable,
+    ): void {
+        /** @var \SplObjectStorage<RuleDefinition, null> $known */
+        $known = new \SplObjectStorage();
+
+        foreach ($reachable as $rule) {
+            $known->offsetSet($rule);
+        }
+
+        foreach ($context->rules as $rule) {
+            if ($known->offsetExists($rule)) {
+                continue;
+            }
+
+            $context->logger->info('Rule {rule} is removed, since it is not reachable from {initial}', [
+                'rule' => (string) $rule,
+                'initial' => $initial->printReference(),
+            ]);
+        }
     }
 }

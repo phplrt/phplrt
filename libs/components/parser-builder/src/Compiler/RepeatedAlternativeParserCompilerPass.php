@@ -34,6 +34,11 @@ final readonly class RepeatedAlternativeParserCompilerPass implements
                 continue;
             }
 
+            $context->logger->info('Alternation {rule} has lost {count} alternative(s) repeating an earlier one', [
+                'rule' => $rule->printReference(),
+                'count' => \count($rule->rules) - \count($rules),
+            ]);
+
             $rule->setRules($rules);
 
             /**

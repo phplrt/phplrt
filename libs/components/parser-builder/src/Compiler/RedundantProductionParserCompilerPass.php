@@ -35,6 +35,11 @@ final readonly class RedundantProductionParserCompilerPass implements
                     continue;
                 }
 
+                $context->logger->info('Rule {rule} is replaced by {child}, since it recognizes the very same input', [
+                    'rule' => (string) $rule,
+                    'child' => $child->printReference(),
+                ]);
+
                 $replacements->replace($rule, $child);
             }
 

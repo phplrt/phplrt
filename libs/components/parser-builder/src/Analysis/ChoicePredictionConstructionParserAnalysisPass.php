@@ -46,6 +46,10 @@ final readonly class ChoicePredictionConstructionParserAnalysisPass implements
         }
 
         $context->choicePrediction = $result;
+
+        $context->logger->info('Choice prediction is known for {rules} alternation(s)', [
+            'rules' => \count($result),
+        ]);
     }
 
     /**

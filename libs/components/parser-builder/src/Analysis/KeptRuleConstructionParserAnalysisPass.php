@@ -60,6 +60,11 @@ final readonly class KeptRuleConstructionParserAnalysisPass implements
         }
 
         $context->kept = $result;
+
+        $context->logger->info('{kept} rule(s) of {rules} are kept in the resulting tree', [
+            'kept' => \count(\array_filter($result)),
+            'rules' => \count($result),
+        ]);
     }
 
     /**

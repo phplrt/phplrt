@@ -69,6 +69,11 @@ final readonly class ParserResultContextTransformer
 
             if ($definition->name !== null) {
                 $constants[$definition->name] = $id;
+
+                $context->logger->debug('Rule {rule} is compiled into the rule #{id}', [
+                    'rule' => $definition->name,
+                    'id' => $id,
+                ]);
             }
         }
 
@@ -78,6 +83,7 @@ final readonly class ParserResultContextTransformer
             reducers: $reducers,
             constants: $constants,
             expectations: $this->createExpectations($lexer),
+            logger: $context->logger,
         );
     }
 

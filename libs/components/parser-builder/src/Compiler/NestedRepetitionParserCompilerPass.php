@@ -33,6 +33,10 @@ final readonly class NestedRepetitionParserCompilerPass implements
 
                 \assert($rule instanceof RepetitionRuleDefinition);
 
+                $context->logger->info('Repetition {rule} has absorbed the repetition nested into it', [
+                    'rule' => $rule->printReference(),
+                ]);
+
                 $rule->setRule($child);
 
                 $joined = true;

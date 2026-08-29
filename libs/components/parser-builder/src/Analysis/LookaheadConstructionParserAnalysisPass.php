@@ -51,6 +51,11 @@ final readonly class LookaheadConstructionParserAnalysisPass implements
         } while ($changed);
 
         $context->lookahead = self::merge($startTokens, $matchesEmptyInput);
+
+        $context->logger->info('Lookahead is known for {rules} rule(s), {empty} of them read an empty input', [
+            'rules' => \count($context->lookahead),
+            'empty' => \count(\array_filter($context->lookahead, static fn(?array $t): bool => $t === null)),
+        ]);
     }
 
     /**

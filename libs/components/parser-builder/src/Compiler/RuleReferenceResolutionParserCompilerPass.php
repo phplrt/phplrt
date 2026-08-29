@@ -41,6 +41,14 @@ final readonly class RuleReferenceResolutionParserCompilerPass implements
             }
         } while ($resolved);
 
+        foreach ($context->rules as $rule) {
+            if ($rule instanceof RuleReference) {
+                $context->logger->debug('Reference to {target} is replaced by the rule it points at', [
+                    'target' => $rule->printReference(),
+                ]);
+            }
+        }
+
         /**
          * A reference stands for the rule it points at, so it must not reach
          * the grammar as a rule of its own.

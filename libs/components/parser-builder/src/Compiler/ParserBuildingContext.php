@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Compiler;
 
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Contains the grammar the compiler passes rewrite and check.
@@ -29,5 +31,9 @@ final class ParserBuildingContext
          * @var list<RuleDefinition>
          */
         public array $rules = [],
+        /**
+         * Reports what the passes do to the rules of the grammar.
+         */
+        public readonly LoggerInterface $logger = new NullLogger(),
     ) {}
 }
