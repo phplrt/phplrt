@@ -19,12 +19,20 @@ use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Parser;
 use Phplrt\Source\SourceFactory;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
-final class Compiler
+final class Compiler implements LoggerAwareInterface
 {
     public readonly ParserBuilder $parser;
 
     public readonly LexerBuilder $lexer;
+
+    /**
+     * Reports what happens to the grammar while it is read and compiled.
+     */
+    public private(set) LoggerInterface $logger;
 
     private readonly ReferenceLoader $loader;
 
@@ -49,9 +57,25 @@ final class Compiler
         ?SourceFactoryInterface $sources = null,
     ) {
         $this->sources = $sources ?? SourceFactory::createDefault();
+        $this->logger = new NullLogger();
         $this->parser = new ParserBuilder();
         $this->lexer = new LexerBuilder();
         $this->loader = new ReferenceLoader($this, $this->loaders);
+    }
+
+    /**
+     * Registers the logger the compilation reports to, along with the builders
+     * it is done by.
+     *
+     * @api
+     */
+    #[\Override]
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+
+        $this->parser->setLogger($logger);
+        $this->lexer->setLogger($logger);
     }
 
     /**
@@ -68,8 +92,16 @@ final class Compiler
         $source = $this->sources->create($source);
 
         if (!$this->markAsLoaded($source)) {
+            $this->logger->debug('Grammar {grammar} has already been read', [
+                'grammar' => self::printSource($source),
+            ]);
+
             return $this;
         }
+
+        $this->logger->info('Reading the {grammar} grammar', [
+            'grammar' => self::printSource($source),
+        ]);
 
         $loader = $this->loaders->selectFor($source);
 
@@ -83,6 +115,20 @@ final class Compiler
         }
 
         return $this;
+    }
+
+    /**
+     * Returns the name a grammar is reported under.
+     *
+     * @return non-empty-string
+     */
+    private static function printSource(ReadableInterface $source): string
+    {
+        if ($source instanceof FileInterface) {
+            return $source->pathname;
+        }
+
+        return 'in-memory';
     }
 
     /**
@@ -111,6 +157,8 @@ final class Compiler
 
     public function build(): CompilerResult
     {
+        $this->logger->info('Compiling the grammar that has been read');
+
         $lexer = $this->lexer->build();
         $parser = $this->parser->build($lexer);
 

@@ -8,6 +8,7 @@ use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Psr\Log\LoggerInterface;
 
 /**
  * Adds the tokens that belong to every state to each of them.
@@ -57,7 +58,7 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
         /** @var \SplObjectStorage<LexerBuilder, null> $visited */
         $visited = new \SplObjectStorage();
 
-        $this->share($context->lexers, $visited);
+        $this->share($context->lexers, $visited, $context->logger);
     }
 
     /**
@@ -72,9 +73,9 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
      * @param array<non-empty-string, mixed> $lexers
      * @param \SplObjectStorage<LexerBuilder, null> $visited
      */
-    private function share(array $lexers, \SplObjectStorage $visited): void
+    private function share(array $lexers, \SplObjectStorage $visited, LoggerInterface $logger): void
     {
-        foreach ($lexers as $lexer) {
+        foreach ($lexers as $name => $lexer) {
             // A lexer written by hand recognizes whatever it recognizes
             if (!$lexer instanceof LexerBuilder || $visited->offsetExists($lexer)) {
                 continue;
@@ -82,11 +83,16 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
 
             $visited->offsetSet($lexer);
 
+            $logger->info('{count} shared token(s) are added to the {lexer} state', [
+                'count' => \count($this->tokens),
+                'lexer' => $name,
+            ]);
+
             foreach ($this->tokens as $definition) {
                 $lexer->addToken(clone $definition);
             }
 
-            $this->share($lexer->lexers, $visited);
+            $this->share($lexer->lexers, $visited, $logger);
         }
     }
 

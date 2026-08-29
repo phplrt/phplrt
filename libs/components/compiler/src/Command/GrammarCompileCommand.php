@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'compile', description: 'Compile the passed grammar', usages: [
@@ -153,20 +154,49 @@ final class GrammarCompileCommand extends Command
         $grammar = $this->getGrammarPathname($input);
         $pathname = $this->getOutputPathname($input);
 
+        $logger = new ConsoleLogger($output);
+
         $output->writeln(\sprintf('Loading <comment>%s</comment> grammar', $grammar));
 
-        $assembly = new Compiler()
-            ->load(new FileSource($grammar))
-        ->generate();
+        $compiler = new Compiler();
+        $compiler->setLogger($logger);
+        $compiler->load(new FileSource($grammar));
+
+        $assembly = $compiler->generate();
 
         foreach ($this->getClassImports($input) as $import) {
+            $logger->debug('The generated parser imports {class}', [
+                'class' => $import,
+            ]);
+
             $assembly = $assembly->withClassImport($import);
         }
 
+        $namespace = $this->getNamespaceName($input);
+
+        if ($namespace !== null) {
+            $logger->debug('The generated parser belongs to the {namespace} namespace', [
+                'namespace' => $namespace,
+            ]);
+        }
+
+        $class = $this->getClassName($input);
+
+        if ($class !== null) {
+            $logger->debug('The generated parser is named {class}', [
+                'class' => $class,
+            ]);
+        }
+
         $assembly
-            ->withNamespaceName($this->getNamespaceName($input))
-            ->withClassName($this->getClassName($input))
+            ->withNamespaceName($namespace)
+            ->withClassName($class)
         ->save($pathname);
+
+        $logger->info('{bytes} byte(s) have been written into {pathname}', [
+            'bytes' => \filesize($pathname),
+            'pathname' => $pathname,
+        ]);
 
         $output->writeln(\sprintf(' [<info>OK</info>] Generated into <comment>%s</comment>', $pathname));
 

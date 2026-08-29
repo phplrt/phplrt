@@ -12,6 +12,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'check', description: 'Check the passed grammar', aliases: ['validate'], usages: [
@@ -139,10 +140,13 @@ final class GrammarCheckCommand extends Command
     {
         $grammar = $this->getGrammarPathname($input);
 
+        $logger = new ConsoleLogger($output);
+
         $output->writeln(\sprintf('Checking <comment>%s</comment> grammar', $grammar));
 
-        $compiler = new Compiler()
-            ->load(new FileSource($grammar));
+        $compiler = new Compiler();
+        $compiler->setLogger($logger);
+        $compiler->load(new FileSource($grammar));
 
         $loaded = $this->getLoadedFiles($compiler);
 
@@ -150,6 +154,11 @@ final class GrammarCheckCommand extends Command
         foreach ($loaded as $file) {
             $output->writeln(\sprintf('  - <comment>%s</comment>', $file));
         }
+
+        $logger->info('{rules} rule(s) declared by {files} file(s) are about to be compiled', [
+            'rules' => $this->getRulesBeforeOptimization($compiler),
+            'files' => \count($loaded),
+        ]);
 
         $result = $compiler->build();
 

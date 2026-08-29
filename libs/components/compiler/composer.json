@@ -26,6 +26,7 @@
         "phplrt/lexer-builder": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
+        "psr/log": "^3.0",
         "symfony/console": "^7.4|^8.0",
         "twig/twig": "^3.28"
     },
