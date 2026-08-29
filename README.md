@@ -1,3 +1,9 @@
+<!--
+    LLM DOCUMENTATION
+
+    Documentation for LLM agents is available at https://phplrt.org/llms-full.txt
+    and its shorter version at https://phplrt.org/llms.txt
+-->
 <p align="center">
     <a href="https://phplrt.org/">
         <img src="https://avatars.githubusercontent.com/u/49816277?s=256&v=4" width="128" alt="Phplrt" />
