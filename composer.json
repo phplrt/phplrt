@@ -23,6 +23,7 @@
         "ext-json": "*",
         "ext-pcre": "*",
         "laminas/laminas-code": "^4.17",
+        "psr/log": "^3.0",
         "symfony/console": "^7.4|^8.0",
         "twig/twig": "^3.28"
     },
