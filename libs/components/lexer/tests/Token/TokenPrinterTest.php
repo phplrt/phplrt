@@ -10,10 +10,12 @@ use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Printer\PrettyTokenPrinter;
 use Phplrt\Lexer\Token\Printer\TokenPrinterInterface;
 use Phplrt\Lexer\Token\Token;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class TokenPrinterTest extends TestCase
 {
     private static function createPrinter(): TokenPrinterInterface
@@ -32,67 +34,60 @@ final class TokenPrinterTest extends TestCase
         );
     }
 
-    #[TestDox('The terminal token is printed as "end of input"')]
     public function testTerminalTokenIsPrintedAsEndOfInput(): void
     {
         $printer = self::createPrinter();
         $token = new EndOfInputToken(0);
 
-        self::assertSame('end of input', $printer->print($token));
+        Assert::same($printer->print($token), 'end of input');
     }
 
-    #[TestDox('A printed token mentions its value')]
     public function testPrintedTokenMentionsItsValue(): void
     {
         $printer = self::createPrinter();
         $token = self::createToken('example');
 
-        self::assertStringContainsString('example', $printer->print($token));
+        Assert::string($printer->print($token))->contains('example');
     }
 
-    #[TestDox('A printed token mentions its name')]
     public function testPrintedTokenMentionsItsName(): void
     {
         $printer = self::createPrinter();
         $token = self::createToken('example', 'T_NAME');
 
-        self::assertStringContainsString('T_NAME', $printer->print($token));
+        Assert::string($printer->print($token))->contains('T_NAME');
     }
 
-    #[TestDox('A printed token stays readable on a single line')]
     public function testPrintedTokenStaysOnASingleLine(): void
     {
         $printer = self::createPrinter();
         $token = self::createToken("first\nsecond");
 
-        self::assertStringNotContainsString("\n", $printer->print($token));
+        Assert::string($printer->print($token))->notContains("\n");
     }
 
-    #[TestDox('A long lexeme is shortened when printed')]
     public function testLongValueIsShortened(): void
     {
         $printer = self::createPrinter();
         $value = \str_repeat('a', 1000);
         $token = self::createToken($value);
 
-        self::assertLessThan(\strlen($value), \strlen($printer->print($token)));
+        Assert::numeric(\strlen($printer->print($token)))->lessThan(\strlen($value));
     }
 
-    #[TestDox('A token is convertible to a string')]
     public function testTokenIsConvertibleToString(): void
     {
         $token = self::createToken('example', 'T_NAME');
 
-        self::assertNotSame('', (string) $token);
-        self::assertStringContainsString('example', (string) $token);
+        Assert::notSame((string) $token, '');
+        Assert::string((string) $token)->contains('example');
     }
 
-    #[TestDox('An unknown token is marked as such when printed')]
     public function testUnknownTokenIsMarkedAsSuch(): void
     {
         $printer = self::createPrinter();
         $token = self::createToken('???', null, Channel::Unknown);
 
-        self::assertStringContainsString('unknown', $printer->print($token));
+        Assert::string($printer->print($token))->contains('unknown');
     }
 }

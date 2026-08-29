@@ -8,30 +8,33 @@ use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
+use Testo\Assert;
+use Testo\Test;
 
+#[Test]
 final class VirtualSourceTest extends TestCase
 {
     public function testPathnameProperty(): void
     {
         $source = new VirtualSource('virtual/file.php', new StringSource('test content'));
 
-        self::assertSame('virtual/file.php', $source->pathname);
-        self::assertInstanceOf(FileInterface::class, $source);
+        Assert::same($source->pathname, 'virtual/file.php');
+        Assert::instanceOf($source, FileInterface::class);
     }
 
     public function testReadsTheContentOfTheSourceItWraps(): void
     {
         $source = new VirtualSource('virtual/file.php', new StringSource('test content'));
 
-        self::assertSame('test content', $source->content);
+        Assert::same($source->content, 'test content');
     }
 
     public function testReadsThroughTheSourceItWraps(): void
     {
         $source = new VirtualSource('virtual/file.php', new StringSource('test content'));
 
-        self::assertSame('test content', $source->read(0, 1024));
-        self::assertSame('content', $source->read(5, 1024));
+        Assert::same($source->read(0, 1024), 'test content');
+        Assert::same($source->read(5, 1024), 'content');
     }
 
     public function testWrapsAFileOfItsOwn(): void
@@ -43,8 +46,8 @@ final class VirtualSourceTest extends TestCase
             autoclose: true,
         ));
 
-        self::assertSame('virtual/file.php', $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, 'virtual/file.php');
+        Assert::same($source->content, 'test content');
     }
 
     public function testWrapsAnotherVirtualFile(): void
@@ -54,15 +57,15 @@ final class VirtualSourceTest extends TestCase
             new StringSource('test content'),
         ));
 
-        self::assertSame('outer.php', $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, 'outer.php');
+        Assert::same($source->content, 'test content');
     }
 
     public function testEmptyContent(): void
     {
         $source = new VirtualSource('virtual/file.php', new StringSource());
 
-        self::assertSame('', $source->content);
-        self::assertSame('', $source->read(0, 1024));
+        Assert::same($source->content, '');
+        Assert::same($source->read(0, 1024), '');
     }
 }

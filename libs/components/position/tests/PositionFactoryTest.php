@@ -9,8 +9,13 @@ use Phplrt\Position\Exception\InvalidArgumentException;
 use Phplrt\Position\PositionFactory;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Data\DataSet;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class PositionFactoryTest extends TestCase
 {
     public function testZeroOffsetReadsNothing(): void
@@ -19,8 +24,8 @@ final class PositionFactoryTest extends TestCase
 
         $position = $factory->createFromOffset(new FileSource($this->temp), 0);
 
-        self::assertSame(PositionInterface::MIN_LINE, $position->line);
-        self::assertSame(PositionInterface::MIN_COLUMN, $position->column);
+        Assert::same($position->line, PositionInterface::MIN_LINE);
+        Assert::same($position->column, PositionInterface::MIN_COLUMN);
     }
 
     #[DataProvider('sourceAndChunkSizeProvider')]
@@ -30,27 +35,24 @@ final class PositionFactoryTest extends TestCase
 
         $position = $factory->createFromOffset(new StringSource($code), \PHP_INT_MAX);
 
-        self::assertSame(self::calculateLine($code, \strlen($code)), $position->line);
-        self::assertSame(self::calculateColumn($code, \strlen($code)), $position->column);
+        Assert::same($position->line, self::calculateLine($code, \strlen($code)));
+        Assert::same($position->column, self::calculateColumn($code, \strlen($code)));
     }
 
-    public function testEveryOffsetOfAnEmptySourcePointsAtItsBeginning(): void
+    #[DataSet([0], 'start')]
+    #[DataSet([1], 'one')]
+    #[DataSet([\PHP_INT_MAX], 'max')]
+    public function testEveryOffsetOfAnEmptySourcePointsAtItsBeginning(int $offset): void
     {
-        $factory = new PositionFactory();
-        $source = new StringSource();
+        $position = new PositionFactory()->createFromOffset(new StringSource(), $offset);
 
-        foreach ([0, 1, \PHP_INT_MAX] as $offset) {
-            $position = $factory->createFromOffset($source, $offset);
-
-            self::assertSame(PositionInterface::MIN_LINE, $position->line);
-            self::assertSame(PositionInterface::MIN_COLUMN, $position->column);
-        }
+        Assert::same($position->line, PositionInterface::MIN_LINE);
+        Assert::same($position->column, PositionInterface::MIN_COLUMN);
     }
 
     public function testFailsInCaseOfNonPositiveChunkSize(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionCode(InvalidArgumentException::CODE_NON_POSITIVE_CHUNK_SIZE);
+        Expect::exception(InvalidArgumentException::class)->withCode(InvalidArgumentException::CODE_NON_POSITIVE_CHUNK_SIZE);
 
         new PositionFactory(0);
     }

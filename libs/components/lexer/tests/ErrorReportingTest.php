@@ -9,10 +9,13 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class ErrorReportingTest extends TestCase
 {
     private static function createIncompleteLexer(): LexerInterface
@@ -22,27 +25,24 @@ final class ErrorReportingTest extends TestCase
         });
     }
 
-    #[TestDox('An unreadable source is reported instead of being silently truncated')]
     public function testUnreadableSourceIsReported(): void
     {
         $lexer = self::createIncompleteLexer();
 
-        $this->expectException(RuntimeExceptionInterface::class);
+        Expect::exception(RuntimeExceptionInterface::class);
 
         \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
     }
 
-    #[TestDox('A reported error is a lexer exception')]
     public function testReportedExceptionIsALexerException(): void
     {
         $lexer = self::createIncompleteLexer();
 
-        $this->expectException(LexerExceptionInterface::class);
+        Expect::exception(LexerExceptionInterface::class);
 
         \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
     }
 
-    #[TestDox('A reported error points at the unreadable fragment')]
     public function testReportedTokenPointsAtTheUnreadableFragment(): void
     {
         $lexer = self::createIncompleteLexer();
@@ -50,25 +50,23 @@ final class ErrorReportingTest extends TestCase
         try {
             \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
         } catch (RuntimeExceptionInterface $e) {
-            self::assertSame(5, $e->token->offset);
+            Assert::same($e->token->offset, 5);
 
             return;
         }
 
-        self::fail('An unreadable source is expected to be reported');
+        Assert::fail('An unreadable source is expected to be reported');
     }
 
-    #[TestDox('A completely readable source is not reported as an error')]
     public function testReadableSourceIsNotReported(): void
     {
         $lexer = self::createIncompleteLexer();
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('word')), false);
 
-        self::assertCount(2, $tokens);
+        Assert::count($tokens, 2);
     }
 
-    #[TestDox('A fragment covered by the implicit unknown token does not truncate the analysis')]
     public function testAnalysisIsNotSilentlyTruncated(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -80,7 +78,6 @@ final class ErrorReportingTest extends TestCase
         self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
-    #[TestDox('A failure that happens inside a state is reported as well')]
     public function testFailureInsideAStateIsReportedToo(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -92,7 +89,7 @@ final class ErrorReportingTest extends TestCase
             $string->addPattern('[a-z]++', 'T_STRING_CHARS');
         });
 
-        $this->expectException(RuntimeExceptionInterface::class);
+        Expect::exception(RuntimeExceptionInterface::class);
 
         \iterator_to_array($lexer->lex(StringSource::createFromString('"abc def"')), false);
     }

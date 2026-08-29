@@ -6,7 +6,6 @@ namespace Phplrt\Compiler\Tests;
 
 use Phplrt\Compiler\Exception\UnsupportedPragmaException;
 use Phplrt\Compiler\Exception\UnsupportedTransitionException;
-use Phplrt\Compiler\Loader\GrammarReference;
 use Phplrt\Compiler\Syntax\PP2\PP2Loader;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
@@ -19,12 +18,16 @@ use Phplrt\Parser\Builder\Definition\RuleReference;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
-use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Data\DataSet;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class PP2LoaderTest extends TestCase
 {
     private const string PATHNAME = '/app/grammar.pp2';
@@ -33,13 +36,13 @@ final class PP2LoaderTest extends TestCase
 
     private ParserBuilder $parser;
 
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->lexer = new LexerBuilder();
         $this->parser = new ParserBuilder();
     }
 
-    #[TestDox('A token declaration is added to the lexer')]
     public function testTokenIsAddedToTheLexer(): void
     {
         $this->load(<<<'PP2'
@@ -49,14 +52,13 @@ final class PP2LoaderTest extends TestCase
 
         [$number, $whitespace] = \array_values($this->lexer->tokens);
 
-        self::assertSame('T_NUMBER', $number->name);
-        self::assertFalse($number->isHidden);
+        Assert::same($number->name, 'T_NUMBER');
+        Assert::false($number->isHidden);
 
-        self::assertSame('T_WHITESPACE', $whitespace->name);
-        self::assertTrue($whitespace->isHidden);
+        Assert::same($whitespace->name, 'T_WHITESPACE');
+        Assert::true($whitespace->isHidden);
     }
 
-    #[TestDox('A token refers to the place of the grammar it is declared in')]
     public function testTokenRefersToItsDeclaration(): void
     {
         $source = <<<'PP2'
@@ -66,10 +68,9 @@ final class PP2LoaderTest extends TestCase
 
         $this->load($source);
 
-        self::assertSame('%token T_NUMBER \d++', $this->readSource($source, $this->lexer->tokens[1]));
+        Assert::same($this->readSource($source, $this->lexer->tokens[1]), '%token T_NUMBER \d++');
     }
 
-    #[TestDox('A token of a named state is read by a lexer of its own')]
     public function testStateIsReadByALexerOfItsOwn(): void
     {
         $this->load(<<<'PP2'
@@ -78,116 +79,106 @@ final class PP2LoaderTest extends TestCase
             %token string:T_END   "      -> default
             PP2);
 
-        self::assertSame(['string'], \array_keys($this->lexer->lexers));
+        Assert::same(\array_keys($this->lexer->lexers), ['string']);
 
         $nested = $this->lexer->lexers['string'];
 
-        self::assertInstanceOf(LexerBuilder::class, $nested);
-        self::assertSame(TransitionType::Enter, $this->lexer->tokens[0]->transition?->type);
-        self::assertSame('string', $this->lexer->tokens[0]->transition?->lexer);
-        self::assertNull($nested->tokens[0]->transition);
-        self::assertSame(TransitionType::Exit, $nested->tokens[1]->transition?->type);
+        Assert::instanceOf($nested, LexerBuilder::class);
+        Assert::same($this->lexer->tokens[0]->transition?->type, TransitionType::Enter);
+        Assert::same($this->lexer->tokens[0]->transition?->lexer, 'string');
+        Assert::null($nested->tokens[0]->transition);
+        Assert::same($nested->tokens[1]->transition?->type, TransitionType::Exit);
     }
 
-    #[TestDox('A token switching between two named states is reported')]
     public function testTransitionBetweenNamedStatesIsReported(): void
     {
-        $this->expectException(UnsupportedTransitionException::class);
-        $this->expectExceptionMessageIsOrContains('cannot be continued by the state "second"');
+        Expect::exception(UnsupportedTransitionException::class)
+        ->withMessageContaining('cannot be continued by the state "second"');
 
         $this->load('%token first:T_X x -> second');
     }
 
-    #[TestDox('A pattern written inside a rule is read by an anonymous token')]
     public function testInlinePatternIsReadByAnAnonymousToken(): void
     {
         $this->load('A : "\+" B() ; B : "\+" ;');
 
-        self::assertCount(1, $this->lexer->tokens);
+        Assert::count($this->lexer->tokens, 1);
 
         $token = $this->lexer->tokens[0];
 
-        self::assertInstanceOf(RegexTokenDefinition::class, $token);
-        self::assertNull($token->name);
-        self::assertSame('\+', $token->regex);
+        Assert::instanceOf($token, RegexTokenDefinition::class);
+        Assert::null($token->name);
+        Assert::same($token->regex, '\+');
     }
 
-    #[TestDox('A pattern written inside a rule is never kept in the tree')]
     public function testInlinePatternIsNotKept(): void
     {
         $this->load('A : "\+" ;');
 
         $rule = $this->parser->initial;
 
-        self::assertInstanceOf(TerminalRuleDefinition::class, $rule);
-        self::assertFalse($rule->isKept);
+        Assert::instanceOf($rule, TerminalRuleDefinition::class);
+        Assert::false($rule->isKept);
     }
 
-    #[TestDox('A token reference says whether the token is kept in the tree')]
     public function testTokenReferenceIsKept(): void
     {
         $this->load('A : <T_KEPT> ::T_SKIPPED:: ;');
 
         [$kept, $skipped] = $this->parser->initial?->children ?? [];
 
-        self::assertInstanceOf(TerminalRuleDefinition::class, $kept);
-        self::assertInstanceOf(TerminalRuleDefinition::class, $skipped);
+        Assert::instanceOf($kept, TerminalRuleDefinition::class);
+        Assert::instanceOf($skipped, TerminalRuleDefinition::class);
 
-        self::assertTrue($kept->isKept);
-        self::assertFalse($skipped->isKept);
+        Assert::true($kept->isKept);
+        Assert::false($skipped->isKept);
     }
 
-    #[TestDox('The rule declared first is where the analysis starts')]
     public function testFirstRuleIsInitial(): void
     {
         $this->load('A : <T_A> ; B : <T_B> ;');
 
-        self::assertSame('A', $this->parser->initial?->name);
+        Assert::same($this->parser->initial?->name, 'A');
     }
 
-    #[TestDox('The root pragma names the rule the analysis starts at')]
     public function testRootPragmaMarksTheInitialRule(): void
     {
         $this->load('A : <T_A> ; %pragma root B B : <T_B> ;');
 
         $initial = $this->parser->initial;
 
-        self::assertInstanceOf(RuleReference::class, $initial);
-        self::assertSame('B', $initial->target);
+        Assert::instanceOf($initial, RuleReference::class);
+        Assert::same($initial->target, 'B');
     }
 
-    #[TestDox('A pragma of an unknown name is reported')]
     public function testUnknownPragmaIsReported(): void
     {
-        $this->expectException(UnsupportedPragmaException::class);
-        $this->expectExceptionMessageIs('Unrecognized pragma "check_tokens"');
+        Expect::exception(UnsupportedPragmaException::class)
+        ->withMessage('Unrecognized pragma "check_tokens"');
 
         $this->load('%pragma check_tokens false');
     }
 
-    #[TestDox('A rule marked by "#" builds a node of its own')]
     public function testKeptRuleBuildsANodeOfItsOwn(): void
     {
         $this->load('#A : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return $children;', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return $children;');
     }
 
-    #[TestDox('A reducer written as code is kept as it is written')]
     public function testCodeReducer(): void
     {
         $this->load('A -> { return 42; } : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return 42;', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return 42;');
     }
 
-    #[TestDox('A reducer is taken out of the nesting the grammar has written it in')]
     public function testCodeReducerIsDedented(): void
     {
         $this->load(<<<'PP2'
@@ -204,110 +195,95 @@ final class PP2LoaderTest extends TestCase
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame(<<<'PHP'
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, <<<'PHP'
             if ($children === null) {
                 return null;
             }
 
             return 42;
-            PHP, $reducer->code);
+            PHP);
     }
 
-    #[TestDox('A reducer is given the variables it is written of')]
     public function testReducerVariablesAreDeclared(): void
     {
         $this->load('A -> { return $end === $offset + $length; } : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertStringContainsString("\$offset = \$ctx->begin;\n", $reducer->code);
-        self::assertStringContainsString("\$length = \$ctx->length;\n", $reducer->code);
-        self::assertStringContainsString("\$end = \$ctx->begin + \$ctx->length;\n", $reducer->code);
-        self::assertStringEndsWith('return $end === $offset + $length;', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::string($reducer->code)->contains("\$offset = \$ctx->begin;\n");
+        Assert::string($reducer->code)->contains("\$length = \$ctx->length;\n");
+        Assert::string($reducer->code)->contains("\$end = \$ctx->begin + \$ctx->length;\n");
+        Assert::true(\str_ends_with($reducer->code, 'return $end === $offset + $length;'));
     }
 
-    #[TestDox('A reducer is given nothing but the variables it is written of')]
     public function testUnusedReducerVariablesAreNotDeclared(): void
     {
         $this->load('A -> { return $children; } : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return $children;', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return $children;');
     }
 
-    #[TestDox('A variable written inside a string is not a variable of a reducer')]
     public function testReducerVariablesAreReadTheWayPhpReadsThem(): void
     {
         $this->load('A -> { return \'$offset\'; } : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return \'$offset\';', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return \'$offset\';');
     }
 
-    #[TestDox('A reducer written as a class name builds an instance of it')]
     public function testClassReducer(): void
     {
         $this->load('A -> \App\Node : <T_A> ;');
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return new \App\Node($ctx, $children);', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return new \App\Node($ctx, $children);');
     }
 
-    #[TestDox('A rule written of nothing but a reference is a rule of its own')]
     public function testRuleOfASingleReferenceIsNamed(): void
     {
         $this->load('A : B() ; B : <T_B> ;');
 
         $initial = $this->parser->initial;
 
-        self::assertSame('A', $initial?->name);
-        self::assertNotInstanceOf(RuleReference::class, $initial);
+        Assert::same($initial?->name, 'A');
+        Assert::false($initial instanceof RuleReference);
     }
 
-    #[TestDox('A rule refers to the place of the grammar it is declared in')]
     public function testRuleRefersToItsDeclaration(): void
     {
         $source = 'A -> { return 42; } : "\+" ;';
 
         $this->load($source);
 
-        self::assertSame('A -> { return 42; } : "\+"', $this->readSource($source, $this->parser->initial));
+        Assert::same($this->readSource($source, $this->parser->initial), 'A -> { return 42; } : "\+"');
     }
 
-    #[TestDox('A predicate is not written in this format')]
-    public function testPredicatesAreReported(): void
+    #[DataSet(['&'], 'and predicate')]
+    #[DataSet(['!'], 'not predicate')]
+    public function testPredicatesAreReported(string $sign): never
     {
-        foreach (['&', '!'] as $sign) {
-            $this->parser = new ParserBuilder();
-            $this->lexer = new LexerBuilder();
+        Expect::exception(UnexpectedTokenException::class);
 
-            try {
-                $this->load(\sprintf("%%token T_A a\nA : %s<T_A> ;", $sign));
-
-                self::fail(\sprintf('The "%s" predicate has been accepted', $sign));
-            } catch (UnexpectedTokenException) {
-                self::assertTrue(true);
-            }
-        }
+        $this->load(\sprintf("%%token T_A a\nA : %s<T_A> ;", $sign));
     }
 
-    #[TestDox('A reference to another grammar is given away instead of being read')]
     public function testReferenceIsGivenAway(): void
     {
         $references = $this->load('%include grammar/lexemes');
 
-        self::assertCount(1, $references);
-        self::assertSame('grammar/lexemes', $references[0]->target);
-        self::assertSame(0, $references[0]->offset);
-        self::assertSame(24, $references[0]->length);
+        Assert::count($references, 1);
+        Assert::same($references[0]->target, 'grammar/lexemes');
+        Assert::same($references[0]->offset, 0);
+        Assert::same($references[0]->length, 24);
     }
 
     private function load(string $source, string $pathname = self::PATHNAME): array
@@ -322,9 +298,9 @@ final class PP2LoaderTest extends TestCase
     {
         $context = $definition?->context;
 
-        self::assertNotNull($context);
-        self::assertInstanceOf(FileInterface::class, $context->source);
-        self::assertSame(self::PATHNAME, $context->source->pathname);
+        Assert::notNull($context);
+        Assert::instanceOf($context->source, FileInterface::class);
+        Assert::same($context->source->pathname, self::PATHNAME);
 
         return \substr($source, $context->offset, $context->length);
     }

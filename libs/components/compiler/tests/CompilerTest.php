@@ -11,13 +11,15 @@ use Phplrt\Compiler\Exception\UnsupportedFormatException;
 use Phplrt\Compiler\Exception\UnsupportedPragmaException;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class CompilerTest extends TestCase
 {
-    #[TestDox('A grammar is read along with every grammar it refers to')]
     public function testReferencesAreRead(): void
     {
         $compiler = $this->load('grammar.pp2');
@@ -28,11 +30,10 @@ final class CompilerTest extends TestCase
             $tokens[] = $token->name;
         }
 
-        self::assertSame(['T_NUMBER', 'T_PLUS', 'T_WHITESPACE'], $tokens);
-        self::assertSame('Expression', $compiler->parser->initial?->printReference());
+        Assert::same($tokens, ['T_NUMBER', 'T_PLUS', 'T_WHITESPACE']);
+        Assert::same($compiler->parser->initial?->printReference(), 'Expression');
     }
 
-    #[TestDox('The declarations of a grammar are read where it is referred to')]
     public function testReferencesAreReadInPlace(): void
     {
         $compiler = $this->load('grammar.pp2');
@@ -42,51 +43,47 @@ final class CompilerTest extends TestCase
             ->toParser($compiler->lexer->build()->toLexer())
             ->parse(StringSource::createFromString('1 + 2 + 39'));
 
-        self::assertSame(42, $result);
+        Assert::same($result, 42);
     }
 
-    #[TestDox('A grammar written in the PP format is reported')]
     public function testPPGrammarIsNotSupported(): void
     {
-        $this->expectException(UnsupportedFormatException::class);
-        $this->expectExceptionMessageIs('Grammar files written in the "pp" format are not supported');
+        Expect::exception(UnsupportedFormatException::class)
+        ->withMessage('Grammar files written in the "pp" format are not supported');
 
         $this->load('legacy.pp');
     }
 
-    #[TestDox('A reference pointing at no file is reported')]
     public function testUnresolvableReferenceIsReported(): void
     {
-        $this->expectException(GrammarNotFoundException::class);
-        $this->expectExceptionMessageIsOrContains('nowhere/at/all: failed to open stream');
+        Expect::exception(GrammarNotFoundException::class)
+        ->withMessageContaining('nowhere/at/all: failed to open stream');
 
         $this->load('unresolvable.pp2');
     }
 
-    #[TestDox('An error of a referred grammar is reported along with the reference')]
     public function testErrorOfAReferredGrammarIsReported(): void
     {
         try {
             $this->load('broken.pp2');
         } catch (IncludeException $e) {
-            self::assertSame('An error occurred while loading "nested/broken" grammar', $e->getMessage());
-            self::assertSame(0, $e->offset);
-            self::assertSame(22, $e->length);
-            self::assertInstanceOf(UnsupportedPragmaException::class, $e->getPrevious());
+            Assert::same($e->getMessage(), 'An error occurred while loading "nested/broken" grammar');
+            Assert::same($e->offset, 0);
+            Assert::same($e->length, 22);
+            Assert::instanceOf($e->getPrevious(), UnsupportedPragmaException::class);
 
             return;
         }
 
-        self::fail('The grammar has been read');
+        Assert::fail('The grammar has been read');
     }
 
-    #[TestDox('A grammar written in no file is read as well')]
     public function testGrammarOfNoFileIsRead(): void
     {
         $compiler = new Compiler();
         $compiler->load(StringSource::createFromString('%token T_NUMBER \d++'));
 
-        self::assertSame('T_NUMBER', $compiler->lexer->tokens[0]->name);
+        Assert::same($compiler->lexer->tokens[0]->name, 'T_NUMBER');
     }
 
     private function load(string $name): Compiler

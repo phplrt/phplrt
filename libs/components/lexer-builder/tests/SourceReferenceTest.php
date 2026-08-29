@@ -8,15 +8,16 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer-compiler')]
+#[Test]
 final class SourceReferenceTest extends TestCase
 {
     private const string SOURCE = "%token T_NAME [a-z]++\n%token T_END \" -> default\n";
 
-    #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
         $source = StringSource::createFromString(self::SOURCE);
@@ -25,12 +26,11 @@ final class SourceReferenceTest extends TestCase
         $definition = $lexer->addValue('"', 'T_END');
         $definition->setSource($source, 22, 12);
 
-        self::assertSame($source, $definition->context?->source);
-        self::assertSame(22, $definition->context?->offset);
-        self::assertSame(12, $definition->context?->length);
+        Assert::same($definition->context?->source, $source);
+        Assert::same($definition->context?->offset, 22);
+        Assert::same($definition->context?->length, 12);
     }
 
-    #[TestDox('The whole fragment of the definition is underlined')]
     public function testErrorUnderlinesTheDefinition(): void
     {
         $lexer = new LexerBuilder();
@@ -41,15 +41,14 @@ final class SourceReferenceTest extends TestCase
         try {
             $lexer->build();
         } catch (CompilationFailedException $e) {
-            self::assertStringContainsString('  | ^^^^^^^^^^^^', (string) $e);
+            Assert::string((string) $e)->contains('  | ^^^^^^^^^^^^');
 
             return;
         }
 
-        self::fail('A lexer ending the reading of nobody is expected to be reported');
+        Assert::fail('A lexer ending the reading of nobody is expected to be reported');
     }
 
-    #[TestDox('An error is printed along with the fragment of the source the definition has been written in')]
     public function testErrorRefersToTheSourceOfTheDefinition(): void
     {
         $source = StringSource::createFromString(self::SOURCE);
@@ -62,16 +61,15 @@ final class SourceReferenceTest extends TestCase
         try {
             $lexer->build();
         } catch (CompilationFailedException $e) {
-            self::assertSame($source, $e->context?->source);
-            self::assertStringContainsString('2 | %token T_END " -> default', (string) $e);
+            Assert::same($e->context?->source, $source);
+            Assert::string((string) $e)->contains('2 | %token T_END " -> default');
 
             return;
         }
 
-        self::fail('A lexer ending the reading of nobody is expected to be reported');
+        Assert::fail('A lexer ending the reading of nobody is expected to be reported');
     }
 
-    #[TestDox('The name of the file the definition has been written in is printed as well')]
     public function testErrorRefersToTheFileOfTheDefinition(): void
     {
         $lexer = new LexerBuilder();
@@ -82,15 +80,14 @@ final class SourceReferenceTest extends TestCase
         try {
             $lexer->build();
         } catch (CompilationFailedException $e) {
-            self::assertStringContainsString('--> /app/example.pp2:2:1', (string) $e);
+            Assert::string((string) $e)->contains('--> /app/example.pp2:2:1');
 
             return;
         }
 
-        self::fail('A lexer ending the reading of nobody is expected to be reported');
+        Assert::fail('A lexer ending the reading of nobody is expected to be reported');
     }
 
-    #[TestDox('An error of a definition built by hand is printed as an ordinary exception')]
     public function testErrorWithoutTheSource(): void
     {
         $lexer = new LexerBuilder();
@@ -99,12 +96,12 @@ final class SourceReferenceTest extends TestCase
         try {
             $lexer->build();
         } catch (CompilationFailedException $e) {
-            self::assertNull($e->context);
-            self::assertStringStartsWith('error[CompilationFailedException]: ', (string) $e);
+            Assert::null($e->context);
+            Assert::true(\str_starts_with((string) $e, 'error[CompilationFailedException]: '));
 
             return;
         }
 
-        self::fail('A lexer ending the reading of nobody is expected to be reported');
+        Assert::fail('A lexer ending the reading of nobody is expected to be reported');
     }
 }

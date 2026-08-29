@@ -9,7 +9,10 @@ use Phplrt\Source\FileSource;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
+use Testo\Assert;
+use Testo\Test;
 
+#[Test]
 final class SourceReadingTest extends TestCase
 {
     private const string CODE = "first\nsecond\nthird";
@@ -21,9 +24,9 @@ final class SourceReadingTest extends TestCase
 
         $position = $factory->createFromOffset($source, 7);
 
-        self::assertSame(2, $position->line);
-        self::assertSame(2, $position->column);
-        self::assertSame('econd', $source->read(7, 5));
+        Assert::same($position->line, 2);
+        Assert::same($position->column, 2);
+        Assert::same($source->read(7, 5), 'econd');
     }
 
     public function testFileIsReadInAnArbitraryOrder(): void
@@ -33,13 +36,13 @@ final class SourceReadingTest extends TestCase
         $factory = new PositionFactory(1);
         $source = new FileSource($this->temp);
 
-        self::assertSame('first', $source->read(0, 5));
+        Assert::same($source->read(0, 5), 'first');
 
         $position = $factory->createFromOffset($source, 13);
 
-        self::assertSame(3, $position->line);
-        self::assertSame(1, $position->column);
-        self::assertSame("\nsecond", $source->read(5, 7));
+        Assert::same($position->line, 3);
+        Assert::same($position->column, 1);
+        Assert::same($source->read(5, 7), "\nsecond");
     }
 
     public function testVirtualFileIsReadFromItsOwnSource(): void
@@ -49,8 +52,8 @@ final class SourceReadingTest extends TestCase
 
         $position = $factory->createFromOffset($source, 13);
 
-        self::assertSame(3, $position->line);
-        self::assertSame(1, $position->column);
+        Assert::same($position->line, 3);
+        Assert::same($position->column, 1);
     }
 
     public function testNonSeekableSourceIsReadFromItsBeginning(): void
@@ -60,8 +63,8 @@ final class SourceReadingTest extends TestCase
 
         $position = $factory->createFromOffset($source, \PHP_INT_MAX);
 
-        self::assertSame(3, $position->line);
-        self::assertSame(6, $position->column);
+        Assert::same($position->line, 3);
+        Assert::same($position->column, 6);
     }
 
     public function testNonSeekableSourceIsReadAfterAPartOfItHasBeenTaken(): void
@@ -70,11 +73,11 @@ final class SourceReadingTest extends TestCase
         $source = new ResourceSource($this->createNonSeekableResource(self::CODE))
             ->toSeekableSource();
 
-        self::assertSame('first', $source->read(0, 5));
+        Assert::same($source->read(0, 5), 'first');
 
         $position = $factory->createFromOffset($source, 7);
 
-        self::assertSame(2, $position->line);
-        self::assertSame(2, $position->column);
+        Assert::same($position->line, 2);
+        Assert::same($position->column, 2);
     }
 }

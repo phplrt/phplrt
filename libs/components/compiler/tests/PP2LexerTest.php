@@ -7,15 +7,16 @@ namespace Phplrt\Compiler\Tests;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class PP2LexerTest extends TestCase
 {
     private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
@@ -67,53 +68,47 @@ final class PP2LexerTest extends TestCase
         return $result;
     }
 
-    #[TestDox('The values of a token declaration are captured by the subgroups of a single token')]
     public function testTokenDeclarationValues(): void
     {
         $source = '%token string:T_CHAR [^"]++ -> default';
 
-        self::assertSame([\sprintf('T_TOKEN(%s)', $source)], self::describeTokens($source));
-        self::assertSame([['string', 'T_CHAR', '[^"]++', 'default']], self::describeCaptures($source));
+        Assert::same(self::describeTokens($source), [\sprintf('T_TOKEN(%s)', $source)]);
+        Assert::same(self::describeCaptures($source), [['string', 'T_CHAR', '[^"]++', 'default']]);
     }
 
-    #[TestDox('A value that is not written keeps the position of its own subgroup')]
     public function testUnwrittenValueKeepsThePosition(): void
     {
-        self::assertSame([['', 'T_A', 'a', '']], self::describeCaptures('%token T_A a'));
+        Assert::same(self::describeCaptures('%token T_A a'), [['', 'T_A', 'a', '']]);
     }
 
-    #[TestDox('A pattern of a declaration is read whole even when it is spelled like a comment')]
     public function testPatternSpelledLikeComment(): void
     {
-        self::assertSame([['', 'T_COMMENT', '//[^\n]*', '']], self::describeCaptures('%skip T_COMMENT //[^\n]*'));
+        Assert::same(self::describeCaptures('%skip T_COMMENT //[^\n]*'), [['', 'T_COMMENT', '//[^\n]*', '']]);
     }
 
-    #[TestDox('A declaration ends where its own values end')]
     public function testDeclarationEnd(): void
     {
-        self::assertSame([
+        Assert::same(self::describeTokens("%token T_A a // and a comment\nA : <T_A>"), [
             'T_TOKEN(%token T_A a)',
             'T_NAME(A)',
             'T_EQ(:)',
             'T_ANGLE_OPEN(<)',
             'T_NAME(T_A)',
             'T_ANGLE_CLOSE(>)',
-        ], self::describeTokens("%token T_A a // and a comment\nA : <T_A>"));
+        ]);
     }
 
-    #[TestDox('The colons of a skipped token reference are told from the "::=" separator')]
     public function testColons(): void
     {
-        self::assertSame([
+        Assert::same(self::describeTokens('A ::= ::T_A::'), [
             'T_NAME(A)',
             'T_EQ(::=)',
             'T_DOUBLE_COLON(::)',
             'T_NAME(T_A)',
             'T_DOUBLE_COLON(::)',
-        ], self::describeTokens('A ::= ::T_A::'));
+        ]);
     }
 
-    #[TestDox('A reducer written as code is read up to the brace closing it')]
     public function testPhpCodeBoundaries(): void
     {
         $source = <<<'PP2'
@@ -123,25 +118,24 @@ final class PP2LexerTest extends TestCase
         $tokens = self::tokenize($source);
         $php = $tokens[1];
 
-        self::assertInstanceOf(TokenEmbedding::class, $php);
-        self::assertSame('T_PHP', $php->name);
-        self::assertSame('-> ', $php->value);
-        self::assertSame('{ return [\'}\', "{"]; /* } */ }', \substr(
+        Assert::instanceOf($php, TokenEmbedding::class);
+        Assert::same($php->name, 'T_PHP');
+        Assert::same($php->value, '-> ');
+        Assert::same(\substr(
             $source,
             $php->children[0]->offset,
             $php->offset + $php->size - $php->children[0]->offset,
-        ));
+        ), '{ return [\'}\', "{"]; /* } */ }');
 
-        self::assertSame('T_EQ', $tokens[2]->name);
+        Assert::same($tokens[2]->name, 'T_EQ');
     }
 
-    #[TestDox('A reducer written as a class name is told from a reducer written as code')]
     public function testArrowIsNotAPhpCodeBlock(): void
     {
-        self::assertSame([
+        Assert::same(self::describeTokens('A -> \App\Node'), [
             'T_NAME(A)',
             'T_ARROW(->)',
             'T_NAME(\App\Node)',
-        ], self::describeTokens('A -> \App\Node'));
+        ]);
     }
 }

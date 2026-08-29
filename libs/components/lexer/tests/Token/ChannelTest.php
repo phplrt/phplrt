@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests\Token;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class ChannelTest extends TestCase
 {
     private static function createAnnotatedLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
@@ -38,7 +38,6 @@ final class ChannelTest extends TestCase
         return $result;
     }
 
-    #[TestDox('A significant token belongs to the default channel')]
     public function testSignificantTokensUseTheDefaultChannel(): void
     {
         $lexer = self::createAnnotatedLexer();
@@ -46,10 +45,9 @@ final class ChannelTest extends TestCase
 
         $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertSame(Channel::Default, $channels['T_NAME']);
+        Assert::same($channels['T_NAME'], Channel::Default);
     }
 
-    #[TestDox('A hidden token is left out of the stream')]
     public function testHiddenTokensAreLeftOutOfTheStream(): void
     {
         $lexer = self::createAnnotatedLexer();
@@ -57,10 +55,9 @@ final class ChannelTest extends TestCase
 
         $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertArrayNotHasKey('T_WHITESPACE', $channels);
+        Assert::array($channels)->doesNotHaveKeys('T_WHITESPACE');
     }
 
-    #[TestDox('A hidden token stays in the stream on its own channel in case nothing is skipped')]
     public function testHiddenTokensArePresentInTheStreamOnTheirOwnChannel(): void
     {
         $lexer = self::createAnnotatedLexer(skip: []);
@@ -68,11 +65,10 @@ final class ChannelTest extends TestCase
 
         $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertArrayHasKey('T_WHITESPACE', $channels);
-        self::assertSame(Channel::Hidden, $channels['T_WHITESPACE']);
+        Assert::array($channels)->hasKeys('T_WHITESPACE');
+        Assert::same($channels['T_WHITESPACE'], Channel::Hidden);
     }
 
-    #[TestDox('A user defined channel is exposed by its name and is not a built-in one')]
     public function testUserDefinedChannelIsExposedByItsName(): void
     {
         $lexer = self::createAnnotatedLexer();
@@ -80,12 +76,11 @@ final class ChannelTest extends TestCase
 
         $channels = self::channels($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertArrayHasKey('T_DOC', $channels);
-        self::assertSame('documentation', $channels['T_DOC']->name);
-        self::assertNotInstanceOf(Channel::class, $channels['T_DOC']);
+        Assert::array($channels)->hasKeys('T_DOC');
+        Assert::same($channels['T_DOC']->name, 'documentation');
+        Assert::false($channels['T_DOC'] instanceof Channel);
     }
 
-    #[TestDox('The same channel name is represented consistently between analyses')]
     public function testTheSameChannelNameIsRepresentedConsistently(): void
     {
         $lexer = self::createAnnotatedLexer();
@@ -93,10 +88,9 @@ final class ChannelTest extends TestCase
         $first = self::channels($lexer->lex(StringSource::createFromString('## one')));
         $second = self::channels($lexer->lex(StringSource::createFromString('## two')));
 
-        self::assertSame($first['T_DOC']->name, $second['T_DOC']->name);
+        Assert::same($second['T_DOC']->name, $first['T_DOC']->name);
     }
 
-    #[TestDox('An unreadable fragment is reported on the unknown channel')]
     public function testUnrecognizedFragmentIsMarkedAsUnknown(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -115,11 +109,10 @@ final class ChannelTest extends TestCase
             }
         }
 
-        self::assertSame(['???'], $unknown);
+        Assert::same($unknown, ['???']);
         self::assertTokensCoverSource($source, $tokens);
     }
 
-    #[TestDox('The terminal token belongs to the end of input channel')]
     public function testTerminalTokenUsesTheEndOfInputChannel(): void
     {
         $lexer = self::createAnnotatedLexer();
@@ -127,6 +120,6 @@ final class ChannelTest extends TestCase
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
 
-        self::assertSame(Channel::EndOfInput, $tokens[\count($tokens) - 1]->channel);
+        Assert::same($tokens[\count($tokens) - 1]->channel, Channel::EndOfInput);
     }
 }

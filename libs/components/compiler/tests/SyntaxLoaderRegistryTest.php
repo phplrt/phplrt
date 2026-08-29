@@ -10,42 +10,40 @@ use Phplrt\Compiler\Syntax\PP2\PP2Loader;
 use Phplrt\Compiler\Syntax\PP3\PP3Loader;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class SyntaxLoaderRegistryTest extends TestCase
 {
-    #[TestDox('The format of a grammar is told by the extension of its file')]
     public function testFormatIsToldByTheExtension(): void
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PPLoader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp')));
-        self::assertInstanceOf(PP2Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp2')));
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.pp3')));
+        Assert::instanceOf($registry->selectFor(VirtualSource::createEmpty('/app/a.pp')), PPLoader::class);
+        Assert::instanceOf($registry->selectFor(VirtualSource::createEmpty('/app/a.pp2')), PP2Loader::class);
+        Assert::instanceOf($registry->selectFor(VirtualSource::createEmpty('/app/a.pp3')), PP3Loader::class);
     }
 
-    #[TestDox('A grammar written in no file is read as the newest format there is')]
     public function testGrammarOfNoFileIsReadAsTheNewestFormat(): void
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(StringSource::createEmpty()));
+        Assert::instanceOf($registry->selectFor(StringSource::createEmpty()), PP3Loader::class);
     }
 
-    #[TestDox('A file named with an extension of no format is read as the newest one')]
     public function testGrammarOfAnUnknownExtensionIsReadAsTheNewestFormat(): void
     {
         $registry = new SyntaxLoaderRegistry();
 
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/a.txt')));
-        self::assertInstanceOf(PP3Loader::class, $registry->selectFor(VirtualSource::createEmpty('/app/grammar')));
+        Assert::instanceOf($registry->selectFor(VirtualSource::createEmpty('/app/a.txt')), PP3Loader::class);
+        Assert::instanceOf($registry->selectFor(VirtualSource::createEmpty('/app/grammar')), PP3Loader::class);
     }
 
-    #[TestDox('The extensions a grammar file may be named with are known')]
     public function testExtensions(): void
     {
-        self::assertSame(['pp', 'pp2', 'pp3'], new SyntaxLoaderRegistry()->extensions);
+        Assert::same(new SyntaxLoaderRegistry()->extensions, ['pp', 'pp2', 'pp3']);
     }
 }

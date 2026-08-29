@@ -10,17 +10,18 @@ use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser-compiler')]
+#[Test]
 final class SourceReferenceTest extends TestCase
 {
     private const string SOURCE = "%token T_NUMBER \\d++\n\nRoot : ;\n";
 
     private const int RULE_OFFSET = 22;
 
-    #[TestDox('A definition refers to the source it has been written in')]
     public function testDefinitionRefersToTheSource(): void
     {
         $source = StringSource::createFromString(self::SOURCE);
@@ -29,11 +30,10 @@ final class SourceReferenceTest extends TestCase
         $definition = $parser->addConcatenation([], 'Root');
         $definition->setSource($source, self::RULE_OFFSET);
 
-        self::assertSame($source, $definition->context?->source);
-        self::assertSame(self::RULE_OFFSET, $definition->context?->offset);
+        Assert::same($definition->context?->source, $source);
+        Assert::same($definition->context?->offset, self::RULE_OFFSET);
     }
 
-    #[TestDox('An error is printed along with the fragment of the source the rule has been written in')]
     public function testErrorRefersToTheSourceOfTheRule(): void
     {
         $source = StringSource::createFromString(self::SOURCE);
@@ -45,16 +45,15 @@ final class SourceReferenceTest extends TestCase
         try {
             $parser->build(self::createLexerBuilder()->build());
         } catch (CompilationFailedException $e) {
-            self::assertSame($source, $e->context?->source);
-            self::assertStringContainsString('3 | Root : ;', (string) $e);
+            Assert::same($e->context?->source, $source);
+            Assert::string((string) $e)->contains('3 | Root : ;');
 
             return;
         }
 
-        self::fail('A rule referring to nothing is expected to be reported');
+        Assert::fail('A rule referring to nothing is expected to be reported');
     }
 
-    #[TestDox('The name of the file the rule has been written in is printed as well')]
     public function testErrorRefersToTheFileOfTheRule(): void
     {
         $parser = new ParserBuilder();
@@ -64,15 +63,14 @@ final class SourceReferenceTest extends TestCase
         try {
             $parser->build(self::createLexerBuilder()->build());
         } catch (CompilationFailedException $e) {
-            self::assertStringContainsString('--> /app/example.pp2:3:1', (string) $e);
+            Assert::string((string) $e)->contains('--> /app/example.pp2:3:1');
 
             return;
         }
 
-        self::fail('A rule referring to nothing is expected to be reported');
+        Assert::fail('A rule referring to nothing is expected to be reported');
     }
 
-    #[TestDox('An error of a rule built by hand is printed as an ordinary exception')]
     public function testErrorWithoutTheSource(): void
     {
         $parser = new ParserBuilder();
@@ -81,16 +79,15 @@ final class SourceReferenceTest extends TestCase
         try {
             $parser->build(self::createLexerBuilder()->build());
         } catch (CompilationFailedException $e) {
-            self::assertNull($e->context);
-            self::assertStringStartsWith('error[CompilationFailedException]: ', (string) $e);
+            Assert::null($e->context);
+            Assert::true(\str_starts_with((string) $e, 'error[CompilationFailedException]: '));
 
             return;
         }
 
-        self::fail('A rule referring to nothing is expected to be reported');
+        Assert::fail('A rule referring to nothing is expected to be reported');
     }
 
-    #[TestDox('An error of a reducer is printed along with the code it has been written of')]
     public function testErrorRefersToTheSourceOfTheReducer(): void
     {
         $code = "Root -> { return \$children }\n  : <T_NUMBER>\n  ;\n";
@@ -107,12 +104,12 @@ final class SourceReferenceTest extends TestCase
             $parser->build($lexer->build())
                 ->toParser(self::createLexer($lexer));
         } catch (ParserCompilerException $e) {
-            self::assertSame($source, $e->context?->source);
-            self::assertStringContainsString('1 | Root -> { return $children }', (string) $e);
+            Assert::same($e->context?->source, $source);
+            Assert::string((string) $e)->contains('1 | Root -> { return $children }');
 
             return;
         }
 
-        self::fail('A reducer that cannot be compiled is expected to be reported');
+        Assert::fail('A reducer that cannot be compiled is expected to be reported');
     }
 }

@@ -7,7 +7,6 @@ namespace Phplrt\Compiler\Tests;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\Generator\ContractsPreloader;
 use Phplrt\Compiler\Generator\GeneratedOutput;
-use Phplrt\Compiler\Generator\SymbolInclude;
 use Phplrt\Compiler\Generator\SymbolType;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
@@ -16,16 +15,20 @@ use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Lifecycle\AfterTest;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class ContractsPreloadTest extends TestCase
 {
     private const string GRAMMAR_PATHNAME = __DIR__ . '/resources/grammar.pp2';
 
     private array $files = [];
 
+    #[AfterTest]
     protected function tearDown(): void
     {
         foreach ($this->files as $pathname) {
@@ -35,65 +38,48 @@ final class ContractsPreloadTest extends TestCase
         $this->files = [];
     }
 
-    #[TestDox('Every contract of the runtime is loaded by the generated code')]
     public function testRuntimeContractsAreLoaded(): void
     {
         $code = (string) self::generate();
         $includes = self::createIncludes();
 
-        self::assertNotEmpty($includes);
+        Assert::notBlank($includes);
 
         foreach ($includes as $include) {
-            self::assertStringContainsString(\sprintf(
+            Assert::string($code)->contains(\sprintf(
                 "\\%s_exists(\\%s::class);\n",
                 $include->type->value,
                 $include->symbol,
-            ), $code);
+            ));
         }
     }
 
-    #[TestDox('Only the contracts of the source, lexer and parser are loaded')]
     public function testOnlyRuntimeContractsAreLoaded(): void
     {
         foreach (self::createIncludes() as $include) {
-            self::assertMatchesRegularExpression(
-                '/^Phplrt\\\\Contracts\\\\(Source|Lexer|Parser)\\\\/',
-                $include->symbol,
-            );
+            Assert::true((bool) \preg_match('/^Phplrt\\\\Contracts\\\\(Source|Lexer|Parser)\\\\/', $include->symbol));
         }
     }
 
-    #[TestDox('A contract is loaded by the declaration it is declared by')]
     public function testContractIsLoadedByItsDeclaration(): void
     {
         $code = (string) self::generate();
 
-        self::assertStringContainsString(
-            \sprintf('\\interface_exists(\\%s::class);', ReadableInterface::class),
-            $code,
-        );
-
-        self::assertStringContainsString(
-            \sprintf('\\enum_exists(\\%s::class);', Channel::class),
-            $code,
-        );
-
-        self::assertStringContainsString(
-            \sprintf('\\class_exists(\\%s::class);', UserDefinedChannel::class),
-            $code,
-        );
+        Assert::string($code)
+            ->contains(\sprintf('\\interface_exists(\\%s::class);', ReadableInterface::class))
+            ->contains(\sprintf('\\enum_exists(\\%s::class);', Channel::class))
+            ->contains(\sprintf('\\class_exists(\\%s::class);', UserDefinedChannel::class));
     }
 
-    #[TestDox('Nothing is included by the generated code')]
     public function testNothingIsIncluded(): void
     {
         $code = (string) self::generate();
 
-        self::assertStringNotContainsString('require', $code);
-        self::assertStringNotContainsString('include', $code);
+        Assert::string($code)
+            ->notContains('require')
+            ->notContains('include');
     }
 
-    #[TestDox('The declaration a contract is declared by is told apart')]
     public function testDeclarationOfAContractIsToldApart(): void
     {
         $types = [];
@@ -102,35 +88,26 @@ final class ContractsPreloadTest extends TestCase
             $types[$include->symbol] = $include->type;
         }
 
-        self::assertSame(SymbolType::InterfaceType, $types[LexerInterface::class] ?? null);
-        self::assertSame(SymbolType::EnumType, $types[Channel::class] ?? null);
-        self::assertSame(SymbolType::ClassType, $types[UserDefinedChannel::class] ?? null);
+        Assert::same($types[LexerInterface::class] ?? null, SymbolType::InterfaceType);
+        Assert::same($types[Channel::class] ?? null, SymbolType::EnumType);
+        Assert::same($types[UserDefinedChannel::class] ?? null, SymbolType::ClassType);
     }
 
-    #[TestDox('The contracts are loaded after the strict types are declared')]
     public function testContractsAreLoadedAfterTheDeclaration(): void
     {
         $code = (string) self::generate();
 
-        self::assertGreaterThan(
-            \strpos($code, 'declare(strict_types=1);'),
-            \strpos($code, 'interface_exists('),
-        );
+        Assert::numeric(\strpos($code, 'interface_exists('))->greaterThan(\strpos($code, 'declare(strict_types=1);'));
     }
 
-    #[TestDox('The contracts are loaded after the namespace the parser belongs to')]
     public function testContractsAreLoadedAfterTheNamespace(): void
     {
         $code = (string) self::generate()
             ->withNamespaceName('Example\\Some');
 
-        self::assertGreaterThan(
-            \strpos($code, 'namespace Example\\Some;'),
-            \strpos($code, 'interface_exists('),
-        );
+        Assert::numeric(\strpos($code, 'interface_exists('))->greaterThan(\strpos($code, 'namespace Example\\Some;'));
     }
 
-    #[TestDox('The contracts are loaded in the order their declarations depend on each other')]
     public function testContractsAreLoadedInDependencyOrder(): void
     {
         $symbols = [];
@@ -147,7 +124,7 @@ final class ContractsPreloadTest extends TestCase
                     continue;
                 }
 
-                self::assertContains($dependency, $loaded, \sprintf(
+                Assert::contains($loaded, $dependency, \sprintf(
                     'The "%s" contract must be preceded by the "%s" contract it depends on',
                     $symbol,
                     $dependency,
@@ -157,21 +134,20 @@ final class ContractsPreloadTest extends TestCase
             $loaded[] = $symbol;
         }
 
-        self::assertSame($symbols, $loaded);
+        Assert::same($loaded, $symbols);
     }
 
-    #[TestDox('A parser generated without the preloading leaves the contracts to be loaded on demand')]
     public function testContractsPreloadingIsDisabled(): void
     {
         $code = (string) self::generate()
             ->withoutContractsPreloading();
 
-        self::assertStringNotContainsString('interface_exists(', $code);
-        self::assertStringNotContainsString('enum_exists(', $code);
-        self::assertStringNotContainsString('class_exists(', $code);
+        Assert::string($code)
+            ->notContains('interface_exists(')
+            ->notContains('enum_exists(')
+            ->notContains('class_exists(');
     }
 
-    #[TestDox('A parser generated without the preloading is still written the way it is asked for')]
     public function testContractsPreloadingIsDisabledAlongWithTheOtherOptions(): void
     {
         $code = (string) self::generate()
@@ -180,13 +156,13 @@ final class ContractsPreloadTest extends TestCase
             ->withClassImport('App\\Node')
             ->withClassName('SomeParser');
 
-        self::assertStringContainsString("\nnamespace Example\\Some;\n", $code);
-        self::assertStringContainsString("\nuse App\\Node;\n", $code);
-        self::assertStringContainsString("\nreadonly class SomeParser extends", $code);
-        self::assertStringNotContainsString('interface_exists(', $code);
+        Assert::string($code)
+            ->contains("\nnamespace Example\\Some;\n")
+            ->contains("\nuse App\\Node;\n")
+            ->contains("\nreadonly class SomeParser extends")
+            ->notContains('interface_exists(');
     }
 
-    #[TestDox('The parser loading the contracts recognizes what the grammar says')]
     public function testParserLoadingTheContractsIsRead(): void
     {
         $pathname = $this->createPathname();
@@ -195,8 +171,8 @@ final class ContractsPreloadTest extends TestCase
 
         $parser = require $pathname;
 
-        self::assertInstanceOf(ParserInterface::class, $parser);
-        self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
+        Assert::instanceOf($parser, ParserInterface::class);
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2 + 39')), 42);
     }
 
     private static function createIncludes(): array

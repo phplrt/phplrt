@@ -10,9 +10,8 @@ use Phplrt\Compiler\Node\Reducer;
 use Phplrt\Compiler\Node\Statement;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\TestCase as BaseTestCase;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase
 {
     protected static function describe(string $source): array
     {

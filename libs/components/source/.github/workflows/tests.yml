@@ -46,4 +46,4 @@ jobs:
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --ignore-platform-reqs --prefer-dist --no-interaction --no-progress
       - name: Execute Tests
-        run: php vendor/bin/phpunit
+        run: php vendor/bin/testo

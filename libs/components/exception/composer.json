@@ -30,7 +30,7 @@
     "require-dev": {
         "ext-mbstring": "*",
         "ext-intl": "*",
-        "phpunit/phpunit": "^13.2",
+        "testo/testo": "^0.10.44",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {
