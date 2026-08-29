@@ -12,7 +12,7 @@
 phpstan.neon export-ignore
 
 # Tests + CI
-phpunit.xml export-ignore
+testo.php export-ignore
 
 /.github export-ignore
 /tests export-ignore

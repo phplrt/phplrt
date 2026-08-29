@@ -8,7 +8,10 @@ use Phplrt\Source\FileSource;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
+use Testo\Assert;
+use Testo\Test;
 
+#[Test]
 final class NamedConstructorsTest extends TestCase
 {
     public function testFileSourceFromPathname(): void
@@ -17,8 +20,8 @@ final class NamedConstructorsTest extends TestCase
 
         $source = FileSource::createFromPathname($this->temp);
 
-        self::assertSame($this->temp, $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, $this->temp);
+        Assert::same($source->content, 'test content');
     }
 
     public function testFileSourceFromSplFileInfo(): void
@@ -27,22 +30,22 @@ final class NamedConstructorsTest extends TestCase
 
         $source = FileSource::createFromSplFileInfo(new \SplFileInfo($this->temp));
 
-        self::assertSame($this->temp, $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, $this->temp);
+        Assert::same($source->content, 'test content');
     }
 
     public function testStringSourceFromString(): void
     {
         $source = StringSource::createFromString('test content');
 
-        self::assertSame('test content', $source->content);
+        Assert::same($source->content, 'test content');
     }
 
     public function testEmptyStringSource(): void
     {
         $source = StringSource::createEmpty();
 
-        self::assertSame('', $source->content);
+        Assert::same($source->content, '');
     }
 
     public function testResourceSourceFromResource(): void
@@ -54,7 +57,7 @@ final class NamedConstructorsTest extends TestCase
         try {
             $source = ResourceSource::createFromResource($stream);
 
-            self::assertSame('test content', $source->content);
+            Assert::same($source->content, 'test content');
         } finally {
             \fclose($stream);
         }
@@ -67,7 +70,7 @@ final class NamedConstructorsTest extends TestCase
         $source = ResourceSource::createFromResource($stream);
         unset($source);
 
-        self::assertIsResource($stream);
+        Assert::true(\is_resource($stream));
 
         \fclose($stream);
     }
@@ -76,16 +79,16 @@ final class NamedConstructorsTest extends TestCase
     {
         $source = VirtualSource::createFromString('virtual.txt', 'test content');
 
-        self::assertSame('virtual.txt', $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, 'virtual.txt');
+        Assert::same($source->content, 'test content');
     }
 
     public function testEmptyVirtualSource(): void
     {
         $source = VirtualSource::createEmpty('virtual.txt');
 
-        self::assertSame('virtual.txt', $source->pathname);
-        self::assertSame('', $source->content);
+        Assert::same($source->pathname, 'virtual.txt');
+        Assert::same($source->content, '');
     }
 
     public function testVirtualSourceFromResourceStream(): void
@@ -97,8 +100,8 @@ final class NamedConstructorsTest extends TestCase
         try {
             $source = VirtualSource::createFromResourceStream('virtual.txt', $stream);
 
-            self::assertSame('virtual.txt', $source->pathname);
-            self::assertSame('test content', $source->content);
+            Assert::same($source->pathname, 'virtual.txt');
+            Assert::same($source->content, 'test content');
         } finally {
             \fclose($stream);
         }
@@ -110,7 +113,7 @@ final class NamedConstructorsTest extends TestCase
 
         $source = VirtualSource::createFromPathname($this->temp);
 
-        self::assertSame($this->temp, $source->pathname);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->pathname, $this->temp);
+        Assert::same($source->content, 'test content');
     }
 }

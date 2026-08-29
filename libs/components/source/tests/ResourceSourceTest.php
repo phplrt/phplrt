@@ -13,7 +13,11 @@ use Phplrt\Source\Exception\StreamNotSerializableException;
 use Phplrt\Source\ResourceSource;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class ResourceSourceTest extends TestCase
 {
     public function testWorksOverTheVeryResourceItHasBeenGiven(): void
@@ -24,7 +28,7 @@ final class ResourceSourceTest extends TestCase
         \fwrite($stream, 'test content');
         \rewind($stream);
 
-        self::assertSame('test content', $source->content);
+        Assert::same($source->content, 'test content');
     }
 
     public function testContentProperty(): void
@@ -36,7 +40,7 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame($content, $source->content);
+        Assert::same($source->content, $content);
     }
 
     public function testSourceBeginsWhereTheStreamHasBeenLeft(): void
@@ -47,9 +51,9 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('content', $source->content);
-        self::assertSame('content', $source->read(0, 1024));
-        self::assertSame('tent', $source->read(3, 1024));
+        Assert::same($source->content, 'content');
+        Assert::same($source->read(0, 1024), 'content');
+        Assert::same($source->read(3, 1024), 'tent');
     }
 
     public function testUriPropertyWithFileStream(): void
@@ -61,7 +65,7 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame($this->temp, $source->uri);
+            Assert::same($source->uri, $this->temp);
         } finally {
             \fclose($stream);
         }
@@ -73,7 +77,7 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('php://memory', $source->uri);
+        Assert::same($source->uri, 'php://memory');
     }
 
     public function testModeProperty(): void
@@ -82,14 +86,14 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('w+b', $source->mode);
+        Assert::same($source->mode, 'w+b');
     }
 
     public function testIsSeekablePropertyWithMemoryStream(): void
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
 
-        self::assertTrue($source->isSeekable);
+        Assert::true($source->isSeekable);
     }
 
     public function testIsLocalPropertyWithFileStream(): void
@@ -101,7 +105,7 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertTrue($source->isLocal);
+            Assert::true($source->isLocal);
         } finally {
             \fclose($stream);
         }
@@ -111,13 +115,12 @@ final class ResourceSourceTest extends TestCase
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb'));
 
-        self::assertTrue($source->isLocal);
+        Assert::true($source->isLocal);
     }
 
     public function testFailsInCaseOfWriteOnlyStream(): void
     {
-        $this->expectException(StreamNotReadableException::class);
-        $this->expectExceptionMessage('is not open for reading');
+        Expect::exception(StreamNotReadableException::class)->withMessageContaining('is not open for reading');
 
         new ResourceSource(\fopen('php://output', 'wb'));
     }
@@ -130,10 +133,10 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('test', $source->read(0, 4));
+        Assert::same($source->read(0, 4), 'test');
 
-        self::assertSame('test content', $source->content);
-        self::assertSame('test content', $source->content);
+        Assert::same($source->content, 'test content');
+        Assert::same($source->content, 'test content');
     }
 
     public function testReadsInAnArbitraryOrder(): void
@@ -144,9 +147,9 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame(' content', $source->read(4, 1024));
-        self::assertSame('test', $source->read(0, 4));
-        self::assertSame(' content', $source->read(4, 1024));
+        Assert::same($source->read(4, 1024), ' content');
+        Assert::same($source->read(0, 4), 'test');
+        Assert::same($source->read(4, 1024), ' content');
     }
 
     public function testReadsNothingBeyondTheEnd(): void
@@ -157,8 +160,8 @@ final class ResourceSourceTest extends TestCase
 
         $source = new ResourceSource($stream);
 
-        self::assertSame('', $source->read(12, 1024));
-        self::assertSame('', $source->read(1024, 1024));
+        Assert::same($source->read(12, 1024), '');
+        Assert::same($source->read(1024, 1024), '');
     }
 
     public function testNonSeekableStreamIsReadForwards(): void
@@ -168,11 +171,11 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertFalse($source->isSeekable);
+            Assert::false($source->isSeekable);
 
-            self::assertSame('test', $source->read(0, 4));
-            self::assertSame('content', $source->read(5, 1024));
-            self::assertSame('', $source->read(1024, 1024));
+            Assert::same($source->read(0, 4), 'test');
+            Assert::same($source->read(5, 1024), 'content');
+            Assert::same($source->read(1024, 1024), '');
         } finally {
             \fclose($stream);
         }
@@ -185,9 +188,9 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame(' content', $source->read(4, 1024));
+            Assert::same($source->read(4, 1024), ' content');
 
-            $this->expectException(StreamNotRewindableException::class);
+            Expect::exception(StreamNotRewindableException::class);
 
             $source->read(0, 4);
         } finally {
@@ -202,8 +205,8 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame('test content', $source->content);
-            self::assertSame('test content', $source->content);
+            Assert::same($source->content, 'test content');
+            Assert::same($source->content, 'test content');
         } finally {
             \fclose($stream);
         }
@@ -216,9 +219,9 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame('test', $source->read(0, 4));
+            Assert::same($source->read(0, 4), 'test');
 
-            $this->expectException(StreamNotRewindableException::class);
+            Expect::exception(StreamNotRewindableException::class);
 
             $source->content;
         } finally {
@@ -233,10 +236,10 @@ final class ResourceSourceTest extends TestCase
         try {
             $taken = new ResourceSource($stream)->toSeekableSource();
 
-            self::assertSame('test content', $taken->content);
-            self::assertSame('test', $taken->read(0, 4));
-            self::assertSame('content', $taken->read(5, 1024));
-            self::assertSame('test', $taken->read(0, 4));
+            Assert::same($taken->content, 'test content');
+            Assert::same($taken->read(0, 4), 'test');
+            Assert::same($taken->read(5, 1024), 'content');
+            Assert::same($taken->read(0, 4), 'test');
         } finally {
             \fclose($stream);
         }
@@ -250,9 +253,9 @@ final class ResourceSourceTest extends TestCase
             $source = new ResourceSource($stream);
             $source->toSeekableSource();
 
-            self::assertSame('test content', $source->content);
+            Assert::same($source->content, 'test content');
 
-            $this->expectException(StreamNotRewindableException::class);
+            Expect::exception(StreamNotRewindableException::class);
 
             $source->read(0, 4);
         } finally {
@@ -269,8 +272,8 @@ final class ResourceSourceTest extends TestCase
         $source = new ResourceSource($stream);
         $source->toSeekableSource();
 
-        self::assertSame('test', $source->read(0, 4));
-        self::assertSame(' content', $source->read(4, 1024));
+        Assert::same($source->read(0, 4), 'test');
+        Assert::same($source->read(4, 1024), ' content');
     }
 
     public function testTakenOverStreamWithoutUriBecomesAStringSource(): void
@@ -278,7 +281,7 @@ final class ResourceSourceTest extends TestCase
         $stream = $this->createNonSeekableResource('test content');
 
         try {
-            self::assertInstanceOf(StringSource::class, new ResourceSource($stream)->toSeekableSource());
+            Assert::instanceOf(new ResourceSource($stream)->toSeekableSource(), StringSource::class);
         } finally {
             \fclose($stream);
         }
@@ -293,9 +296,9 @@ final class ResourceSourceTest extends TestCase
         try {
             $taken = new ResourceSource($stream)->toSeekableSource();
 
-            self::assertInstanceOf(VirtualSource::class, $taken);
-            self::assertSame($this->temp, $taken->pathname);
-            self::assertSame('test content', $taken->content);
+            Assert::instanceOf($taken, VirtualSource::class);
+            Assert::same($taken->pathname, $this->temp);
+            Assert::same($taken->content, 'test content');
         } finally {
             \fclose($stream);
         }
@@ -305,7 +308,7 @@ final class ResourceSourceTest extends TestCase
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
 
-        $this->expectException(NonPositiveBytesCountException::class);
+        Expect::exception(NonPositiveBytesCountException::class);
 
         $source->read(0, 0);
     }
@@ -314,7 +317,7 @@ final class ResourceSourceTest extends TestCase
     {
         $source = new ResourceSource(\fopen('php://memory', 'rb+'));
 
-        $this->expectException(NegativeOffsetException::class);
+        Expect::exception(NegativeOffsetException::class);
 
         $source->read(-1, 1024);
     }
@@ -328,7 +331,7 @@ final class ResourceSourceTest extends TestCase
         $source->read(0, 1024);
         unset($source);
 
-        self::assertIsResource($stream);
+        Assert::true(\is_resource($stream));
     }
 
     public function testAutocloseIsDisabledByDefault(): void
@@ -338,7 +341,7 @@ final class ResourceSourceTest extends TestCase
         $source = new ResourceSource($stream);
         unset($source);
 
-        self::assertIsResource($stream);
+        Assert::true(\is_resource($stream));
     }
 
     public function testAutocloseClosesTheResource(): void
@@ -348,7 +351,7 @@ final class ResourceSourceTest extends TestCase
         $source = new ResourceSource($stream, autoclose: true);
         unset($source);
 
-        self::assertIsClosedResource($stream);
+        Assert::same(\get_debug_type($stream), 'resource (closed)');
     }
 
     public function testFailsInCaseOfClosedResource(): void
@@ -359,8 +362,7 @@ final class ResourceSourceTest extends TestCase
 
         \fclose($stream);
 
-        $this->expectException(ClosedStreamException::class);
-        $this->expectExceptionMessage('closed from the outside');
+        Expect::exception(ClosedStreamException::class)->withMessageContaining('closed from the outside');
 
         $source->content;
     }
@@ -377,12 +379,12 @@ final class ResourceSourceTest extends TestCase
 
         try {
             $source->content;
-            self::fail('Reading $content did not report the closed resource');
+            Assert::fail('Reading $content did not report the closed resource');
         } catch (ClosedStreamException $e) {
-            self::assertStringContainsString('closed from the outside', $e->getMessage());
+            Assert::string($e->getMessage())->contains('closed from the outside');
         }
 
-        $this->expectException(ClosedStreamException::class);
+        Expect::exception(ClosedStreamException::class);
 
         $source->read(0, 4);
     }
@@ -399,11 +401,11 @@ final class ResourceSourceTest extends TestCase
             $serialized = \serialize($source);
             $unserialized = \unserialize($serialized);
 
-            self::assertInstanceOf(ResourceSource::class, $unserialized);
-            self::assertSame($this->temp, $unserialized->uri);
+            Assert::instanceOf($unserialized, ResourceSource::class);
+            Assert::same($unserialized->uri, $this->temp);
 
-            self::assertSame('t content', $unserialized->content);
-            self::assertSame('t co', $unserialized->read(0, 4));
+            Assert::same($unserialized->content, 't content');
+            Assert::same($unserialized->read(0, 4), 't co');
         } finally {
             \fclose($stream);
         }
@@ -418,13 +420,13 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            self::assertSame('test', $source->read(0, 4));
+            Assert::same($source->read(0, 4), 'test');
 
             $unserialized = \unserialize(\serialize($source));
 
-            self::assertInstanceOf(ResourceSource::class, $unserialized);
-            self::assertSame('test content', $unserialized->content);
-            self::assertSame(' content', $unserialized->read(4, 1024));
+            Assert::instanceOf($unserialized, ResourceSource::class);
+            Assert::same($unserialized->content, 'test content');
+            Assert::same($unserialized->read(4, 1024), ' content');
         } finally {
             \fclose($stream);
         }
@@ -437,7 +439,7 @@ final class ResourceSourceTest extends TestCase
         try {
             $source = new ResourceSource($stream);
 
-            $this->expectException(StreamNotSerializableException::class);
+            Expect::exception(StreamNotSerializableException::class);
 
             \serialize($source);
         } finally {

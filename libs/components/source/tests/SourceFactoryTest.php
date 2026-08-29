@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace Phplrt\Source\Tests;
 
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Source\Driver\ResourceSourceDriver;
 use Phplrt\Source\Driver\SourceDriverInterface;
 use Phplrt\Source\Driver\SplFileInfoSourceDriver;
-use Phplrt\Source\Driver\ResourceSourceDriver;
 use Phplrt\Source\Driver\StringSourceDriver;
 use Phplrt\Source\Exception\NotCreatableException;
 use Phplrt\Source\FileSource;
-use Phplrt\Source\StringSource;
-use Phplrt\Source\SourceFactory;
 use Phplrt\Source\ResourceSource;
+use Phplrt\Source\SourceFactory;
+use Phplrt\Source\StringSource;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class SourceFactoryTest extends TestCase
 {
     public function testCreatesSourceFromString(): void
@@ -22,8 +26,8 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create('2 + 2');
 
-        self::assertInstanceOf(StringSource::class, $source);
-        self::assertSame('2 + 2', $source->content);
+        Assert::instanceOf($source, StringSource::class);
+        Assert::same($source->content, '2 + 2');
     }
 
     public function testCreatesFileFromSplFileInfo(): void
@@ -33,9 +37,9 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create(new \SplFileInfo($this->temp));
 
-        self::assertInstanceOf(FileSource::class, $source);
-        self::assertSame($this->temp, $source->pathname);
-        self::assertSame('2 + 2', $source->content);
+        Assert::instanceOf($source, FileSource::class);
+        Assert::same($source->pathname, $this->temp);
+        Assert::same($source->content, '2 + 2');
     }
 
     public function testCreatesStreamFromResource(): void
@@ -47,8 +51,8 @@ final class SourceFactoryTest extends TestCase
         $source = SourceFactory::createDefault()
             ->create($resource);
 
-        self::assertInstanceOf(ResourceSource::class, $source);
-        self::assertSame('test content', $source->content);
+        Assert::instanceOf($source, ResourceSource::class);
+        Assert::same($source->content, 'test content');
     }
 
     public function testPassesReadableThrough(): void
@@ -58,13 +62,12 @@ final class SourceFactoryTest extends TestCase
         $actual = SourceFactory::createDefault()
             ->create($expected);
 
-        self::assertSame($expected, $actual);
+        Assert::same($actual, $expected);
     }
 
     public function testFailsInCaseOfUnsupportedSource(): void
     {
-        $this->expectException(NotCreatableException::class);
-        $this->expectExceptionMessage('from int type');
+        Expect::exception(NotCreatableException::class)->withMessageContaining('from int type');
 
         SourceFactory::createDefault()
             ->create(42);
@@ -72,7 +75,7 @@ final class SourceFactoryTest extends TestCase
 
     public function testFailsInCaseOfNoDrivers(): void
     {
-        $this->expectException(NotCreatableException::class);
+        Expect::exception(NotCreatableException::class);
 
         new SourceFactory()
             ->create('2 + 2');
@@ -82,13 +85,12 @@ final class SourceFactoryTest extends TestCase
     {
         $expected = new StringSource('2 + 2');
 
-        self::assertSame($expected, new SourceFactory()->create($expected));
+        Assert::same(new SourceFactory()->create($expected), $expected);
     }
 
     public function testFailsInCaseOfNonStreamResource(): void
     {
-        $this->expectException(NotCreatableException::class);
-        $this->expectExceptionMessage('from non-stream resource type');
+        Expect::exception(NotCreatableException::class)->withMessageContaining('from non-stream resource type');
 
         SourceFactory::createDefault()
             ->create(\stream_context_create());
@@ -96,8 +98,7 @@ final class SourceFactoryTest extends TestCase
 
     public function testFailsInCaseOfEmptyPathname(): void
     {
-        $this->expectException(NotCreatableException::class);
-        $this->expectExceptionMessage('from empty pathname type');
+        Expect::exception(NotCreatableException::class)->withMessageContaining('from empty pathname type');
 
         SourceFactory::createDefault()
             ->create(new \SplFileInfo(''));
@@ -121,7 +122,7 @@ final class SourceFactoryTest extends TestCase
             new StringSourceDriver(),
         ]);
 
-        self::assertSame($expected, $factory->create('2 + 2'));
+        Assert::same($factory->create('2 + 2'), $expected);
     }
 
     public function testSkipsDriversThatDoNotRecognizeTheSource(): void
@@ -132,7 +133,7 @@ final class SourceFactoryTest extends TestCase
             new StringSourceDriver(),
         ]);
 
-        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
+        Assert::instanceOf($factory->create('2 + 2'), StringSource::class);
     }
 
     public function testAcceptsDriversFromTraversable(): void
@@ -142,7 +143,7 @@ final class SourceFactoryTest extends TestCase
             new StringSourceDriver(),
         ]));
 
-        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
+        Assert::instanceOf($factory->create('2 + 2'), StringSource::class);
     }
 
     public function testIgnoresDriverListKeys(): void
@@ -152,6 +153,6 @@ final class SourceFactoryTest extends TestCase
             'string' => new StringSourceDriver(),
         ]);
 
-        self::assertInstanceOf(StringSource::class, $factory->create('2 + 2'));
+        Assert::instanceOf($factory->create('2 + 2'), StringSource::class);
     }
 }

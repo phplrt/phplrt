@@ -6,14 +6,18 @@ namespace Phplrt\Source\Tests;
 
 use Phplrt\Source\Exception\FileNotFoundException;
 use Phplrt\Source\FileSource;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class FileSourceTest extends TestCase
 {
     public function testConstructor(): void
     {
         $file = new FileSource($this->temp);
 
-        self::assertSame($this->temp, $file->pathname);
+        Assert::same($file->pathname, $this->temp);
     }
 
     public function testIsExistsPropertyWhenFileExists(): void
@@ -22,14 +26,14 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertTrue($file->isExists);
+        Assert::true($file->isExists);
     }
 
     public function testIsExistsPropertyWhenFileNotExists(): void
     {
         $file = new FileSource($this->temp);
 
-        self::assertFalse($file->isExists);
+        Assert::false($file->isExists);
     }
 
     public function testIsReadablePropertyWhenFileIsReadable(): void
@@ -38,14 +42,14 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertTrue($file->isReadable);
+        Assert::true($file->isReadable);
     }
 
     public function testIsReadablePropertyWhenFileNotExists(): void
     {
         $file = new FileSource($this->temp);
 
-        self::assertFalse($file->isReadable);
+        Assert::false($file->isReadable);
     }
 
     public function testModifiedAtProperty(): void
@@ -55,7 +59,7 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame($expectedTime, $file->modifiedAt);
+        Assert::same($file->modifiedAt, $expectedTime);
     }
 
     public function testContentProperty(): void
@@ -65,7 +69,7 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame($content, $file->content);
+        Assert::same($file->content, $content);
     }
 
     public function testContentIsTheWholeFile(): void
@@ -74,12 +78,12 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('test', $file->read(0, 4));
+        Assert::same($file->read(0, 4), 'test');
 
-        self::assertSame('test content', $file->content);
-        self::assertSame('test content', $file->content);
+        Assert::same($file->content, 'test content');
+        Assert::same($file->content, 'test content');
 
-        self::assertSame(' content', $file->read(4, 1024));
+        Assert::same($file->read(4, 1024), ' content');
     }
 
     public function testTheFileIsGivenUpAlongWithTheSource(): void
@@ -88,19 +92,19 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('first content', $file->content);
+        Assert::same($file->content, 'first content');
 
         unset($file);
 
-        self::assertNotFalse(\file_put_contents($this->temp, 'second content'));
-        self::assertSame('second content', new FileSource($this->temp)->content);
+        Assert::notSame(\file_put_contents($this->temp, 'second content'), false);
+        Assert::same(new FileSource($this->temp)->content, 'second content');
     }
 
     public function testContentPropertyThrowsWhenFileNotFound(): void
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(FileNotFoundException::class);
+        Expect::exception(FileNotFoundException::class);
 
         $file->content;
     }
@@ -109,7 +113,7 @@ final class FileSourceTest extends TestCase
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(FileNotFoundException::class);
+        Expect::exception(FileNotFoundException::class);
 
         $file->size;
     }
@@ -118,7 +122,7 @@ final class FileSourceTest extends TestCase
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(FileNotFoundException::class);
+        Expect::exception(FileNotFoundException::class);
 
         $file->modifiedAt;
     }
@@ -129,7 +133,7 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame(12, $file->size);
+        Assert::same($file->size, 12);
     }
 
     public function testReadsTheFileFromTheBeginning(): void
@@ -139,7 +143,7 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame($content, $file->read(0, 1024));
+        Assert::same($file->read(0, 1024), $content);
     }
 
     public function testReadsByChunks(): void
@@ -148,8 +152,8 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('test', $file->read(0, 4));
-        self::assertSame(' content', $file->read(4, 1024));
+        Assert::same($file->read(0, 4), 'test');
+        Assert::same($file->read(4, 1024), ' content');
     }
 
     public function testReadsInAnArbitraryOrder(): void
@@ -158,9 +162,9 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertSame('content', $file->read(5, 1024));
-        self::assertSame('test', $file->read(0, 4));
-        self::assertSame('content', $file->read(5, 1024));
+        Assert::same($file->read(5, 1024), 'content');
+        Assert::same($file->read(0, 4), 'test');
+        Assert::same($file->read(5, 1024), 'content');
     }
 
     public function testDoesNotOpenTheFileUntilItIsRead(): void
@@ -171,11 +175,11 @@ final class FileSourceTest extends TestCase
 
         $file = new FileSource($this->temp);
 
-        self::assertCount($before, \get_resources('stream'));
+        Assert::count(\get_resources('stream'), $before);
 
         $file->read(0, 1);
 
-        self::assertCount($before + 1, \get_resources('stream'));
+        Assert::count(\get_resources('stream'), $before + 1);
     }
 
     public function testClosesTheFileAlongWithTheSource(): void
@@ -188,14 +192,14 @@ final class FileSourceTest extends TestCase
         $file->read(0, 1);
         unset($file);
 
-        self::assertCount($before, \get_resources('stream'));
+        Assert::count(\get_resources('stream'), $before);
     }
 
     public function testReadingThrowsWhenFileNotFound(): void
     {
         $file = new FileSource($this->temp);
 
-        $this->expectException(FileNotFoundException::class);
+        Expect::exception(FileNotFoundException::class);
 
         $file->read(0, 1024);
     }

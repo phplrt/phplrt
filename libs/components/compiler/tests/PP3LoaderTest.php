@@ -26,10 +26,15 @@ use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Data\DataSet;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class PP3LoaderTest extends TestCase
 {
     private const string PATHNAME = '/app/grammar.pp3';
@@ -38,54 +43,43 @@ final class PP3LoaderTest extends TestCase
 
     private ParserBuilder $parser;
 
+    #[BeforeTest]
     protected function setUp(): void
     {
         $this->lexer = new LexerBuilder();
         $this->parser = new ParserBuilder();
     }
 
-    #[TestDox('A rule is separated from what it recognizes by a colon')]
     public function testColonSeparatesARule(): void
     {
         $this->load("%token T_A a\nA : <T_A> ;");
 
-        self::assertNotNull($this->parser->initial);
+        Assert::notNull($this->parser->initial);
     }
 
-    #[TestDox('A rule separated by anything but a colon is reported')]
-    public function testOtherSeparatorsAreReported(): void
+    #[DataSet(['='], 'equals sign')]
+    #[DataSet(['::='], 'bnf arrow')]
+    public function testOtherSeparatorsAreReported(string $separator): never
     {
-        foreach (['=', '::='] as $separator) {
-            $this->parser = new ParserBuilder();
-            $this->lexer = new LexerBuilder();
+        Expect::exception(UnexpectedTokenException::class);
 
-            try {
-                $this->load(\sprintf("%%token T_A a\nA %s <T_A> ;", $separator));
-
-                self::fail(\sprintf('The "%s" separator has been accepted', $separator));
-            } catch (UnexpectedTokenException) {
-                self::assertTrue(true);
-            }
-        }
+        $this->load(\sprintf("%%token T_A a\nA %s <T_A> ;", $separator));
     }
 
-    #[TestDox('A rule marked by "#" is reported')]
     public function testKeptMarkerIsReported(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $this->load("%token T_A a\n#A : <T_A> ;");
     }
 
-    #[TestDox('A reducer written as a class name is reported')]
     public function testClassReducerIsReported(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $this->load("%token T_A a\nA -> \\App\\Node : <T_A> ;");
     }
 
-    #[TestDox('A statement written after "&" is recognized without being read')]
     public function testExpectedPredicate(): void
     {
         $parser = $this->compile(<<<'PP3'
@@ -97,10 +91,9 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        self::assertSame(2, $parser->parse(StringSource::createFromString('ab')));
+        Assert::same($parser->parse(StringSource::createFromString('ab')), 2);
     }
 
-    #[TestDox('A statement written after "!" is recognized when the statement is not')]
     public function testUnexpectedPredicate(): void
     {
         $parser = $this->compile(<<<'PP3'
@@ -115,14 +108,13 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        self::assertSame('42', $parser->parse(StringSource::createFromString('42')));
+        Assert::same($parser->parse(StringSource::createFromString('42')), '42');
 
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $parser->parse(StringSource::createFromString('42 beta'));
     }
 
-    #[TestDox('A predicate stands before the quantifier of the statement it looks at')]
     public function testPredicateAppliesToTheQuantifiedStatement(): void
     {
         $parser = $this->compile(<<<'PP3'
@@ -134,94 +126,85 @@ final class PP3LoaderTest extends TestCase
               ;
             PP3);
 
-        self::assertSame(3, $parser->parse(StringSource::createFromString('aab')));
+        Assert::same($parser->parse(StringSource::createFromString('aab')), 3);
     }
 
-    #[TestDox('A reducer written as code is read')]
     public function testCodeReducerIsRead(): void
     {
         $this->load("%token T_A a\nA -> { return 42; } : <T_A> ;");
 
         $reducer = $this->parser->initial?->reducer;
 
-        self::assertInstanceOf(PhpCodeReducer::class, $reducer);
-        self::assertSame('return 42;', $reducer->code);
+        Assert::instanceOf($reducer, PhpCodeReducer::class);
+        Assert::same($reducer->code, 'return 42;');
     }
 
-    #[TestDox('The "state" action hands the reading over to the lexer of that state')]
     public function testStateActionEntersALexer(): void
     {
         $this->load("%token T_QUOTE \" -> state(string)\n%token string:T_TEXT [^\"]++");
 
         [$quote] = \array_values($this->lexer->tokens);
 
-        self::assertSame(TransitionType::Enter, $quote->transition?->type);
-        self::assertSame('string', $quote->transition->lexer);
+        Assert::same($quote->transition?->type, TransitionType::Enter);
+        Assert::same($quote->transition->lexer, 'string');
     }
 
-    #[TestDox('The "exit" action gives the control back')]
     public function testExitActionLeavesALexer(): void
     {
         $this->load("%token T_QUOTE \" -> state(string)\n%token string:T_CLOSE \" -> exit()");
 
         $nested = $this->lexer->lexers['string'] ?? null;
 
-        self::assertInstanceOf(LexerBuilder::class, $nested);
+        Assert::instanceOf($nested, LexerBuilder::class);
 
         [$close] = \array_values($nested->tokens);
 
-        self::assertSame(TransitionType::Exit, $close->transition?->type);
+        Assert::same($close->transition?->type, TransitionType::Exit);
     }
 
-    #[TestDox('The "channel" action emits the token to that channel')]
     public function testChannelActionSetsTheChannel(): void
     {
         $this->load('%token T_COMMENT //[^\n]*+ -> channel(comments)');
 
         [$comment] = \array_values($this->lexer->tokens);
 
-        self::assertEquals(new UserDefinedChannel('comments'), $comment->channel);
+        Assert::equals($comment->channel, new UserDefinedChannel('comments'));
     }
 
-    #[TestDox('The "channel" action names a built-in channel as well')]
     public function testChannelActionSetsABuiltInChannel(): void
     {
         $this->load('%token T_WHITESPACE \s++ -> channel(Hidden)');
 
         [$whitespace] = \array_values($this->lexer->tokens);
 
-        self::assertSame(Channel::Hidden, $whitespace->channel);
-        self::assertTrue($whitespace->isHidden);
+        Assert::same($whitespace->channel, Channel::Hidden);
+        Assert::true($whitespace->isHidden);
     }
 
-    #[TestDox('An action the compiler knows nothing about is reported')]
     public function testUnknownActionIsReported(): void
     {
-        $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessageIs('Unrecognized token action "skip"');
+        Expect::exception(UnsupportedTokenActionException::class)
+        ->withMessage('Unrecognized token action "skip"');
 
         $this->load('%token T_A a -> skip()');
     }
 
-    #[TestDox('An action written without the value it needs is reported')]
     public function testActionWithoutValueIsReported(): void
     {
-        $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessageIs('The "state" action of a token expects a value');
+        Expect::exception(UnsupportedTokenActionException::class)
+        ->withMessage('The "state" action of a token expects a value');
 
         $this->load('%token T_A a -> state()');
     }
 
-    #[TestDox('An action written with a value it does nothing with is reported')]
     public function testActionWithUnexpectedValueIsReported(): void
     {
-        $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessageIs('The "exit" action of a token expects no value');
+        Expect::exception(UnsupportedTokenActionException::class)
+        ->withMessage('The "exit" action of a token expects no value');
 
         $this->load('%token T_A a -> exit(somewhere)');
     }
 
-    #[TestDox('An action is pointed at by the place it is written at')]
     public function testActionRefersToItsDeclaration(): void
     {
         $source = '%token T_A a -> skip()';
@@ -229,90 +212,82 @@ final class PP3LoaderTest extends TestCase
         try {
             $this->load($source);
         } catch (UnsupportedTokenActionException $e) {
-            self::assertSame(\strpos($source, 'skip()'), $e->offset);
-            self::assertSame(\strlen('skip()'), $e->length);
+            Assert::same($e->offset, \strpos($source, 'skip()'));
+            Assert::same($e->length, \strlen('skip()'));
 
             return;
         }
 
-        self::fail('The action has been accepted');
+        Assert::fail('The action has been accepted');
     }
 
-    #[TestDox('A token does everything it is written to do')]
     public function testSeveralActionsAreApplied(): void
     {
         $this->load("%token T_QUOTE \" -> state(string), channel(strings)\n%token string:T_TEXT [^\"]++");
 
         [$quote] = \array_values($this->lexer->tokens);
 
-        self::assertSame(TransitionType::Enter, $quote->transition?->type);
-        self::assertSame('string', $quote->transition->lexer);
-        self::assertEquals(new UserDefinedChannel('strings'), $quote->channel);
+        Assert::same($quote->transition?->type, TransitionType::Enter);
+        Assert::same($quote->transition->lexer, 'string');
+        Assert::equals($quote->channel, new UserDefinedChannel('strings'));
     }
 
-    #[TestDox('The order the actions are written in does not matter')]
     public function testSeveralActionsAreAppliedInAnyOrder(): void
     {
         $this->load("%token T_QUOTE \" -> channel(strings), state(string)\n%token string:T_TEXT [^\"]++");
 
         [$quote] = \array_values($this->lexer->tokens);
 
-        self::assertSame(TransitionType::Enter, $quote->transition?->type);
-        self::assertEquals(new UserDefinedChannel('strings'), $quote->channel);
+        Assert::same($quote->transition?->type, TransitionType::Enter);
+        Assert::equals($quote->channel, new UserDefinedChannel('strings'));
     }
 
-    #[TestDox('A token moving the reading twice is reported')]
     public function testSeveralTransitionsAreReported(): void
     {
-        $this->expectException(UnsupportedTokenActionException::class);
-        $this->expectExceptionMessageIs('A token is read once, so the "exit" '
+        Expect::exception(UnsupportedTokenActionException::class)
+        ->withMessage('A token is read once, so the "exit" '
             . 'action cannot be applied after the "state" one');
 
         $this->load("%token T_QUOTE \" -> state(string), exit()\n%token string:T_TEXT [^\"]++");
     }
 
-    #[TestDox('A token naming the state it switches to is no longer read')]
     public function testStateNameIsNotAnAction(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $this->load("%token T_QUOTE \" -> string\n%token string:T_TEXT [^\"]++");
     }
 
-    #[TestDox('An expression beginning with an arrow is still read as an expression')]
     public function testPatternBeginningWithAnArrow(): void
     {
         $this->load('%token T_PHP ->\\s*+(?=\\{) -> state(php)');
 
         [$php] = \array_values($this->lexer->tokens);
 
-        self::assertInstanceOf(RegexTokenDefinition::class, $php);
-        self::assertSame('->\\s*+(?=\\{)', $php->regex);
-        self::assertSame(TransitionType::Enter, $php->transition?->type);
+        Assert::instanceOf($php, RegexTokenDefinition::class);
+        Assert::same($php->regex, '->\\s*+(?=\\{)');
+        Assert::same($php->transition?->type, TransitionType::Enter);
     }
 
-    #[TestDox('An expression spelled like a name is still read as an expression')]
     public function testPatternSpelledLikeAName(): void
     {
         $this->load("%token T_TRUE true -> channel(literals)\n%token T_FALSE false");
 
         [$true, $false] = \array_values($this->lexer->tokens);
 
-        self::assertInstanceOf(RegexTokenDefinition::class, $true);
-        self::assertSame('true', $true->regex);
-        self::assertInstanceOf(RegexTokenDefinition::class, $false);
-        self::assertSame('false', $false->regex);
+        Assert::instanceOf($true, RegexTokenDefinition::class);
+        Assert::same($true->regex, 'true');
+        Assert::instanceOf($false, RegexTokenDefinition::class);
+        Assert::same($false->regex, 'false');
     }
 
-    #[TestDox('A part of a declaration written twice is reported')]
     public function testDeclarationWrittenTwiceIsReported(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $this->load('%token T_A a b');
     }
 
-    #[TestDox('A statement written of a value declares the token reading exactly it')]
     public function testInlineValue(): void
     {
         $result = $this->build(<<<'PP3'
@@ -325,10 +300,9 @@ final class PP3LoaderTest extends TestCase
 
         $parser = $result->parser->toParser($result->lexer->toLexer());
 
-        self::assertSame(3, $parser->parse(StringSource::createFromString('1+2')));
+        Assert::same($parser->parse(StringSource::createFromString('1+2')), 3);
     }
 
-    #[TestDox('A statement written of an expression declares the token recognizing it')]
     public function testInlinePattern(): void
     {
         $result = $this->build(<<<'PP3'
@@ -342,11 +316,10 @@ final class PP3LoaderTest extends TestCase
 
         $parser = $result->parser->toParser($result->lexer->toLexer());
 
-        self::assertSame(2, $parser->parse(StringSource::createFromString('1 and 2')));
-        self::assertSame(2, $parser->parse(StringSource::createFromString('1 xor 2')));
+        Assert::same($parser->parse(StringSource::createFromString('1 and 2')), 2);
+        Assert::same($parser->parse(StringSource::createFromString('1 xor 2')), 2);
     }
 
-    #[TestDox('The same value written in several rules declares a single token')]
     public function testInlineValueIsDeclaredOnce(): void
     {
         $this->load(<<<'PP3'
@@ -356,10 +329,9 @@ final class PP3LoaderTest extends TestCase
             B : "+" <T_NUMBER> ;
             PP3);
 
-        self::assertCount(2, $this->lexer->tokens);
+        Assert::count($this->lexer->tokens, 2);
     }
 
-    #[TestDox('A token declared for every state is added to each of them')]
     public function testSharedTokenReachesEveryState(): void
     {
         $result = $this->build(<<<'PP3'
@@ -370,15 +342,14 @@ final class PP3LoaderTest extends TestCase
             A : <T_QUOTE> ;
             PP3);
 
-        self::assertContains('T_WHITESPACE', $result->lexer->names);
+        Assert::contains($result->lexer->names, 'T_WHITESPACE');
 
         $nested = $result->lexer->lexers['string'] ?? null;
 
-        self::assertInstanceOf(LexerBuilderResult::class, $nested);
-        self::assertContains('T_WHITESPACE', $nested->names);
+        Assert::instanceOf($nested, LexerBuilderResult::class);
+        Assert::contains($nested->names, 'T_WHITESPACE');
     }
 
-    #[TestDox('A token declared for every state is read by the initial one in the order it is declared in')]
     public function testSharedTokenKeepsItsOrder(): void
     {
         $result = $this->build(<<<'PP3'
@@ -389,13 +360,9 @@ final class PP3LoaderTest extends TestCase
             A : <T_FIRST> ;
             PP3);
 
-        self::assertSame(
-            ['T_FIRST', 'T_SHARED', 'T_LAST'],
-            \array_values($result->lexer->names),
-        );
+        Assert::same(\array_values($result->lexer->names), ['T_FIRST', 'T_SHARED', 'T_LAST']);
     }
 
-    #[TestDox('A token declared for every state reaches a state declared after it')]
     public function testSharedTokenReachesALaterState(): void
     {
         $result = $this->build(<<<'PP3'
@@ -407,11 +374,10 @@ final class PP3LoaderTest extends TestCase
 
         $nested = $result->lexer->lexers['one'] ?? null;
 
-        self::assertInstanceOf(LexerBuilderResult::class, $nested);
-        self::assertContains('T_WHITESPACE', $nested->names);
+        Assert::instanceOf($nested, LexerBuilderResult::class);
+        Assert::contains($nested->names, 'T_WHITESPACE');
     }
 
-    #[TestDox('A lexer written by hand is not given the shared tokens')]
     public function testSharedTokenSkipsAnEmbeddedLexer(): void
     {
         $result = $this->build(<<<'PP3'
@@ -421,59 +387,51 @@ final class PP3LoaderTest extends TestCase
             A : <T_OPEN> ;
             PP3);
 
-        self::assertInstanceOf(PhpCodeEmbeddedLexer::class, $result->lexer->lexers['php'] ?? null);
+        Assert::instanceOf($result->lexer->lexers['php'] ?? null, PhpCodeEmbeddedLexer::class);
     }
 
-    #[TestDox('A lexer is declared as the code building it')]
     public function testLexerDeclaration(): void
     {
         $this->load('%lexer php -> { new \App\PhpLexer() }');
 
         $lexer = $this->lexer->lexers['php'] ?? null;
 
-        self::assertInstanceOf(PhpCodeEmbeddedLexer::class, $lexer);
-        self::assertSame('new \App\PhpLexer()', $lexer->code);
+        Assert::instanceOf($lexer, PhpCodeEmbeddedLexer::class);
+        Assert::same($lexer->code, 'new \App\PhpLexer()');
     }
 
-    #[TestDox('A lexer written of no code is reported')]
     public function testEmptyLexerDeclarationIsReported(): void
     {
-        $this->expectException(EmptyLexerException::class);
+        Expect::exception(EmptyLexerException::class);
 
         $this->load('%lexer php -> {}');
     }
 
-    #[TestDox('A PCRE modifier is enabled by its name and by its value alike')]
-    public function testPcreFlagPragma(): void
+    #[DataSet(['Caseless'], 'long name')]
+    #[DataSet(['i'], 'short name')]
+    public function testPcreFlagPragma(string $flag): void
     {
-        foreach (['Caseless', 'i'] as $flag) {
-            $this->lexer = new LexerBuilder();
+        $this->load(\sprintf('%%pragma lexer.pcre.flag %s', $flag));
 
-            $this->load(\sprintf('%%pragma lexer.pcre.flag %s', $flag));
-
-            self::assertArrayHasKey('i', $this->lexer->flags);
-        }
+        Assert::array($this->lexer->flags)->hasKeys('i');
     }
 
-    #[TestDox('A PCRE modifier is disabled by a setting of the grammar')]
     public function testPcreDisablePragma(): void
     {
-        self::assertArrayHasKey('u', $this->lexer->flags);
+        Assert::array($this->lexer->flags)->hasKeys('u');
 
         $this->load('%pragma lexer.pcre.disable Utf8');
 
-        self::assertArrayNotHasKey('u', $this->lexer->flags);
+        Assert::array($this->lexer->flags)->doesNotHaveKeys('u');
     }
 
-    #[TestDox('A modifier the compiler knows nothing about is reported')]
     public function testUnknownPcreFlagIsReported(): void
     {
-        $this->expectException(UnsupportedPragmaValueException::class);
+        Expect::exception(UnsupportedPragmaValueException::class);
 
         $this->load('%pragma lexer.pcre.flag Nope');
     }
 
-    #[TestDox('A pass is registered at the priority its setting is named after')]
     public function testPassPragmas(): void
     {
         $this->load(\sprintf(
@@ -482,46 +440,43 @@ final class PP3LoaderTest extends TestCase
             ParserPassStub::class,
         ));
 
-        self::assertContainsOnlyInstancesOf(
-            LexerPassStub::class,
+        Assert::true(\array_all(
             \array_filter(
                 $this->lexer->compilerPasses[LexerBuilder::PASS_PRIORITY_CHECK],
                 static fn(object $pass): bool => $pass instanceof LexerPassStub,
             ),
-        );
+            static fn(object $pass): bool => $pass instanceof LexerPassStub,
+        ));
 
         $optimize = $this->parser->compilerPasses[ParserBuilder::PASS_PRIORITY_OPTIMIZE];
 
-        self::assertNotEmpty(\array_filter(
+        Assert::notBlank(\array_filter(
             $optimize,
             static fn(object $pass): bool => $pass instanceof ParserPassStub,
         ));
     }
 
-    #[TestDox('A pass is dropped by a setting of the grammar')]
     public function testDisablePassPragma(): void
     {
         $this->load(\sprintf('%%pragma parser.disable \\%s', NestedConcatenationParserCompilerPass::class));
 
         foreach ($this->parser->compilerPasses as $passes) {
             foreach ($passes as $pass) {
-                self::assertNotInstanceOf(NestedConcatenationParserCompilerPass::class, $pass);
+                Assert::false($pass instanceof NestedConcatenationParserCompilerPass);
             }
         }
     }
 
-    #[TestDox('A pass that does not exist is reported')]
     public function testUnknownPassIsReported(): void
     {
-        $this->expectException(UnsupportedPragmaValueException::class);
+        Expect::exception(UnsupportedPragmaValueException::class);
 
         $this->load('%pragma lexer.check \No\Such\Pass');
     }
 
-    #[TestDox('A pass of the wrong kind is reported')]
     public function testPassOfTheWrongKindIsReported(): void
     {
-        $this->expectException(UnsupportedPragmaValueException::class);
+        Expect::exception(UnsupportedPragmaValueException::class);
 
         $this->load(\sprintf('%%pragma lexer.check \\%s', ParserPassStub::class));
     }

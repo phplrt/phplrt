@@ -7,18 +7,20 @@ namespace Phplrt\Contracts\Source\Tests;
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\FileInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use Testo\Assert\ExpectNoAssertions;
+use Testo\Test;
 
 /**
  * Note: Changing the behavior of these tests is allowed ONLY when updating
  *       a MAJOR version of the package.
  */
+#[Test]
 class CompatibilityTest extends TestCase
 {
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testFileCompatibility(): void
     {
-        new class () implements FileInterface {
+        new class implements FileInterface {
             public string $pathname;
 
             public string $content;
@@ -35,10 +37,10 @@ class CompatibilityTest extends TestCase
         };
     }
 
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testReadableCompatibility(): void
     {
-        new class () implements ReadableInterface {
+        new class implements ReadableInterface {
             public string $content;
 
             public function read(int $offset, int $bytes): string
@@ -53,9 +55,9 @@ class CompatibilityTest extends TestCase
         };
     }
 
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testSourceExceptionCompatibility(): void
     {
-        new class () extends \Exception implements SourceExceptionInterface {};
+        new class extends \Exception implements SourceExceptionInterface {};
     }
 }

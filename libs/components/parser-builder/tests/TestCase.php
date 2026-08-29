@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Tests;
 
+use Phplrt\Contracts\Lexer\LexerInterface;
+use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
-use Phplrt\Contracts\Lexer\LexerInterface;
-use Phplrt\Contracts\Lexer\TokenInterface;
-use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -18,9 +18,9 @@ use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Testo\Assert;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase
 {
     protected static function createLexerBuilder(): LexerBuilder
     {
@@ -101,6 +101,6 @@ abstract class TestCase extends BaseTestCase
             }
         }
 
-        self::fail(\sprintf('Rule "%s" has not been defined', $name));
+        Assert::fail(\sprintf('Rule "%s" has not been defined', $name));
     }
 }

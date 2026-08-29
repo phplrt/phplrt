@@ -8,11 +8,13 @@ use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Compiler\Syntax\PP3\PP3Parser;
 use Phplrt\Source\FileSource;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class SyntaxGrammarTest extends TestCase
 {
     private const string BUILD_SCRIPT = 'composer dev:syntax';
@@ -35,7 +37,6 @@ final class SyntaxGrammarTest extends TestCase
     }
 
     #[DataProvider('formatsDataProvider')]
-    #[TestDox('The parser of a format is what the grammar describing it compiles into')]
     public function testGeneratedParserMatchesTheGrammar(
         string $grammar,
         string $pathname,
@@ -48,28 +49,22 @@ final class SyntaxGrammarTest extends TestCase
             ->withNamespaceName($namespace)
             ->withClassName($class);
 
-        self::assertSame(
-            \file_get_contents($pathname),
-            $expected,
-            \sprintf('The grammar has changed, run "php %s"', self::BUILD_SCRIPT),
-        );
+        Assert::same($expected, \file_get_contents($pathname), \sprintf('The grammar has changed, run "php %s"', self::BUILD_SCRIPT));
     }
 
-    #[TestDox('The grammar of the PP3 format is read by the parser it describes')]
     public function testPP3GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP3Parser()
             ->parse(FileSource::createFromPathname(__DIR__ . '/../resources/pp3.pp3'));
 
-        self::assertNotEmpty([...$declarations]);
+        Assert::notBlank([...$declarations]);
     }
 
-    #[TestDox('A grammar of the PP2 format is read by the parser its own grammar describes')]
     public function testPP2GrammarIsReadByItsOwnParser(): void
     {
         $declarations = new PP2Parser()
             ->parse(FileSource::createFromPathname(__DIR__ . '/resources/grammar.pp2'));
 
-        self::assertNotEmpty([...$declarations]);
+        Assert::notBlank([...$declarations]);
     }
 }

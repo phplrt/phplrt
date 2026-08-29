@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Tests\Token;
 
 use Phplrt\Contracts\Lexer\Channel;
-use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Lexer;
 use Phplrt\Lexer\Tests\TestCase;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class TokenStreamTest extends TestCase
 {
     private static function createExpressionLexer(iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS): LexerInterface
@@ -28,7 +29,6 @@ final class TokenStreamTest extends TestCase
         }, $skip);
     }
 
-    #[TestDox('Tokens are produced in the same order they occur in the source')]
     public function testProducesTokensInSourceOrder(): void
     {
         $lexer = self::createExpressionLexer(skip: []);
@@ -36,7 +36,7 @@ final class TokenStreamTest extends TestCase
 
         $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertSame([
+        Assert::same($actual, [
             'T_NAME(x)@0',
             'T_WHITESPACE( )@1',
             'T_ASSIGN(=)@2',
@@ -47,10 +47,9 @@ final class TokenStreamTest extends TestCase
             'T_WHITESPACE( )@7',
             'T_NUMBER(20)@8',
             'EndOfInput()@10',
-        ], $actual);
+        ]);
     }
 
-    #[TestDox('A token of a channel the lexer does not report never reaches the stream')]
     public function testSkippedChannelDoesNotReachTheStream(): void
     {
         $lexer = self::createExpressionLexer();
@@ -58,17 +57,16 @@ final class TokenStreamTest extends TestCase
 
         $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertSame([
+        Assert::same($actual, [
             'T_NAME(x)@0',
             'T_ASSIGN(=)@2',
             'T_NUMBER(1)@4',
             'T_PLUS(+)@6',
             'T_NUMBER(20)@8',
             'EndOfInput()@10',
-        ], $actual);
+        ]);
     }
 
-    #[TestDox('Every token points at the exact place its lexeme was read from')]
     public function testEveryTokenPointsAtItsPositionInSource(): void
     {
         $lexer = self::createExpressionLexer();
@@ -77,7 +75,6 @@ final class TokenStreamTest extends TestCase
         self::assertTokensMatchSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
-    #[TestDox('The tokens together cover the whole source')]
     public function testTokensCoverTheWholeSource(): void
     {
         $lexer = self::createExpressionLexer(skip: []);
@@ -86,7 +83,6 @@ final class TokenStreamTest extends TestCase
         self::assertTokensCoverSource($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
-    #[TestDox('The stream is always terminated by a single end of input token')]
     public function testStreamIsTerminatedByEndOfInputToken(): void
     {
         $lexer = self::createExpressionLexer();
@@ -95,19 +91,17 @@ final class TokenStreamTest extends TestCase
         self::assertTerminatedStream($source, $lexer->lex(StringSource::createFromString($source)));
     }
 
-    #[TestDox('An empty source produces nothing but the terminal token')]
     public function testEmptySourceProducesOnlyTheTerminalToken(): void
     {
         $lexer = self::createExpressionLexer();
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createEmpty()), false);
 
-        self::assertCount(1, $tokens);
-        self::assertSame(Channel::EndOfInput, $tokens[0]->channel);
-        self::assertSame(0, $tokens[0]->offset);
+        Assert::count($tokens, 1);
+        Assert::same($tokens[0]->channel, Channel::EndOfInput);
+        Assert::same($tokens[0]->offset, 0);
     }
 
-    #[TestDox('A token value holds the exact lexeme, whitespace included')]
     public function testValueContainsTheExactLexeme(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -117,10 +111,9 @@ final class TokenStreamTest extends TestCase
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
 
-        self::assertSame('"  spaced  "', $tokens[0]->value);
+        Assert::same($tokens[0]->value, '"  spaced  "');
     }
 
-    #[TestDox('Token offsets are measured in bytes, not in characters')]
     public function testOffsetsAreMeasuredInBytes(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -131,15 +124,14 @@ final class TokenStreamTest extends TestCase
 
         $actual = self::describe($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertSame([
+        Assert::same($actual, [
             'T_WORD(привет)@0',
             'T_WHITESPACE( )@12',
             'T_WORD(мир)@13',
             'EndOfInput()@19',
-        ], $actual);
+        ]);
     }
 
-    #[TestDox('An anonymous token has no name')]
     public function testAnonymousTokenHasNoName(): void
     {
         $lexer = self::lexer(static function (LexerBuilder $lexer): void {
@@ -148,10 +140,9 @@ final class TokenStreamTest extends TestCase
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('42')), false);
 
-        self::assertNull($tokens[0]->name);
+        Assert::null($tokens[0]->name);
     }
 
-    #[TestDox('Tokens of different types are distinguished by their identifier')]
     public function testNamedTokensAreDistinguishedByIdentifier(): void
     {
         $lexer = self::createExpressionLexer();
@@ -163,25 +154,17 @@ final class TokenStreamTest extends TestCase
             $identifiers[$token->name ?? 'eoi'] = $token->id;
         }
 
-        self::assertSame(
-            \count($identifiers),
-            \count(\array_unique($identifiers)),
-        );
+        Assert::same(\count(\array_unique($identifiers)), \count($identifiers));
     }
 
-    #[TestDox('Analysing the same source twice produces the same result')]
     public function testRepeatedAnalysisProducesTheSameResult(): void
     {
         $lexer = self::createExpressionLexer();
         $source = 'a = 1 + 2';
 
-        self::assertSame(
-            self::describe($lexer->lex(StringSource::createFromString($source))),
-            self::describe($lexer->lex(StringSource::createFromString($source))),
-        );
+        Assert::same(self::describe($lexer->lex(StringSource::createFromString($source))), self::describe($lexer->lex(StringSource::createFromString($source))));
     }
 
-    #[TestDox('An analysis does not depend on the previous ones')]
     public function testAnalysisDoesNotDependOnPreviousCalls(): void
     {
         $lexer = self::createExpressionLexer();
@@ -191,6 +174,6 @@ final class TokenStreamTest extends TestCase
         $lexer->lex(StringSource::createFromString('completely + different + source'));
         $after = self::describe($lexer->lex(StringSource::createFromString($source)));
 
-        self::assertSame($before, $after);
+        Assert::same($after, $before);
     }
 }

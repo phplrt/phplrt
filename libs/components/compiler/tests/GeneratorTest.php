@@ -20,14 +20,19 @@ use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Lifecycle\AfterTest;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class GeneratorTest extends TestCase
 {
     private array $files = [];
 
+    #[AfterTest]
     protected function tearDown(): void
     {
         foreach ($this->files as $pathname) {
@@ -37,37 +42,33 @@ final class GeneratorTest extends TestCase
         $this->files = [];
     }
 
-    #[TestDox('The generated parser recognizes what the grammar says')]
     public function testGeneratedParserRecognizesTheGrammar(): void
     {
         $parser = $this->generate('grammar.pp2');
 
-        self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2 + 39')), 42);
     }
 
-    #[TestDox('The generated lexer reads the fragments the grammar says')]
     public function testGeneratedLexerReadsTheFragments(): void
     {
         $parser = $this->generate('states.pp2');
 
         $result = $parser->parse(StringSource::createFromString('"hello",'));
 
-        self::assertIsArray($result);
-        self::assertInstanceOf(TokenEmbedding::class, $result[0]);
-        self::assertSame(['T_TEXT', 'T_QUOTE_CLOSE'], \array_column($result[0]->children, 'name'));
+        Assert::array($result);
+        Assert::instanceOf($result[0], TokenEmbedding::class);
+        Assert::same(\array_column($result[0]->children, 'name'), ['T_TEXT', 'T_QUOTE_CLOSE']);
     }
 
-    #[TestDox('The generated code belongs to the given namespace')]
     public function testNamespaceIsGenerated(): void
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
             ->withNamespaceName('Example\\Some');
 
-        self::assertStringContainsString("\nnamespace Example\\Some;\n", $code);
+        Assert::string($code)->contains("\nnamespace Example\\Some;\n");
     }
 
-    #[TestDox('The generated code refers to the given classes by their short names')]
     public function testClassImportsAreGenerated(): void
     {
         $code = (string) $this->compile('grammar.pp2')
@@ -75,48 +76,43 @@ final class GeneratorTest extends TestCase
             ->withClassImport('App\\Node')
             ->withClassImport('App\\Other\\Node', as: 'OtherNode');
 
-        self::assertStringContainsString("\nuse App\\Node;\nuse App\\Other\\Node as OtherNode;\n", $code);
+        Assert::string($code)->contains("\nuse App\\Node;\nuse App\\Other\\Node as OtherNode;\n");
     }
 
-    #[TestDox('A named token is referred to by the constant of the generated parser')]
     public function testNamedTokenIsReferredByConstant(): void
     {
         $code = (string) $this->compile('grammar.pp2')->generate();
 
-        self::assertStringContainsString('public const int T_NUMBER = 0;', $code);
-        self::assertStringContainsString('new \\Phplrt\\Parser\\Grammar\\Lexeme(self::T_NUMBER, true)', $code);
+        Assert::string($code)
+            ->contains('public const int T_NUMBER = 0;')
+            ->contains('new \\Phplrt\\Parser\\Grammar\\Lexeme(self::T_NUMBER, true)');
     }
 
-    #[TestDox('A token written inside a rule is referred to by its identifier')]
     public function testInlineTokenIsReferredByIdentifier(): void
     {
         $code = (string) $this->compile('states.pp2')->generate();
 
-        self::assertStringContainsString('new \\Phplrt\\Parser\\Grammar\\Lexeme(2, false)', $code);
+        Assert::string($code)->contains('new \\Phplrt\\Parser\\Grammar\\Lexeme(2, false)');
     }
 
-    #[TestDox('A lexer reading a fragment is written down once and referred to')]
     public function testFragmentIsWrittenDownOnce(): void
     {
         $code = (string) $this->compile('states.pp2')->generate();
 
-        self::assertStringContainsString('$state_string = new \\Phplrt\\Lexer\\Lexer(', $code);
-        self::assertStringContainsString('0 => $state_string,', $code);
+        Assert::string($code)
+            ->contains('$state_string = new \\Phplrt\\Lexer\\Lexer(')
+            ->contains('0 => $state_string,');
     }
 
-    #[TestDox('A rule is reduced by a method named after it')]
     public function testReducerIsGeneratedAsAMethod(): void
     {
         $code = (string) $this->compile('grammar.pp2')->generate();
 
-        self::assertStringContainsString(
-            'private static function reduceExpression(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed',
-            $code,
-        );
-        self::assertStringContainsString('0 => self::reduceExpression(...),', $code);
+        Assert::string($code)
+            ->contains('private static function reduceExpression(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed')
+            ->contains('0 => self::reduceExpression(...),');
     }
 
-    #[TestDox('A rule reduced by the parser itself is reduced by a method of its own')]
     public function testReducerOfTheParserIsNotStatic(): void
     {
         $code = (string) $this->generateOf(<<<'PP2'
@@ -125,14 +121,11 @@ final class GeneratorTest extends TestCase
             Name -> { return $this->rename($children); } : <T_NAME> ;
             PP2);
 
-        self::assertStringContainsString(
-            'private function reduceName(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed',
-            $code,
-        );
-        self::assertStringContainsString('0 => $this->reduceName(...),', $code);
+        Assert::string($code)
+            ->contains('private function reduceName(\\Phplrt\\Parser\\Context $ctx, mixed $children): mixed')
+            ->contains('0 => $this->reduceName(...),');
     }
 
-    #[TestDox('A rule named by nothing is reduced by a method named after its identifier')]
     public function testReducerOfAnUnnamedRuleIsNamedAfterIt(): void
     {
         $lexer = new LexerBuilder();
@@ -144,11 +137,11 @@ final class GeneratorTest extends TestCase
 
         $code = (string) self::build($lexer, $parser);
 
-        self::assertStringContainsString('function reduceRule0(', $code);
-        self::assertStringContainsString('0 => self::reduceRule0(...),', $code);
+        Assert::string($code)
+            ->contains('function reduceRule0(')
+            ->contains('0 => self::reduceRule0(...),');
     }
 
-    #[TestDox('Two rules spelled the same way are reduced by methods of their own')]
     public function testReducersOfTheSameNameAreToldApart(): void
     {
         $reducer = new PhpCodeReducer('return 42;');
@@ -158,14 +151,13 @@ final class GeneratorTest extends TestCase
             constants: ['The Number' => 0, 'TheNumber' => 1],
         );
 
-        self::assertSame([0 => 'reduceTheNumber', 1 => 'reduceTheNumber1'], $names);
+        Assert::same($names, [0 => 'reduceTheNumber', 1 => 'reduceTheNumber1']);
     }
 
-    #[TestDox('A rule reduced by a callback is reported')]
     public function testCallableReducerIsReported(): void
     {
-        $this->expectException(UnsupportedReducerException::class);
-        $this->expectExceptionMessageIsOrContains('The rule #0 is reduced by');
+        Expect::exception(UnsupportedReducerException::class)
+        ->withMessageContaining('The rule #0 is reduced by');
 
         $lexer = new LexerBuilder();
         $lexer->addPattern('\d++', 'T_NUMBER');
@@ -178,11 +170,10 @@ final class GeneratorTest extends TestCase
         (string) self::build($lexer, $parser);
     }
 
-    #[TestDox('A fragment read by a lexer built at runtime is reported')]
     public function testRuntimeEmbeddedLexerIsReported(): void
     {
-        $this->expectException(UnsupportedEmbeddedLexerException::class);
-        $this->expectExceptionMessageIsOrContains('The fragment "php" is read by');
+        Expect::exception(UnsupportedEmbeddedLexerException::class)
+        ->withMessageContaining('The fragment "php" is read by');
 
         $embedded = new LexerBuilder();
         $embedded->addPattern('\s++', 'T_WHITESPACE');
@@ -199,7 +190,6 @@ final class GeneratorTest extends TestCase
         (string) self::build($lexer, $parser);
     }
 
-    #[TestDox('The generated code is saved into the given file')]
     public function testGeneratedCodeIsSaved(): void
     {
         $pathname = $this->createPathname();
@@ -208,11 +198,10 @@ final class GeneratorTest extends TestCase
             ->generate()
             ->save($pathname);
 
-        self::assertFileExists($pathname);
-        self::assertSame((string) $output, \file_get_contents($pathname));
+        Assert::true(\is_file($pathname));
+        Assert::same(\file_get_contents($pathname), (string) $output);
     }
 
-    #[TestDox('A parser that is named is declared instead of being returned')]
     public function testNamedParserIsDeclared(): void
     {
         $class = 'GeneratedParser' . \bin2hex(\random_bytes(8));
@@ -226,25 +215,25 @@ final class GeneratorTest extends TestCase
 
         $code = (string) \file_get_contents($pathname);
 
-        self::assertStringContainsString(\sprintf(
-            "readonly class %s extends \\Phplrt\\Parser\\Parser\n{\n",
-            $class,
-        ), $code);
-        self::assertStringNotContainsString('return new readonly class', $code);
+        Assert::string($code)
+            ->contains(\sprintf(
+                "readonly class %s extends \\Phplrt\\Parser\\Parser\n{\n",
+                $class,
+            ))
+            ->notContains('return new readonly class');
 
         require $pathname;
 
         $parser = new $class();
 
-        self::assertInstanceOf(ParserInterface::class, $parser);
-        self::assertSame(42, $parser->parse(StringSource::createFromString('1 + 2 + 39')));
+        Assert::instanceOf($parser, ParserInterface::class);
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2 + 39')), 42);
     }
 
-    #[TestDox('A parser named the way no class may be named is reported')]
     public function testInvalidClassNameIsReported(): void
     {
-        $this->expectException(InvalidClassNameException::class);
-        $this->expectExceptionMessageIsOrContains('The parser cannot be declared as "App\\Parser"');
+        Expect::exception(InvalidClassNameException::class)
+        ->withMessageContaining('The parser cannot be declared as "App\\Parser"');
 
         (string) $this->compile('grammar.pp2')
             ->generate()
@@ -261,7 +250,7 @@ final class GeneratorTest extends TestCase
 
         $parser = require $pathname;
 
-        self::assertInstanceOf(ParserInterface::class, $parser);
+        Assert::instanceOf($parser, ParserInterface::class);
 
         return $parser;
     }

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Phplrt\Source\Tests;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Testo\Core\Exception\SkipTest;
+use Testo\Lifecycle\AfterTest;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase
 {
     private const string TEMP_DIRECTORY = __DIR__ . '/temp';
 
@@ -21,7 +22,7 @@ abstract class TestCase extends BaseTestCase
         $pair = @\stream_socket_pair(\STREAM_PF_INET, \STREAM_SOCK_STREAM, \STREAM_IPPROTO_IP);
 
         if ($pair === false) {
-            self::markTestSkipped('The platform does not support socket pairs');
+            throw new SkipTest('The platform does not support socket pairs');
         }
 
         [$read, $write] = $pair;
@@ -32,10 +33,9 @@ abstract class TestCase extends BaseTestCase
         return $read;
     }
 
+    #[AfterTest]
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         if (\is_file($this->temp)) {
             \unlink($this->temp);
         }

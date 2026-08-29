@@ -8,13 +8,15 @@ use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer-compiler')]
+#[Test]
 final class FragmentTest extends TestCase
 {
-    #[TestDox('A piece of an expression is written into the expression referring to it')]
     public function testFragmentIsWrittenIntoExpression(): void
     {
         $lexer = new LexerBuilder();
@@ -23,10 +25,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?:[0-9])++', $token->regex);
+        Assert::same($token->regex, '(?:[0-9])++');
     }
 
-    #[TestDox('A piece written of another piece is written of what that one stands for')]
     public function testFragmentIsWrittenOfAnotherFragment(): void
     {
         $lexer = new LexerBuilder();
@@ -36,10 +37,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?:[0-9])++(?:[eE][+-]?(?:[0-9])++)?', $token->regex);
+        Assert::same($token->regex, '(?:[0-9])++(?:[eE][+-]?(?:[0-9])++)?');
     }
 
-    #[TestDox('A piece is written into the expression whatever the order they are declared in')]
     public function testFragmentIsDeclaredAfterUse(): void
     {
         $lexer = new LexerBuilder();
@@ -48,10 +48,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?:[0-9])++', $token->regex);
+        Assert::same($token->regex, '(?:[0-9])++');
     }
 
-    #[TestDox('A piece is written into the expressions of every state')]
     public function testFragmentReachesEveryState(): void
     {
         $lexer = new LexerBuilder();
@@ -64,10 +63,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?:[a-z]++)', $token->regex);
+        Assert::same($token->regex, '(?:[a-z]++)');
     }
 
-    #[TestDox('A state knows the pieces it declares on its own')]
     public function testStateDeclaresFragmentOfItsOwn(): void
     {
         $lexer = new LexerBuilder();
@@ -81,10 +79,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?:[a-z]++)|(?:[A-Z]++)', $token->regex);
+        Assert::same($token->regex, '(?:[a-z]++)|(?:[A-Z]++)');
     }
 
-    #[TestDox('A token recognizing the value it is written of is left alone')]
     public function testValueTokenIsNotRewritten(): void
     {
         $lexer = new LexerBuilder();
@@ -93,10 +90,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('(?&DIGIT)', $token->value);
+        Assert::same($token->value, '(?&DIGIT)');
     }
 
-    #[TestDox('A reference spelled after a backslash is read as the characters it is written of')]
     public function testEscapedReferenceIsNotRewritten(): void
     {
         $lexer = new LexerBuilder();
@@ -105,10 +101,9 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('\\(?&DIGIT\\)', $token->regex);
+        Assert::same($token->regex, '\\(?&DIGIT\\)');
     }
 
-    #[TestDox('An expression calling a subpattern of its own is left alone')]
     public function testSubpatternCallIsNotRewritten(): void
     {
         $lexer = new LexerBuilder();
@@ -116,14 +111,13 @@ final class FragmentTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame('\((?<in>[^()]|(?&in))*+\)', $token->regex);
+        Assert::same($token->regex, '\((?<in>[^()]|(?&in))*+\)');
     }
 
-    #[TestDox('A piece that has not been declared is reported')]
     public function testUnknownFragmentIsReported(): void
     {
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessageIsOrContains(
+        Expect::exception(CompilationFailedException::class)
+        ->withMessageContaining(
             'refers to the "DIGIT" fragment, which has not been declared',
         );
 
@@ -133,11 +127,10 @@ final class FragmentTest extends TestCase
         $lexer->build();
     }
 
-    #[TestDox('A piece written of itself is reported')]
     public function testRecursiveFragmentIsReported(): void
     {
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessageIsOrContains('(A) fragment is written of itself');
+        Expect::exception(CompilationFailedException::class)
+        ->withMessageContaining('(A) fragment is written of itself');
 
         $lexer = new LexerBuilder();
         $lexer->addFragment('A', '[a-z](?&A)?');
@@ -146,11 +139,10 @@ final class FragmentTest extends TestCase
         $lexer->build();
     }
 
-    #[TestDox('A piece written of a piece written of it is reported')]
     public function testIndirectlyRecursiveFragmentIsReported(): void
     {
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessageIsOrContains('fragment is written of itself');
+        Expect::exception(CompilationFailedException::class)
+        ->withMessageContaining('fragment is written of itself');
 
         $lexer = new LexerBuilder();
         $lexer->addFragment('A', '(?&B)');
@@ -160,17 +152,15 @@ final class FragmentTest extends TestCase
         $lexer->build();
     }
 
-    #[TestDox('A piece is removed by the name it has been added under')]
     public function testFragmentIsRemoved(): void
     {
         $lexer = new LexerBuilder();
         $lexer->addFragment('DIGIT', '[0-9]');
         $lexer->removeFragment('DIGIT');
 
-        self::assertSame([], $lexer->fragments);
+        Assert::same($lexer->fragments, []);
     }
 
-    #[TestDox('The lexer reads what the expressions the pieces are written into recognize')]
     public function testLexerReadsWhatFragmentsDescribe(): void
     {
         $lexer = new LexerBuilder();
@@ -189,14 +179,13 @@ final class FragmentTest extends TestCase
             $tokens[] = $token->value;
         }
 
-        self::assertSame(['1', '12.5', '3e10', ''], $tokens);
+        Assert::same($tokens, ['1', '12.5', '3e10', '']);
     }
 
-    #[TestDox('The expression a token is recognized by is rewritten by a pass')]
     public function testRegexIsWritable(): void
     {
         $definition = new RegexTokenDefinition('[0-9]', 'T_NUMBER');
 
-        self::assertSame('[a-z]', $definition->setRegex('[a-z]')->regex);
+        Assert::same($definition->setRegex('[a-z]')->regex, '[a-z]');
     }
 }

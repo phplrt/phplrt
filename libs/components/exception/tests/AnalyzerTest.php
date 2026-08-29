@@ -12,74 +12,68 @@ use Phplrt\Exception\Tests\Stub\LexerRuntimeExceptionStub;
 use Phplrt\Exception\Tests\Stub\ParserRuntimeExceptionStub;
 use Phplrt\Exception\Tests\Stub\TokenStub;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/exception')]
+#[Test]
 final class AnalyzerTest extends TestCase
 {
     private const string SOURCE = "line 1\nline 2\nline 3\nline 4";
 
-    #[TestDox('The name and the message of the error are taken from it')]
     public function testNameAndMessageAreGivenBack(): void
     {
         $result = new Analyzer()->analyze(new \LogicException('Something went wrong'));
 
-        self::assertSame(\LogicException::class, $result->class);
-        self::assertSame('Something went wrong', $result->message);
+        Assert::same($result->class, \LogicException::class);
+        Assert::same($result->message, 'Something went wrong');
     }
 
-    #[TestDox('The severity of an error telling nothing about it is the default one')]
     public function testSeverityOfArbitraryExceptionIsTheDefaultOne(): void
     {
-        self::assertSame(FailureLevel::DEFAULT, new Analyzer()->analyze(new \LogicException())->level);
+        Assert::same(new Analyzer()->analyze(new \LogicException())->level, FailureLevel::DEFAULT);
     }
 
-    #[TestDox('The severity an error tells about itself is taken from it')]
     public function testSeverityIsTakenFromTheError(): void
     {
         $result = new Analyzer()->analyze(new \ErrorException('', severity: \E_USER_WARNING));
 
-        self::assertSame(FailureLevel::Warning, $result->level);
+        Assert::same($result->level, FailureLevel::Warning);
     }
 
-    #[TestDox('An error that refers to no source is located in the file it has been thrown from')]
     public function testSourceOfArbitraryExceptionIsItsOwnFile(): void
     {
         $info = new Analyzer()->analyze(new \LogicException());
 
-        self::assertInstanceOf(FileInterface::class, $info->source);
-        self::assertSame(__FILE__, $info->source->pathname);
+        Assert::instanceOf($info->source, FileInterface::class);
+        Assert::same($info->source->pathname, __FILE__);
     }
 
-    #[TestDox('An error that refers to no source is located on the line it has been thrown from')]
     public function testPositionOfArbitraryExceptionIsItsOwnLine(): void
     {
         $line = __LINE__ + 1;
         $info = new Analyzer()->analyze(new \LogicException());
 
-        self::assertSame($line, $info->position->line);
-        self::assertSame(1, $info->position->column);
+        Assert::same($info->position->line, $line);
+        Assert::same($info->position->column, 1);
     }
 
-    #[TestDox('An error that refers to no source covers no fragment of it')]
     public function testArbitraryExceptionHasNoInterval(): void
     {
-        self::assertNull(new Analyzer()->analyze(new \LogicException())->interval);
+        Assert::null(new Analyzer()->analyze(new \LogicException())->interval);
     }
 
-    #[TestDox('An error thrown outside any file is located in an empty source')]
     public function testExceptionWithoutFileIsLocatedInEmptySource(): void
     {
         $info = new Analyzer()->analyze(new FilelessExceptionStub());
 
-        self::assertNotInstanceOf(FileInterface::class, $info->source);
-        self::assertSame('', $info->source->content);
-        self::assertSame(1, $info->position->line);
-        self::assertSame(1, $info->position->column);
+        Assert::false($info->source instanceof FileInterface);
+        Assert::same($info->source->content, '');
+        Assert::same($info->position->line, 1);
+        Assert::same($info->position->column, 1);
     }
 
-    #[TestDox('A lexical error is located in the source it has been thrown for')]
     public function testSourceOfLexerExceptionIsTheAnalyzedOne(): void
     {
         $source = new StringSource(self::SOURCE);
@@ -89,10 +83,9 @@ final class AnalyzerTest extends TestCase
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
 
-        self::assertSame($source, $info->source);
+        Assert::same($info->source, $source);
     }
 
-    #[TestDox('A lexical error is located at the position of its own token')]
     public function testPositionOfLexerExceptionIsTheOneOfItsToken(): void
     {
         $info = new Analyzer()->analyze(new LexerRuntimeExceptionStub(
@@ -100,11 +93,10 @@ final class AnalyzerTest extends TestCase
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
 
-        self::assertSame(3, $info->position->line);
-        self::assertSame(3, $info->position->column);
+        Assert::same($info->position->line, 3);
+        Assert::same($info->position->column, 3);
     }
 
-    #[TestDox('A lexical error covers the fragment its own token has been read from')]
     public function testIntervalOfLexerExceptionIsTheOneOfItsToken(): void
     {
         $info = new Analyzer()->analyze(new LexerRuntimeExceptionStub(
@@ -112,12 +104,11 @@ final class AnalyzerTest extends TestCase
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
 
-        self::assertNotNull($info->interval);
-        self::assertSame(16, $info->interval->offset);
-        self::assertSame(4, $info->interval->length);
+        Assert::notNull($info->interval);
+        Assert::same($info->interval->offset, 16);
+        Assert::same($info->interval->length, 4);
     }
 
-    #[TestDox('A syntax error covers the fragment of the size it tells about')]
     public function testIntervalOfParserExceptionIsTheOneItTellsAbout(): void
     {
         $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
@@ -126,12 +117,11 @@ final class AnalyzerTest extends TestCase
             length: 12,
         ));
 
-        self::assertNotNull($info->interval);
-        self::assertSame(14, $info->interval->offset);
-        self::assertSame(12, $info->interval->length);
+        Assert::notNull($info->interval);
+        Assert::same($info->interval->offset, 14);
+        Assert::same($info->interval->length, 12);
     }
 
-    #[TestDox('A syntax error of an unknown size covers the fragment its own token has been read from')]
     public function testIntervalOfParserExceptionFallsBackToItsToken(): void
     {
         $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
@@ -139,12 +129,11 @@ final class AnalyzerTest extends TestCase
             token: new TokenStub(offset: 14, value: 'line'),
         ));
 
-        self::assertNotNull($info->interval);
-        self::assertSame(14, $info->interval->offset);
-        self::assertSame(4, $info->interval->length);
+        Assert::notNull($info->interval);
+        Assert::same($info->interval->offset, 14);
+        Assert::same($info->interval->length, 4);
     }
 
-    #[TestDox('A syntax error is located at the position its own fragment starts at')]
     public function testPositionOfParserExceptionIsTheBeginningOfItsFragment(): void
     {
         $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
@@ -153,17 +142,15 @@ final class AnalyzerTest extends TestCase
             length: 12,
         ));
 
-        self::assertSame(3, $info->position->line);
-        self::assertSame(1, $info->position->column);
+        Assert::same($info->position->line, 3);
+        Assert::same($info->position->column, 1);
     }
 
-    #[TestDox('An error that no other one has led to refers to no previous information')]
     public function testTheOnlyExceptionHasNoPrevious(): void
     {
-        self::assertNull(new Analyzer()->analyze(new \LogicException())->previous);
+        Assert::null(new Analyzer()->analyze(new \LogicException())->previous);
     }
 
-    #[TestDox('Every error of the chain is described, from the outermost one to the innermost')]
     public function testEveryExceptionOfTheChainIsDescribed(): void
     {
         $source = new StringSource(self::SOURCE);
@@ -181,20 +168,19 @@ final class AnalyzerTest extends TestCase
 
         $info = new Analyzer()->analyze(new \LogicException('Compilation failed', 0, $outer));
 
-        self::assertNull($info->interval);
+        Assert::null($info->interval);
 
-        self::assertNotNull($info->previous);
-        self::assertSame(ParserRuntimeExceptionStub::class, $info->previous->class);
-        self::assertSame(4, $info->previous->position->line);
+        Assert::notNull($info->previous);
+        Assert::same($info->previous->class, ParserRuntimeExceptionStub::class);
+        Assert::same($info->previous->position->line, 4);
 
-        self::assertNotNull($info->previous->previous);
-        self::assertSame(LexerRuntimeExceptionStub::class, $info->previous->previous->class);
-        self::assertSame(2, $info->previous->previous->position->line);
+        Assert::notNull($info->previous->previous);
+        Assert::same($info->previous->previous->class, LexerRuntimeExceptionStub::class);
+        Assert::same($info->previous->previous->position->line, 2);
 
-        self::assertNull($info->previous->previous->previous);
+        Assert::null($info->previous->previous->previous);
     }
 
-    #[TestDox('A chain of any length is described without a recursion')]
     public function testChainOfAnyLengthIsDescribed(): void
     {
         $exception = new \LogicException('#0');
@@ -206,13 +192,13 @@ final class AnalyzerTest extends TestCase
         $info = new Analyzer()->analyze($exception);
 
         for ($i = 999; $i > 0; --$i) {
-            self::assertSame('#' . $i, $info->message);
-            self::assertNotNull($info->previous);
+            Assert::same($info->message, '#' . $i);
+            Assert::notNull($info->previous);
 
             $info = $info->previous;
         }
 
-        self::assertSame('#0', $info->message);
-        self::assertNull($info->previous);
+        Assert::same($info->message, '#0');
+        Assert::null($info->previous);
     }
 }

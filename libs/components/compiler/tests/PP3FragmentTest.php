@@ -12,13 +12,15 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/compiler')]
+#[Test]
 final class PP3FragmentTest extends TestCase
 {
-    #[TestDox('A piece declared by a grammar is written into the expressions referring to it')]
     public function testFragmentIsWrittenIntoExpression(): void
     {
         $result = $this->compile(<<<'PP3'
@@ -30,13 +32,9 @@ final class PP3FragmentTest extends TestCase
             Number : <T_NUMBER> ;
             PP3);
 
-        self::assertSame(
-            '(?:[0-9])++(\.(?:[0-9])++)?(?:[eE][+-]?(?:[0-9])++)?',
-            self::regexOf($result, 'T_NUMBER'),
-        );
+        Assert::same(self::regexOf($result, 'T_NUMBER'), '(?:[0-9])++(\.(?:[0-9])++)?(?:[eE][+-]?(?:[0-9])++)?');
     }
 
-    #[TestDox('A piece is written into the expression whatever the order they are declared in')]
     public function testFragmentIsDeclaredAfterUse(): void
     {
         $result = $this->compile(<<<'PP3'
@@ -46,10 +44,9 @@ final class PP3FragmentTest extends TestCase
             Number : <T_NUMBER> ;
             PP3);
 
-        self::assertSame('(?:[0-9])++', self::regexOf($result, 'T_NUMBER'));
+        Assert::same(self::regexOf($result, 'T_NUMBER'), '(?:[0-9])++');
     }
 
-    #[TestDox('A piece is written into the expressions of every state')]
     public function testFragmentReachesEveryState(): void
     {
         $result = $this->compile(<<<'PP3'
@@ -64,11 +61,10 @@ final class PP3FragmentTest extends TestCase
 
         $state = $result->lexer->lexers['string'];
 
-        self::assertInstanceOf(LexerBuilderResult::class, $state);
-        self::assertSame('(?:[a-z]++)', self::findRegex($state->tokens, 'T_TEXT'));
+        Assert::instanceOf($state, LexerBuilderResult::class);
+        Assert::same(self::findRegex($state->tokens, 'T_TEXT'), '(?:[a-z]++)');
     }
 
-    #[TestDox('A piece is written into the expression of a token belonging to every state')]
     public function testFragmentReachesSharedToken(): void
     {
         $result = $this->compile(<<<'PP3'
@@ -83,12 +79,11 @@ final class PP3FragmentTest extends TestCase
 
         $state = $result->lexer->lexers['string'];
 
-        self::assertInstanceOf(LexerBuilderResult::class, $state);
-        self::assertSame('(?:[\x20\t])++', self::regexOf($result, 'T_WHITESPACE'));
-        self::assertSame('(?:[\x20\t])++', self::findRegex($state->tokens, 'T_WHITESPACE'));
+        Assert::instanceOf($state, LexerBuilderResult::class);
+        Assert::same(self::regexOf($result, 'T_WHITESPACE'), '(?:[\x20\t])++');
+        Assert::same(self::findRegex($state->tokens, 'T_WHITESPACE'), '(?:[\x20\t])++');
     }
 
-    #[TestDox('The lexer reads what the expressions the pieces are written into recognize')]
     public function testGrammarReadsWhatFragmentsDescribe(): void
     {
         $parser = new Compiler()
@@ -105,14 +100,13 @@ final class PP3FragmentTest extends TestCase
                 PP3))
         ->getParser();
 
-        self::assertSame(35000000000.0, $parser->parse(StringSource::createFromString(' 3.5e10 ')));
+        Assert::same($parser->parse(StringSource::createFromString(' 3.5e10 ')), 35000000000.0);
     }
 
-    #[TestDox('A piece that has not been declared is reported')]
     public function testUnknownFragmentIsReported(): void
     {
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessageIsOrContains(
+        Expect::exception(CompilationFailedException::class)
+        ->withMessageContaining(
             'refers to the "DIGT" fragment, which has not been declared',
         );
 
@@ -124,11 +118,10 @@ final class PP3FragmentTest extends TestCase
             PP3);
     }
 
-    #[TestDox('A piece written of itself is reported')]
     public function testRecursiveFragmentIsReported(): void
     {
-        $this->expectException(CompilationFailedException::class);
-        $this->expectExceptionMessageIsOrContains('fragment is written of itself');
+        Expect::exception(CompilationFailedException::class)
+        ->withMessageContaining('fragment is written of itself');
 
         $this->compile(<<<'PP3'
             %fragment A  (?&B)
@@ -140,11 +133,10 @@ final class PP3FragmentTest extends TestCase
             PP3);
     }
 
-    #[TestDox('A piece declared twice is reported')]
     public function testDuplicateFragmentIsReported(): void
     {
-        $this->expectException(DuplicateFragmentException::class);
-        $this->expectExceptionMessageIsOrContains('The "A" fragment has already been declared');
+        Expect::exception(DuplicateFragmentException::class)
+        ->withMessageContaining('The "A" fragment has already been declared');
 
         $this->compile(<<<'PP3'
             %fragment A  [a-z]
@@ -156,11 +148,10 @@ final class PP3FragmentTest extends TestCase
             PP3);
     }
 
-    #[TestDox('A piece belonging to a state is reported')]
     public function testFragmentWithStateIsReported(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
-        $this->expectExceptionMessageIsOrContains('unexpected "string:"');
+        Expect::exception(UnexpectedTokenException::class)
+        ->withMessageContaining('unexpected "string:"');
 
         $this->compile(<<<'PP3'
             %fragment string:A  [a-z]
@@ -171,11 +162,10 @@ final class PP3FragmentTest extends TestCase
             PP3);
     }
 
-    #[TestDox('A piece doing something to the reading is reported')]
     public function testFragmentWithActionIsReported(): void
     {
-        $this->expectException(UnexpectedTokenException::class);
-        $this->expectExceptionMessageIsOrContains('unexpected "-> exit()"');
+        Expect::exception(UnexpectedTokenException::class)
+        ->withMessageContaining('unexpected "-> exit()"');
 
         $this->compile(<<<'PP3'
             %fragment A  [a-z]  -> exit()
@@ -186,7 +176,6 @@ final class PP3FragmentTest extends TestCase
             PP3);
     }
 
-    #[TestDox('A piece becomes no token of its own')]
     public function testFragmentIsNotAToken(): void
     {
         $result = $this->compile(<<<'PP3'
@@ -196,7 +185,7 @@ final class PP3FragmentTest extends TestCase
             Number : <T_NUMBER> ;
             PP3);
 
-        self::assertSame(['T_NUMBER'], \array_values($result->lexer->names));
+        Assert::same(\array_values($result->lexer->names), ['T_NUMBER']);
     }
 
     private function compile(string $grammar): CompilerResult

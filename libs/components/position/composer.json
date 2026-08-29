@@ -29,7 +29,7 @@
     "require-dev": {
         "phplrt/source": "^4.0",
         "phpstan/phpstan": "^2.2",
-        "phpunit/phpunit": "^13.2"
+        "testo/testo": "^0.10.44"
     },
     "autoload-dev": {
         "psr-4": {

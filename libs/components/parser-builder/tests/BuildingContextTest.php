@@ -9,13 +9,14 @@ use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
 use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser-compiler')]
+#[Test]
 final class BuildingContextTest extends TestCase
 {
-    #[TestDox('An optimized grammar does not affect the rules the builder has been given')]
     public function testRulesAreIsolated(): void
     {
         $parser = new ParserBuilder();
@@ -34,17 +35,16 @@ final class BuildingContextTest extends TestCase
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame([
+        Assert::same(self::describe($result), [
             '0: Concatenation(1, 2, 1)',
             '1: Lexeme(1, keep)',
             '2: Lexeme(2, skip)',
-        ], self::describe($result), 'The nested concatenation has been joined');
+        ], 'The nested concatenation has been joined');
 
-        self::assertCount(2, $initial->rules, 'The rules of the builder are left as they have been defined');
-        self::assertSame($nested, $initial->rules[1]);
+        Assert::count($initial->rules, 2, 'The rules of the builder are left as they have been defined');
+        Assert::same($initial->rules[1], $nested);
     }
 
-    #[TestDox('The very same builder compiles into the very same parser every time')]
     public function testBuildIsRepeatable(): void
     {
         $parser = new ParserBuilder();
@@ -61,13 +61,9 @@ final class BuildingContextTest extends TestCase
 
         $lexer = self::createLexerBuilder()->build();
 
-        self::assertSame(
-            self::describe($parser->build($lexer)),
-            self::describe($parser->build($lexer)),
-        );
+        Assert::same(self::describe($parser->build($lexer)), self::describe($parser->build($lexer)));
     }
 
-    #[TestDox('A rule spliced out of the grammar is no longer compiled into the parser')]
     public function testDetachedRuleIsNotCompiled(): void
     {
         $parser = new ParserBuilder();
@@ -93,9 +89,9 @@ final class BuildingContextTest extends TestCase
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame([
+        Assert::same(self::describe($result), [
             '0: Concatenation(1)',
             '1: Lexeme(1, keep)',
-        ], self::describe($result));
+        ]);
     }
 }

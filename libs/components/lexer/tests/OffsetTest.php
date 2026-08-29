@@ -8,10 +8,13 @@ use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer')]
+#[Test]
 final class OffsetTest extends TestCase
 {
     private static function createWordsLexer(): LexerInterface
@@ -23,7 +26,6 @@ final class OffsetTest extends TestCase
         });
     }
 
-    #[TestDox('The analysis starts at the given offset')]
     public function testAnalysisStartsAtTheGivenOffset(): void
     {
         $lexer = self::createWordsLexer();
@@ -31,13 +33,12 @@ final class OffsetTest extends TestCase
 
         $actual = self::describe($lexer->lex(StringSource::createFromString($source), 8));
 
-        self::assertSame([
+        Assert::same($actual, [
             'T_NAME(three)@8',
             'EndOfInput()@13',
-        ], $actual);
+        ]);
     }
 
-    #[TestDox('Token offsets stay absolute to the whole source, not to the starting offset')]
     public function testOffsetsRemainAbsoluteToTheWholeSource(): void
     {
         $lexer = self::createWordsLexer();
@@ -46,7 +47,6 @@ final class OffsetTest extends TestCase
         self::assertTokensMatchSource($source, $lexer->lex(StringSource::createFromString($source), 4));
     }
 
-    #[TestDox('Token offsets stay absolute after a part of the source has been read')]
     public function testOffsetsRemainAbsoluteAfterThePartialReadingOfTheSource(): void
     {
         $lexer = self::createWordsLexer();
@@ -54,15 +54,14 @@ final class OffsetTest extends TestCase
 
         $source->read(0, 4);
 
-        self::assertSame([
+        Assert::same(self::describe($lexer->lex($source)), [
             'T_NAME(one)@0',
             'T_NAME(two)@4',
             'T_NAME(three)@8',
             'EndOfInput()@13',
-        ], self::describe($lexer->lex($source)));
+        ]);
     }
 
-    #[TestDox('An offset equal to the source length produces only the terminal token')]
     public function testOffsetEqualToSourceLengthProducesOnlyTheTerminalToken(): void
     {
         $lexer = self::createWordsLexer();
@@ -70,29 +69,24 @@ final class OffsetTest extends TestCase
 
         $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source), \strlen($source)), false);
 
-        self::assertCount(1, $tokens);
-        self::assertSame(Channel::EndOfInput, $tokens[0]->channel);
-        self::assertSame(\strlen($source), $tokens[0]->offset);
+        Assert::count($tokens, 1);
+        Assert::same($tokens[0]->channel, Channel::EndOfInput);
+        Assert::same($tokens[0]->offset, \strlen($source));
     }
 
-    #[TestDox('The default offset is the beginning of the source')]
     public function testZeroOffsetIsTheDefault(): void
     {
         $lexer = self::createWordsLexer();
         $source = 'one two';
 
-        self::assertSame(
-            self::describe($lexer->lex(StringSource::createFromString($source))),
-            self::describe($lexer->lex(StringSource::createFromString($source), 0)),
-        );
+        Assert::same(self::describe($lexer->lex(StringSource::createFromString($source), 0)), self::describe($lexer->lex(StringSource::createFromString($source))));
     }
 
-    #[TestDox('A negative offset is rejected')]
     public function testNegativeOffsetIsRejected(): void
     {
         $lexer = self::createWordsLexer();
 
-        $this->expectException(\InvalidArgumentException::class);
+        Expect::exception(\InvalidArgumentException::class);
 
         \iterator_to_array($lexer->lex(StringSource::createFromString('one two'), -1), false);
     }

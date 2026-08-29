@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Phplrt\Source\Tests;
 
 use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
+#[Test]
 final class ExceptionTest extends TestCase
 {
     public static function exceptionDataProvider(): iterable
@@ -21,7 +24,7 @@ final class ExceptionTest extends TestCase
     #[DataProvider('exceptionDataProvider')]
     public function testIsPartOfTheSourceContract(string $class): void
     {
-        self::assertTrue(\is_subclass_of($class, SourceExceptionInterface::class));
+        Assert::true(\is_subclass_of($class, SourceExceptionInterface::class));
     }
 
     #[DataProvider('exceptionDataProvider')]
@@ -29,6 +32,6 @@ final class ExceptionTest extends TestCase
     {
         $reflection = new \ReflectionClass($class);
 
-        self::assertTrue($reflection->isAbstract() || $reflection->isFinal());
+        Assert::true($reflection->isAbstract() || $reflection->isFinal());
     }
 }

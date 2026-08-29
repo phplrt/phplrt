@@ -11,57 +11,55 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Tests\TestCase;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser')]
+#[Test]
 final class UnexpectedTokenExceptionTest extends TestCase
 {
     private const string SOURCE = "first line\nsecond line\nthird line";
 
-    #[TestDox('The source the error occurred in is available')]
     public function testSource(): void
     {
         $source = StringSource::createFromString(self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
-        self::assertSame($source, $exception->source);
-        self::assertSame(18, $exception->token->offset);
+        Assert::same($exception->source, $source);
+        Assert::same($exception->token->offset, 18);
     }
 
-    #[TestDox('The error is printed along with the fragment of the source code')]
     public function testStringRepresentation(): void
     {
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(StringSource::createFromString(self::SOURCE), $this->createToken());
 
-        self::assertStringStartsWith(<<<'OUT'
+        Assert::true(\str_starts_with((string) $exception, <<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
             1 | first line
             2 | second line
               |        ^^^^
             3 | third line
-            OUT, (string) $exception);
+            OUT));
     }
 
-    #[TestDox('The error occurred in a file is printed along with the name of that file')]
     public function testStringRepresentationOfAFile(): void
     {
         $source = VirtualSource::createFromString('/app/example.pp2', self::SOURCE);
 
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced($source, $this->createToken());
 
-        self::assertStringStartsWith(<<<'OUT'
+        Assert::true(\str_starts_with((string) $exception, <<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected "line" (T_WORD)
              --> /app/example.pp2:2:8
             1 | first line
             2 | second line
               |        ^^^^
             3 | third line
-            OUT, (string) $exception);
+            OUT));
     }
 
-    #[TestDox('The error occurred outside the source code is printed without a fragment')]
     public function testStringRepresentationOfAnEmptySource(): void
     {
         $exception = UnexpectedTokenException::becauseUnexpectedTokenProduced(
@@ -69,11 +67,11 @@ final class UnexpectedTokenExceptionTest extends TestCase
             new Token(0, null, Channel::EndOfInput, '', 0),
         );
 
-        self::assertStringStartsWith(<<<'OUT'
+        Assert::true(\str_starts_with((string) $exception, <<<'OUT'
             error[UnexpectedTokenException]: Syntax error, unexpected end of input
             1 |
               | ^
-            OUT, (string) $exception);
+            OUT));
     }
 
     private function createToken(): TokenInterface

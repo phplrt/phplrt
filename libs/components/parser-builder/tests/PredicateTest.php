@@ -9,10 +9,13 @@ use Phplrt\Parser\Builder\Exception\ParserCompilerException;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser-compiler')]
+#[Test]
 final class PredicateTest extends TestCase
 {
     private static function createParserFor(bool $isExpected): ParserInterface
@@ -32,51 +35,45 @@ final class PredicateTest extends TestCase
             ->toParser(self::createLexer($lexer));
     }
 
-    #[TestDox('A rule behind a predicate is recognized while the predicate matches')]
     public function testExpectedRuleIsRecognized(): void
     {
         $parser = self::createParserFor(true);
 
-        self::assertSame(['1'], self::collectValues($parser->parse(StringSource::createFromString('1'))));
+        Assert::same(self::collectValues($parser->parse(StringSource::createFromString('1'))), ['1']);
     }
 
-    #[TestDox('A predicate reads nothing, so the rule behind it reads the very same token')]
     public function testPredicateReadsNothing(): void
     {
         $parser = self::createParserFor(true);
 
-        self::assertCount(1, self::collectValues($parser->parse(StringSource::createFromString('1'))));
+        Assert::count(self::collectValues($parser->parse(StringSource::createFromString('1'))), 1);
     }
 
-    #[TestDox('A rule behind a predicate is not recognized while the predicate does not match')]
     public function testExpectedRuleIsNotRecognized(): void
     {
         $parser = self::createParserFor(true);
 
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $parser->parse(StringSource::createFromString('+'));
     }
 
-    #[TestDox('A negative predicate matches everything the rule does not')]
     public function testRejectedRuleIsRecognized(): void
     {
         $parser = self::createParserFor(false);
 
-        self::assertSame(['+'], self::collectValues($parser->parse(StringSource::createFromString('+'))));
+        Assert::same(self::collectValues($parser->parse(StringSource::createFromString('+'))), ['+']);
     }
 
-    #[TestDox('A negative predicate matches nothing the rule does')]
     public function testRejectedRuleIsNotRecognized(): void
     {
         $parser = self::createParserFor(false);
 
-        $this->expectException(UnexpectedTokenException::class);
+        Expect::exception(UnexpectedTokenException::class);
 
         $parser->parse(StringSource::createFromString('1'));
     }
 
-    #[TestDox('A predicate is compiled into a rule of its own')]
     public function testGrammar(): void
     {
         $lexer = self::createLexerBuilder();
@@ -87,15 +84,14 @@ final class PredicateTest extends TestCase
             $parser->addTokenReference('T_NUMBER'),
         ], 'Root'));
 
-        self::assertSame([
+        Assert::same(self::describe($parser->build($lexer->build())), [
             '0: Concatenation(1, 3)',
             '1: Predicate(2, reject)',
             '2: Lexeme(2, keep)',
             '3: Lexeme(1, keep)',
-        ], self::describe($parser->build($lexer->build())));
+        ]);
     }
 
-    #[TestDox('A predicate builds nothing, so it cannot be reduced')]
     public function testPredicateWithReducer(): void
     {
         $parser = new ParserBuilder();
@@ -105,13 +101,12 @@ final class PredicateTest extends TestCase
             $parser->addTokenReference('T_NUMBER'),
         ], 'Root'));
 
-        $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessageIsOrContains('only looks at what comes next, so it builds nothing to reduce');
+        Expect::exception(ParserCompilerException::class)
+        ->withMessageContaining('only looks at what comes next, so it builds nothing to reduce');
 
         $parser->build(self::createLexerBuilder()->build());
     }
 
-    #[TestDox('A rule reaching itself through a predicate is left recursive')]
     public function testLeftRecursionThroughPredicate(): void
     {
         $parser = new ParserBuilder();
@@ -123,8 +118,8 @@ final class PredicateTest extends TestCase
 
         $parser->setInitialRule($root);
 
-        $this->expectException(ParserCompilerException::class);
-        $this->expectExceptionMessageIsOrContains('is left recursive');
+        Expect::exception(ParserCompilerException::class)
+        ->withMessageContaining('is left recursive');
 
         $parser->build(self::createLexerBuilder()->build());
     }

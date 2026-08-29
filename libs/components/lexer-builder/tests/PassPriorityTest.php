@@ -6,21 +6,22 @@ namespace Phplrt\Lexer\Builder\Tests;
 
 use Phplrt\Lexer\Builder\Analysis\ChannelConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\LexerAnalysisPassInterface;
+use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
 use Phplrt\Lexer\Builder\Analysis\RegexConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\SubgroupConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TokenNameConstructionLexerAnalysisPass;
 use Phplrt\Lexer\Builder\Analysis\TransitionConstructionLexerAnalysisPass;
-use Phplrt\Lexer\Builder\Analysis\LexerResultContext;
 use Phplrt\Lexer\Builder\Compiler\LexerBuildingContext;
 use Phplrt\Lexer\Builder\Compiler\LexerCompilerPassInterface;
 use Phplrt\Lexer\Builder\LexerBuilder;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/lexer-compiler')]
+#[Test]
 final class PassPriorityTest extends TestCase
 {
-    #[TestDox('The compiler passes are processed in the order of their priority')]
     public function testPriorityOrder(): void
     {
         $order = [];
@@ -49,16 +50,15 @@ final class PassPriorityTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame([
+        Assert::same($order, [
             'custom',
             'normalize',
             'check',
             'optimize',
             'check-after-optimize',
-        ], $order);
+        ]);
     }
 
-    #[TestDox('The compiler passes of the same priority are processed in the order they have been registered')]
     public function testRegistrationOrder(): void
     {
         $order = [];
@@ -71,10 +71,9 @@ final class PassPriorityTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame(['first', 'second'], $order);
+        Assert::same($order, ['first', 'second']);
     }
 
-    #[TestDox('The analysis passes are processed after every compiler pass, whatever its priority is')]
     public function testAnalysisOrder(): void
     {
         $order = [];
@@ -88,35 +87,33 @@ final class PassPriorityTest extends TestCase
 
         $lexer->build();
 
-        self::assertSame(['compile', 'first', 'second'], $order);
+        Assert::same($order, ['compile', 'first', 'second']);
     }
 
-    #[TestDox('The default compiler passes are registered under their own priorities')]
     public function testDefaultPriorities(): void
     {
         $lexer = new LexerBuilder();
 
-        self::assertSame([
+        Assert::same(\array_keys($lexer->compilerPasses), [
             LexerBuilder::PASS_PRIORITY_NORMALIZE,
             LexerBuilder::PASS_PRIORITY_CHECK,
-        ], \array_keys($lexer->compilerPasses));
+        ]);
     }
 
-    #[TestDox('Everything derived from the token definitions is described by an analysis pass')]
     public function testDefaultAnalysisPasses(): void
     {
         $lexer = new LexerBuilder();
 
-        self::assertSame([
+        Assert::same(\array_map(
+            static fn(LexerAnalysisPassInterface $pass): string => $pass::class,
+            $lexer->analysisPasses,
+        ), [
             TokenNameConstructionLexerAnalysisPass::class,
             ChannelConstructionLexerAnalysisPass::class,
             TransitionConstructionLexerAnalysisPass::class,
             SubgroupConstructionLexerAnalysisPass::class,
             RegexConstructionLexerAnalysisPass::class,
-        ], \array_map(
-            static fn(LexerAnalysisPassInterface $pass): string => $pass::class,
-            $lexer->analysisPasses,
-        ));
+        ]);
     }
 
     private static function createPass(array &$order, string $name): LexerCompilerPassInterface

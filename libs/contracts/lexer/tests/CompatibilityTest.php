@@ -10,29 +10,31 @@ use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
-use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use Testo\Assert\ExpectNoAssertions;
+use Testo\Test;
 
 /**
  * Note: Changing the behavior of these tests is allowed ONLY when updating
  *       a MAJOR version of the package.
  */
+#[Test]
 class CompatibilityTest extends TestCase
 {
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testLexerCompatibility(): void
     {
-        new class () implements LexerInterface {
-            public function lex(mixed $source, int $offset = 0): iterable
+        new class implements LexerInterface {
+            public function lex(ReadableInterface $source, int $offset = 0): iterable
             {
                 return [];
             }
         };
     }
 
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testTokenCompatibility(): void
     {
-        new class () implements TokenInterface {
+        new class implements TokenInterface {
             public int $id;
             public ?string $name;
             public ChannelInterface $channel;
@@ -49,17 +51,16 @@ class CompatibilityTest extends TestCase
         };
     }
 
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testLexerExceptionCompatibility(): void
     {
         new class extends \Exception implements LexerExceptionInterface {};
     }
 
-    #[DoesNotPerformAssertions]
+    #[ExpectNoAssertions]
     public function testLexerRuntimeExceptionCompatibility(): void
     {
-        new class extends \Exception implements RuntimeExceptionInterface
-        {
+        new class extends \Exception implements RuntimeExceptionInterface {
             public ReadableInterface $source;
             public TokenInterface $token;
         };

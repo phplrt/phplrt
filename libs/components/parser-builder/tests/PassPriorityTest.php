@@ -14,13 +14,14 @@ use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
 use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
 use Phplrt\Parser\Builder\ParserBuilder;
-use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\TestDox;
+use Testo\Assert;
+use Testo\Filter\Group;
+use Testo\Test;
 
 #[Group('phplrt/parser-compiler')]
+#[Test]
 final class PassPriorityTest extends TestCase
 {
-    #[TestDox('The compiler passes are processed in the order of their priority')]
     public function testPriorityOrder(): void
     {
         $order = [];
@@ -49,16 +50,15 @@ final class PassPriorityTest extends TestCase
 
         $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame([
+        Assert::same($order, [
             'custom',
             'normalize',
             'check',
             'optimize',
             'check-after-optimize',
-        ], $order);
+        ]);
     }
 
-    #[TestDox('The compiler passes of the same priority are processed in the order they have been registered')]
     public function testRegistrationOrder(): void
     {
         $order = [];
@@ -71,10 +71,9 @@ final class PassPriorityTest extends TestCase
 
         $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame(['first', 'second'], $order);
+        Assert::same($order, ['first', 'second']);
     }
 
-    #[TestDox('The analysis passes are processed after every compiler pass, whatever its priority is')]
     public function testAnalysisOrder(): void
     {
         $order = [];
@@ -91,40 +90,34 @@ final class PassPriorityTest extends TestCase
 
         $parser->build(self::createLexerBuilder()->build());
 
-        self::assertSame(['compile', 'first', 'second'], $order);
+        Assert::same($order, ['compile', 'first', 'second']);
     }
 
-    #[TestDox('The default compiler passes are registered under their own priorities')]
     public function testDefaultPriorities(): void
     {
         $parser = new ParserBuilder();
 
-        self::assertSame([
+        Assert::same(\array_keys($parser->compilerPasses), [
             ParserBuilder::PASS_PRIORITY_NORMALIZE,
             ParserBuilder::PASS_PRIORITY_CHECK,
             ParserBuilder::PASS_PRIORITY_OPTIMIZE,
-        ], \array_keys($parser->compilerPasses));
+        ]);
 
-        self::assertInstanceOf(
-            InitialRuleParserCompilerPass::class,
-            $parser->compilerPasses[ParserBuilder::PASS_PRIORITY_NORMALIZE][0],
-            'The initial rule is computed before everything that needs it',
-        );
+        Assert::instanceOf($parser->compilerPasses[ParserBuilder::PASS_PRIORITY_NORMALIZE][0], InitialRuleParserCompilerPass::class, 'The initial rule is computed before everything that needs it');
     }
 
-    #[TestDox('The default analysis passes are registered in the order they depend on each other')]
     public function testDefaultAnalysisPasses(): void
     {
         $parser = new ParserBuilder();
 
-        self::assertSame([
+        Assert::same(\array_map(
+            static fn(ParserAnalysisPassInterface $pass): string => $pass::class,
+            $parser->analysisPasses,
+        ), [
             LookaheadConstructionParserAnalysisPass::class,
             KeptRuleConstructionParserAnalysisPass::class,
             ChoicePredictionConstructionParserAnalysisPass::class,
-        ], \array_map(
-            static fn(ParserAnalysisPassInterface $pass): string => $pass::class,
-            $parser->analysisPasses,
-        ));
+        ]);
     }
 
     private static function createCompilerPass(array &$order, string $name): ParserCompilerPassInterface
