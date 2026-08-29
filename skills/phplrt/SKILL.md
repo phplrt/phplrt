@@ -77,10 +77,15 @@ composer show phplrt/runtime >/dev/null 2>&1 || composer require phplrt/runtime
 # .pp3 + generate (recommended): the compiler is dev-only
 composer show phplrt/compiler >/dev/null 2>&1 || composer require --dev phplrt/compiler
 
-# builder path (prototyping, or a parser assembled dynamically at runtime): dev-only unless
-# you truly build at boot in production, in which case drop --dev for these two
+# lexer branch (tokenizing only, incl. nested sub-lexers via the builder API): the lexer builder alone
+composer show phplrt/lexer-builder >/dev/null 2>&1 || composer require --dev phplrt/lexer-builder
+
+# parser branch (prototyping, or a parser assembled dynamically at runtime): pulls lexer-builder too;
+# dev-only unless you truly build at boot in production, in which case drop --dev
 composer show phplrt/parser-builder >/dev/null 2>&1 || composer require --dev phplrt/parser-builder
 ```
+
+Run the guard for every package the branch's reference file names before writing code that imports it — a feature added mid-task (a nested lexer inside parser work, a `.pp3` generate step after prototyping) re-enters this table with its own row.
 
 ## Mental model
 
