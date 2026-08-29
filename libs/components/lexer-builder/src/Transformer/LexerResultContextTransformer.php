@@ -30,13 +30,26 @@ final readonly class LexerResultContextTransformer
         $lexers = [];
 
         foreach ($context->lexers as $name => $lexer) {
-            $lexers[$name] = $lexer instanceof LexerBuilder ? $lexer->build() : $lexer;
+            if (!$lexer instanceof LexerBuilder) {
+                $lexers[$name] = $lexer;
+
+                continue;
+            }
+
+            $context->logger->info('Building the {lexer} lexer the reading is handed over to', [
+                'lexer' => $name,
+            ]);
+
+            $lexer->setLogger($context->logger);
+
+            $lexers[$name] = $lexer->build();
         }
 
         return new LexerResultContext(
             tokens: [...$context->tokens, $this->createUnknownToken()],
             flags: \array_values($context->flags),
             lexers: $lexers,
+            logger: $context->logger,
         );
     }
 

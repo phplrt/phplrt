@@ -8,6 +8,8 @@ use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Describes the lexer the analysis passes complement with the metadata.
@@ -67,5 +69,9 @@ final class LexerResultContext
          * @var array<int, non-empty-string|null>
          */
         public array $transitions = [],
+        /**
+         * Reports what the passes have found out about the lexer.
+         */
+        public readonly LoggerInterface $logger = new NullLogger(),
     ) {}
 }

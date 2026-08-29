@@ -26,5 +26,10 @@ final readonly class TokenNameConstructionLexerAnalysisPass implements
         }
 
         $context->names = $result;
+
+        $context->logger->info('{named} token(s) of {tokens} have a name', [
+            'named' => \count($result),
+            'tokens' => \count($context->tokens),
+        ]);
     }
 }

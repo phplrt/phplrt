@@ -33,5 +33,9 @@ final readonly class TransitionConstructionLexerAnalysisPass implements
         }
 
         $context->transitions = $result;
+
+        $context->logger->info('{count} token(s) change the lexer the reading goes on with', [
+            'count' => \count($result),
+        ]);
     }
 }

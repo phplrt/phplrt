@@ -20,5 +20,10 @@ final readonly class RegexConstructionLexerAnalysisPass implements
     public function process(LexerResultContext $context): void
     {
         $context->pattern = $this->generator->generate($context->tokens, $context->flags);
+
+        $context->logger->info('The expression recognizing {tokens} token(s) is {bytes} byte(s) long', [
+            'tokens' => \count($context->tokens),
+            'bytes' => \strlen($context->pattern),
+        ]);
     }
 }

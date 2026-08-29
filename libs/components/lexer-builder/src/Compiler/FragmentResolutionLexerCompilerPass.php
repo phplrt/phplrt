@@ -10,6 +10,7 @@ use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Psr\Log\LoggerInterface;
 
 /**
  * Writes every piece of an expression into the expressions referring to it.
@@ -44,12 +45,12 @@ final readonly class FragmentResolutionLexerCompilerPass implements
 
     public function process(LexerBuildingContext $context): void
     {
-        self::expandTokens($context->tokens, $context->fragments);
+        self::expandTokens($context->tokens, $context->fragments, $context->logger);
 
         /** @var \SplObjectStorage<LexerBuilder, null> $visited */
         $visited = new \SplObjectStorage();
 
-        self::expandLexers($context->lexers, $context->fragments, $visited);
+        self::expandLexers($context->lexers, $context->fragments, $visited, $context->logger);
     }
 
     /**
@@ -57,7 +58,7 @@ final readonly class FragmentResolutionLexerCompilerPass implements
      * @param array<non-empty-string, FragmentDefinition> $fragments
      * @throws CompilationFailedException
      */
-    private static function expandTokens(array $tokens, array $fragments): void
+    private static function expandTokens(array $tokens, array $fragments, LoggerInterface $logger): void
     {
         foreach ($tokens as $definition) {
             if (!$definition instanceof RegexTokenDefinition) {
@@ -66,9 +67,16 @@ final readonly class FragmentResolutionLexerCompilerPass implements
 
             $regex = self::expand($definition->regex, $definition, $fragments);
 
-            if ($regex !== '') {
-                $definition->regex = $regex;
+            if ($regex === '' || $regex === $definition->regex) {
+                continue;
             }
+
+            $logger->debug('Token {token} refers to the fragments it is now written of: {regex}', [
+                'token' => (string) $definition,
+                'regex' => $regex,
+            ]);
+
+            $definition->regex = $regex;
         }
     }
 
@@ -78,8 +86,12 @@ final readonly class FragmentResolutionLexerCompilerPass implements
      * @param \SplObjectStorage<LexerBuilder, null> $visited
      * @throws CompilationFailedException
      */
-    private static function expandLexers(array $lexers, array $fragments, \SplObjectStorage $visited): void
-    {
+    private static function expandLexers(
+        array $lexers,
+        array $fragments,
+        \SplObjectStorage $visited,
+        LoggerInterface $logger,
+    ): void {
         foreach ($lexers as $lexer) {
             // A lexer written by hand recognizes whatever it recognizes
             if (!$lexer instanceof LexerBuilder || $visited->offsetExists($lexer)) {
@@ -92,8 +104,8 @@ final readonly class FragmentResolutionLexerCompilerPass implements
             // with the ones it declares on its own
             $known = [...$fragments, ...$lexer->fragments];
 
-            self::expandTokens($lexer->tokens, $known);
-            self::expandLexers($lexer->lexers, $known, $visited);
+            self::expandTokens($lexer->tokens, $known, $logger);
+            self::expandLexers($lexer->lexers, $known, $visited, $logger);
         }
     }
 

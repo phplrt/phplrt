@@ -30,5 +30,9 @@ final readonly class ChannelConstructionLexerAnalysisPass implements
         }
 
         $context->channels = $result;
+
+        $context->logger->info('{count} token(s) are emitted to a channel of their own', [
+            'count' => \count($result),
+        ]);
     }
 }

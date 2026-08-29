@@ -25,6 +25,7 @@ final readonly class LexerBuildingContextTransformer
             lexers: $builder->lexers,
             flags: $builder->flags,
             isEmbedded: $builder->isEmbedded,
+            logger: $builder->logger,
         );
     }
 }

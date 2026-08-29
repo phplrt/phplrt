@@ -33,8 +33,11 @@ use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\Transformer\LexerBuilderResultTransformer;
 use Phplrt\Lexer\Builder\Transformer\LexerBuildingContextTransformer;
 use Phplrt\Lexer\Builder\Transformer\LexerResultContextTransformer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
-final class LexerBuilder
+final class LexerBuilder implements LoggerAwareInterface
 {
     /**
      * Brings the lexer to the form the rest of the passes expect: the lexers
@@ -115,8 +118,16 @@ final class LexerBuilder
      */
     public private(set) array $analysisPasses = [];
 
+    /**
+     * Reports what the passes do to the token definitions while the lexer is
+     * built.
+     */
+    public private(set) LoggerInterface $logger;
+
     public function __construct()
     {
+        $this->logger = new NullLogger();
+
         $this->compilerPasses = [
             /**
              * Dead lexers are dropped first, so that the code that could
@@ -418,10 +429,25 @@ final class LexerBuilder
     }
 
     /**
+     * Registers the logger the passes report to.
+     *
+     * @api
+     */
+    #[\Override]
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * @throws LexerCompilerException
      */
     public function build(): LexerBuilderResult
     {
+        $this->logger->info('Building a lexer out of {tokens} token(s)', [
+            'tokens' => \count($this->tokens),
+        ]);
+
         $building = new LexerBuildingContextTransformer()
             ->transform($this);
 
@@ -431,6 +457,10 @@ final class LexerBuilder
             ->transform($building);
 
         $this->analyze($result);
+
+        $this->logger->info('The lexer of {tokens} token(s) has been built', [
+            'tokens' => \count($result->tokens),
+        ]);
 
         return new LexerBuilderResultTransformer()
             ->transform($result);
@@ -442,9 +472,26 @@ final class LexerBuilder
     private function process(LexerBuildingContext $context): void
     {
         try {
-            foreach ($this->compilerPasses as $passes) {
+            foreach ($this->compilerPasses as $priority => $passes) {
                 foreach ($passes as $pass) {
+                    $context->logger->debug('Compiler pass {pass} of {priority} priority', [
+                        'pass' => $pass::class,
+                        'priority' => $priority,
+                    ]);
+
+                    $before = \count($context->tokens);
+
                     $pass->process($context);
+
+                    $after = \count($context->tokens);
+
+                    if ($before !== $after) {
+                        $context->logger->info('{pass} has left {after} token(s) of {before}', [
+                            'pass' => self::printPass($pass),
+                            'before' => $before,
+                            'after' => $after,
+                        ]);
+                    }
                 }
             }
         } catch (LexerCompilerException $e) {
@@ -461,6 +508,10 @@ final class LexerBuilder
     {
         try {
             foreach ($this->analysisPasses as $pass) {
+                $context->logger->debug('Analysis pass {pass}', [
+                    'pass' => $pass::class,
+                ]);
+
                 $pass->process($context);
             }
         } catch (LexerCompilerException $e) {
@@ -468,5 +519,25 @@ final class LexerBuilder
         } catch (\Throwable $e) {
             throw LexerCompilerException::becauseInternalErrorOccurs($e);
         }
+    }
+
+    /**
+     * Returns the name a pass is reported under.
+     *
+     * @return non-empty-string
+     */
+    private static function printPass(LexerCompilerPassInterface $pass): string
+    {
+        $class = $pass::class;
+
+        $offset = \strrpos($class, '\\');
+
+        if ($offset === false) {
+            return $class;
+        }
+
+        $name = \substr($class, $offset + 1);
+
+        return $name === '' ? $class : $name;
     }
 }

@@ -9,6 +9,8 @@ use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Contains the token definitions the compiler passes rewrite and check.
@@ -49,5 +51,9 @@ final class LexerBuildingContext
          * so it is allowed to stop reading and give the control back
          */
         public bool $isEmbedded = false,
+        /**
+         * Reports what the passes do to the token definitions.
+         */
+        public readonly LoggerInterface $logger = new NullLogger(),
     ) {}
 }

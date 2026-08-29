@@ -24,6 +24,10 @@ final readonly class UnreachableLexerCompilerPass implements
                 continue;
             }
 
+            $context->logger->info('Lexer {lexer} is removed, since nothing hands the reading over to it', [
+                'lexer' => $name,
+            ]);
+
             unset($context->lexers[$name]);
         }
     }

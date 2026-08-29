@@ -35,6 +35,10 @@ final readonly class SubgroupConstructionLexerAnalysisPass implements
         }
 
         $context->subgroups = $result;
+
+        $context->logger->info('{count} token(s) capture the subgroups of their expressions', [
+            'count' => \count($result),
+        ]);
     }
 
     /**
