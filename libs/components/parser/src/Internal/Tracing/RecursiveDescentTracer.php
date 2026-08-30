@@ -26,6 +26,7 @@ use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
  * @phpstan-import-type LookaheadTableType from GrammarTable
  * @phpstan-import-type KeptTableType from GrammarTable
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
+ * @phpstan-import-type MessageTableType from GrammarTable
  */
 final class RecursiveDescentTracer
 {
@@ -59,6 +60,16 @@ final class RecursiveDescentTracer
      */
     private readonly array $choicePrediction;
 
+    /**
+     * The rules describing their own failure by a message of their own.
+     *
+     * Only the presence of a rule is asked about here: the message itself is
+     * read once the recognition is over, by the one reporting the error.
+     *
+     * @var MessageTableType
+     */
+    private readonly array $messages;
+
     private readonly ErrorReport $error;
 
     private function __construct(
@@ -69,6 +80,7 @@ final class RecursiveDescentTracer
         $this->lookahead = $table->lookahead;
         $this->kept = $table->kept;
         $this->choicePrediction = $table->choicePrediction;
+        $this->messages = $table->messages;
 
         $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
     }
@@ -89,6 +101,18 @@ final class RecursiveDescentTracer
 
         if ($isMatched && $current->channel === Channel::EndOfInput) {
             return new SuccessfulTracingResult($self->entries, $self->length);
+        }
+
+        /**
+         * The rule the recognition starts at is contained by nothing, so its
+         * own failure is reported here rather than by the rule above it.
+         *
+         * A rule that has been recognized without reading the source to its
+         * end has not described the source either, so it is reported the very
+         * same way.
+         */
+        if (isset($self->messages[$table->initial])) {
+            $self->error->labelInitial($table->initial);
         }
 
         return $self->error->toFailureResult(
@@ -214,6 +238,16 @@ final class RecursiveDescentTracer
 
         foreach ($rule->ruleIds as $inner) {
             if (!$this->match($inner)) {
+                /**
+                 * The place a rule is written at is what its message describes,
+                 * so the failure is reported before the input is given back:
+                 * afterwards the reading is at the beginning of the sequence
+                 * instead of the element that has broken it.
+                 */
+                if (isset($this->messages[$inner])) {
+                    $this->error->label($inner);
+                }
+
                 if ($buffer->key !== $rollback) {
                     $buffer->seek($rollback);
                 }
@@ -244,6 +278,12 @@ final class RecursiveDescentTracer
         foreach ($alternatives as $inner) {
             if ($this->match($inner)) {
                 return true;
+            }
+
+            // An alternative describing its own failure is reported the way an
+            // element of a sequence is
+            if (isset($this->messages[$inner])) {
+                $this->error->label($inner);
             }
 
             // Most alternatives are rejected by their start token and so read

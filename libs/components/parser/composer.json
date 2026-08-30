@@ -21,6 +21,7 @@
         "ext-json": "*",
         "phplrt/lexer": "^4.0",
         "phplrt/parser-contracts": "^4.0",
+        "phplrt/position": "^4.0",
         "phplrt/source-contracts": "^4.0"
     },
     "suggest": {

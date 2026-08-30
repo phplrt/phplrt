@@ -18,6 +18,7 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
+use Phplrt\Parser\Internal\MessageInterpolator;
 use Phplrt\Parser\Internal\Reduction\ReducerTable;
 use Phplrt\Parser\Internal\Tracing\GrammarTable;
 use Phplrt\Parser\Internal\Tracing\RecursiveDescentTracer;
@@ -36,12 +37,19 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @phpstan-import-type LookaheadTableType from GrammarTable
  * @phpstan-import-type KeptTableType from GrammarTable
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
+ * @phpstan-import-type MessageTableType from GrammarTable
  */
 readonly class Parser implements ParserInterface
 {
     private GrammarTable $table;
 
     private ReducerTable $reducers;
+
+    /**
+     * Fills the placeholders of a message in with what the reading has broken
+     * on.
+     */
+    private MessageInterpolator $interpolator;
 
     /**
      * @param list<RuleInterface> $grammar
@@ -58,6 +66,8 @@ readonly class Parser implements ParserInterface
      * @param ExpectationsTableType $expectations the way an error has to
      *        name each token: by its name, or by what an anonymous one is
      *        recognized by
+     * @param MessageTableType $messages the message describing the failure of
+     *        a rule, indexed by the rule identifiers
      */
     public function __construct(
         private LexerInterface $lexer,
@@ -68,6 +78,7 @@ readonly class Parser implements ParserInterface
         array $kept = [],
         array $choicePrediction = [],
         private array $expectations = [],
+        private array $messages = [],
     ) {
         $this->table = new GrammarTable(
             rules: $grammar,
@@ -75,6 +86,7 @@ readonly class Parser implements ParserInterface
             lookahead: $lookahead,
             kept: $kept,
             choicePrediction: $choicePrediction,
+            messages: $messages,
         );
 
         $this->reducers = new ReducerTable(
@@ -82,6 +94,8 @@ readonly class Parser implements ParserInterface
             reducers: $reducers,
             rule: $initial,
         );
+
+        $this->interpolator = new MessageInterpolator();
     }
 
     /**
@@ -166,10 +180,27 @@ readonly class Parser implements ParserInterface
             }
         }
 
-        return UnexpectedTokenException::becauseUnexpectedTokenProduced(
+        $token = $result->token ?? $result->stoppedAt;
+
+        $rule = $result->labelled;
+        $message = $rule === null ? null : $this->messages[$rule] ?? null;
+
+        // The grammar says nothing about this failure, so it is described by
+        // the tokens that could have been read instead
+        if ($rule === null || $message === null) {
+            return UnexpectedTokenException::becauseUnexpectedTokenProduced(
+                source: $source,
+                token: $token,
+                expected: $expected,
+            );
+        }
+
+        return UnexpectedTokenException::becauseGrammarDescribesTheError(
             source: $source,
-            token: $result->token ?? $result->stoppedAt,
+            token: $token,
+            message: $this->interpolator->interpolate($message, $source, $token, $expected),
             expected: $expected,
+            rule: $rule,
         );
     }
 

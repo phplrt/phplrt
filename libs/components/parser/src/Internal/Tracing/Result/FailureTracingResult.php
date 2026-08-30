@@ -32,6 +32,12 @@ final class FailureTracingResult extends TracingResult
          * @var list<int>
          */
         public array $expected = [],
+        /**
+         * The identifier of the rule describing the failure by a message of
+         * its own, or {@see null} in case the failure is described by the
+         * tokens that could have been read instead.
+         */
+        public ?int $labelled = null,
         array $entries = [],
         int $length = 0,
     ) {

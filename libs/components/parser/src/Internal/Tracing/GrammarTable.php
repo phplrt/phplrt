@@ -20,6 +20,7 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * @phpstan-type LookaheadTableType array<int, array<int, true>|null>
  * @phpstan-type KeptTableType array<int, bool>
  * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
+ * @phpstan-type MessageTableType array<int, non-empty-string>
  */
 final readonly class GrammarTable
 {
@@ -87,6 +88,13 @@ final readonly class GrammarTable
          * @var ChoicePredictionTableType
          */
         public array $choicePrediction = [],
+        /**
+         * The message describing the failure of a rule, indexed by the rule
+         * identifiers.
+         *
+         * @var MessageTableType
+         */
+        public array $messages = [],
     ) {
         // A grammar that has not been described is recognized all the same: it
         // reads exactly the same sources, only slower, and errors get reported

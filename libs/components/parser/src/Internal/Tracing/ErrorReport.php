@@ -54,6 +54,30 @@ final class ErrorReport
      */
     private array $rules = [];
 
+    /**
+     * The rule describing the failure by a message of its own, or {@see null}
+     * in case no such rule was being recognized when the input has broken.
+     */
+    private ?int $labelled = null;
+
+    /**
+     * The position the rule above has been entered at.
+     *
+     * @var int<-1, max>
+     */
+    private int $labelledAt = -1;
+
+    /**
+     * The rule the recognition starts at, in case it describes the failure by
+     * a message of its own, or {@see null} in case it describes the failure by
+     * nothing.
+     *
+     * The rule is contained by nothing, so it stands for the source as a whole
+     * and describes every failure the rules inside it leave undescribed, no
+     * matter where the reading has stopped.
+     */
+    private ?int $initial = null;
+
     public function __construct(
         private readonly BufferInterface $buffer,
         /**
@@ -81,6 +105,12 @@ final class ErrorReport
             $this->token = $buffer->current;
             $this->rules = [$rule];
 
+            // The rules remembered so far were being recognized when the input
+            // broke somewhere before this, which is no longer the error the
+            // report describes
+            $this->labelled = null;
+            $this->labelledAt = -1;
+
             return;
         }
 
@@ -89,6 +119,44 @@ final class ErrorReport
         if ($position === $furthest && !isset($this->rules[self::RULES_LIMIT - 1])) {
             $this->rules[] = $rule;
         }
+    }
+
+    /**
+     * Remembers that the given rule, which describes the failure by a message
+     * of its own, could not be recognized.
+     *
+     * The rule is reported once the input has been given back, so the reading
+     * is at the position the rule has been entered at rather than at the one
+     * it has broken on.
+     */
+    public function label(int $rule): void
+    {
+        $position = $this->buffer->key;
+
+        /**
+         * A rule entered past the deepest failure has never reached it, so it
+         * describes an error earlier than the one that has stopped the reading.
+         *
+         * Of the rules that have reached it, the one entered last is the one
+         * written closest to the input that has broken, and the rules are
+         * reported as the recognition unwinds, innermost first, so the one
+         * remembered at the same position is already that one.
+         */
+        if ($position > $this->furthest || $position <= $this->labelledAt) {
+            return;
+        }
+
+        $this->labelledAt = $position;
+        $this->labelled = $rule;
+    }
+
+    /**
+     * Remembers that the rule the recognition starts at, which describes the
+     * failure by a message of its own, has not described the source.
+     */
+    public function labelInitial(int $rule): void
+    {
+        $this->initial = $rule;
     }
 
     /**
@@ -105,9 +173,15 @@ final class ErrorReport
         // The input the analysis stopped at is reported in case no deeper
         // failure has been recorded
         if ($this->token === null || $this->furthest < $buffer->key) {
+            /**
+             * The rules remembered so far were being recognized when the input
+             * broke before the place the reading has stopped at, so what they
+             * say is said about another failure than the one reported here.
+             */
             return new FailureTracingResult(
                 stoppedAt: $stoppedAt,
                 token: $buffer->current,
+                labelled: $this->initial,
                 entries: $entries,
                 length: $length,
             );
@@ -117,6 +191,7 @@ final class ErrorReport
             stoppedAt: $stoppedAt,
             token: $this->token,
             expected: $this->calculateExpectedTokens(),
+            labelled: $this->labelled ?? $this->initial,
             entries: $entries,
             length: $length,
         );

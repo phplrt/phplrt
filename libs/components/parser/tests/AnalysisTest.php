@@ -256,7 +256,7 @@ final class AnalysisTest extends TestCase
             expectations: self::createExpectations(),
         );
 
-        $expected = 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected';
+        $expected = 'Syntax error, unexpected "1" (T_NUMBER), T_PLUS or T_MINUS expected';
 
         foreach (['with' => $withTables, 'without' => $withoutTables] as $name => $parser) {
             $actual = $parser->analyze(StringSource::createFromString('1'), Mode::SyntaxCheck);
@@ -292,7 +292,7 @@ final class AnalysisTest extends TestCase
 
         Assert::instanceOf($actual, FailureResult::class);
 
-        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER), one of T_PLUS, T_MINUS expected');
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER), T_PLUS or T_MINUS expected');
     }
 
     public function testExpectedTokensOfAnAlternationRecognizingNothing(): void
@@ -321,7 +321,7 @@ final class AnalysisTest extends TestCase
 
         Assert::instanceOf($actual, FailureResult::class);
 
-        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS), one of T_PLUS, T_MINUS expected');
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS), T_PLUS or T_MINUS expected');
     }
 
     public function testEmptyFragmentIsRead(): void

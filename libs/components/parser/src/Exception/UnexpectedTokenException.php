@@ -6,17 +6,10 @@ namespace Phplrt\Parser\Exception;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
+use Phplrt\Parser\Internal\ExpectationPrinter;
 
 class UnexpectedTokenException extends ParserRuntimeException
 {
-    /**
-     * The number of the expectations an error message tells by name, the rest
-     * of them being counted instead.
-     *
-     * @var int<1, max>
-     */
-    private const int MAX_LISTED_EXPECTATIONS = 3;
-
     /**
      * @param int<0, max>|null $length
      */
@@ -64,6 +57,40 @@ class UnexpectedTokenException extends ParserRuntimeException
     }
 
     /**
+     * Reports the error the grammar describes by a message of its own.
+     *
+     * The message is reported as it is written: the place the reading has
+     * broken at is told by the error itself, so there is nothing to say about
+     * it that the grammar has not said.
+     *
+     * The code of the error is the rule the message is written on, counted
+     * from one.
+     *
+     * @param non-empty-string $message
+     * @param list<non-empty-string> $expected
+     * @param int $rule the identifier of the rule the message is written on
+     */
+    public static function becauseGrammarDescribesTheError(
+        ReadableInterface $source,
+        TokenInterface $token,
+        string $message,
+        array $expected = [],
+        int $rule = 0,
+        ?\Throwable $previous = null,
+    ): self {
+        return new self(
+            source: $source,
+            token: $token,
+            message: $message,
+            expected: $expected,
+            // The rules are numbered from zero and an error carries no code at
+            // all by default, so the identifier is counted from one here
+            code: $rule + 1,
+            previous: $previous,
+        );
+    }
+
+    /**
      * @param list<non-empty-string> $expected
      * @return non-empty-string
      */
@@ -71,27 +98,10 @@ class UnexpectedTokenException extends ParserRuntimeException
     {
         $message = \sprintf('Syntax error, unexpected %s', $token);
 
-        return $message . match (\count($expected)) {
-            0 => '',
-            1 => \sprintf(', %s expected', \implode(', ', $expected)),
-            default => \sprintf(', one of %s expected', self::createExpectations($expected)),
-        };
-    }
-
-    /**
-     * @param non-empty-list<non-empty-string> $expected
-     * @return non-empty-string
-     */
-    private static function createExpectations(array $expected): string
-    {
-        $hidden = \count($expected) - self::MAX_LISTED_EXPECTATIONS;
-
-        if ($hidden <= 0) {
-            return \implode(', ', $expected);
+        if ($expected === []) {
+            return $message;
         }
 
-        $expectations = \array_slice($expected, 0, self::MAX_LISTED_EXPECTATIONS);
-
-        return \sprintf('%s (+%d more expectations)', \implode(', ', $expectations), $hidden);
+        return $message . \sprintf(', %s expected', ExpectationPrinter::printShort($expected));
     }
 }
