@@ -67,13 +67,10 @@ final readonly class MessageInterpolator
         TokenInterface $token,
         array $expected = [],
     ): string {
-        $callback = fn(array $matches): string
-            => $this->createReplacement($matches, $source, $token, $expected)
-        ;
-
         $result = \preg_replace_callback(
             pattern: MessagePlaceholder::PATTERN,
-            callback: $callback,
+            callback: fn(array $matches): string
+                => $this->createReplacement($matches, $source, $token, $expected),
             subject: $message,
         );
 
@@ -87,7 +84,8 @@ final readonly class MessageInterpolator
     }
 
     /**
-     * @param array{0: non-empty-string, 1?: non-empty-string} $matches
+     * @param array{0: non-empty-string, 1?: non-empty-string} $matches the whole
+     *        placeholder, along with its name in case it has been captured
      * @param list<non-empty-string> $expected
      * @throws SourceExceptionInterface
      */
