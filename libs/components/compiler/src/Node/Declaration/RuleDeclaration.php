@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Node\Declaration;
 
+use Phplrt\Compiler\Node\Annotation;
 use Phplrt\Compiler\Node\Reducer\Reducer;
 use Phplrt\Compiler\Node\Statement\Statement;
 
@@ -37,6 +38,13 @@ final readonly class RuleDeclaration extends Declaration
          * even when it recognizes a single child
          */
         public bool $isKept = false,
+        /**
+         * What is said about the rule apart from what it recognizes, in the
+         * order it is written.
+         *
+         * @var list<Annotation>
+         */
+        public array $annotations = [],
         int $offset = 0,
         int $length = 0,
     ) {

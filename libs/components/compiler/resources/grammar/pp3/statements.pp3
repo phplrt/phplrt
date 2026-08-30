@@ -81,7 +81,7 @@ Concatenation -> {
         length: \max(0, $last->offset + $last->length - $statements[0]->offset),
     );
 }
-  : Prefixed()+
+  : Element()+
   ;
 
 /**
@@ -203,23 +203,39 @@ RuleReference -> {
   ;
 
 /**
- * A statement to look ahead at, like:
+ * A single thing a sequence is written of, like:
  *  - &<T_ELSE>
- *  - !Keyword()
+ *  - Number()* @error("a number is expected")
  *
- *  The statement is recognized the way any other one is, and whatever it has
- *  read is given back afterwards: an "&" carries on when it has been
- *  recognized, a "!" when it has not, and neither of them ever reaches the
- *  syntax tree.
+ *  A statement may be looked ahead at, and it may be said something about
+ *  apart from what it recognizes.
+ *
+ *  The statement of a predicate is recognized the way any other one is, and
+ *  whatever it has read is given back afterwards: an "&" carries on when it
+ *  has been recognized, a "!" when it has not, and neither of them ever
+ *  reaches the syntax tree.
  *
  *  The predicate stands before the quantifier rather than after it, so
  *  "&Number()*" looks ahead at any number of them at once instead of looking
  *  ahead any number of times.
  *
- *  A statement written with nothing before it is that statement.
+ *  Whatever is said about the statement is written after the predicate, so it
+ *  is said about the looking ahead rather than about what is looked ahead at.
+ *
+ *  A statement written with nothing around it is that statement.
  */
-Prefixed -> {
+Element -> {
     \assert(\is_array($children));
+
+    $annotations = [];
+
+    // What is said about the statement is written after it, so it is read off
+    // the back until the statement itself is reached
+    while (($annotation = $children[\count($children) - 1] ?? null) instanceof \Phplrt\Compiler\Node\Annotation) {
+        \array_unshift($annotations, $annotation);
+
+        \array_pop($children);
+    }
 
     $sign = $children[0] ?? null;
     $statement = $children[1] ?? null;
@@ -227,21 +243,91 @@ Prefixed -> {
     if ($statement === null) {
         \assert($sign instanceof \Phplrt\Compiler\Node\Statement\Statement);
 
-        return $sign;
+        $statement = $sign;
+    } else {
+        \assert($sign instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+
+        $statement = new \Phplrt\Compiler\Node\Statement\Predicate(
+            statement: $statement,
+            isExpected: $sign->value === '&',
+            offset: $sign->offset,
+            length: \max(0, $statement->offset + $statement->length - $sign->offset),
+        );
     }
 
-    \assert($sign instanceof \Phplrt\Contracts\Lexer\TokenInterface);
-    \assert($statement instanceof \Phplrt\Compiler\Node\Statement\Statement);
+    if ($annotations === []) {
+        return $statement;
+    }
 
-    return new \Phplrt\Compiler\Node\Statement\Predicate(
+    $last = $annotations[\count($annotations) - 1];
+
+    return new \Phplrt\Compiler\Node\Statement\Annotated(
         statement: $statement,
-        isExpected: $sign->value === '&',
-        offset: $sign->offset,
-        length: \max(0, $statement->offset + $statement->length - $sign->offset),
+        annotations: $annotations,
+        offset: $statement->offset,
+        length: \max(0, $last->offset + $last->length - $statement->offset),
     );
 }
-  : (<T_AMPERSAND> | <T_EXCLAMATION>)? Suffixed()
+  : (<T_AMPERSAND> | <T_EXCLAMATION>)? Suffixed() AnnotationList()?
   ;
+
+/**
+ * What is said about a rule or about a statement apart from what it
+ * recognizes, like:
+ *  - @error("a closing parenthesis is expected")
+ *
+ *  Several of them are written one after another, with nothing in between.
+ */
+AnnotationList : Annotation()+ ;
+
+/**
+ * A single thing said about a rule or about a statement, written as a name
+ * along with the values it is said with.
+ *
+ * What a name means is decided by the compilation rather than here, so a name
+ * it knows nothing about is still read.
+ */
+Annotation -> {
+    \assert(\is_array($children));
+
+    $name = \array_shift($children);
+
+    \assert($name instanceof \Phplrt\Lexer\Token\Token);
+
+    // The "@" opening the annotation belongs to the grammar rather than to the
+    // name, so the name is captured apart from it
+    $identifier = $name->captures[0] ?? '';
+
+    \assert($identifier !== '', 'The name is captured by the token the annotation is read as');
+
+    $arguments = [];
+    $last = $name;
+
+    foreach ($children as $argument) {
+        \assert($argument instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+
+        // The quotes surrounding a value belong to the grammar rather than to
+        // the value, and a quote of the value is written escaped for the very
+        // same reason
+        $arguments[] = \str_replace('\\"', '"', \substr($argument->value, 1, -1));
+
+        $last = $argument;
+    }
+
+    return new \Phplrt\Compiler\Node\Annotation(
+        name: $identifier,
+        arguments: $arguments,
+        offset: $name->offset,
+        length: \max(0, $last->offset + $last->size - $name->offset),
+    );
+}
+  : <T_ANNOTATION> ::T_PARENTHESIS_OPEN:: ArgumentList()? ::T_PARENTHESIS_CLOSE::
+  ;
+
+ArgumentList : <T_STRING> ArgumentTail()* ;
+
+ArgumentTail : ::T_COMMA:: <T_STRING> ;
 
 Inline
   : InlineValue()

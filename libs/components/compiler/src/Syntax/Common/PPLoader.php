@@ -6,9 +6,11 @@ namespace Phplrt\Compiler\Syntax\Common;
 
 use Phplrt\Compiler\Exception\CompilerRuntimeException;
 use Phplrt\Compiler\Exception\EmptyPatternException;
+use Phplrt\Compiler\Exception\UnsupportedAnnotationException;
 use Phplrt\Compiler\Exception\UnsupportedTransitionException;
 use Phplrt\Compiler\Loader\GrammarReference;
 use Phplrt\Compiler\Loader\SyntaxLoaderInterface;
+use Phplrt\Compiler\Node\Annotation;
 use Phplrt\Compiler\Node\Declaration\Declaration;
 use Phplrt\Compiler\Node\Declaration\IncludeDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
@@ -17,6 +19,7 @@ use Phplrt\Compiler\Node\Declaration\TokenDeclaration;
 use Phplrt\Compiler\Node\Reducer\ClassReducer;
 use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Node\Statement\Alternation;
+use Phplrt\Compiler\Node\Statement\Annotated;
 use Phplrt\Compiler\Node\Statement\Concatenation;
 use Phplrt\Compiler\Node\Statement\InlinePattern;
 use Phplrt\Compiler\Node\Statement\InlineValue;
@@ -37,6 +40,7 @@ use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleReference as RuleReferenceDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
+use Phplrt\Parser\Exception\MessagePlaceholder;
 
 /**
  * Reads a grammar file of the PP family into the lexer and the parser it
@@ -61,6 +65,14 @@ abstract class PPLoader implements SyntaxLoaderInterface
      * @var non-empty-string
      */
     protected const string PRAGMA_ROOT = 'root';
+
+    /**
+     * The name of the annotation saying what a rule reports in case of it
+     * cannot be recognized.
+     *
+     * @var non-empty-string
+     */
+    private const string ANNOTATION_ERROR = 'error';
 
     /**
      * The body of the reducer standing for the "#" marker, which builds no
@@ -307,6 +319,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
         $rule->setSource($source, $declaration->offset, $declaration->length);
 
         $this->loadReducer($rule, $declaration, $source);
+        $this->loadAnnotations($rule, $declaration->annotations, $source);
 
         /**
          * The rule declared first is where the analysis starts, unless the
@@ -468,6 +481,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
                 rule: $this->loadStatement($statement->statement, $source, $parser, $lexer),
                 isExpected: $statement->isExpected,
             ),
+            $statement instanceof Annotated => $this->createAnnotated($statement, $source, $parser, $lexer),
             $statement instanceof RuleReference => $parser->addRuleReference($statement->name),
             $statement instanceof TokenReference => $parser->addTokenReference($statement->name)
                 ->setKept($statement->isKept),
@@ -494,6 +508,113 @@ abstract class PPLoader implements SyntaxLoaderInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Reads a statement along with what is said about it.
+     *
+     * @throws CompilerRuntimeException
+     */
+    private function createAnnotated(
+        Annotated $statement,
+        ReadableInterface $source,
+        ParserBuilder $parser,
+        LexerBuilder $lexer,
+    ): RuleDefinition {
+        $rule = $this->loadStatement($statement->statement, $source, $parser, $lexer);
+
+        /**
+         * A reference stands for another rule instead of being one and never
+         * reaches the compiled grammar, so what is said about it is said about
+         * a production wrapping it.
+         */
+        if ($rule instanceof RuleReferenceDefinition) {
+            $rule = $parser->addConcatenation([$rule]);
+            $rule->setSource($source, $statement->offset, $statement->length);
+        }
+
+        $this->loadAnnotations($rule, $statement->annotations, $source);
+
+        return $rule;
+    }
+
+    /**
+     * Reads what is said about a rule apart from what it recognizes.
+     *
+     * @param list<Annotation> $annotations
+     * @throws UnsupportedAnnotationException
+     */
+    private function loadAnnotations(RuleDefinition $rule, array $annotations, ReadableInterface $source): void
+    {
+        foreach ($annotations as $annotation) {
+            match ($annotation->name) {
+                self::ANNOTATION_ERROR => $this->loadErrorAnnotation($rule, $annotation, $source),
+                default => throw UnsupportedAnnotationException::becauseAnnotationIsNotSupported(
+                    source: $source,
+                    annotation: $annotation,
+                ),
+            };
+        }
+    }
+
+    /**
+     * Reads the message the rule reports in case of it cannot be recognized.
+     *
+     * @throws UnsupportedAnnotationException
+     */
+    private function loadErrorAnnotation(
+        RuleDefinition $rule,
+        Annotation $annotation,
+        ReadableInterface $source,
+    ): void {
+        // A rule reports a single error, so the one it already reports is the
+        // one the second message would be lost behind
+        if ($rule->message !== null) {
+            throw UnsupportedAnnotationException::becauseAnnotationIsWrittenTwice($source, $annotation);
+        }
+
+        if (\count($annotation->arguments) !== 1) {
+            throw UnsupportedAnnotationException::becauseAnnotationExpectsValues($source, $annotation, 1);
+        }
+
+        $message = $annotation->arguments[0];
+
+        if ($message === '') {
+            throw UnsupportedAnnotationException::becauseAnnotationExpectsNonEmptyValue($source, $annotation);
+        }
+
+        self::assertPlaceholdersAreDefined($message, $annotation, $source);
+
+        $rule->setMessage($message);
+    }
+
+    /**
+     * Reports a message asking about something the reading knows no value for.
+     *
+     * @throws UnsupportedAnnotationException
+     */
+    private static function assertPlaceholdersAreDefined(
+        string $message,
+        Annotation $annotation,
+        ReadableInterface $source,
+    ): void {
+        \preg_match_all(MessagePlaceholder::PATTERN, $message, $matches, \PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $name = $match[1] ?? '';
+
+            // A pair of braces stands for a brace of the message itself and
+            // asks about nothing
+            if ($name === '' || MessagePlaceholder::tryFrom($name) !== null) {
+                continue;
+            }
+
+            throw UnsupportedAnnotationException::becausePlaceholderIsNotSupported(
+                source: $source,
+                annotation: $annotation,
+                placeholder: $name,
+            );
+        }
     }
 
     /**

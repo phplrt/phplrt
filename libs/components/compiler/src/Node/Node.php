@@ -23,7 +23,7 @@ use Phplrt\Compiler\Node\Statement\Statement;
  * element means and never how it is spelled: the spelling belongs to the
  * format that has been read and lives with the parser reading it.
  *
- * @phpstan-sealed Declaration|Quantifier|Reducer|Statement|TokenAction
+ * @phpstan-sealed Annotation|Declaration|Quantifier|Reducer|Statement|TokenAction
  */
 abstract readonly class Node
 {

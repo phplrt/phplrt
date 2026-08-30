@@ -220,12 +220,26 @@ LexerDeclaration -> {
  *  The name is written first, the reducer after it and what the rule recognizes
  *  past the colon, so the declaration is read from both ends: whatever is left
  *  between them is the reducer, in case it has been written at all.
+ *
+ *  Whatever is said about the rule apart from what it recognizes is written
+ *  after its name.
  */
 RuleDeclaration -> {
     \assert(\is_array($children));
 
     $name = \array_shift($children);
     $body = \array_pop($children);
+
+    $annotations = [];
+
+    // What is said about the rule is written after its name, so it is read off
+    // the front until the reducer is reached
+    while (($annotation = $children[0] ?? null) instanceof \Phplrt\Compiler\Node\Annotation) {
+        $annotations[] = $annotation;
+
+        \array_shift($children);
+    }
+
     $reducer = \array_pop($children);
 
     \assert($name instanceof \Phplrt\Contracts\Lexer\TokenInterface);
@@ -237,9 +251,10 @@ RuleDeclaration -> {
         name: $name->value,
         body: $body,
         reducer: $reducer,
+        annotations: $annotations,
         offset: $name->offset,
         length: \max(0, $body->offset + $body->length - $name->offset),
     );
 }
-  : <T_NAME> CodeReducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
+  : <T_NAME> AnnotationList()? CodeReducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
   ;

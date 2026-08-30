@@ -16,3 +16,6 @@ choicePrediction: {{ value(parser.choicePrediction) }},
 {% if parser.expectations is not empty %}
 expectations: {{ value(parser.expectations) }},
 {% endif %}
+{% if parser.messages is not empty %}
+messages: {{ value(parser.messages) }},
+{% endif %}
