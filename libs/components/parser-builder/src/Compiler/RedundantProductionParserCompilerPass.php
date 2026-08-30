@@ -62,6 +62,12 @@ final readonly class RedundantProductionParserCompilerPass implements
             return null;
         }
 
+        // A rule with a message of its own reports the error the rule it
+        // refers to says nothing about, so it may not be removed either
+        if ($rule->message !== null) {
+            return null;
+        }
+
         // An alternation passes the value of the matched rule through
         if ($rule instanceof AlternationRuleDefinition) {
             return \count($rule->rules) === 1 ? $rule->rules[0] : null;

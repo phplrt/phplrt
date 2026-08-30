@@ -75,6 +75,13 @@ final readonly class ParserBuilderResult
          * @var array<int, non-empty-string>
          */
         public array $expectations = [],
+        /**
+         * A map of rule ID and the message reported in case of the rule cannot
+         * be recognized.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public array $messages = [],
     ) {}
 
     /**

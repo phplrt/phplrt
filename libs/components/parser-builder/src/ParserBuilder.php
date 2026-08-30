@@ -25,6 +25,7 @@ use Phplrt\Parser\Builder\Compiler\RuleNameDuplicationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\RuleReferenceResolutionParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\TokenReferenceValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\UnreachableRuleParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\UnreportableMessageParserCompilerPass;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
@@ -145,6 +146,13 @@ final class ParserBuilder implements LoggerAwareInterface
                  */
                 new DuplicateRuleParserCompilerPass(),
                 new RepeatedAlternativeParserCompilerPass(),
+            ],
+            self::PASS_PRIORITY_CHECK_AFTER_OPTIMIZE => [
+                /**
+                 * Where a message may be reported from is decided by the shape
+                 * of the grammar, which the rewrites above are free to change.
+                 */
+                new UnreportableMessageParserCompilerPass(),
             ],
         ];
 

@@ -42,7 +42,7 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
     {
         $rules = $context->rules;
 
-        $nullable = $this->calculateNullable($rules);
+        $nullable = NullableRules::createFromRules($rules);
 
         /** @var \SplObjectStorage<RuleDefinition, int> $statuses */
         $statuses = new \SplObjectStorage();
@@ -53,14 +53,13 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
     }
 
     /**
-     * @param \SplObjectStorage<RuleDefinition, bool> $nullable
      * @param \SplObjectStorage<RuleDefinition, int> $statuses
      * @param list<RuleDefinition> $stack
      * @throws CompilationFailedException
      */
     private function validateOrFail(
         RuleDefinition $rule,
-        \SplObjectStorage $nullable,
+        NullableRules $nullable,
         \SplObjectStorage $statuses,
         array $stack,
     ): void {
@@ -92,10 +91,9 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
      * Returns the rules that may be entered before the given one recognizes
      * a token.
      *
-     * @param \SplObjectStorage<RuleDefinition, bool> $nullable
      * @return list<RuleDefinition>
      */
-    private function getLeadingRules(RuleDefinition $rule, \SplObjectStorage $nullable): array
+    private function getLeadingRules(RuleDefinition $rule, NullableRules $nullable): array
     {
         if ($rule instanceof ConcatenationRuleDefinition) {
             $result = [];
@@ -105,7 +103,7 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
 
                 // Everything behind a rule that recognizes a token is reached
                 // only after the input has moved forward
-                if ($nullable[$inner] !== true) {
+                if (!$nullable->isNullable($inner)) {
                     break;
                 }
             }
@@ -123,74 +121,6 @@ final readonly class LeftRecursionValidationParserCompilerPass implements
             $rule instanceof PredicateRuleDefinition,
             $rule instanceof RepetitionRuleDefinition => [$rule->rule],
             default => [],
-        };
-    }
-
-    /**
-     * Returns the rules that may be recognized without consuming a token.
-     *
-     * @param list<RuleDefinition> $rules
-     * @return \SplObjectStorage<RuleDefinition, bool>
-     */
-    private function calculateNullable(array $rules): \SplObjectStorage
-    {
-        /** @var \SplObjectStorage<RuleDefinition, bool> $result */
-        $result = new \SplObjectStorage();
-
-        foreach ($rules as $rule) {
-            $result[$rule] = false;
-        }
-
-        // The rules refer to each other, so the values change until they stop
-        do {
-            $changed = false;
-
-            foreach ($rules as $rule) {
-                $nullable = $this->isNullable($rule, $result);
-
-                if ($nullable === $result[$rule]) {
-                    continue;
-                }
-
-                $result[$rule] = $nullable;
-                $changed = true;
-            }
-        } while ($changed);
-
-        return $result;
-    }
-
-    /**
-     * @param \SplObjectStorage<RuleDefinition, bool> $nullable
-     */
-    private function isNullable(RuleDefinition $rule, \SplObjectStorage $nullable): bool
-    {
-        if ($rule instanceof ConcatenationRuleDefinition) {
-            foreach ($rule->rules as $inner) {
-                if ($nullable[$inner] !== true) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        if ($rule instanceof AlternationRuleDefinition) {
-            foreach ($rule->rules as $inner) {
-                if ($nullable[$inner] === true) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return match (true) {
-            $rule instanceof OptionalRuleDefinition,
-            $rule instanceof PredicateRuleDefinition => true,
-            $rule instanceof RepetitionRuleDefinition => $rule->min === 0
-                || $nullable[$rule->rule] === true,
-            default => false,
         };
     }
 

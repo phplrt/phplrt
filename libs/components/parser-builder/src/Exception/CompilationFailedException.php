@@ -31,4 +31,14 @@ class CompilationFailedException extends ParserCompilerException
 
         return new self($rule, \sprintf($template, $rule));
     }
+
+    /**
+     * @param non-empty-string $reason
+     */
+    public static function becauseMessageCannotBeReported(RuleDefinition $rule, string $reason): self
+    {
+        $template = 'Rule %s can never report the message it carries: %s';
+
+        return new self($rule, \sprintf($template, $rule, $reason));
+    }
 }

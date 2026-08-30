@@ -101,6 +101,7 @@ final class PassPriorityTest extends TestCase
             ParserBuilder::PASS_PRIORITY_NORMALIZE,
             ParserBuilder::PASS_PRIORITY_CHECK,
             ParserBuilder::PASS_PRIORITY_OPTIMIZE,
+            ParserBuilder::PASS_PRIORITY_CHECK_AFTER_OPTIMIZE,
         ]);
 
         Assert::instanceOf($parser->compilerPasses[ParserBuilder::PASS_PRIORITY_NORMALIZE][0], InitialRuleParserCompilerPass::class, 'The initial rule is computed before everything that needs it');

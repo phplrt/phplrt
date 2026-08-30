@@ -26,6 +26,18 @@ abstract class RuleDefinition extends Definition
     public private(set) ?ReducerInterface $reducer = null;
 
     /**
+     * Contains the message reported in case of the rule cannot be recognized,
+     * or {@see null} in case of the failure is described by the tokens that
+     * could have been read instead.
+     *
+     * A placeholder of the message is written in braces, the way it is written
+     * for a logger, and a brace of the message itself is written twice.
+     *
+     * @var non-empty-string|null
+     */
+    public private(set) ?string $message = null;
+
+    /**
      * Contains the rules the current one refers to
      *
      * @var list<RuleDefinition>
@@ -157,6 +169,22 @@ abstract class RuleDefinition extends Definition
             $reducer instanceof ReducerInterface => $reducer,
             default => new CallableReducer($reducer),
         };
+
+        return $this;
+    }
+
+    /**
+     * Updates the message reported in case of the rule cannot be recognized
+     * and returns itself as the fluent interface.
+     *
+     * @api
+     *
+     * @param non-empty-string|null $message
+     * @return $this
+     */
+    public function setMessage(?string $message): self
+    {
+        $this->message = $message;
 
         return $this;
     }

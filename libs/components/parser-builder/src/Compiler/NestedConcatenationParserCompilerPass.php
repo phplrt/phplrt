@@ -107,10 +107,12 @@ final readonly class NestedConcatenationParserCompilerPass implements
         ParserBuildingContext $context,
     ): bool {
         /**
-         * A rule with a reducer builds a node of its own and the initial rule
-         * is always present in the result, so neither may be joined.
+         * A rule with a reducer builds a node of its own, a rule with a
+         * message of its own reports an error nothing else reports, and the
+         * initial rule is always present in the result, so none of them may be
+         * joined.
          */
-        if ($child->reducer !== null || $child === $context->initial) {
+        if ($child->reducer !== null || $child->message !== null || $child === $context->initial) {
             return false;
         }
 

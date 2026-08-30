@@ -59,12 +59,17 @@ final readonly class ParserResultContextTransformer
         $grammar = [];
         $reducers = [];
         $constants = [];
+        $messages = [];
 
         foreach ($context->rules as $id => $definition) {
             $grammar[] = $this->createRule($definition, $identifiers, $lexer);
 
             if ($definition->reducer !== null) {
                 $reducers[$id] = $definition->reducer;
+            }
+
+            if ($definition->message !== null) {
+                $messages[$id] = $definition->message;
             }
 
             if ($definition->name !== null) {
@@ -83,6 +88,7 @@ final readonly class ParserResultContextTransformer
             reducers: $reducers,
             constants: $constants,
             expectations: $this->createExpectations($lexer),
+            messages: $messages,
             logger: $context->logger,
         );
     }

@@ -24,6 +24,7 @@ final readonly class ParserBuilderResultTransformer
             constants: $context->constants,
             expectations: $context->expectations,
             choicePrediction: $context->choicePrediction,
+            messages: $context->messages,
         );
     }
 }

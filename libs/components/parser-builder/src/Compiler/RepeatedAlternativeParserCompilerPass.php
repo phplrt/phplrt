@@ -43,9 +43,10 @@ final readonly class RepeatedAlternativeParserCompilerPass implements
 
             /**
              * An alternation left with a single rule recognizes exactly what
-             * that rule does, unless it builds a node of its own.
+             * that rule does, unless it builds a node of its own or reports an
+             * error of its own.
              */
-            if ($rule->reducer === null && \count($rules) === 1) {
+            if ($rule->reducer === null && $rule->message === null && \count($rules) === 1) {
                 $replacements->replace($rule, $rules[0]);
             }
         }

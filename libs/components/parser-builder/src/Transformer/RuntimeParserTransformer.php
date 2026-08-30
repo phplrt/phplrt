@@ -35,6 +35,7 @@ final readonly class RuntimeParserTransformer
             kept: $result->kept,
             choicePrediction: $result->choicePrediction,
             expectations: $result->expectations,
+            messages: $result->messages,
         );
     }
 
