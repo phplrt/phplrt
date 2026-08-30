@@ -24,8 +24,8 @@ phplrt splits in two:
 **The correct flow — generate once, commit the output, depend only on the runtime:**
 
 ```bash
-composer require phplrt/runtime            # production
-composer require --dev phplrt/compiler     # dev only
+composer require phplrt/runtime            # production   (ask the user first — see Pre-flight)
+composer require --dev phplrt/compiler     # dev only     (ask the user first — see Pre-flight)
 
 # generate a committed parser from the grammar (dev step; re-run when the grammar changes)
 vendor/bin/phplrt check grammar.pp3 -v   # exit 0 = the grammar compiles; read the numbers (see pp3.md)
@@ -47,7 +47,7 @@ The in-PHP builders are for prototyping a grammar and for the rare parser assemb
 
 ## Pre-flight — install what you use
 
-Phplrt is split into components; each class lives in its own package. A "class not found" is a missing package, not a typo — install only what the branch needs before writing code. Check first, install only if absent (the guard avoids needless network churn; `composer require` is otherwise a no-op when present).
+Phplrt is split into components; each class lives in its own package. A "class not found" is a missing package, not a typo — sort out what the branch needs before writing code. Checking is yours; **installing is the user's call — never run `composer require` without asking them first.** When a package the branch needs is missing, stop and ask, naming the package, its scope (`--dev` or runtime), and one line of why — what class or step needs it and what it drags in, both straight from the table below. Install only after they agree.
 
 **Split it by where it runs (see "Ship the runtime" above):** the describer packages below — the `*-builder` pair and `phplrt/compiler` — are **dev** dependencies (`--dev`); production needs only `phplrt/runtime`. The one exception is a parser you genuinely assemble with the builders at runtime, which then keeps the `*-builder` pair in `require`.
 
@@ -70,22 +70,23 @@ Pass `$PHP_BIN` (and `$COMPOSER`) to every subagent you dispatch, and invoke PHP
 | `ParserBuilder` | `phplrt/parser-builder` | dev (`--dev`) | `phplrt/lexer-builder`, `phplrt/lexer`, `phplrt/parser` |
 | `.pp3` `Compiler`, `vendor/bin/phplrt compile` (codegen) | `phplrt/compiler` | dev (`--dev`) | all of the above **+ laminas-code, symfony/console, twig** |
 
+**Step 1 — check what the branch needs (read-only, run freely):**
+
 ```bash
-# always: the runtime ships to production
-composer show phplrt/runtime >/dev/null 2>&1 || composer require phplrt/runtime
-
-# .pp3 + generate (recommended): the compiler is dev-only
-composer show phplrt/compiler >/dev/null 2>&1 || composer require --dev phplrt/compiler
-
-# lexer branch (tokenizing only, incl. nested sub-lexers via the builder API): the lexer builder alone
-composer show phplrt/lexer-builder >/dev/null 2>&1 || composer require --dev phplrt/lexer-builder
-
-# parser branch (prototyping, or a parser assembled dynamically at runtime): pulls lexer-builder too;
-# dev-only unless you truly build at boot in production, in which case drop --dev
-composer show phplrt/parser-builder >/dev/null 2>&1 || composer require --dev phplrt/parser-builder
+composer show phplrt/runtime        >/dev/null 2>&1 || echo "missing: phplrt/runtime"        # always
+composer show phplrt/compiler      >/dev/null 2>&1 || echo "missing: phplrt/compiler"       # .pp3 + generate branch
+composer show phplrt/lexer-builder >/dev/null 2>&1 || echo "missing: phplrt/lexer-builder"   # lexer branch (incl. nested sub-lexers)
+composer show phplrt/parser-builder >/dev/null 2>&1 || echo "missing: phplrt/parser-builder" # parser branch (pulls lexer-builder)
 ```
 
-Run the guard for every package the branch's reference file names before writing code that imports it — a feature added mid-task (a nested lexer inside parser work, a `.pp3` generate step after prototyping) re-enters this table with its own row.
+**Step 2 — for each missing package, ask the user before installing.** Say what and why, e.g.: *"The parser branch needs `phplrt/parser-builder` as a dev dependency — it provides the `ParserBuilder` class for prototyping the grammar and won't ship to production. Install it?"* For `phplrt/compiler`, mention it pulls laminas-code + symfony/console + twig — the reason it must stay `--dev`. Only after the user agrees:
+
+```bash
+composer require phplrt/runtime             # the one runtime dependency
+composer require --dev phplrt/<describer>   # compiler / lexer-builder / parser-builder
+```
+
+Re-enter this check for every package a reference file names before writing code that imports it — a feature added mid-task (a nested lexer inside parser work, a `.pp3` generate step after prototyping) brings its own row of the table, and its own ask.
 
 ## Mental model
 
