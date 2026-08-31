@@ -34,7 +34,7 @@ $files = Finder::create()
     ))
 ;
 
-return new Config()
+return (new Config())
     ->setUnsupportedPhpVersionAllowed(true)
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
@@ -287,7 +287,11 @@ return new Config()
         'unary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
         'yoda_style' => false,
-        'new_expression_parentheses' => true,
+        // A "new" expression is written in parentheses, which is what PHP 8.3
+        // requires to call into the object right away.
+        'new_expression_parentheses' => [
+            'use_parentheses' => true,
+        ],
     ])
     ->setCacheFile(__DIR__ . '/vendor/.cache.php-cs-fixer')
     ->setFinder($files);
