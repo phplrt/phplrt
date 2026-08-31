@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Command;
 
 use Phplrt\Compiler\Compiler;
+use Phplrt\Compiler\Generator\TargetPhpVersion;
 use Phplrt\Source\FileSource;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -54,6 +55,13 @@ final class GrammarCompileCommand extends Command
             mode: InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
             description: 'The list of class imports',
             default: [],
+        );
+
+        $this->addOption(
+            name: 'php',
+            mode: InputOption::VALUE_OPTIONAL,
+            description: 'The target PHP version',
+            suggestedValues: ['8.1', '8.2', '8.3', '8.4', '8.5', '8.6'],
         );
     }
 
@@ -125,6 +133,17 @@ final class GrammarCompileCommand extends Command
         return $name;
     }
 
+    private function getTargetPhpVersion(InputInterface $input): ?TargetPhpVersion
+    {
+        $version = $input->getOption('php');
+
+        if (!\is_string($version) || $version === '') {
+            return null;
+        }
+
+        return TargetPhpVersion::fromString($version);
+    }
+
     /**
      * @return list<non-empty-string>
      */
@@ -173,7 +192,6 @@ final class GrammarCompileCommand extends Command
         }
 
         $namespace = $this->getNamespaceName($input);
-
         if ($namespace !== null) {
             $logger->debug('The generated parser belongs to the {namespace} namespace', [
                 'namespace' => $namespace,
@@ -181,11 +199,19 @@ final class GrammarCompileCommand extends Command
         }
 
         $class = $this->getClassName($input);
-
         if ($class !== null) {
             $logger->debug('The generated parser is named {class}', [
                 'class' => $class,
             ]);
+        }
+
+        $php = $this->getTargetPhpVersion($input);
+        if ($php !== null) {
+            $logger->debug('The generated parser target is {php}', [
+                'php' => $php->name,
+            ]);
+
+            $assembly = $assembly->withTargetPhpVersion($php);
         }
 
         $assembly

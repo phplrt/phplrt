@@ -19,6 +19,7 @@ const COMMANDS = [
         'output' => __DIR__ . '/../src/Syntax/PP2/PP2Parser.php',
         '--namespace' => 'Phplrt\Compiler\Syntax\PP2',
         '--class' => 'PP2Parser',
+        '--php' => '8.1',
     ],
     [
         'compile',
@@ -26,6 +27,7 @@ const COMMANDS = [
         'output' => __DIR__ . '/../src/Syntax/PP3/PP3Parser.php',
         '--namespace' => 'Phplrt\Compiler\Syntax\PP3',
         '--class' => 'PP3Parser',
+        '--php' => '8.1',
     ],
 ];
 

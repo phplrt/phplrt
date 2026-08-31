@@ -51,6 +51,7 @@ final readonly class GeneratedOutput implements \Stringable
             namespace: $namespace,
             imports: $this->context->imports,
             class: $this->context->class,
+            php: $this->context->php,
         ));
     }
 
@@ -68,6 +69,7 @@ final readonly class GeneratedOutput implements \Stringable
             namespace: $this->context->namespace,
             imports: $this->context->imports,
             class: $class,
+            php: $this->context->php,
         ));
     }
 
@@ -85,6 +87,22 @@ final readonly class GeneratedOutput implements \Stringable
             namespace: $this->context->namespace,
             imports: [...$this->context->imports, new ClassImport($class, $as)],
             class: $this->context->class,
+            php: $this->context->php,
+        ));
+    }
+
+    /**
+     * Returns new output with the PHP target version
+     *
+     * @api
+     */
+    public function withTargetPhpVersion(TargetPhpVersion $version): self
+    {
+        return $this->withContext(new OutputContext(
+            namespace: $this->context->namespace,
+            imports: $this->context->imports,
+            class: $this->context->class,
+            php: $version,
         ));
     }
 
@@ -113,6 +131,7 @@ final readonly class GeneratedOutput implements \Stringable
             preloadContracts: $this->preloadContracts,
         );
     }
+
 
     /**
      * Writes the code into the given file.
@@ -149,12 +168,12 @@ final readonly class GeneratedOutput implements \Stringable
      */
     public function __toString(): string
     {
-        $result = clone $this->context;
+        $context = clone $this->context;
 
         if ($this->preloadContracts) {
-            $result->includes = $this->contracts->createIncludes();
+            $context->includes = $this->contracts->createIncludes();
         }
 
-        return $this->generator->generate($this->result, $result);
+        return $this->generator->generate($this->result, $context);
     }
 }

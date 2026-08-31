@@ -20,6 +20,11 @@ final class OutputContext
      */
     public array $includes = [];
 
+    /**
+     * Provides PHP target version
+     */
+    public readonly TargetPhpVersion $php;
+
     public function __construct(
         /**
          * The namespace the generated code belongs to, or {@see null} in case
@@ -42,5 +47,12 @@ final class OutputContext
          * @var non-empty-string|null
          */
         public readonly ?string $class = null,
-    ) {}
+        /**
+         * Provides PHP target version
+         */
+        ?TargetPhpVersion $php = null,
+    ) {
+        $this->php = $php
+            ?? TargetPhpVersion::current();
+    }
 }

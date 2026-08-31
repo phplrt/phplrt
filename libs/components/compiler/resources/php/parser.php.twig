@@ -2,18 +2,19 @@
 
 {% block body %}
 {% if class is null %}
-return new readonly class extends \Phplrt\Parser\Parser {
+return new class extends \Phplrt\Parser\Parser {
 {% else %}
 /**
  * @template TResult of mixed = mixed
  *
  * @template-extends \Phplrt\Parser\Parser<TResult>
  */
-readonly class {{ class }} extends \Phplrt\Parser\Parser
+class {{ class }} extends \Phplrt\Parser\Parser
 {
 {% endif %}
 {% for id, name in lexer.names %}
-    public const int {{ name }} = {{ id }};
+    /** @var int */
+    public const {% if php.value >= 80200 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
 
     public function __construct()
@@ -30,7 +31,7 @@ readonly class {{ class }} extends \Phplrt\Parser\Parser
 {{ include('parser/methods.php.twig')|trim(side='right')|indent(1) }}
 {% endif %}
 {% if class is null %}
-};
+%};
 {% else %}
 }
 {% endif %}
