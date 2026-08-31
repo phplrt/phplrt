@@ -59,7 +59,7 @@ final readonly class LexerResultContextTransformer
      */
     private function createUnknownToken(): TokenDefinition
     {
-        return new RegexTokenDefinition('[^\\s]++')
+        return (new RegexTokenDefinition('[^\\s]++'))
             ->setChannel(Channel::Unknown);
     }
 }

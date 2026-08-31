@@ -9,6 +9,12 @@ use Phplrt\Contracts\Lexer\ChannelInterface;
 use Phplrt\Contracts\Lexer\UserDefinedChannel;
 
 /**
+ * @property bool $isHidden Contains {@see true} in case of token should be
+ *           hidden, or {@see false} instead.
+ *
+ *           Note: Starting with PHP 8.4, in the future, this annotation will
+ *           be expressed as a full-fledged property.
+ *
  * @phpstan-sealed RegexTokenDefinition|ValueTokenDefinition
  */
 abstract class TokenDefinition extends Definition
@@ -23,17 +29,6 @@ abstract class TokenDefinition extends Definition
     public ?string $name;
 
     /**
-     * Contains {@see true} in case of token should be
-     * hidden, or {@see false} instead
-     */
-    public bool $isHidden {
-        get => $this->channel === Channel::Hidden;
-        set(bool $isHidden) {
-            $this->channel = $isHidden ? Channel::Hidden : self::DEFAULT_TOKEN_CHANNEL;
-        }
-    }
-
-    /**
      * Contains optional channel reference
      */
     public ChannelInterface $channel = self::DEFAULT_TOKEN_CHANNEL;
@@ -41,8 +36,10 @@ abstract class TokenDefinition extends Definition
     /**
      * Contains what this token does to the reading, or {@see null} in case of
      * the token changes nothing
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?Transition $transition = null;
+    public ?Transition $transition = null;
 
     /**
      * @param non-empty-string|null $name
@@ -114,7 +111,7 @@ abstract class TokenDefinition extends Definition
      */
     public function setHidden(bool $hidden = true): self
     {
-        $this->isHidden = $hidden;
+        $this->channel = $hidden ? Channel::Hidden : self::DEFAULT_TOKEN_CHANNEL;
 
         return $this;
     }
@@ -161,5 +158,25 @@ abstract class TokenDefinition extends Definition
         }
 
         return \sprintf('%s (%s)', $this->printValue(), $this->name);
+    }
+
+    public function __get(string $property): mixed
+    {
+        return match ($property) {
+            'isHidden' => $this->channel === Channel::Hidden,
+            default => throw new \Error(\sprintf('Undefined property %s::$%s', static::class, $property)),
+        };
+    }
+
+    public function __set(string $property, mixed $value): void
+    {
+        switch ($property) {
+            case 'isHidden':
+                $this->setHidden((bool) $value);
+                break;
+
+            default:
+                throw new \Error(\sprintf('Undefined property %s::$%s', static::class, $property));
+        }
     }
 }

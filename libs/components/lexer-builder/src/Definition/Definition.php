@@ -11,8 +11,10 @@ abstract class Definition implements \Stringable
     /**
      * The place of the source code this definition has been written in, in
      * case it has been written at all rather than built by hand.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?SourceReference $context = null;
+    public ?SourceReference $context = null;
 
     /**
      * @param int<0, max> $offset

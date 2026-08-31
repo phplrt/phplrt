@@ -72,7 +72,7 @@ final readonly class LexerBuilderResult
      */
     public function toLexer(): LexerInterface
     {
-        return new RuntimeLexerTransformer()
+        return (new RuntimeLexerTransformer())
             ->transform($this);
     }
 
