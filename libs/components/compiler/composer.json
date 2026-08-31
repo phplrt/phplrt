@@ -19,7 +19,7 @@
         "bin/phplrt"
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "composer-runtime-api": "^2.2",
         "laminas/laminas-code": "^4.17",
         "phplrt/exception": "^4.0",

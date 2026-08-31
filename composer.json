@@ -18,7 +18,7 @@
         "libs/components/compiler/bin/phplrt"
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "ext-json": "*",
         "ext-pcre": "*",
         "composer-runtime-api": "^2.2",
@@ -108,7 +108,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "8.3.0"
+            "php": "8.2.0"
         }
     },
     "scripts-aliases": {

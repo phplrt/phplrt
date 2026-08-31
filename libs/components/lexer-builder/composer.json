@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "phplrt/exception": "^4.0",
         "phplrt/lexer": "^4.0",
         "phplrt/source-contracts": "^4.0",
