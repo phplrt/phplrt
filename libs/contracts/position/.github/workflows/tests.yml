@@ -8,7 +8,6 @@ jobs:
   tests:
     name: Tests (${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.php == '8.6' }}
     strategy:
       fail-fast: false
       matrix:
@@ -41,10 +40,12 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Install Dependencies
+        continue-on-error: ${{ matrix.php == '8.6' }}
         uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --ignore-platform-reqs --prefer-dist --no-interaction --no-progress
       - name: Execute Tests
+        continue-on-error: ${{ matrix.php == '8.6' }}
         run: php vendor/bin/testo
