@@ -78,7 +78,7 @@ final readonly class PhpCodePrinter
             ? ValueGenerator::OUTPUT_MULTIPLE_LINE
             : ValueGenerator::OUTPUT_SINGLE_LINE;
 
-        return new ValueGenerator($value, outputMode: $mode)
+        return (new ValueGenerator($value, outputMode: $mode))
             ->generate();
     }
 
