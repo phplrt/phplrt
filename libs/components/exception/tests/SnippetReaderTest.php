@@ -61,7 +61,7 @@ final class SnippetReaderTest extends TestCase
             position: new Position(line: 4),
         );
 
-        Assert::same(self::describe(new SnippetReader()->read($info)), [
+        Assert::same(self::describe((new SnippetReader())->read($info)), [
             ' #2@7: line 2',
             ' #3@14: line 3',
             '>#4@21:0-6: line 4',
@@ -107,10 +107,10 @@ final class SnippetReaderTest extends TestCase
 
     private static function read(\Throwable $e, ?int $lines = null): array
     {
-        $info = new Analyzer()->analyze($e);
+        $info = (new Analyzer())->analyze($e);
 
         return $lines === null
-            ? new SnippetReader()->read($info)
-            : new SnippetReader()->read($info, $lines);
+            ? (new SnippetReader())->read($info)
+            : (new SnippetReader())->read($info, $lines);
     }
 }

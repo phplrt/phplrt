@@ -319,7 +319,7 @@ final class SnippetFragmentTest extends TestCase
 
     private static function read(ReadableInterface $source, int $offset, int $length, int $lines): array
     {
-        return new SnippetReader()->read(new FailureResult(
+        return (new SnippetReader())->read(new FailureResult(
             class: '',
             message: '',
             source: $source,

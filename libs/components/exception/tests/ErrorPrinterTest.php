@@ -123,7 +123,7 @@ final class ErrorPrinterTest extends TestCase
     {
         $e = self::createError();
 
-        Assert::true(\str_ends_with((string) new ErrorPrinter()->print($e), "\n" . $e->getTraceAsString()));
+        Assert::true(\str_ends_with((string) (new ErrorPrinter())->print($e), "\n" . $e->getTraceAsString()));
     }
 
     public function testPrintsEveryErrorOfTheChain(): void
@@ -138,14 +138,14 @@ final class ErrorPrinterTest extends TestCase
 
     public function testRenderIsTheSameAsTheStringConversion(): void
     {
-        $result = new ErrorPrinter()->print(self::createError());
+        $result = (new ErrorPrinter())->print(self::createError());
 
         Assert::same((string) $result, $result->render());
     }
 
     public function testDescriptionIsImmutable(): void
     {
-        $result = new ErrorPrinter()->print(self::createError(message: ''));
+        $result = (new ErrorPrinter())->print(self::createError(message: ''));
 
         $described = $result->withMessage('Something went wrong');
 
@@ -193,7 +193,7 @@ final class ErrorPrinterTest extends TestCase
 
     private static function print(\Throwable $e, ?\Closure $then = null): string
     {
-        $printed = new ErrorPrinter()->print($e);
+        $printed = (new ErrorPrinter())->print($e);
 
         $result = (string) ($then === null ? $printed : $then($printed));
 
