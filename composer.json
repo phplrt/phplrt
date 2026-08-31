@@ -19,12 +19,13 @@
     ],
     "require": {
         "php": "^8.4",
-        "composer-runtime-api": "^2.2",
         "ext-json": "*",
         "ext-pcre": "*",
+        "composer-runtime-api": "^2.2",
         "laminas/laminas-code": "^4.17",
         "psr/log": "^3.0",
         "symfony/console": "^7.4|^8.0",
+        "symfony/polyfill-php80": "^1.37",
         "twig/twig": "^3.28"
     },
     "autoload": {
@@ -47,10 +48,7 @@
             "Phplrt\\Parser\\Builder\\": "libs/components/parser-builder/src",
             "Phplrt\\Position\\": "libs/components/position/src",
             "Phplrt\\Source\\": "libs/components/source/src"
-        },
-        "files": [
-            "libs/components/source/src/polyfill.php"
-        ]
+        }
     },
     "require-dev": {
         "ext-intl": "*",

@@ -1,0 +1,50 @@
+name: Syntax Check
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: PHP ${{matrix.php}}
+    runs-on: 'ubuntu-latest'
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          # - '7.4'
+          # - '8.0'
+          # - '8.1'
+          # - '8.2'
+          # - '8.3'
+          - '8.4'
+          - '8.5'
+          - '8.6'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Set Git To Use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          ini-values: "memory_limit=-1"
+      - name: Install Dependencies
+        uses: nick-invision/retry@v4
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer update --no-dev --ignore-platform-reqs
+      - name: Execute Tests
+        run: php tests/syntax-check.php
