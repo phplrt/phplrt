@@ -42,8 +42,10 @@ final class ErrorReport
      * The position of the failure the report describes.
      *
      * @var int<-1, max>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) int $furthest = -1;
+    public int $furthest = -1;
 
     private ?TokenInterface $token = null;
 
