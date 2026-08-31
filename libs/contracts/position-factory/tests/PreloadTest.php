@@ -13,17 +13,17 @@ final class PreloadTest extends TestCase
     /**
      * @var non-empty-string
      */
-    private const string PRELOAD_PATHNAME = __DIR__ . '/../src/preload.php';
+    private const PRELOAD_PATHNAME = __DIR__ . '/../src/preload.php';
 
     /**
      * @var non-empty-string
      */
-    private const string SOURCES_PATHNAME = __DIR__ . '/../src';
+    private const SOURCES_PATHNAME = __DIR__ . '/../src';
 
     /**
      * @var non-empty-string
      */
-    private const string SYMBOL_PREFIX = 'Phplrt\\Contracts\\Position\\';
+    private const SYMBOL_PREFIX = 'Phplrt\\Contracts\\Position\\';
 
     public function testAllSymbolsExist(): void
     {

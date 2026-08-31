@@ -51,24 +51,32 @@ final class ParserBuilder implements LoggerAwareInterface
      * Brings the grammar to the form the rest of the passes expect: the
      * references are replaced by the rules they point at and the rules that
      * cannot be reached are dropped.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_NORMALIZE = 0;
+    public const PASS_PRIORITY_NORMALIZE = 0;
 
     /**
      * Reports the grammar that cannot be compiled into a parser.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK = 100;
+    public const PASS_PRIORITY_CHECK = 100;
 
     /**
      * Rewrites the grammar, keeping the input it recognizes and the result it
      * builds the same.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_OPTIMIZE = 200;
+    public const PASS_PRIORITY_OPTIMIZE = 200;
 
     /**
      * Reports the grammar that has been broken by a rewrite.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
+    public const PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
      * Contains the rule the analysis starts at, or {@see null} in case of the

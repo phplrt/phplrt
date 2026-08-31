@@ -20,7 +20,7 @@ use Testo\Test;
 #[Test]
 final class AnalyzerTest extends TestCase
 {
-    private const string SOURCE = "line 1\nline 2\nline 3\nline 4";
+    private const SOURCE = "line 1\nline 2\nline 3\nline 4";
 
     public function testNameAndMessageAreGivenBack(): void
     {

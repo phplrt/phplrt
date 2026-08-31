@@ -30,7 +30,7 @@ use Testo\Test;
 #[Test]
 final class PP2LoaderTest extends TestCase
 {
-    private const string PATHNAME = '/app/grammar.pp2';
+    private const PATHNAME = '/app/grammar.pp2';
 
     private LexerBuilder $lexer;
 

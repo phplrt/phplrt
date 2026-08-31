@@ -36,8 +36,10 @@ enum Channel implements ChannelInterface
 
     /**
      * The channel of the significant tokens.
+     *
+     * @var self
      */
-    public const self DEFAULT = self::Default;
+    public const DEFAULT = self::Default;
 
     /**
      * Returns every channel of this set, indexed by its own name.

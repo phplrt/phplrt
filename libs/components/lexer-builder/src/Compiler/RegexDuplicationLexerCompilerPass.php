@@ -21,14 +21,14 @@ final readonly class RegexDuplicationLexerCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string PATTERN_LITERAL = '/^(?:\\\\[^\p{L}\p{N}]|[^\\\\^$.\[\]|()?*+{}])++$/u';
+    private const PATTERN_LITERAL = '/^(?:\\\\[^\p{L}\p{N}]|[^\\\\^$.\[\]|()?*+{}])++$/u';
 
     /**
      * Everything such an expression escapes.
      *
      * @var non-empty-string
      */
-    private const string PATTERN_ESCAPE = '/\\\\(.)/su';
+    private const PATTERN_ESCAPE = '/\\\\(.)/su';
 
     public function process(LexerBuildingContext $context): void
     {

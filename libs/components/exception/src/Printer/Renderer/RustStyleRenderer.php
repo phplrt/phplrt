@@ -25,17 +25,17 @@ abstract readonly class RustStyleRenderer implements RendererInterface
     /**
      * @var non-empty-string
      */
-    private const string GUTTER = ' | ';
+    private const GUTTER = ' | ';
 
     /**
      * @var non-empty-string
      */
-    private const string ARROW = '--> ';
+    private const ARROW = '--> ';
 
     /**
      * @var non-empty-string
      */
-    private const string UNDERLINE = '^';
+    private const UNDERLINE = '^';
 
     public function __construct(
         /**

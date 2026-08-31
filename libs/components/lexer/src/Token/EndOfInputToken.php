@@ -12,7 +12,7 @@ class EndOfInputToken extends Token
     /**
      * An "end of input" token identifier
      */
-    public const int TOKEN_ID = -1;
+    public const TOKEN_ID = -1;
 
     /**
      * Note: This "@var" docblock is required because the php-cs-fixer
@@ -20,7 +20,7 @@ class EndOfInputToken extends Token
      *
      * @var ChannelInterface
      */
-    public const ChannelInterface TOKEN_CHANNEL = Channel::EndOfInput;
+    public const TOKEN_CHANNEL = Channel::EndOfInput;
 
     /**
      * @param int<0, max> $offset

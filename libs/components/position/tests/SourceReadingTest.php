@@ -15,7 +15,7 @@ use Testo\Test;
 #[Test]
 final class SourceReadingTest extends TestCase
 {
-    private const string CODE = "first\nsecond\nthird";
+    private const CODE = "first\nsecond\nthird";
 
     public function testSourceIsReadFromItsBeginning(): void
     {

@@ -43,24 +43,32 @@ final class LexerBuilder implements LoggerAwareInterface
      * Brings the lexer to the form the rest of the passes expect: the lexers
      * that cannot be entered are dropped, and what a token definition refers
      * to is written into it.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_NORMALIZE = 0;
+    public const PASS_PRIORITY_NORMALIZE = 0;
 
     /**
      * Reports the lexer that cannot be compiled.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK = 100;
+    public const PASS_PRIORITY_CHECK = 100;
 
     /**
      * Rewrites the token definitions, keeping the input they recognize the
      * same.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_OPTIMIZE = 200;
+    public const PASS_PRIORITY_OPTIMIZE = 200;
 
     /**
      * Reports the lexer that has been broken by a rewrite.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
+    public const PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
      * Contains {@see true} in case of the lexer is called by another one, so
@@ -390,9 +398,12 @@ final class LexerBuilder implements LoggerAwareInterface
      */
     public function addCompilerPass(LexerCompilerPassInterface $pass, int $priority = self::PASS_PRIORITY_CHECK): self
     {
-        $this->compilerPasses[$priority][] = $pass;
+        $passes = $this->compilerPasses;
+        $passes[$priority][] = $pass;
 
-        \ksort($this->compilerPasses);
+        \ksort($passes);
+
+        $this->compilerPasses = $passes;
 
         return $this;
     }

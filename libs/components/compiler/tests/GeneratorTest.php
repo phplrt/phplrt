@@ -84,7 +84,7 @@ final class GeneratorTest extends TestCase
         $code = (string) $this->compile('grammar.pp2')->generate();
 
         Assert::string($code)
-            ->contains('public const int T_NUMBER = 0;')
+            ->contains('public const /* int */ T_NUMBER = 0;')
             ->contains('new \\Phplrt\\Parser\\Grammar\\Lexeme(self::T_NUMBER, true)');
     }
 
@@ -217,10 +217,10 @@ final class GeneratorTest extends TestCase
 
         Assert::string($code)
             ->contains(\sprintf(
-                "readonly class %s extends \\Phplrt\\Parser\\Parser\n{\n",
+                "class %s extends \\Phplrt\\Parser\\Parser\n{\n",
                 $class,
             ))
-            ->notContains('return new readonly class');
+            ->notContains('return new class');
 
         require $pathname;
 

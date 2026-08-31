@@ -24,12 +24,12 @@ final readonly class LineReader
     /**
      * @var non-empty-string
      */
-    private const string DELIMITER_ANCHOR = "\n";
+    private const DELIMITER_ANCHOR = "\n";
 
     /**
      * @var non-empty-string
      */
-    private const string DELIMITER_EXTRA = "\r";
+    private const DELIMITER_EXTRA = "\r";
 
     public function __construct(
         /**

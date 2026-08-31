@@ -34,14 +34,14 @@ final readonly class FragmentResolutionLexerCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string PATTERN_REFERENCE = '/\\\\.|\(\?&([a-zA-Z_][a-zA-Z0-9_]*+)\)/s';
+    private const PATTERN_REFERENCE = '/\\\\.|\(\?&([a-zA-Z_][a-zA-Z0-9_]*+)\)/s';
 
     /**
      * The name an expression captures a subpattern under.
      *
      * @var non-empty-string
      */
-    private const string PATTERN_CAPTURE = '/\(\?P?[<\'](%s)[>\']/';
+    private const PATTERN_CAPTURE = '/\(\?P?[<\'](%s)[>\']/';
 
     public function process(LexerBuildingContext $context): void
     {

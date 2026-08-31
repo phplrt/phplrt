@@ -19,7 +19,7 @@ use Testo\Test;
 #[Test]
 final class PP2LexerTest extends TestCase
 {
-    private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
+    private const GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
 
     private static ?LexerInterface $lexer = null;
 

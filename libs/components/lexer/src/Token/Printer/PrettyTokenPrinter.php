@@ -9,16 +9,16 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 final readonly class PrettyTokenPrinter implements TokenPrinterInterface
 {
-    private const int DEFAULT_LENGTH = 30;
+    private const DEFAULT_LENGTH = 30;
 
-    private const string DEFAULT_WRAP = '"';
+    private const DEFAULT_WRAP = '"';
 
-    private const array DEFAULT_REPLACEMENTS = [
+    private const DEFAULT_REPLACEMENTS = [
         ["\0", "\n", "\t", "\v"],
         ['\0', '\n', '\t', '\v'],
     ];
 
-    private const string DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
+    private const DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
 
     public function __construct(
         /**

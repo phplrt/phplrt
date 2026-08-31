@@ -22,7 +22,7 @@ final readonly class PPLoader implements SyntaxLoaderInterface
     /**
      * @var non-empty-string
      */
-    private const string FORMAT = 'pp';
+    private const FORMAT = 'pp';
 
     public function load(ReadableInterface $source, ParserBuilder $parser, LexerBuilder $lexer): iterable
     {

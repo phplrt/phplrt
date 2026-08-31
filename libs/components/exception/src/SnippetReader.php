@@ -27,14 +27,14 @@ final readonly class SnippetReader
      *
      * @var int<0, max>
      */
-    public const int DEFAULT_LINES_AROUND = 2;
+    public const DEFAULT_LINES_AROUND = 2;
 
     /**
      * The default number of bytes read at once.
      *
      * @var int<1, max>
      */
-    public const int DEFAULT_CHUNK_SIZE = 8192;
+    public const DEFAULT_CHUNK_SIZE = 8192;
 
     /**
      * The reader of the lines the source consists of.

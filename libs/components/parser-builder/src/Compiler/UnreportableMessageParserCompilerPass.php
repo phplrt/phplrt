@@ -28,7 +28,7 @@ final readonly class UnreportableMessageParserCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string REASON_ALWAYS_MATCHES = 'the rule is recognized even when '
+    private const REASON_ALWAYS_MATCHES = 'the rule is recognized even when '
         . 'the input does not match it';
 
     /**
@@ -36,7 +36,7 @@ final readonly class UnreportableMessageParserCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string REASON_GUARDED = 'the rule containing it is rejected by this '
+    private const REASON_GUARDED = 'the rule containing it is rejected by this '
         . 'very token before it is entered';
 
     /**
@@ -44,7 +44,7 @@ final readonly class UnreportableMessageParserCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string REASON_NOT_REPORTED = 'nothing reports the failure of a rule '
+    private const REASON_NOT_REPORTED = 'nothing reports the failure of a rule '
         . 'written in this place';
 
     /**

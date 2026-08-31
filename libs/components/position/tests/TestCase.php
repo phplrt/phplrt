@@ -12,7 +12,7 @@ use Testo\Lifecycle\AfterTest;
  */
 abstract class TestCase
 {
-    private const string TEMP_DIRECTORY = __DIR__ . '/temp';
+    private const TEMP_DIRECTORY = __DIR__ . '/temp';
 
     private ?string $tempPathname = null;
 

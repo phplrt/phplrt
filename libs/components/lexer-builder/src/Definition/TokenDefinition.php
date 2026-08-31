@@ -19,7 +19,10 @@ use Phplrt\Contracts\Lexer\UserDefinedChannel;
  */
 abstract class TokenDefinition extends Definition
 {
-    private const ChannelInterface DEFAULT_TOKEN_CHANNEL = Channel::DEFAULT;
+    /**
+     * @var ChannelInterface
+     */
+    private const DEFAULT_TOKEN_CHANNEL = Channel::DEFAULT;
 
     /**
      * Contains token name, or {@see null} in case of token is anonymous

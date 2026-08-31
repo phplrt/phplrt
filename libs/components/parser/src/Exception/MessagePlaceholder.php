@@ -25,7 +25,7 @@ enum MessagePlaceholder: string
      *
      * @var non-empty-string
      */
-    public const string PATTERN = '/\{\{|\}\}|\{([a-zA-Z][a-zA-Z0-9_]*+)\}/';
+    public const PATTERN = '/\{\{|\}\}|\{([a-zA-Z][a-zA-Z0-9_]*+)\}/';
 
     /**
      * The token the reading has broken on, along with everything known about

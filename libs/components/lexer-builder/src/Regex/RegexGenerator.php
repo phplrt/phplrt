@@ -11,12 +11,12 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
     /**
      * @var list<non-empty-string>
      */
-    private const array ADDITIONAL_ESCAPED_CHARACTERS = ['#'];
+    private const ADDITIONAL_ESCAPED_CHARACTERS = ['#'];
 
     /**
      * Default PCRE delimiter.
      */
-    final public const string DEFAULT_DELIMITER = '/';
+    final public const DEFAULT_DELIMITER = '/';
 
     /**
      * List of characters that should be escaped in regex patterns.

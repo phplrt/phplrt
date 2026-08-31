@@ -36,7 +36,7 @@ final class ErrorReport
      *
      * @var int<1, max>
      */
-    private const int RULES_LIMIT = 4;
+    private const RULES_LIMIT = 4;
 
     /**
      * The position of the failure the report describes.

@@ -20,12 +20,12 @@ final readonly class PositionFactory implements PositionFactoryInterface
      *
      * @var int<1, max>
      */
-    public const int DEFAULT_CHUNK_SIZE = 65536;
+    public const DEFAULT_CHUNK_SIZE = 65536;
 
     /**
      * @var non-empty-string
      */
-    private const string LINE_DELIMITER = "\n";
+    private const LINE_DELIMITER = "\n";
 
     /**
      * The number of bytes read at once.

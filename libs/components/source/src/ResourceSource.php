@@ -49,7 +49,7 @@ class ResourceSource extends Readable
      *
      * @var int<1, max>
      */
-    private const int CHUNK_SIZE = 65536;
+    private const CHUNK_SIZE = 65536;
 
     /**
      * The position of the stream this source begins at.
@@ -362,7 +362,7 @@ class ResourceSource extends Readable
      *     uri: non-empty-string,
      *     mode: non-empty-string,
      *     initial: int<0, max>,
-     *     ...
+     *     ...<string, mixed>
      * } $data
      * @throws StreamNotOpenedException When the stream cannot be opened
      * @throws StreamNotSeekableException When the stream cannot be moved to the

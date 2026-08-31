@@ -28,7 +28,7 @@ final readonly class ReferenceLoader
      *
      * @var non-empty-string
      */
-    private const string DIRECTORY_CURRENT = '.';
+    private const DIRECTORY_CURRENT = '.';
 
     public function __construct(
         private Compiler $context,

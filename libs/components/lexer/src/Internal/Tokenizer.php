@@ -28,7 +28,7 @@ final readonly class Tokenizer
      *
      * @var int<1, max>
      */
-    private const int ERROR_FRAGMENT_LENGTH = 64;
+    private const ERROR_FRAGMENT_LENGTH = 64;
 
     /**
      * Stands in for the tokens the configuration says nothing about.

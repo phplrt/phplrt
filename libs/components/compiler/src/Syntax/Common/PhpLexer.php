@@ -22,7 +22,7 @@ final readonly class PhpLexer implements LexerInterface
      * The opening tag the code is read with, so that it is read as code
      * rather than as inline HTML.
      */
-    private const string OPENING_TAG = '<?php ';
+    private const OPENING_TAG = '<?php ';
 
     public function lex(ReadableInterface $source, int $offset = 0): iterable
     {

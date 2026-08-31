@@ -24,7 +24,7 @@ use Testo\Test;
 #[Test]
 final class ContractsPreloadTest extends TestCase
 {
-    private const string GRAMMAR_PATHNAME = __DIR__ . '/resources/grammar.pp2';
+    private const GRAMMAR_PATHNAME = __DIR__ . '/resources/grammar.pp2';
 
     private array $files = [];
 
@@ -159,7 +159,7 @@ final class ContractsPreloadTest extends TestCase
         Assert::string($code)
             ->contains("\nnamespace Example\\Some;\n")
             ->contains("\nuse App\\Node;\n")
-            ->contains("\nreadonly class SomeParser extends")
+            ->contains("\nclass SomeParser extends")
             ->notContains('interface_exists(');
     }
 

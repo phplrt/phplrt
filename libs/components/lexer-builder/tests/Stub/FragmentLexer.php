@@ -12,7 +12,7 @@ use Phplrt\Lexer\Token\Token;
 
 final readonly class FragmentLexer implements LexerInterface
 {
-    public const int T_FRAGMENT = 100;
+    public const T_FRAGMENT = 100;
 
     public function lex(ReadableInterface $source, int $offset = 0): iterable
     {

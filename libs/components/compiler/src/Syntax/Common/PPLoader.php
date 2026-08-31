@@ -57,14 +57,14 @@ abstract class PPLoader implements SyntaxLoaderInterface
      *
      * @var non-empty-string
      */
-    protected const string STATE_DEFAULT = 'default';
+    protected const STATE_DEFAULT = 'default';
 
     /**
      * The setting naming the rule the analysis starts at.
      *
      * @var non-empty-string
      */
-    protected const string PRAGMA_ROOT = 'root';
+    protected const PRAGMA_ROOT = 'root';
 
     /**
      * The name of the annotation saying what a rule reports in case of it
@@ -72,7 +72,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
      *
      * @var non-empty-string
      */
-    private const string ANNOTATION_ERROR = 'error';
+    private const ANNOTATION_ERROR = 'error';
 
     /**
      * The body of the reducer standing for the "#" marker, which builds no
@@ -80,7 +80,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
      *
      * @var non-empty-string
      */
-    private const string REDUCER_KEEP = 'return $children;';
+    private const REDUCER_KEEP = 'return $children;';
 
     /**
      * The variables a reducer may be written of, along with what each of them
@@ -92,7 +92,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
      *
      * @var array<non-empty-string, non-empty-string>
      */
-    private const array REDUCER_VARIABLES = [
+    private const REDUCER_VARIABLES = [
         '$source' => '$ctx->source',
         '$content' => '$ctx->source->content',
         '$begin' => '$ctx->begin',
@@ -107,7 +107,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
      *
      * @var non-empty-string
      */
-    private const string REDUCER_VARIABLES_NOTICE = '// The variables below are declared by the compiler';
+    private const REDUCER_VARIABLES_NOTICE = '// The variables below are declared by the compiler';
 
     /**
      * Reading a grammar file needs a parser of its own, which is built once

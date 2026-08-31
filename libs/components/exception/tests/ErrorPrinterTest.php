@@ -19,9 +19,9 @@ use Testo\Test;
 #[Test]
 final class ErrorPrinterTest extends TestCase
 {
-    private const string SOURCE = "first line\nsecond line\nthird line";
+    private const SOURCE = "first line\nsecond line\nthird line";
 
-    private const string PATHNAME = '/app/example.pp2';
+    private const PATHNAME = '/app/example.pp2';
 
     public function testPrintsMessageAndClassOfTheError(): void
     {

@@ -17,7 +17,7 @@ use Testo\Test;
 #[Test]
 final class SyntaxGrammarTest extends TestCase
 {
-    private const string BUILD_SCRIPT = 'composer dev:syntax';
+    private const BUILD_SCRIPT = 'composer dev:syntax';
 
     public static function formatsDataProvider(): iterable
     {

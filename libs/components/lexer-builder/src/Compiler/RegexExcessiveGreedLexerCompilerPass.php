@@ -17,7 +17,7 @@ final readonly class RegexExcessiveGreedLexerCompilerPass implements
     /**
      * @var list<non-empty-string>
      */
-    private const array WIDE_PATTERNS = ['.+', '.*'];
+    private const WIDE_PATTERNS = ['.+', '.*'];
 
     public function process(LexerBuildingContext $context): void
     {

@@ -16,7 +16,7 @@ readonly class SourceLine
      *
      * @var int<1, max>
      */
-    public const int MIN_NUMBER = PositionInterface::MIN_LINE;
+    public const MIN_NUMBER = PositionInterface::MIN_LINE;
 
     public function __construct(
         /**

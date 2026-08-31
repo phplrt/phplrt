@@ -20,7 +20,7 @@ final class ContractsPreloader
      *
      * @var non-empty-array<non-empty-string, class-string>
      */
-    private const array PACKAGES = [
+    private const PACKAGES = [
         'phplrt/source-contracts' => ReadableInterface::class,
         'phplrt/lexer-contracts' => LexerInterface::class,
         'phplrt/parser-contracts' => ParserInterface::class,
@@ -32,7 +32,7 @@ final class ContractsPreloader
      *
      * @var non-empty-string
      */
-    private const string PRELOAD_FILENAME = 'preload.php';
+    private const PRELOAD_FILENAME = 'preload.php';
 
     /**
      * @var list<SymbolInclude>|null

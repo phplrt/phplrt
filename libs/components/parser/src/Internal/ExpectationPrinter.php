@@ -19,7 +19,7 @@ final class ExpectationPrinter
      *
      * @var int<1, max>
      */
-    private const int MAX_LISTED = 3;
+    private const MAX_LISTED = 3;
 
     /**
      * Returns the first few of the given names, along with the number of the

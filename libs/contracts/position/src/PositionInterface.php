@@ -31,12 +31,12 @@ interface PositionInterface
      *
      * @var int<1, max>
      */
-    public const int MIN_LINE = 1;
+    public const MIN_LINE = 1;
 
     /**
      * The minimal column number a position is allowed to have.
      *
      * @var int<1, max>
      */
-    public const int MIN_COLUMN = 1;
+    public const MIN_COLUMN = 1;
 }

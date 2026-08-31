@@ -39,17 +39,17 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
  * @phpstan-import-type MessageTableType from GrammarTable
  */
-readonly class Parser implements ParserInterface
+class Parser implements ParserInterface
 {
-    private GrammarTable $table;
+    private readonly GrammarTable $table;
 
-    private ReducerTable $reducers;
+    private readonly ReducerTable $reducers;
 
     /**
      * Fills the placeholders of a message in with what the reading has broken
      * on.
      */
-    private MessageInterpolator $interpolator;
+    private readonly MessageInterpolator $interpolator;
 
     /**
      * @param list<RuleInterface> $grammar
@@ -70,15 +70,15 @@ readonly class Parser implements ParserInterface
      *        a rule, indexed by the rule identifiers
      */
     public function __construct(
-        private LexerInterface $lexer,
+        private readonly LexerInterface $lexer,
         array $grammar,
         int $initial,
         array $reducers = [],
         array $lookahead = [],
         array $kept = [],
         array $choicePrediction = [],
-        private array $expectations = [],
-        private array $messages = [],
+        private readonly array $expectations = [],
+        private readonly array $messages = [],
     ) {
         $this->table = new GrammarTable(
             rules: $grammar,

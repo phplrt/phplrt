@@ -14,11 +14,11 @@ use Phplrt\Parser\Exception\OutOfRangeException;
  *
  * @template-covariant TToken of TokenInterface = TokenInterface
  *
- * @property-read TToken $current The token at the current position.
- * @property-read int<0, max> $key The position of the current token.
- *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @property-read TToken $current The token at the current position.
+ * @property-read int<0, max> $key The position of the current token.
  */
 interface BufferInterface
 {

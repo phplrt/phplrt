@@ -40,7 +40,7 @@ final readonly class PhpCodePrinter
      *
      * @var non-empty-string
      */
-    private const string SCOPE_TOKENS = 'self';
+    private const SCOPE_TOKENS = 'self';
 
     /**
      * The prefix of the variable a lexer reading a fragment is written into.
@@ -50,21 +50,21 @@ final readonly class PhpCodePrinter
      *
      * @var non-empty-string
      */
-    private const string VARIABLE_PREFIX = '$state_';
+    private const VARIABLE_PREFIX = '$state_';
 
     /**
      * The prefix of the method a rule is reduced by.
      *
      * @var non-empty-string
      */
-    private const string METHOD_PREFIX = 'reduce';
+    private const METHOD_PREFIX = 'reduce';
 
     /**
      * The characters a single level of nesting is written with.
      *
      * @var non-empty-string
      */
-    private const string INDENTATION = '    ';
+    private const INDENTATION = '    ';
 
     /**
      * Writes the given value down as the expression building it back.

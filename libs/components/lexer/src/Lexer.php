@@ -26,7 +26,7 @@ readonly class Lexer implements LexerInterface
      *
      * @var non-empty-list<ChannelInterface>
      */
-    public const array DEFAULT_SKIP_CHANNELS = [
+    public const DEFAULT_SKIP_CHANNELS = [
         Channel::Hidden,
     ];
 

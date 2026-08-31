@@ -11,9 +11,9 @@ use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
  */
 class InvalidArgumentException extends \InvalidArgumentException implements SourceExceptionInterface
 {
-    final public const int CODE_LINE_OUT_OF_RANGE = 0x01;
-    final public const int CODE_COLUMN_OUT_OF_RANGE = 0x02;
-    final public const int CODE_NON_POSITIVE_CHUNK_SIZE = 0x03;
+    final public const CODE_LINE_OUT_OF_RANGE = 0x01;
+    final public const CODE_COLUMN_OUT_OF_RANGE = 0x02;
+    final public const CODE_NON_POSITIVE_CHUNK_SIZE = 0x03;
 
     public static function becauseLineIsOutOfRange(int $line, ?\Throwable $prev = null): self
     {

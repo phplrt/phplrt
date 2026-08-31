@@ -19,7 +19,7 @@ use Testo\Test;
 #[Test]
 final class PP3AnnotationTest extends TestCase
 {
-    private const string HEAD = <<<'PP3'
+    private const HEAD = <<<'PP3'
         %token T_OPEN   \(
         %token T_CLOSE  \)
         %token T_COMMA  ,

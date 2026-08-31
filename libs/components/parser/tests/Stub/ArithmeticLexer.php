@@ -13,15 +13,15 @@ use Phplrt\Lexer\Token\Token;
 
 final readonly class ArithmeticLexer implements LexerInterface
 {
-    public const int T_NUMBER = 0;
+    public const T_NUMBER = 0;
 
-    public const int T_PLUS = 1;
+    public const T_PLUS = 1;
 
-    public const int T_MINUS = 2;
+    public const T_MINUS = 2;
 
-    private const string PATTERN = '/\G(?:(?<T_NUMBER>\d++)|(?<T_PLUS>\+)|(?<T_MINUS>-)|(?<skip>\s++))/Ssu';
+    private const PATTERN = '/\G(?:(?<T_NUMBER>\d++)|(?<T_PLUS>\+)|(?<T_MINUS>-)|(?<skip>\s++))/Ssu';
 
-    private const array IDENTIFIERS = [
+    private const IDENTIFIERS = [
         'T_NUMBER' => self::T_NUMBER,
         'T_PLUS' => self::T_PLUS,
         'T_MINUS' => self::T_MINUS,

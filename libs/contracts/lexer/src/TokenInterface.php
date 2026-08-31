@@ -51,5 +51,5 @@ interface TokenInterface extends \Stringable
      *
      * @var int<0, max>
      */
-    public const int MIN_OFFSET = 0;
+    public const MIN_OFFSET = 0;
 }
