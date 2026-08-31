@@ -11,13 +11,12 @@ concurrency:
 jobs:
   coding-standards:
     name: Coding Standards
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     strategy:
       fail-fast: false
       matrix:
         php: [ '8.5' ]
-        os: [ ubuntu-latest ]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
