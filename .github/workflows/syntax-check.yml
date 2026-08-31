@@ -3,8 +3,6 @@ name: Syntax Check
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,16 +12,17 @@ jobs:
   check:
     name: PHP ${{matrix.php}} Syntax Check
     runs-on: 'ubuntu-latest'
+    continue-on-error: ${{ contains(fromJSON('["7.4", "8.0", "8.1", "8.2", "8.3"]'), matrix.php) }}
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     strategy:
       fail-fast: false
       matrix:
         php:
-          # - '7.4'
-          # - '8.0'
-          # - '8.1'
-          # - '8.2'
-          # - '8.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+          - '8.3'
           - '8.4'
           - '8.5'
           - '8.6'

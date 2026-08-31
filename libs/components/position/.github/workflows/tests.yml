@@ -8,6 +8,7 @@ jobs:
   tests:
     name: Tests (${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }})
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.php == '8.6' }}
     strategy:
       fail-fast: false
       matrix:

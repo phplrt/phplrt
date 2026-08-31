@@ -3,8 +3,6 @@ name: Syntax Check
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

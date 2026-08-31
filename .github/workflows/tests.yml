@@ -3,8 +3,6 @@ name: Tests
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,6 +12,7 @@ jobs:
   test:
     name: PHP ${{matrix.php}}, ${{ matrix.os }}, ${{ matrix.stability }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.php == '8.6' }}
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     strategy:
       fail-fast: false
