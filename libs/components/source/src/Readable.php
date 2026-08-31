@@ -16,9 +16,15 @@ abstract class Readable implements ReadableInterface
      * @throws SourceExceptionInterface may occur when it is not possible to
      *         read source's data and/or convert it to a string
      */
+    abstract public function getContents(): string;
+
+    /**
+     * @throws SourceExceptionInterface may occur when it is not possible to
+     *         read source's data and/or convert it to a string
+     */
     public function __toString(): string
     {
-        return $this->content;
+        return $this->getContents();
     }
 
     /**
@@ -26,6 +32,8 @@ abstract class Readable implements ReadableInterface
      * @param TArgSource $source
      * @return (TArgSource is ReadableInterface ? TArgSource&ReadableInterface : ReadableInterface)
      * @throws SourceExceptionInterface
+     *
+     * @deprecated since 4.0, please use "SourceFactory::create()" instead
      */
     #[\Deprecated('Please use "SourceFactory::create()" instead', since: '4.0')]
     public static function new(mixed $source): ReadableInterface
@@ -39,6 +47,9 @@ abstract class Readable implements ReadableInterface
      *
      * @param non-empty-string|null $pathname
      * @return ($pathname is null ? StringSource : VirtualSource)
+     *
+     * @deprecated since 4.0, please use "StringSource::createEmpty()" or
+     *             "VirtualSource::createEmpty()" instead
      */
     #[\Deprecated('Please use "StringSource::createEmpty()" or "VirtualSource::createEmpty()" instead', since: '4.0')]
     public static function empty(?string $pathname = null): Readable
@@ -54,6 +65,8 @@ abstract class Readable implements ReadableInterface
      * @api
      *
      * @param non-empty-string $pathname
+     *
+     * @deprecated since 4.0, please use "FileSource::createFromPathname()" instead
      */
     #[\Deprecated('Please use "FileSource::createFromPathname()" instead', since: '4.0')]
     public static function fromPathname(string $pathname): FileSource
@@ -63,6 +76,8 @@ abstract class Readable implements ReadableInterface
 
     /**
      * @api
+     *
+     * @deprecated since 4.0, please use "FileSource::createFromSplFileInfo()" instead
      */
     #[\Deprecated('Please use "FileSource::createFromSplFileInfo()" instead', since: '4.0')]
     public static function fromSplFileInfo(\SplFileInfo $info): FileSource
@@ -75,6 +90,9 @@ abstract class Readable implements ReadableInterface
      *
      * @param non-empty-string|null $pathname
      * @return ($pathname is null ? StringSource : VirtualSource)
+     *
+     * @deprecated since 4.0, please use "StringSource::createFromString()" or
+     *             "VirtualSource::createFromString()" instead
      */
     #[\Deprecated('Please use "StringSource::createFromString()" or "VirtualSource::createFromString()" instead', since: '4.0')]
     public static function fromSources(string $sources, ?string $pathname = null): Readable
@@ -92,6 +110,9 @@ abstract class Readable implements ReadableInterface
      * @param resource $resource
      * @param non-empty-string|null $pathname
      * @return ($pathname is null ? ResourceSource : VirtualSource)
+     *
+     * @deprecated since 4.0, please use "ResourceSource::createFromResource()"
+     *             or "VirtualSource::createFromResource()" instead
      */
     #[\Deprecated('Please use "ResourceSource::createFromResource()" or "VirtualSource::createFromResource()" instead', since: '4.0')]
     public static function fromResource(mixed $resource, ?string $pathname = null): Readable
