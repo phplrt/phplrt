@@ -28,8 +28,10 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
      * The definitions belonging to every state, in the order they are declared.
      *
      * @var list<TokenDefinition>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    private array $tokens = [];
+    public array $tokens = [];
 
     /**
      * @api
@@ -41,14 +43,6 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
         $this->tokens[] = $definition;
 
         return $this;
-    }
-
-    /**
-     * @return list<TokenDefinition>
-     */
-    public function getProcessedTokens(): array
-    {
-        return $this->tokens;
     }
 
     public function process(LexerBuildingContext $context): void
