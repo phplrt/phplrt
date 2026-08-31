@@ -105,7 +105,8 @@ final class ContractsPreloader
 
         // A package the root one replaces is installed by nothing, so it is
         // only reachable through a symbol it declares.
-        $declaration = new \ReflectionClass($symbol)->getFileName();
+        $declaration = (new \ReflectionClass($symbol))
+            ->getFileName();
 
         if ($declaration === false) {
             return null;
