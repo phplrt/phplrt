@@ -31,8 +31,10 @@ final class Compiler implements LoggerAwareInterface
 
     /**
      * Reports what happens to the grammar while it is read and compiled.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) LoggerInterface $logger;
+    public LoggerInterface $logger;
 
     private readonly ReferenceLoader $loader;
 
