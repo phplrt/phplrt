@@ -5,3 +5,9 @@ parameters:
   paths:
     - src
   treatPhpDocTypesAsCertain: false
+  ignoreErrors:
+    # Reading the content of a source may fail, which a "@property-read" tag has
+    # no way of saying: only a hook or a method carries a "@throws" of its own.
+    - identifier: catch.neverThrown
+      path: src/Lexer.php
+      message: '#Phplrt\\Contracts\\Source\\Exception\\SourceExceptionInterface is never thrown#'
