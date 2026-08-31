@@ -440,12 +440,14 @@ final class PP3LoaderTest extends TestCase
             ParserPassStub::class,
         ));
 
-        Assert::true(\array_all(
-            \array_filter(
-                $this->lexer->compilerPasses[LexerBuilder::PASS_PRIORITY_CHECK],
-                static fn(object $pass): bool => $pass instanceof LexerPassStub,
-            ),
+        $checks = \array_filter(
+            $this->lexer->compilerPasses[LexerBuilder::PASS_PRIORITY_CHECK],
             static fn(object $pass): bool => $pass instanceof LexerPassStub,
+        );
+
+        Assert::same([], \array_filter(
+            $checks,
+            static fn(object $pass): bool => !$pass instanceof LexerPassStub,
         ));
 
         $optimize = $this->parser->compilerPasses[ParserBuilder::PASS_PRIORITY_OPTIMIZE];
@@ -499,7 +501,7 @@ final class PP3LoaderTest extends TestCase
 
     private function load(string $source, string $pathname = self::PATHNAME): array
     {
-        $result = new PP3Loader()
+        $result = (new PP3Loader())
             ->load(VirtualSource::createFromString($pathname, $source), $this->parser, $this->lexer);
 
         return \iterator_to_array($result, false);

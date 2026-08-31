@@ -146,7 +146,7 @@ final class GeneratorTest extends TestCase
     {
         $reducer = new PhpCodeReducer('return 42;');
 
-        $names = new PhpCodePrinter()->createMethodNames(
+        $names = (new PhpCodePrinter())->createMethodNames(
             reducers: [0 => $reducer, 1 => $reducer],
             constants: ['The Number' => 0, 'TheNumber' => 1],
         );
@@ -257,13 +257,13 @@ final class GeneratorTest extends TestCase
 
     private function compile(string $name): Compiler
     {
-        return new Compiler()
+        return (new Compiler())
             ->load(FileSource::createFromPathname(__DIR__ . '/resources/' . $name));
     }
 
     private function generateOf(string $grammar): GeneratedOutput
     {
-        return new Compiler()
+        return (new Compiler())
             ->load(StringSource::createFromString($grammar))
             ->generate();
     }

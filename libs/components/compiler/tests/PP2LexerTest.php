@@ -25,7 +25,7 @@ final class PP2LexerTest extends TestCase
 
     private static function tokenize(string $source): array
     {
-        $lexer = self::$lexer ??= new Compiler()
+        $lexer = self::$lexer ??= (new Compiler())
             ->load(FileSource::createFromPathname(self::GRAMMAR))
             ->build()
             ->lexer

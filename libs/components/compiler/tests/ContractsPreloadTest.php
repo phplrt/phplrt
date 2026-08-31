@@ -177,7 +177,7 @@ final class ContractsPreloadTest extends TestCase
 
     private static function createIncludes(): array
     {
-        return new ContractsPreloader()->createIncludes();
+        return (new ContractsPreloader())->createIncludes();
     }
 
     private static function findDependenciesOf(string $symbol): array
@@ -190,7 +190,7 @@ final class ContractsPreloadTest extends TestCase
 
     private static function generate(): GeneratedOutput
     {
-        return new Compiler()
+        return (new Compiler())
             ->load(FileSource::createFromPathname(self::GRAMMAR_PATHNAME))
             ->generate();
     }

@@ -86,7 +86,7 @@ final class PP3FragmentTest extends TestCase
 
     public function testGrammarReadsWhatFragmentsDescribe(): void
     {
-        $parser = new Compiler()
+        $parser = (new Compiler())
             ->load(StringSource::createFromString(<<<'PP3'
                 %fragment DIGIT  [0-9]
                 %fragment EXP    [eE][+-]?(?&DIGIT)++
@@ -190,7 +190,7 @@ final class PP3FragmentTest extends TestCase
 
     private function compile(string $grammar): CompilerResult
     {
-        return new Compiler()
+        return (new Compiler())
             ->load(StringSource::createFromString($grammar))
         ->build();
     }
