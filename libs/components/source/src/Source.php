@@ -11,5 +11,6 @@ if (!\class_exists(Source::class, false)) {
 /**
  * @deprecated since phplrt 4.0 and will be removed in 5.0,
  *             please use {@see StringSource} instead.
+ * @phpstan-ignore class.extendsFinalByPhpDoc
  */
 final class Source extends StringSource {}

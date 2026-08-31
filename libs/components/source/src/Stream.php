@@ -11,5 +11,6 @@ if (!\class_exists(Stream::class, false)) {
 /**
  * @deprecated since phplrt 4.0 and will be removed in 5.0,
  *             please use {@see ResourceSource} instead.
+ * @phpstan-ignore class.extendsFinalByPhpDoc
  */
 final class Stream extends ResourceSource {}

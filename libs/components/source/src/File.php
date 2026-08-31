@@ -11,5 +11,6 @@ if (!\class_exists(File::class, false)) {
 /**
  * @deprecated since phplrt 4.0 and will be removed in 5.0,
  *             please use {@see FileSource} instead.
+ * @phpstan-ignore class.extendsFinalByPhpDoc
  */
 final class File extends FileSource {}

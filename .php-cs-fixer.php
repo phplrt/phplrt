@@ -25,7 +25,7 @@ const DIR_EXCLUDE = [];
 const FILE_EXCLUDE = [];
 
 $files = Finder::create()
-    ->in([...DIR_INCLUDE, ...(glob(__DIR__ . '/libs/*/*/tests') ?: [])])
+    ->in(DIR_INCLUDE)
     ->exclude(DIR_EXCLUDE)
     ->filter(static fn(SplFileInfo $file): bool => !in_array(
         needle: realpath($file->getPathname()),
