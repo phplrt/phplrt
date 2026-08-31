@@ -308,7 +308,13 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      */
     private function findCapturedIndex(array $lines): ?int
     {
-        return \array_find_key($lines, static fn(SourceLine $line): bool => $line instanceof CapturedSourceLine);
+        foreach ($lines as $index => $line) {
+            if ($line instanceof CapturedSourceLine) {
+                return $index;
+            }
+        }
+
+        return null;
     }
 
     /**
