@@ -22,7 +22,7 @@ abstract class TestCase
 
         $definition($builder);
 
-        return new RuntimeLexerTransformer($skip)
+        return (new RuntimeLexerTransformer($skip))
             ->transform($builder->build());
     }
 
