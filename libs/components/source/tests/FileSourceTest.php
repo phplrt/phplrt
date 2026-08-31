@@ -97,7 +97,7 @@ final class FileSourceTest extends TestCase
         unset($file);
 
         Assert::notSame(\file_put_contents($this->temp, 'second content'), false);
-        Assert::same(new FileSource($this->temp)->content, 'second content');
+        Assert::same((new FileSource($this->temp))->content, 'second content');
     }
 
     public function testContentPropertyThrowsWhenFileNotFound(): void

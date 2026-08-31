@@ -87,7 +87,7 @@ final class StringSourceTest extends TestCase
     {
         Expect::exception(NonPositiveBytesCountException::class);
 
-        new StringSource('test content')->read(0, 0);
+        (new StringSource('test content'))->read(0, 0);
     }
 
     public function testReadingDoesNotOpenAnyResource(): void
