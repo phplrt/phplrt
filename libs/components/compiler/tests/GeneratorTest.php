@@ -11,6 +11,7 @@ use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Generator\GeneratedOutput;
 use Phplrt\Compiler\Generator\PhpCodePrinter;
+use Phplrt\Compiler\Generator\TargetPhpVersion;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
 use Phplrt\Lexer\Builder\LexerBuilder;
@@ -21,6 +22,8 @@ use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
 use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Data\DataSet;
 use Testo\Expect;
 use Testo\Filter\Group;
 use Testo\Lifecycle\AfterTest;
@@ -79,13 +82,26 @@ final class GeneratorTest extends TestCase
         Assert::string($code)->contains("\nuse App\\Node;\nuse App\\Other\\Node as OtherNode;\n");
     }
 
-    public function testNamedTokenIsReferredByConstant(): void
+    #[DataSet([TargetPhpVersion::Php81, false], 'PHP 8.1 (no typed constants)')]
+    #[DataSet([TargetPhpVersion::Php82, false], 'PHP 8.2 (no typed constants)')]
+    #[DataSet([TargetPhpVersion::Php83, true], 'PHP 8.3 (supports typed constants)')]
+    #[DataSet([TargetPhpVersion::Php84, true], 'PHP 8.4 (supports typed constants)')]
+    #[DataSet([TargetPhpVersion::Php85, true], 'PHP 8.5 (supports typed constants)')]
+    #[DataSet([TargetPhpVersion::Php86, true], 'PHP 8.6 (supports typed constants)')]
+    public function testNamedTokenIsReferredByConstant(TargetPhpVersion $php, bool $hasTypedConstant): void
     {
-        $code = (string) $this->compile('grammar.pp2')->generate();
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+                ->withTargetPhpVersion($php);
 
-        Assert::string($code)
-            ->contains('public const /* int */ T_NUMBER = 0;')
+        $string = Assert::string($code)
             ->contains('new \\Phplrt\\Parser\\Grammar\\Lexeme(self::T_NUMBER, true)');
+
+        if ($hasTypedConstant) {
+            $string->contains('public const int T_NUMBER = 0;');
+        } else {
+            $string->contains('public const T_NUMBER = 0;');
+        }
     }
 
     public function testInlineTokenIsReferredByIdentifier(): void
