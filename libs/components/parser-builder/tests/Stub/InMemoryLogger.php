@@ -12,8 +12,9 @@ final class InMemoryLogger extends AbstractLogger
      * The messages that have been reported, each one prefixed by its level.
      *
      * @var list<non-empty-string>
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $records = [];
+    public array $records = [];
 
     public function log($level, string|\Stringable $message, array $context = []): void
     {

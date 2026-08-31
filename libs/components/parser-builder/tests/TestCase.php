@@ -35,7 +35,7 @@ abstract class TestCase
 
     protected static function createLexer(LexerBuilder $builder): LexerInterface
     {
-        return new RuntimeLexerTransformer()
+        return (new RuntimeLexerTransformer())
             ->transform($builder->build());
     }
 

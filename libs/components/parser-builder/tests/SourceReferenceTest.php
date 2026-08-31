@@ -98,7 +98,7 @@ final class SourceReferenceTest extends TestCase
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([
             $parser->addTokenReference('T_NUMBER'),
-        ], 'Root')->setReducer(new PhpCodeReducer('return $children')->setSource($source, 10)));
+        ], 'Root')->setReducer((new PhpCodeReducer('return $children'))->setSource($source, 10)));
 
         try {
             $parser->build($lexer->build())

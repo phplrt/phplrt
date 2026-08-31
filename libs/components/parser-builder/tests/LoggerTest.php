@@ -17,7 +17,7 @@ final class LoggerTest extends TestCase
 {
     public function testNothingIsReportedByDefault(): void
     {
-        Assert::instanceOf(new ParserBuilder()->logger, NullLogger::class);
+        Assert::instanceOf((new ParserBuilder())->logger, NullLogger::class);
     }
 
     public function testUnreachableRuleIsReported(): void
