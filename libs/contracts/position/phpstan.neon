@@ -5,3 +5,8 @@ parameters:
   paths:
     - src
   treatPhpDocTypesAsCertain: false
+  # PHP 8.3 has no property declarations in an interface, so the contracts state
+  # what they expose using "@property-read". PHPStan reads such a tag only from a
+  # type that allows dynamic properties, which is what these entries say.
+  universalObjectCratesClasses:
+    - Phplrt\Contracts\Position\PositionInterface

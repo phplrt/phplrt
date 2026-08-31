@@ -13,6 +13,15 @@ namespace Phplrt\Contracts\Position;
  *
  * An implementation MUST be immutable.
  *
+ * All properties described below SHOULD BE considered actual interface
+ * requirements. Their absence in the code is due to support requirements
+ * for PHP versions prior to 8.4.
+ *
+ * @property-read int<1, max> $line The number of the source line the position
+ *         points at.
+ * @property-read int<1, max> $column The number of the column within its own
+ *         line the position points at.
+ *
  * @readonly
  */
 interface PositionInterface
@@ -30,22 +39,4 @@ interface PositionInterface
      * @var int<1, max>
      */
     public const int MIN_COLUMN = 1;
-
-    /**
-     * The number of the source line the position points at.
-     *
-     * @var int<1, max>
-     */
-    public int $line {
-        get;
-    }
-
-    /**
-     * The number of the column within its own line the position points at.
-     *
-     * @var int<1, max>
-     */
-    public int $column {
-        get;
-    }
 }
