@@ -49,7 +49,7 @@ abstract class CompilerRuntimeException extends CompilerException
     public function __toString(): string
     {
         try {
-            return (string) new ErrorPrinter()
+            return (string) (new ErrorPrinter())
                 ->print($this)
                 ->withSource($this->source)
                 ->withInterval($this->offset, $this->length ?? 0);
