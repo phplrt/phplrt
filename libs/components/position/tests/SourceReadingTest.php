@@ -70,7 +70,7 @@ final class SourceReadingTest extends TestCase
     public function testNonSeekableSourceIsReadAfterAPartOfItHasBeenTaken(): void
     {
         $factory = new PositionFactory();
-        $source = new ResourceSource($this->createNonSeekableResource(self::CODE))
+        $source = (new ResourceSource($this->createNonSeekableResource(self::CODE)))
             ->toSeekableSource();
 
         Assert::same($source->read(0, 5), 'first');
