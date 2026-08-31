@@ -23,7 +23,10 @@
     "autoload": {
         "psr-4": {
             "Phplrt\\Source\\": "src"
-        }
+        },
+        "files": [
+            "src/polyfill.php"
+        ]
     },
     "require-dev": {
         "testo/testo": "^0.10.44",
