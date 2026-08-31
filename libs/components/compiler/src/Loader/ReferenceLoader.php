@@ -71,7 +71,7 @@ final readonly class ReferenceLoader
 
         // A reference is allowed to omit the extension, so every format there
         // is gets tried in turn
-        foreach ($this->loaders->extensions as $extension) {
+        foreach ($this->loaders->getSupportedExtensions() as $extension) {
             if (\is_file($pathname . '.' . $extension)) {
                 return $pathname . '.' . $extension;
             }
