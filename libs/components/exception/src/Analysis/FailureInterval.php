@@ -12,13 +12,11 @@ namespace Phplrt\Exception\Analysis;
 final class FailureInterval
 {
     /**
-     * Gets the end offset in bytes of the failure interval.
+     * The end offset in bytes of the failure interval.
      *
      * @var int<0, max>
      */
-    public int $endsAt {
-        get => $this->offset + $this->length;
-    }
+    public readonly int $endsAt;
 
     public function __construct(
         /**
@@ -34,5 +32,7 @@ final class FailureInterval
          * @var int<0, max>
          */
         public readonly int $length = 0,
-    ) {}
+    ) {
+        $this->endsAt = $this->offset + $this->length;
+    }
 }
