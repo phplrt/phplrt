@@ -25,12 +25,11 @@ use Psr\Log\LoggerInterface;
 final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
 {
     /**
-     * The definitions belonging to every state, in the order they are
-     * declared.
+     * The definitions belonging to every state, in the order they are declared.
      *
      * @var list<TokenDefinition>
      */
-    public private(set) array $tokens = [];
+    private array $tokens = [];
 
     /**
      * @api
@@ -42,6 +41,14 @@ final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
         $this->tokens[] = $definition;
 
         return $this;
+    }
+
+    /**
+     * @return list<TokenDefinition>
+     */
+    public function getProcessedTokens(): array
+    {
+        return $this->tokens;
     }
 
     public function process(LexerBuildingContext $context): void
