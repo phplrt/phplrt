@@ -43,7 +43,7 @@ enum TargetPhpVersion: int
             \PHP_VERSION_ID >= self::Php84->value => self::Php84,
             \PHP_VERSION_ID >= self::Php83->value => self::Php83,
             \PHP_VERSION_ID >= self::Php82->value => self::Php82,
-            \PHP_VERSION_ID >= self::Php81->value => self::Php81,
+            // \PHP_VERSION_ID >= self::Php81->value => self::Php81,
             default => throw new \RuntimeException('Unsupported PHP version target'),
         };
     }

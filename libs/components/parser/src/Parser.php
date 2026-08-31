@@ -38,6 +38,8 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @phpstan-import-type KeptTableType from GrammarTable
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
  * @phpstan-import-type MessageTableType from GrammarTable
+ *
+ * @readonly
  */
 class Parser implements ParserInterface
 {

@@ -132,7 +132,6 @@ final readonly class GeneratedOutput implements \Stringable
         );
     }
 
-
     /**
      * Writes the code into the given file.
      *

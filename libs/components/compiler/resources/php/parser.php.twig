@@ -8,13 +8,15 @@ return new class extends \Phplrt\Parser\Parser {
  * @template TResult of mixed = mixed
  *
  * @template-extends \Phplrt\Parser\Parser<TResult>
+ *
+ * @readonly
  */
 class {{ class }} extends \Phplrt\Parser\Parser
 {
 {% endif %}
 {% for id, name in lexer.names %}
     /** @var int */
-    public const {% if php.value >= 80200 %}int {% endif %}{{ name }} = {{ id }};
+    public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
 
     public function __construct()
@@ -31,7 +33,7 @@ class {{ class }} extends \Phplrt\Parser\Parser
 {{ include('parser/methods.php.twig')|trim(side='right')|indent(1) }}
 {% endif %}
 {% if class is null %}
-%};
+};
 {% else %}
 }
 {% endif %}
