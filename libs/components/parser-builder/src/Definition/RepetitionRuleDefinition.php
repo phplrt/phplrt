@@ -10,21 +10,24 @@ namespace Phplrt\Parser\Builder\Definition;
 final class RepetitionRuleDefinition extends ProductionRuleDefinition implements
     SequenceRuleDefinitionInterface
 {
-    public private(set) RuleDefinition $rule;
+    /**
+     * @phpstan-readonly-allow-private-mutation
+     */
+    public RuleDefinition $rule;
 
     /**
      * @var int<0, max>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) int $min;
+    public int $min;
 
     /**
      * @var int<0, max>|float
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) int|float $max;
-
-    public array $children {
-        get => [$this->rule];
-    }
+    public int|float $max;
 
     /**
      * @param int<0, max> $min
@@ -88,6 +91,11 @@ final class RepetitionRuleDefinition extends ProductionRuleDefinition implements
     public function replaceChildren(\Closure $replace): void
     {
         $this->rule = $replace($this->rule);
+    }
+
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return [$this->rule];
     }
 
     protected function printValue(): string

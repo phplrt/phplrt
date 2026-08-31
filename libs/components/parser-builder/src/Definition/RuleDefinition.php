@@ -10,20 +10,27 @@ use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Context;
 
 /**
+ * @property-read list<RuleDefinition> $children Contains the rules the current
+ *         one refers to.
+ *
  * @phpstan-type ReducerType callable(Context, mixed): mixed
  */
 abstract class RuleDefinition extends Definition
 {
     /**
      * @var non-empty-string|null
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?string $name = null;
+    public ?string $name = null;
 
     /**
      * Contains the reducer converting the rule into the node of the syntax
      * tree, or {@see null} in case of the rule is reduced to its children
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?ReducerInterface $reducer = null;
+    public ?ReducerInterface $reducer = null;
 
     /**
      * Contains the message reported in case of the rule cannot be recognized,
@@ -34,15 +41,10 @@ abstract class RuleDefinition extends Definition
      * for a logger, and a brace of the message itself is written twice.
      *
      * @var non-empty-string|null
-     */
-    public private(set) ?string $message = null;
-
-    /**
-     * Contains the rules the current one refers to
      *
-     * @var list<RuleDefinition>
+     * @phpstan-readonly-allow-private-mutation
      */
-    public array $children { get => []; }
+    public ?string $message = null;
 
     /**
      * Replaces every rule the current one refers to by the result of the given
@@ -82,9 +84,19 @@ abstract class RuleDefinition extends Definition
 
         $visited->offsetSet($this);
 
-        foreach ($this->children as $child) {
+        foreach ($this->getChildrenRuleDefinitions() as $child) {
             $child->collectRule($visited);
         }
+    }
+
+    /**
+     * Returns the rules the current one refers to.
+     *
+     * @return list<RuleDefinition>
+     */
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return [];
     }
 
     /**
@@ -214,5 +226,17 @@ abstract class RuleDefinition extends Definition
         }
 
         return \sprintf('%s = %s', $this->name, $this->printValue());
+    }
+
+    public function __get(string $property): mixed
+    {
+        return match ($property) {
+            'children' => $this->getChildrenRuleDefinitions(),
+            default => throw new \Error(\sprintf(
+                'Undefined property %s::$%s',
+                static::class,
+                $property,
+            )),
+        };
     }
 }

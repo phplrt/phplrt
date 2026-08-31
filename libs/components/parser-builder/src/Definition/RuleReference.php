@@ -13,21 +13,23 @@ namespace Phplrt\Parser\Builder\Definition;
  */
 final class RuleReference extends RuleDefinition
 {
-    public array $children {
-        get => \is_string($this->target) ? [] : [$this->target];
-    }
+    /**
+     * Contains the rule the reference points at, or the name of that rule
+     *
+     * @var RuleDefinition|non-empty-string
+     *
+     * @phpstan-readonly-allow-private-mutation
+     */
+    public RuleDefinition|string $target;
 
     /**
      * @param RuleDefinition|non-empty-string $target
      */
     public function __construct(
-        /**
-         * Contains the rule the reference points at, or the name of that rule
-         *
-         * @var RuleDefinition|non-empty-string
-         */
-        public private(set) RuleDefinition|string $target,
+        RuleDefinition|string $target,
     ) {
+        $this->target = $target;
+
         parent::__construct();
     }
 
@@ -54,6 +56,11 @@ final class RuleReference extends RuleDefinition
         }
 
         $this->target = $replace($this->target);
+    }
+
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return \is_string($this->target) ? [] : [$this->target];
     }
 
     protected function printValue(): string

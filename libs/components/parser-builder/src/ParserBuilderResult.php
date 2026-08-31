@@ -89,7 +89,7 @@ final readonly class ParserBuilderResult
      */
     public function toParser(LexerInterface $lexer): Parser
     {
-        return new RuntimeParserTransformer()
+        return (new RuntimeParserTransformer())
             ->transform($this, $lexer);
     }
 }
