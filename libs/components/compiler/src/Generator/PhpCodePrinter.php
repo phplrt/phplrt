@@ -79,6 +79,7 @@ final class PhpCodePrinter
      */
     public function printValue(mixed $value, int $depth = 0): string
     {
+        /** @var non-empty-string */
         return match (true) {
             $value === null => 'null',
             $value === true => 'true',
@@ -147,6 +148,7 @@ final class PhpCodePrinter
     /**
      * @param list<string> $items the items already written down
      * @param int<0, max> $depth the number of arrays the items are nested in
+     * @return non-empty-string
      */
     private function printItems(array $items, int $depth): string
     {
