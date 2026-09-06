@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Command;
 
 use Phplrt\Compiler\Compiler;
+use Phplrt\Compiler\Generator\ClassModifier;
 use Phplrt\Compiler\Generator\TargetPhpVersion;
 use Phplrt\Source\FileSource;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -67,6 +68,25 @@ final class GrammarCompileCommand extends Command
             mode: InputOption::VALUE_OPTIONAL,
             description: 'The target PHP version',
             suggestedValues: ['8.1', '8.2', '8.3', '8.4', '8.5', '8.6'],
+        ));
+
+        $inputDefinition->addOption(new InputOption(
+            name: 'readonly',
+            mode: InputOption::VALUE_NEGATABLE,
+            description: 'Annotate the generated parser as readonly',
+            default: true,
+        ));
+
+        $inputDefinition->addOption(new InputOption(
+            name: 'abstract',
+            mode: InputOption::VALUE_NONE,
+            description: 'Declare the generated parser as abstract',
+        ));
+
+        $inputDefinition->addOption(new InputOption(
+            name: 'final',
+            mode: InputOption::VALUE_NONE,
+            description: 'Declare the generated parser as final',
         ));
     }
 
@@ -136,6 +156,27 @@ final class GrammarCompileCommand extends Command
         }
 
         return $name;
+    }
+
+    private function isReadonly(InputInterface $input): bool
+    {
+        return $input->getOption('readonly') !== false;
+    }
+
+    private function getClassModifier(InputInterface $input): ClassModifier
+    {
+        $isAbstract = $input->getOption('abstract') === true;
+        $isFinal = $input->getOption('final') === true;
+
+        if ($isAbstract && $isFinal) {
+            throw new \InvalidArgumentException('The [abstract] and [final] options cannot be used together');
+        }
+
+        return match (true) {
+            $isAbstract => ClassModifier::Abstract,
+            $isFinal => ClassModifier::Final,
+            default => ClassModifier::Default,
+        };
     }
 
     private function getTargetPhpVersion(InputInterface $input): ?TargetPhpVersion
@@ -218,6 +259,21 @@ final class GrammarCompileCommand extends Command
             ]);
 
             $assembly = $assembly->withTargetPhpVersion($php);
+        }
+
+        if (!$this->isReadonly($input)) {
+            $logger->debug('The generated parser is not annotated as readonly');
+
+            $assembly = $assembly->withReadonly(false);
+        }
+
+        $modifier = $this->getClassModifier($input);
+        if ($modifier !== ClassModifier::Default) {
+            $logger->debug('The generated parser is declared as {modifier}', [
+                'modifier' => $modifier->value,
+            ]);
+
+            $assembly = $assembly->withClassModifier($modifier);
         }
 
         $assembly
