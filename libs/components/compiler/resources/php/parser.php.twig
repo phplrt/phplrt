@@ -13,7 +13,7 @@ return new class extends \Phplrt\Parser\Parser {
  * @readonly
 {% endif %}
  */
-{% if abstract %}abstract {% endif %}class {{ class }} extends \Phplrt\Parser\Parser
+{% if modifier.value %}{{ modifier.value }} {% endif %}class {{ class }} extends \Phplrt\Parser\Parser
 {
 {% endif %}
 {% for id, name in lexer.names %}

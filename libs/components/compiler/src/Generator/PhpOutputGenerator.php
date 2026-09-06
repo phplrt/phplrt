@@ -8,7 +8,7 @@ use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\CodeGenerationException;
 use Phplrt\Compiler\Exception\GeneratorException;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
-use Phplrt\Compiler\Exception\UnsupportedAbstractClassException;
+use Phplrt\Compiler\Exception\UnsupportedClassModifierException;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
@@ -73,7 +73,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
     {
         self::assertFragmentsAreDefined($result->lexer);
         self::assertClassNameIsValid($context->class);
-        self::assertAbstractClassIsNamed($context);
+        self::assertClassModifierIsNamed($context);
 
         try {
             $generated = $this->twig->render(self::TEMPLATE_ENTRYPOINT, [
@@ -83,7 +83,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
                 'class' => $context->class,
                 'php' => $context->php,
                 'readonly' => $context->readonly,
-                'abstract' => $context->abstract,
+                'modifier' => $context->modifier,
                 'lexer' => $result->lexer,
                 'parser' => $result->parser,
                 'methods' => $this->printer->createMethodNames(
@@ -123,21 +123,21 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
     }
 
     /**
-     * Checks that the parser that is abstract is named.
+     * Checks that the parser carrying a modifier is named.
      *
      * An anonymous class is written down as the very expression building it,
-     * which leaves nothing an abstract declaration could be written as.
+     * which leaves nothing a modifier could be written on.
      *
-     * @throws UnsupportedAbstractClassException in case of the parser is
-     *         abstract and is named by nothing
+     * @throws UnsupportedClassModifierException in case of the parser carries
+     *         a modifier and is named by nothing
      */
-    private static function assertAbstractClassIsNamed(OutputContext $context): void
+    private static function assertClassModifierIsNamed(OutputContext $context): void
     {
-        if (!$context->abstract || $context->class !== null) {
+        if ($context->modifier === ClassModifier::Default || $context->class !== null) {
             return;
         }
 
-        throw UnsupportedAbstractClassException::becauseAbstractClassIsNotNamed();
+        throw UnsupportedClassModifierException::becauseModifierRequiresClassName($context->modifier);
     }
 
     /**

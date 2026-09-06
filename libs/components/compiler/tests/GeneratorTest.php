@@ -8,9 +8,10 @@ use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
-use Phplrt\Compiler\Exception\UnsupportedAbstractClassException;
+use Phplrt\Compiler\Exception\UnsupportedClassModifierException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Exception\UnsupportedValueException;
+use Phplrt\Compiler\Generator\ClassModifier;
 use Phplrt\Compiler\Generator\GeneratedOutput;
 use Phplrt\Compiler\Generator\PhpCodePrinter;
 use Phplrt\Compiler\Generator\TargetPhpVersion;
@@ -287,33 +288,40 @@ final class GeneratorTest extends TestCase
             ->notContains('@readonly');
     }
 
-    public function testAbstractParserIsDeclared(): void
+    #[DataSet([ClassModifier::Abstract, 'abstract class LanguageParser'], 'abstract')]
+    #[DataSet([ClassModifier::Final, 'final class LanguageParser'], 'final')]
+    #[DataSet([ClassModifier::Default, 'class LanguageParser'], 'default')]
+    public function testParserIsDeclaredWithTheModifier(ClassModifier $modifier, string $declaration): void
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
             ->withClassName('LanguageParser')
-            ->withAbstract();
+            ->withClassModifier($modifier);
 
-        Assert::string($code)->contains("\nabstract class LanguageParser extends \\Phplrt\\Parser\\Parser\n");
+        Assert::string($code)->contains("\n" . $declaration . " extends \\Phplrt\\Parser\\Parser\n");
     }
 
-    public function testParserIsNotAbstractByDefault(): void
+    public function testParserCarriesNoModifierByDefault(): void
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
             ->withClassName('LanguageParser');
 
-        Assert::string($code)->notContains('abstract class');
+        Assert::string($code)
+            ->notContains('abstract class')
+            ->notContains('final class');
     }
 
-    public function testAnonymousAbstractParserIsReported(): void
+    #[DataSet([ClassModifier::Abstract, 'abstract'], 'abstract')]
+    #[DataSet([ClassModifier::Final, 'final'], 'final')]
+    public function testAnonymousParserWithAModifierIsReported(ClassModifier $modifier, string $keyword): void
     {
-        Expect::exception(UnsupportedAbstractClassException::class)
-        ->withMessageContaining('An abstract parser cannot be anonymous');
+        Expect::exception(UnsupportedClassModifierException::class)
+        ->withMessageContaining('An anonymous parser cannot be declared as ' . $keyword);
 
         (string) $this->compile('grammar.pp2')
             ->generate()
-            ->withAbstract();
+            ->withClassModifier($modifier);
     }
 
     private function generate(string $name): ParserInterface

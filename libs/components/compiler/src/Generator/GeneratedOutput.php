@@ -55,7 +55,7 @@ final class GeneratedOutput implements \Stringable
             class: $this->context->class,
             php: $this->context->php,
             readonly: $this->context->readonly,
-            abstract: $this->context->abstract,
+            modifier: $this->context->modifier,
         ));
     }
 
@@ -75,7 +75,7 @@ final class GeneratedOutput implements \Stringable
             class: $class,
             php: $this->context->php,
             readonly: $this->context->readonly,
-            abstract: $this->context->abstract,
+            modifier: $this->context->modifier,
         ));
     }
 
@@ -95,7 +95,7 @@ final class GeneratedOutput implements \Stringable
             class: $this->context->class,
             php: $this->context->php,
             readonly: $this->context->readonly,
-            abstract: $this->context->abstract,
+            modifier: $this->context->modifier,
         ));
     }
 
@@ -112,7 +112,7 @@ final class GeneratedOutput implements \Stringable
             class: $this->context->class,
             php: $version,
             readonly: $this->context->readonly,
-            abstract: $this->context->abstract,
+            modifier: $this->context->modifier,
         ));
     }
 
@@ -129,19 +129,19 @@ final class GeneratedOutput implements \Stringable
             class: $this->context->class,
             php: $this->context->php,
             readonly: $readonly,
-            abstract: $this->context->abstract,
+            modifier: $this->context->modifier,
         ));
     }
 
     /**
-     * Returns the output declaring the parser as abstract.
+     * Returns the output declaring the parser the given way.
      *
-     * A parser that is abstract is declared rather than returned, so it is
+     * A parser carrying a modifier is declared rather than returned, so it is
      * only written down along with a name of its own.
      *
      * @api
      */
-    public function withAbstract(bool $abstract = true): self
+    public function withClassModifier(ClassModifier $modifier): self
     {
         return $this->withContext(new OutputContext(
             namespace: $this->context->namespace,
@@ -149,7 +149,7 @@ final class GeneratedOutput implements \Stringable
             class: $this->context->class,
             php: $this->context->php,
             readonly: $this->context->readonly,
-            abstract: $abstract,
+            modifier: $modifier,
         ));
     }
 

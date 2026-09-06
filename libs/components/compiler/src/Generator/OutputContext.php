@@ -56,9 +56,9 @@ final class OutputContext
          */
         public readonly bool $readonly = true,
         /**
-         * Whether the parser is written down as abstract.
+         * The way the class of the parser is declared.
          */
-        public readonly bool $abstract = false,
+        public readonly ClassModifier $modifier = ClassModifier::Default,
     ) {
         $this->php = $php
             ?? TargetPhpVersion::current();
