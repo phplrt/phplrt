@@ -19,20 +19,22 @@ use Phplrt\Parser\Parser;
  * is always enough to reach its definition.
  *
  * @phpstan-import-type ReducerType from RuleDefinition
+ *
+ * @readonly
  */
-final readonly class ParserBuilderResult
+final class ParserBuilderResult
 {
     public function __construct(
         /**
          * @var list<RuleInterface>
          */
-        public array $grammar,
+        public readonly array $grammar,
         /**
          * The identifier of the rule the analysis starts at.
          *
          * @var int<0, max>
          */
-        public int $initial,
+        public readonly int $initial,
         /**
          * The identifiers of the tokens a rule may begin with, indexed by the
          * rule identifiers, or {@see null} for a rule that may begin with any
@@ -40,48 +42,48 @@ final readonly class ParserBuilderResult
          *
          * @var array<int, array<int, true>|null>
          */
-        public array $lookahead,
+        public readonly array $lookahead,
         /**
          * The rules that are kept in the resulting tree, indexed by the rule
          * identifiers.
          *
          * @var array<int, bool>
          */
-        public array $kept,
+        public readonly array $kept,
         /**
          * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
          *
          * @var array<int<0, max>, ReducerInterface>
          */
-        public array $reducers = [],
+        public readonly array $reducers = [],
         /**
          * A map of rule name and its ID.
          *
          * @var array<non-empty-string, int>
          */
-        public array $constants = [],
+        public readonly array $constants = [],
         /**
          * The alternatives of every alternation worth trying, indexed by the
          * token the reading is at and then by the rule identifiers.
          *
          * @var array<int, array<int, list<int>>>
          */
-        public array $choicePrediction = [],
+        public readonly array $choicePrediction = [],
         /**
          * A map of token ID and the way an error has to name it: a name, or
          * what an anonymous token is recognized by.
          *
          * @var array<int, non-empty-string>
          */
-        public array $expectations = [],
+        public readonly array $expectations = [],
         /**
          * A map of rule ID and the message reported in case of the rule cannot
          * be recognized.
          *
          * @var array<int, non-empty-string>
          */
-        public array $messages = [],
+        public readonly array $messages = [],
     ) {}
 
     /**

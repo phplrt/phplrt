@@ -13,12 +13,15 @@ use Phplrt\Source\Driver\SplFileInfoSourceDriver;
 use Phplrt\Source\Driver\StringSourceDriver;
 use Phplrt\Source\Exception\NotCreatableException;
 
-final readonly class SourceFactory implements SourceFactoryInterface
+/**
+ * @readonly
+ */
+final class SourceFactory implements SourceFactoryInterface
 {
     /**
      * @var list<SourceDriverInterface>
      */
-    private array $drivers;
+    private readonly array $drivers;
 
     /**
      * @param iterable<mixed, SourceDriverInterface> $drivers drivers are
@@ -27,7 +30,11 @@ final readonly class SourceFactory implements SourceFactoryInterface
      */
     public function __construct(iterable $drivers = [])
     {
-        $this->drivers = \iterator_to_array($drivers, false);
+        $this->drivers = match (true) {
+            $drivers instanceof \Traversable => \iterator_to_array($drivers, false),
+            \array_is_list($drivers) => $drivers,
+            default => \array_values($drivers),
+        };
     }
 
     /**

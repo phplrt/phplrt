@@ -23,8 +23,10 @@ use Psr\Log\LoggerInterface;
  *
  * The states are reached through the lexer they belong to, so a piece declared
  * once is written into every expression of every state.
+ *
+ * @readonly
  */
-final readonly class FragmentResolutionLexerCompilerPass implements
+final class FragmentResolutionLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**

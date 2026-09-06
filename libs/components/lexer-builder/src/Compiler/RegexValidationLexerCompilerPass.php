@@ -10,8 +10,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the regular expression is specified correctly.
+ *
+ * @readonly
  */
-final readonly class RegexValidationLexerCompilerPass implements
+final class RegexValidationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuildingContext $context): void

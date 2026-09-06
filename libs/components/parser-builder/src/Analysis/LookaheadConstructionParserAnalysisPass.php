@@ -20,8 +20,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * begin with anything at all.
  *
  * TODO Refactor lookahead table builder (expand method is sucks)
+ *
+ * @readonly
  */
-final readonly class LookaheadConstructionParserAnalysisPass implements
+final class LookaheadConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
     public function process(ParserResultContext $context): void

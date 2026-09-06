@@ -9,12 +9,14 @@ use Phplrt\Lexer\Builder\Regex\RegexGeneratorInterface;
 
 /**
  * Describes the pattern the lexer recognizes its tokens with.
+ *
+ * @readonly
  */
-final readonly class RegexConstructionLexerAnalysisPass implements
+final class RegexConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
 {
     public function __construct(
-        private RegexGeneratorInterface $generator = new MarkersRegexGenerator(),
+        private readonly RegexGeneratorInterface $generator = new MarkersRegexGenerator(),
     ) {}
 
     public function process(LexerResultContext $context): void

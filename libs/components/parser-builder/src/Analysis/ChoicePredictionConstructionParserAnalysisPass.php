@@ -20,8 +20,10 @@ use Phplrt\Parser\Grammar\Lexeme;
  * The answer is only as good as the tables it is read off, so a grammar that
  * has not been described is left alone: such an alternation is recognized by
  * trying every alternative it has.
+ *
+ * @readonly
  */
-final readonly class ChoicePredictionConstructionParserAnalysisPass implements
+final class ChoicePredictionConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
     public function process(ParserResultContext $context): void

@@ -27,8 +27,10 @@ use Phplrt\Position\PositionFactory;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @readonly
  */
-final readonly class MessageInterpolator
+final class MessageInterpolator
 {
     /**
      * The place of the source a token starts at, indexed by that token.
@@ -39,14 +41,14 @@ final readonly class MessageInterpolator
      *
      * @var \WeakMap<TokenInterface, PositionInterface>
      */
-    private \WeakMap $positions;
+    private readonly \WeakMap $positions;
 
     public function __construct(
         /**
          * Tells the line and the column of the place the reading has stopped
          * at, in case the message asks about either of them.
          */
-        private PositionFactoryInterface $factory = new PositionFactory(),
+        private readonly PositionFactoryInterface $factory = new PositionFactory(),
     ) {
         $this->positions = new \WeakMap();
     }

@@ -18,8 +18,10 @@ use Phplrt\Parser\Parser;
  * Turns the result of the compilation into the parser reading the input.
  *
  * @phpstan-import-type ReducerType from RuleDefinition
+ *
+ * @readonly
  */
-final readonly class RuntimeParserTransformer
+final class RuntimeParserTransformer
 {
     /**
      * @throws ParserCompilerException in case of the grammar cannot be run

@@ -36,19 +36,21 @@ namespace Phplrt\Parser\Grammar;
  * ```math
  * L(A^{n,m}) = \bigcup_{i=n}^{m} L(A)^i
  * ```
+ *
+ * @readonly
  */
-final readonly class Repetition implements SequenceInterface
+final class Repetition implements SequenceInterface
 {
     public function __construct(
-        public int $ruleId,
+        public readonly int $ruleId,
         /**
          * @var int<0, max>
          */
-        public int $min = 0,
+        public readonly int $min = 0,
         /**
          * @var int<0, max>|float
          */
-        public int|float $max = \INF,
+        public readonly int|float $max = \INF,
     ) {
         \assert($max >= $min, 'Max repetitions count must be greater or equal than min repetitions');
         \assert(\is_int($max) || \is_infinite($max), 'Max repetitions may contain only integer or INF (float) values');

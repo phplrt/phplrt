@@ -19,8 +19,10 @@ use Phplrt\Lexer\Builder\LexerBuilder;
  * Identifiers are assigned here, so this is the point after which the token
  * definitions may no longer be rewritten. The lexers reading the fragments are
  * compiled here as well, each of them on its own.
+ *
+ * @readonly
  */
-final readonly class LexerResultContextTransformer
+final class LexerResultContextTransformer
 {
     /**
      * @throws LexerCompilerException

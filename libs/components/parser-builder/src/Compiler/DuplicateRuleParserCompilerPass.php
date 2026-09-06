@@ -21,8 +21,10 @@ use Phplrt\Parser\Builder\Definition\TokenRuleDefinition;
  * The very same token or group of rules is usually mentioned by the grammar
  * more than once, and each mention costs a rule of the compiled parser along
  * with an entry in each of its tables.
+ *
+ * @readonly
  */
-final readonly class DuplicateRuleParserCompilerPass implements
+final class DuplicateRuleParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

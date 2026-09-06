@@ -19,8 +19,10 @@ use Phplrt\Parser\Grammar\SequenceInterface;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @readonly
  */
-final readonly class ReducerTable
+final class ReducerTable
 {
     /**
      * The rules reduced to the list of their children, indexed by the rule
@@ -28,7 +30,7 @@ final readonly class ReducerTable
      *
      * @var array<int, bool>
      */
-    private array $merged;
+    private readonly array $merged;
 
     /**
      * @param list<RuleInterface> $grammar
@@ -42,13 +44,13 @@ final readonly class ReducerTable
          *
          * @var array<int<0, max>, ReducerType>
          */
-        private array $reducers,
+        private readonly array $reducers,
         /**
          * The identifier of the rule the analysis starts at.
          *
          * @var int<0, max>
          */
-        private int $rule,
+        private readonly int $rule,
     ) {
         $this->merged = self::calculateMerged($grammar);
     }

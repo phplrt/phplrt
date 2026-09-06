@@ -10,7 +10,10 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
-final readonly class FragmentLexer implements LexerInterface
+/**
+ * @readonly
+ */
+final class FragmentLexer implements LexerInterface
 {
     public const T_FRAGMENT = 100;
 

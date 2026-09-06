@@ -14,8 +14,10 @@ use Phplrt\Lexer\Builder\LexerBuilder;
  * what a rule of a parser refers to, so replacing it by a copy would break that
  * link. Everything around them is an array, which PHP copies by value, so a
  * pass rewriting the lexers does not reach the builder.
+ *
+ * @readonly
  */
-final readonly class LexerBuildingContextTransformer
+final class LexerBuildingContextTransformer
 {
     public function transform(LexerBuilder $builder): LexerBuildingContext
     {

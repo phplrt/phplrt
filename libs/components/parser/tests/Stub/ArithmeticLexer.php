@@ -11,7 +11,10 @@ use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 
-final readonly class ArithmeticLexer implements LexerInterface
+/**
+ * @readonly
+ */
+final class ArithmeticLexer implements LexerInterface
 {
     public const T_NUMBER = 0;
 

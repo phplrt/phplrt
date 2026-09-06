@@ -19,8 +19,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
  *
  * Such a rule would be entered over and over again at the very same position
  * of the input, so the analysis would never end.
+ *
+ * @readonly
  */
-final readonly class LeftRecursionValidationParserCompilerPass implements
+final class LeftRecursionValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     /**

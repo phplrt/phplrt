@@ -15,8 +15,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 /**
  * Checks that every token referred to by the grammar is recognized by the lexer
  * and reaches the parser.
+ *
+ * @readonly
  */
-final readonly class TokenReferenceValidationParserCompilerPass implements
+final class TokenReferenceValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

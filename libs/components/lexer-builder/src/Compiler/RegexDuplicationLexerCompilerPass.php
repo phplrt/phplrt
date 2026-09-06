@@ -11,8 +11,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that no two token definitions recognize the same fragment
+ *
+ * @readonly
  */
-final readonly class RegexDuplicationLexerCompilerPass implements
+final class RegexDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**

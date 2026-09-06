@@ -33,10 +33,12 @@ namespace Phplrt\Parser\Grammar;
  * ```math
  * L(A?) = L(A) \cup \{\, \varepsilon \,\}
  * ```
+ *
+ * @readonly
  */
-final readonly class Optional implements ProductionInterface
+final class Optional implements ProductionInterface
 {
     public function __construct(
-        public int $ruleId,
+        public readonly int $ruleId,
     ) {}
 }

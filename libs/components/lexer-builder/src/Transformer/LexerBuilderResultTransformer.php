@@ -11,8 +11,10 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
 /**
  * Closes the compilation, turning the context the analysis passes were free to
  * complement into the result nothing may change anymore.
+ *
+ * @readonly
  */
-final readonly class LexerBuilderResultTransformer
+final class LexerBuilderResultTransformer
 {
     public function transform(LexerResultContext $context): LexerBuilderResult
     {

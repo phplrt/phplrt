@@ -95,12 +95,7 @@ final class LexerBuilder implements LoggerAwareInterface
      *
      * @phpstan-readonly-allow-private-mutation
      */
-    public array $flags = [
-        RegexModifier::Compiled->value => RegexModifier::Compiled,
-        RegexModifier::DotAll->value => RegexModifier::DotAll,
-        RegexModifier::Utf8->value => RegexModifier::Utf8,
-        RegexModifier::Multiline->value => RegexModifier::Multiline,
-    ];
+    public array $flags = [];
 
     /**
      * A map of name and the piece of an expression it stands for.
@@ -151,6 +146,13 @@ final class LexerBuilder implements LoggerAwareInterface
     public function __construct()
     {
         $this->logger = new NullLogger();
+
+        $this->flags = [
+            RegexModifier::Compiled->value => RegexModifier::Compiled,
+            RegexModifier::DotAll->value => RegexModifier::DotAll,
+            RegexModifier::Utf8->value => RegexModifier::Utf8,
+            RegexModifier::Multiline->value => RegexModifier::Multiline,
+        ];
 
         $this->compilerPasses = [
             /**

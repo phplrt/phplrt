@@ -15,8 +15,10 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  * rule is greedy, so the first occurrence reads everything there is and the
  * outer repetition stops right after it. The inner repetition is therefore an
  * extra step of the analysis and an extra rule of the grammar.
+ *
+ * @readonly
  */
-final readonly class NestedRepetitionParserCompilerPass implements
+final class NestedRepetitionParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

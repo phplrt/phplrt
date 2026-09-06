@@ -10,5 +10,7 @@ namespace Phplrt\Parser\Analysis\Result;
  * @template-covariant TValue of mixed = null
  *
  * @template-extends Result<TValue>
+ *
+ * @readonly
  */
-readonly class SuccessfulResult extends Result {}
+class SuccessfulResult extends Result {}

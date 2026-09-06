@@ -8,8 +8,10 @@ namespace Phplrt\Parser\Analysis\Result;
  * What an analysis has made of a source.
  *
  * @template-covariant TValue of mixed = mixed
+ *
+ * @readonly
  */
-abstract readonly class Result
+abstract class Result
 {
     public function __construct(
         /**
@@ -18,6 +20,6 @@ abstract readonly class Result
          *
          * @var TValue
          */
-        public mixed $value = null,
+        public readonly mixed $value = null,
     ) {}
 }

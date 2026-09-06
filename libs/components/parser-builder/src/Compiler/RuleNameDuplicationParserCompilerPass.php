@@ -12,8 +12,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
  *
  * Each named rule is exposed as a class constant of the generated parser, so
  * two rules cannot reuse the same name.
+ *
+ * @readonly
  */
-final readonly class RuleNameDuplicationParserCompilerPass implements
+final class RuleNameDuplicationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

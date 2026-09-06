@@ -14,8 +14,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the productions of the grammar are complete.
+ *
+ * @readonly
  */
-final readonly class ProductionValidationParserCompilerPass implements
+final class ProductionValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

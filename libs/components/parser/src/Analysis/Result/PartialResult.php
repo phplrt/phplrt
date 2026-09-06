@@ -15,8 +15,10 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
  * @template-covariant TValue of mixed = null
  *
  * @template-extends SuccessfulResult<TValue>
+ *
+ * @readonly
  */
-final readonly class PartialResult extends SuccessfulResult
+final class PartialResult extends SuccessfulResult
 {
     /**
      * @param TValue $value
@@ -27,7 +29,7 @@ final readonly class PartialResult extends SuccessfulResult
          * The first token the grammar says nothing about, which is where the
          * fragment ends.
          */
-        public TokenInterface $token,
+        public readonly TokenInterface $token,
         /**
          * What the analysis has to say about the source: the very error the
          * source would be rejected with, ready to be thrown as it is.
@@ -35,7 +37,7 @@ final readonly class PartialResult extends SuccessfulResult
          * The reading stops where it can no longer go on, so there is exactly
          * one thing to say and this is it.
          */
-        public RuntimeExceptionInterface $error,
+        public readonly RuntimeExceptionInterface $error,
     ) {
         parent::__construct($value);
     }

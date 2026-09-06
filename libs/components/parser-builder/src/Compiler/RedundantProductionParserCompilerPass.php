@@ -18,8 +18,10 @@ use Phplrt\Parser\Builder\Definition\SequenceRuleDefinitionInterface;
  *
  * Such a production is an extra step of the analysis and an extra rule of the
  * grammar, so it is replaced by the rule it refers to.
+ *
+ * @readonly
  */
-final readonly class RedundantProductionParserCompilerPass implements
+final class RedundantProductionParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

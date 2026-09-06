@@ -16,8 +16,10 @@ use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
  * A token identifier is the position of its definition in this lexer, so it
  * only means something here: the tokens read by another lexer are carried by
  * the token that entered it and never reach this stream.
+ *
+ * @readonly
  */
-final readonly class LexerBuilderResult
+final class LexerBuilderResult
 {
     public function __construct(
         /**
@@ -25,37 +27,37 @@ final readonly class LexerBuilderResult
          *
          * @var non-empty-array<int, TokenDefinition>
          */
-        public array $tokens,
+        public readonly array $tokens,
         /**
          * A map of name and the lexer reading the fragment it stands for.
          *
          * @var array<non-empty-string, self|EmbeddedLexerInterface>
          */
-        public array $lexers,
+        public readonly array $lexers,
         /**
          * A map of token ID and the number of subgroups its definition has.
          *
          * @var array<int, int<1, max>>
          */
-        public array $subgroups,
+        public readonly array $subgroups,
         /**
          * The pattern recognizing the tokens of the lexer.
          *
          * @var non-empty-string
          */
-        public string $pattern,
+        public readonly string $pattern,
         /**
          * A map of token ID and the channel it is emitted to.
          *
          * @var array<int, non-empty-string>
          */
-        public array $channels,
+        public readonly array $channels,
         /**
          * A map of token ID and its name.
          *
          * @var array<int, non-empty-string>
          */
-        public array $names,
+        public readonly array $names,
         /**
          * A map of token ID and what the token does to the reading.
          *
@@ -64,7 +66,7 @@ final readonly class LexerBuilderResult
          *
          * @var array<int, non-empty-string|null>
          */
-        public array $transitions,
+        public readonly array $transitions,
     ) {}
 
     /**

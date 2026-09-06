@@ -33,8 +33,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * Identifiers are assigned here: a rule is addressed by its position in the
  * grammar from now on, and the token a terminal refers to is looked up in the
  * lexer, so this is the point after which the rules may no longer be rewritten.
+ *
+ * @readonly
  */
-final readonly class ParserResultContextTransformer
+final class ParserResultContextTransformer
 {
     /**
      * @throws ParserCompilerException

@@ -44,13 +44,15 @@ namespace Phplrt\Parser\Grammar;
  * ```math
  * L(A \mid B) = L(A) \cup L(B)
  * ```
+ *
+ * @readonly
  */
-final readonly class Alternation implements ProductionInterface
+final class Alternation implements ProductionInterface
 {
     public function __construct(
         /**
          * @var non-empty-list<int>
          */
-        public array $ruleIds,
+        public readonly array $ruleIds,
     ) {}
 }

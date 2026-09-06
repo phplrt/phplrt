@@ -9,7 +9,10 @@ use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Definition\ValueTokenDefinition;
 use Phplrt\Lexer\Builder\Exception\InvalidArgumentException;
 
-final readonly class MarkersRegexGenerator extends RegexGenerator
+/**
+ * @readonly
+ */
+final class MarkersRegexGenerator extends RegexGenerator
 {
     private const PATTERN_TOKEN = '(?:(?:%s)(*MARK:%s))';
     private const PATTERN_BODY = '\\G(?|%s)';

@@ -9,8 +9,10 @@ namespace Phplrt\Lexer\Builder\Analysis;
  *
  * A token needs no name to be recognized, so the nameless ones are reported by
  * their identifier and are not described here.
+ *
+ * @readonly
  */
-final readonly class TokenNameConstructionLexerAnalysisPass implements
+final class TokenNameConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
 {
     public function process(LexerResultContext $context): void

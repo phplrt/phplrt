@@ -34,13 +34,15 @@ namespace Phplrt\Parser\Grammar;
  * ```math
  * L(A\,B) = \{\, uv \mid u \in L(A),\ v \in L(B) \,\}
  * ```
+ *
+ * @readonly
  */
-final readonly class Concatenation implements SequenceInterface
+final class Concatenation implements SequenceInterface
 {
     public function __construct(
         /**
          * @var non-empty-list<int>
          */
-        public array $ruleIds,
+        public readonly array $ruleIds,
     ) {}
 }

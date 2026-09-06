@@ -9,8 +9,10 @@ use Phplrt\Source\FileSource;
 
 /**
  * Creates a source out of a reference to a physical file.
+ *
+ * @readonly
  */
-final readonly class SplFileInfoSourceDriver implements SourceDriverInterface
+final class SplFileInfoSourceDriver implements SourceDriverInterface
 {
     /**
      * @throws NotCreatableException in case the reference carries no pathname

@@ -19,8 +19,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
  * A message describes a rule that has been entered and could not be finished,
  * so a rule that cannot fail where it is written describes a failure that never
  * happens: the message is written, compiled and never read out.
+ *
+ * @readonly
  */
-final readonly class UnreportableMessageParserCompilerPass implements
+final class UnreportableMessageParserCompilerPass implements
     ParserCompilerPassInterface
 {
     /**

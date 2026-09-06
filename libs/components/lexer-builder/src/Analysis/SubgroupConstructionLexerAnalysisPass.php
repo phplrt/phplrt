@@ -14,8 +14,10 @@ use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
  * two subgroups is reported the very same way as the one with five. Counting
  * them beforehand is what keeps a token that captures nothing from being read
  * as if it did.
+ *
+ * @readonly
  */
-final readonly class SubgroupConstructionLexerAnalysisPass implements
+final class SubgroupConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
 {
     public function process(LexerResultContext $context): void

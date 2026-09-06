@@ -41,15 +41,17 @@ namespace Phplrt\Parser\Grammar;
  * ```math
  * L(\&A) = L(!A) = \{\, \varepsilon \,\}
  * ```
+ *
+ * @readonly
  */
-final readonly class Predicate implements ProductionInterface
+final class Predicate implements ProductionInterface
 {
     public function __construct(
-        public int $ruleId,
+        public readonly int $ruleId,
         /**
          * Contains {@see true} in case of the rule must be recognized at this
          * position, or {@see false} in case of it must not.
          */
-        public bool $isExpected = true,
+        public readonly bool $isExpected = true,
     ) {}
 }

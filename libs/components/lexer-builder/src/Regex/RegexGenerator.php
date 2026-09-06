@@ -6,7 +6,10 @@ namespace Phplrt\Lexer\Builder\Regex;
 
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
 
-abstract readonly class RegexGenerator implements RegexGeneratorInterface
+/**
+ * @readonly
+ */
+abstract class RegexGenerator implements RegexGeneratorInterface
 {
     /**
      * @var list<non-empty-string>
@@ -23,13 +26,13 @@ abstract readonly class RegexGenerator implements RegexGeneratorInterface
      *
      * @var non-empty-string
      */
-    private string $escapedCharacters;
+    private readonly string $escapedCharacters;
 
     public function __construct(
         /**
          * @var non-empty-string
          */
-        protected string $delimiter = self::DEFAULT_DELIMITER,
+        protected readonly string $delimiter = self::DEFAULT_DELIMITER,
     ) {
         $this->escapedCharacters = $this->getEscapedCharacters($delimiter);
     }

@@ -11,8 +11,10 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
  *
  * Such a lexer is dead code: nothing would ever hand the reading over to it,
  * so it is dropped instead of being compiled.
+ *
+ * @readonly
  */
-final readonly class UnreachableLexerCompilerPass implements
+final class UnreachableLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuildingContext $context): void

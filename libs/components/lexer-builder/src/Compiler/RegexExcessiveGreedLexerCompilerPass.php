@@ -10,8 +10,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the lexer does not contain "unmatchable" regular expressions
+ *
+ * @readonly
  */
-final readonly class RegexExcessiveGreedLexerCompilerPass implements
+final class RegexExcessiveGreedLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**

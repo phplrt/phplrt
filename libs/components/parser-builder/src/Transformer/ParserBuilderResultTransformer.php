@@ -10,8 +10,10 @@ use Phplrt\Parser\Builder\ParserBuilderResult;
 /**
  * Closes the compilation, turning the context the analysis passes were free to
  * complement into the result nothing may change anymore.
+ *
+ * @readonly
  */
-final readonly class ParserBuilderResultTransformer
+final class ParserBuilderResultTransformer
 {
     public function transform(ParserResultContext $context): ParserBuilderResult
     {

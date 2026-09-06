@@ -15,8 +15,10 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  *
  * Note: Reachability is transitive, so a rule referred to ONLY by an already
  *       unreachable rule is removed as well.
+ *
+ * @readonly
  */
-final readonly class UnreachableRuleParserCompilerPass implements
+final class UnreachableRuleParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

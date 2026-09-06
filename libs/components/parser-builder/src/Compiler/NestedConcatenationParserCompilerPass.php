@@ -14,8 +14,10 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  * A concatenation is associative, so the nested one is an extra step of the
  * analysis and an extra rule of the grammar while the rules of both of them are
  * recognized one after another all the same.
+ *
+ * @readonly
  */
-final readonly class NestedConcatenationParserCompilerPass implements
+final class NestedConcatenationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
