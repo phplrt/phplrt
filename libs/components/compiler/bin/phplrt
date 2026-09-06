@@ -10,7 +10,13 @@ use Symfony\Component\Console\Application;
 require __DIR__ . '/bootstrap.php';
 
 $app = new Application(PHPLRT_NAME, PHPLRT_VERSION);
-$app->addCommand(new GrammarCompileCommand());
-$app->addCommand(new GrammarCheckCommand());
+
+// Note: The method a single command is registered by has been renamed in
+//       symfony/console 7.4, while this one is spelled the same in every
+//       version the compiler is built against
+$app->addCommands([
+    new GrammarCompileCommand(),
+    new GrammarCheckCommand(),
+]);
 
 exit($app->run());
