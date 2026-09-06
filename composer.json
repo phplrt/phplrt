@@ -18,13 +18,13 @@
         "libs/components/compiler/bin/phplrt"
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "ext-json": "*",
         "ext-pcre": "*",
         "composer-runtime-api": "^2.2",
-        "laminas/laminas-code": "^4.17",
+        "laminas/laminas-code": "^4.16",
         "psr/log": "^3.0",
-        "symfony/console": "^7.4|^8.0",
+        "symfony/console": "^6.4|^7.0|^8.0",
         "symfony/polyfill-php80": "^1.37",
         "twig/twig": "^3.28"
     },
@@ -60,7 +60,7 @@
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-strict-rules": "^2.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "testo/testo": "^0.10.44"
+        "testo/testo": "^0.10"
     },
     "autoload-dev": {
         "psr-4": {

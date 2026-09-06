@@ -19,15 +19,15 @@
         "bin/phplrt"
     ],
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "composer-runtime-api": "^2.2",
-        "laminas/laminas-code": "^4.17",
+        "laminas/laminas-code": "^4.16",
         "phplrt/exception": "^4.0",
         "phplrt/lexer-builder": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
         "psr/log": "^3.0",
-        "symfony/console": "^7.4|^8.0",
+        "symfony/console": "^6.4|^7.0|^8.0",
         "twig/twig": "^3.28"
     },
     "autoload": {
@@ -36,7 +36,7 @@
         }
     },
     "require-dev": {
-        "testo/testo": "^0.10.44",
+        "testo/testo": "^0.10",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {
