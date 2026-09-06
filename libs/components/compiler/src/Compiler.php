@@ -79,7 +79,11 @@ final class Compiler implements LoggerAwareInterface
             /* skip on error */
         }
 
-        return $version ?? 'dev-master';
+        if ($version === null || $version === '') {
+            return 'dev-master';
+        }
+
+        return $version;
     }
 
     /**
