@@ -25,7 +25,6 @@
         "laminas/laminas-code": "^4.16",
         "psr/log": "^3.0",
         "symfony/console": "^6.4|^7.0|^8.0",
-        "symfony/polyfill-php80": "^1.37",
         "twig/twig": "^3.28"
     },
     "autoload": {
