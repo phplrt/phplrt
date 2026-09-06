@@ -9,6 +9,7 @@ use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
+use Phplrt\Compiler\Exception\UnsupportedValueException;
 use Phplrt\Compiler\Generator\GeneratedOutput;
 use Phplrt\Compiler\Generator\PhpCodePrinter;
 use Phplrt\Compiler\Generator\TargetPhpVersion;
@@ -204,6 +205,14 @@ final class GeneratorTest extends TestCase
             ->setName('Php');
 
         (string) self::build($lexer, $parser);
+    }
+
+    public function testUnsupportedValueIsReported(): void
+    {
+        Expect::exception(UnsupportedValueException::class)
+        ->withMessageContaining('A value of type stdClass cannot be generated');
+
+        (new PhpCodePrinter())->printValue(new \stdClass());
     }
 
     public function testGeneratedCodeIsSaved(): void
