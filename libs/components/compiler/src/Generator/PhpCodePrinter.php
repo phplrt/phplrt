@@ -7,7 +7,6 @@ namespace Phplrt\Compiler\Generator;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Exception\UnsupportedRuleException;
-use Phplrt\Compiler\Exception\UnsupportedValueException;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\PhpCodeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
@@ -75,8 +74,8 @@ final class PhpCodePrinter
      * written into is the only thing deciding where it is placed.
      *
      * @param int<0, max> $depth the number of arrays the value is nested in
-     * @throws \ValueError in case of the value cannot be written down
      * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
      */
     public function printValue(mixed $value, int $depth = 0): string
     {
@@ -93,8 +92,8 @@ final class PhpCodePrinter
     /**
      * @param array<array-key, mixed> $value
      * @param int<0, max> $depth the number of arrays the value is nested in
-     * @throws \ValueError in case of the value cannot be written down
      * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
      */
     private function printArrayValue(array $value, int $depth): string
     {
@@ -131,8 +130,8 @@ final class PhpCodePrinter
     /**
      * @param list<mixed> $value
      * @param int<0, max> $depth the number of arrays the value is nested in
-     * @throws \ValueError in case of the value cannot be written down
      * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
      */
     private function printListValue(array $value, int $depth): string
     {
