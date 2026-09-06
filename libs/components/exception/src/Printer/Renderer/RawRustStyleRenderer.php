@@ -8,8 +8,10 @@ use Phplrt\Exception\Analysis\FailureLevel;
 
 /**
  * Prints the diagnostics as a plain text, without any decorations.
+ *
+ * @readonly
  */
-final readonly class RawRustStyleRenderer extends RustStyleRenderer
+final class RawRustStyleRenderer extends RustStyleRenderer
 {
     protected function printError(string $value, FailureLevel $level): string
     {

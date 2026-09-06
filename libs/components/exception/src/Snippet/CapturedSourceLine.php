@@ -8,8 +8,10 @@ use Phplrt\Exception\Analysis\FailureInterval;
 
 /**
  * A line of the source code containing a part of the captured (error) fragment.
+ *
+ * @readonly
  */
-final readonly class CapturedSourceLine extends SourceLine
+final class CapturedSourceLine extends SourceLine
 {
     /**
      * @param int<1, max> $number
@@ -27,7 +29,7 @@ final readonly class CapturedSourceLine extends SourceLine
          * which is how a fragment spanning several lines is told from one
          * pointing at a position.
          */
-        public FailureInterval $captured,
+        public readonly FailureInterval $captured,
     ) {
         parent::__construct($number, $offset, $value);
     }

@@ -19,8 +19,10 @@ use Phplrt\Exception\SnippetReader;
  *
  * A line is printed as long as it is, so the output is as wide as the widest
  * line of the source code it contains.
+ *
+ * @readonly
  */
-abstract readonly class RustStyleRenderer implements RendererInterface
+abstract class RustStyleRenderer implements RendererInterface
 {
     /**
      * @var non-empty-string
@@ -41,7 +43,7 @@ abstract readonly class RustStyleRenderer implements RendererInterface
         /**
          * The reader of the source code lines the error is printed along with.
          */
-        private SnippetReader $reader = new SnippetReader(),
+        private readonly SnippetReader $reader = new SnippetReader(),
     ) {}
 
     /**

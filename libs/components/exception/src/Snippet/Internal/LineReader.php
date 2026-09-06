@@ -18,8 +18,10 @@ use Phplrt\Exception\Snippet\SourceLine;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Exception
+ *
+ * @readonly
  */
-final readonly class LineReader
+final class LineReader
 {
     /**
      * @var non-empty-string
@@ -37,7 +39,7 @@ final readonly class LineReader
          *
          * @var int<1, max>
          */
-        private int $chunkSize,
+        private readonly int $chunkSize,
     ) {}
 
     /**

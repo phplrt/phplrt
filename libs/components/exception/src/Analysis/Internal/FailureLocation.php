@@ -12,18 +12,20 @@ use Phplrt\Exception\Analysis\FailureInterval;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Exception
+ *
+ * @readonly
  */
-final readonly class FailureLocation
+final class FailureLocation
 {
     public function __construct(
         /**
          * The source the error occurred in.
          */
-        public ReadableInterface $source,
+        public readonly ReadableInterface $source,
         /**
          * The fragment of the source the error occurred in, or {@see null} in
          * case the error tells nothing about the size of it.
          */
-        public ?FailureInterval $interval = null,
+        public readonly ?FailureInterval $interval = null,
     ) {}
 }

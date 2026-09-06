@@ -21,8 +21,10 @@ use Phplrt\Source\StringSource;
 /**
  * Tells everything that is known about an error: the source it occurred in,
  * the place inside that source and the fragment it covers.
+ *
+ * @readonly
  */
-final readonly class Analyzer
+final class Analyzer
 {
     /**
      * The locators telling where an error has occurred, queried in the given
@@ -30,14 +32,14 @@ final readonly class Analyzer
      *
      * @var list<FailureLocatorInterface>
      */
-    private array $locators;
+    private readonly array $locators;
 
     public function __construct(
         /**
          * The factory telling which line and column of the source an error
          * has occurred at.
          */
-        private PositionFactoryInterface $positions = new PositionFactory(),
+        private readonly PositionFactoryInterface $positions = new PositionFactory(),
     ) {
         // A syntax error tells the size of its own, which is more precise
         // than the one of the token it has been raised on.

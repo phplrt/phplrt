@@ -13,21 +13,23 @@ use Phplrt\Exception\Snippet\SourceLine;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Exception
+ *
+ * @readonly
  */
-final readonly class CapturedFragment
+final class CapturedFragment
 {
     public function __construct(
         /**
          * The fragment of the source, counted in bytes from the beginning
          * of it.
          */
-        private FailureInterval $fragment,
+        private readonly FailureInterval $fragment,
         /**
          * The number of the line the fragment starts on.
          *
          * @var int<1, max>
          */
-        public int $number,
+        public readonly int $number,
     ) {}
 
     /**

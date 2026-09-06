@@ -9,8 +9,10 @@ use Phplrt\Exception\Analysis\FailureLevel;
 /**
  * Prints the diagnostics decorated by the ANSI escape sequences supported by
  * the terminals.
+ *
+ * @readonly
  */
-final readonly class AnsiRustStyleRenderer extends RustStyleRenderer
+final class AnsiRustStyleRenderer extends RustStyleRenderer
 {
     /**
      * @var non-empty-string

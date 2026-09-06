@@ -15,10 +15,12 @@ use Phplrt\Exception\Printer\Renderer\RustStyleRenderer;
  * Everything the error tells about itself is taken from it: the source, the
  * place inside that source, the message and the name of the error, so there
  * is nothing left for the caller to describe.
+ *
+ * @readonly
  */
-final readonly class ErrorPrinter
+final class ErrorPrinter
 {
-    private RendererInterface $renderer;
+    private readonly RendererInterface $renderer;
 
     /**
      * @param RendererInterface|null $renderer the renderer turning the errors
@@ -27,7 +29,7 @@ final readonly class ErrorPrinter
      */
     public function __construct(
         ?RendererInterface $renderer = null,
-        private Analyzer $analyzer = new Analyzer(),
+        private readonly Analyzer $analyzer = new Analyzer(),
     ) {
         $this->renderer = $renderer ?? RustStyleRenderer::createDefault();
     }

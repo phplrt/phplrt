@@ -19,19 +19,21 @@ use Phplrt\Exception\Printer\Renderer\RendererInterface;
  * Everything the error is described by comes from its own analysis and MAY be
  * replaced afterward, one thing at a time, while the source code is read only
  * at the moment the whole thing is turned into a string.
+ *
+ * @readonly
  */
-final readonly class PrintableError implements \Stringable
+final class PrintableError implements \Stringable
 {
     public function __construct(
-        private RendererInterface $renderer,
+        private readonly RendererInterface $renderer,
         /**
          * Everything that is known about the error being printed.
          */
-        public FailureResult $error,
+        public readonly FailureResult $error,
         /**
          * The error the information has been built out of.
          */
-        public \Throwable $exception,
+        public readonly \Throwable $exception,
     ) {}
 
     /**
