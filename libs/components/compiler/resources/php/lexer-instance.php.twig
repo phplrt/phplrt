@@ -2,6 +2,6 @@
 {{ expression(lexer, name) }}
 {% else %}
 new \Phplrt\Lexer\Lexer(
-{{ include('lexer/arguments.php.twig', {lexer: lexer, path: path})|trim|indent(1, true) }}
+{{ include('lexer/arguments.php.twig', {lexer: lexer, path: ''})|trim|indent(1, true) }}
 )
 {% endif %}

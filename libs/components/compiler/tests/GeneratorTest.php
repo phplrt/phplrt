@@ -244,7 +244,7 @@ final class GeneratorTest extends TestCase
 
         Assert::string($code)
             ->contains(\sprintf(
-                "class %s extends \\Phplrt\\Parser\\Parser\n{\n",
+                "class %s implements \\Phplrt\\Contracts\\Parser\\ParserInterface\n{\n",
                 $class,
             ))
             ->notContains('return new class');
@@ -267,38 +267,67 @@ final class GeneratorTest extends TestCase
             ->withClassName('App\\Parser');
     }
 
-    public function testReadonlyAnnotationIsGenerated(): void
-    {
-        $code = (string) $this->compile('grammar.pp2')
-            ->generate()
-            ->withClassName('LanguageParser');
-
-        Assert::string($code)->contains(" * @readonly\n */\nclass LanguageParser extends \\Phplrt\\Parser\\Parser\n");
-    }
-
-    public function testReadonlyAnnotationIsOmitted(): void
+    public function testReadonlyIsAnnotatedBelowPhp82(): void
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
             ->withClassName('LanguageParser')
-            ->withReadonly(false);
+            ->withTargetPhpVersion(TargetPhpVersion::Php81);
 
         Assert::string($code)
-            ->contains("\nclass LanguageParser extends \\Phplrt\\Parser\\Parser\n")
+            ->contains(" * @readonly\n */\nclass LanguageParser implements \\Phplrt\\Contracts\\Parser\\ParserInterface\n")
+            ->notContains('readonly class');
+    }
+
+    #[DataSet([TargetPhpVersion::Php82], 'PHP 8.2')]
+    #[DataSet([TargetPhpVersion::Php86], 'PHP 8.6')]
+    public function testReadonlyIsDeclaredFromPhp82(TargetPhpVersion $php): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser')
+            ->withTargetPhpVersion($php);
+
+        Assert::string($code)
+            ->contains("\nreadonly class LanguageParser implements \\Phplrt\\Contracts\\Parser\\ParserInterface\n")
             ->notContains('@readonly');
     }
 
-    #[DataSet([ClassModifier::Abstract, 'abstract class LanguageParser'], 'abstract')]
-    #[DataSet([ClassModifier::Final, 'final class LanguageParser'], 'final')]
-    #[DataSet([ClassModifier::Default, 'class LanguageParser'], 'default')]
-    public function testParserIsDeclaredWithTheModifier(ClassModifier $modifier, string $declaration): void
+    #[DataSet([TargetPhpVersion::Php81], 'PHP 8.1')]
+    #[DataSet([TargetPhpVersion::Php82], 'PHP 8.2')]
+    public function testReadonlyIsDropped(TargetPhpVersion $php): void
     {
         $code = (string) $this->compile('grammar.pp2')
             ->generate()
             ->withClassName('LanguageParser')
+            ->withTargetPhpVersion($php)
+            ->withReadonly(false);
+
+        Assert::string($code)
+            ->contains("\nclass LanguageParser implements \\Phplrt\\Contracts\\Parser\\ParserInterface\n")
+            ->notContains('@readonly')
+            ->notContains('readonly class');
+    }
+
+    #[DataSet([ClassModifier::Abstract, TargetPhpVersion::Php81, 'abstract class'], 'abstract on PHP 8.1')]
+    #[DataSet([ClassModifier::Final, TargetPhpVersion::Php81, 'final class'], 'final on PHP 8.1')]
+    #[DataSet([ClassModifier::Default, TargetPhpVersion::Php81, 'class'], 'default on PHP 8.1')]
+    #[DataSet([ClassModifier::Abstract, TargetPhpVersion::Php82, 'abstract readonly class'], 'abstract on PHP 8.2')]
+    #[DataSet([ClassModifier::Final, TargetPhpVersion::Php82, 'final readonly class'], 'final on PHP 8.2')]
+    #[DataSet([ClassModifier::Default, TargetPhpVersion::Php82, 'readonly class'], 'default on PHP 8.2')]
+    public function testParserIsDeclaredWithTheModifier(
+        ClassModifier $modifier,
+        TargetPhpVersion $php,
+        string $declaration,
+    ): void {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser')
+            ->withTargetPhpVersion($php)
             ->withClassModifier($modifier);
 
-        Assert::string($code)->contains("\n" . $declaration . " extends \\Phplrt\\Parser\\Parser\n");
+        Assert::string($code)
+            ->contains("\n" . $declaration . " LanguageParser implements \\Phplrt\\Contracts\\Parser\\ParserInterface\n");
     }
 
     public function testParserCarriesNoModifierByDefault(): void
@@ -310,6 +339,17 @@ final class GeneratorTest extends TestCase
         Assert::string($code)
             ->notContains('abstract class')
             ->notContains('final class');
+    }
+
+    #[DataSet([TargetPhpVersion::Php82, 'return new class implements'], 'PHP 8.2')]
+    #[DataSet([TargetPhpVersion::Php83, 'return new readonly class implements'], 'PHP 8.3')]
+    public function testAnonymousParserIsDeclared(TargetPhpVersion $php, string $declaration): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withTargetPhpVersion($php);
+
+        Assert::string($code)->contains($declaration);
     }
 
     #[DataSet([ClassModifier::Abstract, 'abstract'], 'abstract')]

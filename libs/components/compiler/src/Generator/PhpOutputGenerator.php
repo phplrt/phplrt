@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
+use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\CodeGenerationException;
 use Phplrt\Compiler\Exception\GeneratorException;
@@ -77,6 +78,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
 
         try {
             $generated = $this->twig->render(self::TEMPLATE_ENTRYPOINT, [
+                'version' => Compiler::getVersion(),
                 'namespace' => $context->namespace,
                 'imports' => $context->imports,
                 'includes' => $context->includes,

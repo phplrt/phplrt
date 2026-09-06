@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Compiler\Tests;
 
 use Phplrt\Compiler\Compiler;
+use Phplrt\Compiler\Generator\ClassModifier;
 use Phplrt\Compiler\Generator\TargetPhpVersion;
 use Phplrt\Compiler\Syntax\PP2\PP2Parser;
 use Phplrt\Compiler\Syntax\PP3\PP3Parser;
@@ -21,6 +22,8 @@ final class SyntaxGrammarTest extends TestCase
     private const BUILD_SCRIPT = 'composer dev:syntax';
 
     private const BUILD_TARGET = TargetPhpVersion::Php81;
+
+    private const BUILD_MODIFIER = ClassModifier::Final;
 
     public static function formatsDataProvider(): iterable
     {
@@ -51,7 +54,8 @@ final class SyntaxGrammarTest extends TestCase
             ->generate()
             ->withNamespaceName($namespace)
             ->withClassName($class)
-            ->withTargetPhpVersion(self::BUILD_TARGET);
+            ->withTargetPhpVersion(self::BUILD_TARGET)
+            ->withClassModifier(self::BUILD_MODIFIER);
 
         Assert::same($expected, \file_get_contents($pathname), \sprintf('The grammar has changed, run "php %s"', self::BUILD_SCRIPT));
     }

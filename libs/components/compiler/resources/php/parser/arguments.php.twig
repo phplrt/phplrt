@@ -1,4 +1,4 @@
-lexer: {{ include('lexer.php.twig', {lexer: lexer, name: null, path: ''})|trim }},
+lexer: $this->lexer,
 grammar: {{ include('parser/grammar.php.twig')|trim }},
 initial: {{ parser.initial }},
 {% if parser.reducers is not empty %}

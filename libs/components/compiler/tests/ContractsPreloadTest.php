@@ -159,7 +159,7 @@ final class ContractsPreloadTest extends TestCase
         Assert::string($code)
             ->contains("\nnamespace Example\\Some;\n")
             ->contains("\nuse App\\Node;\n")
-            ->contains("\nclass SomeParser extends")
+            ->contains("class SomeParser implements")
             ->notContains('interface_exists(');
     }
 

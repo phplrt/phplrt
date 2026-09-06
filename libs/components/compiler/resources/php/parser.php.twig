@@ -2,18 +2,18 @@
 
 {% block body %}
 {% if class is null %}
-return new class extends \Phplrt\Parser\Parser {
+return new {% if readonly and php.value >= 80300 %}readonly {% endif %}class implements \Phplrt\Contracts\Parser\ParserInterface {
 {% else %}
 /**
  * @template TResult of mixed = mixed
  *
- * @template-extends \Phplrt\Parser\Parser<TResult>
-{% if readonly %}
+ * @template-implements \Phplrt\Contracts\Parser\ParserInterface<TResult>
+{% if readonly and php.value < 80200 %}
  *
  * @readonly
 {% endif %}
  */
-{% if modifier.value %}{{ modifier.value }} {% endif %}class {{ class }} extends \Phplrt\Parser\Parser
+{% if modifier.value %}{{ modifier.value }} {% endif %}{% if readonly and php.value >= 80200 %}readonly {% endif %}class {{ class }} implements \Phplrt\Contracts\Parser\ParserInterface
 {
 {% endif %}
 {% for id, name in lexer.names %}
@@ -21,15 +21,29 @@ return new class extends \Phplrt\Parser\Parser {
     public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
 
+{% if class is not null %}
+    /**
+     * @var \Phplrt\Contracts\Parser\ParserInterface<TResult>
+     */
+{% endif %}
+    protected readonly \Phplrt\Contracts\Parser\ParserInterface $parser;
+
+    protected readonly \Phplrt\Contracts\Lexer\LexerInterface $lexer;
+
     public function __construct()
     {
 {% if lexer.lexers is not empty %}
 {{ include('lexer/states.php.twig', {lexers: lexer.lexers, path: ''})|trim|indent(2, true) }}
 
 {% endif %}
-        parent::__construct(
-{{ include('parser/arguments.php.twig')|trim|indent(3, true) }}
-        );
+        $this->lexer = {{ include('lexer-instance.php.twig', {lexer: lexer, name: null})|trim|indent(2) }};
+
+        $this->parser = {{ include('parser-instance.php.twig')|trim|indent(2) }};
+    }
+
+    public function parse(\Phplrt\Contracts\Source\ReadableInterface $source): mixed
+    {
+        return $this->parser->parse($source);
     }
 {% if parser.reducers is not empty %}
 {{ include('parser/methods.php.twig')|trim(side='right')|indent(1) }}

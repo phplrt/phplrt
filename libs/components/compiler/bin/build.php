@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 use Phplrt\Compiler\Command\GrammarCompileCommand;
+use Phplrt\Compiler\Compiler;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 require __DIR__ . '/bootstrap.php';
 
-$app = new Application(PHPLRT_NAME, PHPLRT_VERSION);
+$app = new Application('phplrt', Compiler::getVersion());
 $app->addCommands([new GrammarCompileCommand()]);
 
 const COMMANDS = [
@@ -20,6 +21,7 @@ const COMMANDS = [
         '--namespace' => 'Phplrt\Compiler\Syntax\PP2',
         '--class' => 'PP2Parser',
         '--php' => '8.1',
+        '--final' => true,
     ],
     [
         'compile',
@@ -28,6 +30,7 @@ const COMMANDS = [
         '--namespace' => 'Phplrt\Compiler\Syntax\PP3',
         '--class' => 'PP3Parser',
         '--php' => '8.1',
+        '--final' => true,
     ],
 ];
 

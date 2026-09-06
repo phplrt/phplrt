@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Composer\InstalledVersions;
-
 if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
     trigger_error('The console should be invoked via the CLI '
         . 'version of PHP, not the ' . PHP_SAPI . ' SAPI.', E_USER_WARNING);
@@ -20,15 +18,3 @@ while (dirname($directory) !== $directory) {
 
     $directory = dirname($directory);
 }
-
-
-$version = null;
-try {
-    $version = InstalledVersions::getPrettyVersion('phplrt/compiler')
-        ?? InstalledVersions::getPrettyVersion('phplrt/phplrt');
-} catch (\Throwable) {
-    /* skip on error */
-}
-
-define('PHPLRT_NAME', 'phplrt');
-define('PHPLRT_VERSION', $version ?? 'dev-master');

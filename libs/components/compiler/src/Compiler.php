@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler;
 
+use Composer\InstalledVersions;
 use Phplrt\Compiler\Exception\CompilerRuntimeException;
 use Phplrt\Compiler\Generator\GeneratedOutput;
 use Phplrt\Compiler\Generator\OutputGeneratorInterface;
@@ -63,6 +64,22 @@ final class Compiler implements LoggerAwareInterface
         $this->parser = new ParserBuilder();
         $this->lexer = new LexerBuilder();
         $this->loader = new ReferenceLoader($this, $this->loaders);
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    public static function getVersion(): string
+    {
+        $version = null;
+        try {
+            $version = InstalledVersions::getPrettyVersion('phplrt/compiler')
+                ?? InstalledVersions::getPrettyVersion('phplrt/phplrt');
+        } catch (\Throwable) {
+            /* skip on error */
+        }
+
+        return $version ?? 'dev-master';
     }
 
     /**
