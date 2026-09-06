@@ -29,7 +29,7 @@
         ]
     },
     "require-dev": {
-        "testo/testo": "^0.10",
+        "testo/testo": "^0.10.45",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {

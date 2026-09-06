@@ -36,7 +36,7 @@
         "phplrt/exception": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
-        "testo/testo": "^0.10",
+        "testo/testo": "^0.10.45",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {

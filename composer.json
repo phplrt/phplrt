@@ -58,7 +58,7 @@
         "phpstan/phpstan": "^2.2",
         "phpstan/phpstan-strict-rules": "^2.0",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
-        "testo/testo": "^0.10"
+        "testo/testo": "^0.10.45"
     },
     "autoload-dev": {
         "psr-4": {
