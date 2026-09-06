@@ -9,8 +9,10 @@ use Phplrt\Compiler\Node\Annotation;
 /**
  * Recognizes what the statement it is written after recognizes, and says
  * something about it apart from that.
+ *
+ * @readonly
  */
-final readonly class Annotated extends Statement
+final class Annotated extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -20,13 +22,13 @@ final readonly class Annotated extends Statement
         /**
          * What is recognized.
          */
-        public Statement $statement,
+        public readonly Statement $statement,
         /**
          * What is said about the statement, in the order it is written.
          *
          * @var non-empty-list<Annotation>
          */
-        public array $annotations,
+        public readonly array $annotations,
         int $offset = 0,
         int $length = 0,
     ) {

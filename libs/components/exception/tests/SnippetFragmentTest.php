@@ -23,7 +23,7 @@ use Testo\Test;
 #[Test]
 final class SnippetFragmentTest extends TestCase
 {
-    private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
+    private const SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     public function testReadsLinesAroundTheCapturedOne(): void
     {
@@ -319,7 +319,7 @@ final class SnippetFragmentTest extends TestCase
 
     private static function read(ReadableInterface $source, int $offset, int $length, int $lines): array
     {
-        return new SnippetReader()->read(new FailureResult(
+        return (new SnippetReader())->read(new FailureResult(
             class: '',
             message: '',
             source: $source,

@@ -13,17 +13,18 @@ namespace Phplrt\Parser\Builder\Definition;
  */
 final class PredicateRuleDefinition extends ProductionRuleDefinition
 {
-    public private(set) RuleDefinition $rule;
+    /**
+     * @phpstan-readonly-allow-private-mutation
+     */
+    public RuleDefinition $rule;
 
     /**
      * Contains {@see true} in case of the rule must be recognized at this
      * position, or {@see false} in case of it must not
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) bool $isExpected;
-
-    public array $children {
-        get => [$this->rule];
-    }
+    public bool $isExpected;
 
     /**
      * @param non-empty-string|null $name
@@ -93,6 +94,11 @@ final class PredicateRuleDefinition extends ProductionRuleDefinition
     public function replaceChildren(\Closure $replace): void
     {
         $this->rule = $replace($this->rule);
+    }
+
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return [$this->rule];
     }
 
     protected function printValue(): string

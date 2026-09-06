@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Generator;
 
-use Laminas\Code\Generator\ValueGenerator;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Exception\UnsupportedRuleException;
@@ -29,8 +28,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * Everything a parser is built of is either a value the templates dump as it
  * is, or a definition that has to be spelled: the spelling is done here, so
  * that the templates are left with nothing but the shape of the file.
+ *
+ * @readonly
  */
-final readonly class PhpCodePrinter
+final class PhpCodePrinter
 {
     /**
      * The class the constants standing for the tokens are declared in.
@@ -40,7 +41,7 @@ final readonly class PhpCodePrinter
      *
      * @var non-empty-string
      */
-    private const string SCOPE_TOKENS = 'self';
+    private const SCOPE_TOKENS = 'self';
 
     /**
      * The prefix of the variable a lexer reading a fragment is written into.
@@ -50,36 +51,115 @@ final readonly class PhpCodePrinter
      *
      * @var non-empty-string
      */
-    private const string VARIABLE_PREFIX = '$state_';
+    private const VARIABLE_PREFIX = '$state_';
 
     /**
      * The prefix of the method a rule is reduced by.
      *
      * @var non-empty-string
      */
-    private const string METHOD_PREFIX = 'reduce';
+    private const METHOD_PREFIX = 'reduce';
 
     /**
      * The characters a single level of nesting is written with.
      *
      * @var non-empty-string
      */
-    private const string INDENTATION = '    ';
+    private const INDENTATION = '    ';
 
     /**
-     * Writes the given value down as the expression building it back.
+     * Writes the given value down as the expression, building it back.
      *
      * The value is written at the leftmost position, so that the code it is
      * written into is the only thing deciding where it is placed.
+     *
+     * @param int<0, max> $depth the number of arrays the value is nested in
+     * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
      */
-    public function printValue(mixed $value, bool $multiline = true): string
+    public function printValue(mixed $value, int $depth = 0): string
     {
-        $mode = $multiline
-            ? ValueGenerator::OUTPUT_MULTIPLE_LINE
-            : ValueGenerator::OUTPUT_SINGLE_LINE;
+        /** @var non-empty-string */
+        return match (true) {
+            $value === null => 'null',
+            $value === true => 'true',
+            $value === false => 'false',
+            \is_scalar($value) => \var_export($value, true),
+            \is_array($value) => $this->printArrayValue($value, $depth),
+            default => throw new \ValueError(\sprintf('A value of type %s cannot be generated', \get_debug_type($value))),
+        };
+    }
 
-        return new ValueGenerator($value, outputMode: $mode)
-            ->generate();
+    /**
+     * @param array<array-key, mixed> $value
+     * @param int<0, max> $depth the number of arrays the value is nested in
+     * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
+     */
+    private function printArrayValue(array $value, int $depth): string
+    {
+        if (\array_is_list($value)) {
+            return $this->printListValue($value, $depth);
+        }
+
+        $items = [];
+        $sequence = 0;
+
+        foreach ($value as $key => $item) {
+            $printed = $this->printValue($item, $depth + 1);
+
+            // Note: A key is left out while it repeats what PHP counts on its
+            //       own, so that a list reads as a list
+            if ($key === $sequence) {
+                ++$sequence;
+
+                $items[] = $printed;
+
+                continue;
+            }
+
+            if (\is_int($key)) {
+                $sequence = \max($key + 1, $sequence);
+            }
+
+            $items[] = \var_export($key, true) . ' => ' . $printed;
+        }
+
+        return $this->printItems($items, $depth);
+    }
+
+    /**
+     * @param list<mixed> $value
+     * @param int<0, max> $depth the number of arrays the value is nested in
+     * @return non-empty-string
+     * @throws \ValueError in case of the value cannot be written down
+     */
+    private function printListValue(array $value, int $depth): string
+    {
+        $items = [];
+
+        foreach ($value as $item) {
+            $items[] = $this->printValue($item, $depth + 1);
+        }
+
+        return $this->printItems($items, $depth);
+    }
+
+    /**
+     * @param list<string> $items the items already written down
+     * @param int<0, max> $depth the number of arrays the items are nested in
+     * @return non-empty-string
+     */
+    private function printItems(array $items, int $depth): string
+    {
+        if ($items === []) {
+            return '[]';
+        }
+
+        $inner = "\n" . \str_repeat(self::INDENTATION, $depth + 1);
+        $outer = "\n" . \str_repeat(self::INDENTATION, $depth);
+
+        return '[' . $inner . \implode(',' . $inner, $items) . ',' . $outer . ']';
     }
 
     /**

@@ -7,36 +7,39 @@ namespace Phplrt\Lexer\Token\Printer;
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
 
-final readonly class PrettyTokenPrinter implements TokenPrinterInterface
+/**
+ * @readonly
+ */
+final class PrettyTokenPrinter implements TokenPrinterInterface
 {
-    private const int DEFAULT_LENGTH = 30;
+    private const DEFAULT_LENGTH = 30;
 
-    private const string DEFAULT_WRAP = '"';
+    private const DEFAULT_WRAP = '"';
 
-    private const array DEFAULT_REPLACEMENTS = [
+    private const DEFAULT_REPLACEMENTS = [
         ["\0", "\n", "\t", "\v"],
         ['\0', '\n', '\t', '\v'],
     ];
 
-    private const string DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
+    private const DEFAULT_OVERFLOW_SUFFIX = ' (%s+)';
 
     public function __construct(
         /**
          * @var int<1, max>
          */
-        private int $length = self::DEFAULT_LENGTH,
+        private readonly int $length = self::DEFAULT_LENGTH,
         /**
          * @var non-empty-string
          */
-        private string $wrap = self::DEFAULT_WRAP,
+        private readonly string $wrap = self::DEFAULT_WRAP,
         /**
          * @var array{array<non-empty-string>, array<non-empty-string>}
          */
-        private array $replacements = self::DEFAULT_REPLACEMENTS,
+        private readonly array $replacements = self::DEFAULT_REPLACEMENTS,
         /**
          * @var non-empty-string
          */
-        private string $suffix = self::DEFAULT_OVERFLOW_SUFFIX,
+        private readonly string $suffix = self::DEFAULT_OVERFLOW_SUFFIX,
     ) {}
 
     public function print(TokenInterface $token): string

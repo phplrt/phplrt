@@ -11,8 +11,10 @@ use Phplrt\Contracts\Lexer\Channel;
  *
  * The default channel is the one the reader expects anyway, so only the tokens
  * leaving it are described.
+ *
+ * @readonly
  */
-final readonly class ChannelConstructionLexerAnalysisPass implements
+final class ChannelConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
 {
     public function process(LexerResultContext $context): void

@@ -234,7 +234,7 @@ final class ResourceSourceTest extends TestCase
         $stream = $this->createNonSeekableResource('test content');
 
         try {
-            $taken = new ResourceSource($stream)->toSeekableSource();
+            $taken = (new ResourceSource($stream))->toSeekableSource();
 
             Assert::same($taken->content, 'test content');
             Assert::same($taken->read(0, 4), 'test');
@@ -281,7 +281,7 @@ final class ResourceSourceTest extends TestCase
         $stream = $this->createNonSeekableResource('test content');
 
         try {
-            Assert::instanceOf(new ResourceSource($stream)->toSeekableSource(), StringSource::class);
+            Assert::instanceOf((new ResourceSource($stream))->toSeekableSource(), StringSource::class);
         } finally {
             \fclose($stream);
         }
@@ -294,7 +294,7 @@ final class ResourceSourceTest extends TestCase
         $stream = \fopen($this->temp, 'rb');
 
         try {
-            $taken = new ResourceSource($stream)->toSeekableSource();
+            $taken = (new ResourceSource($stream))->toSeekableSource();
 
             Assert::instanceOf($taken, VirtualSource::class);
             Assert::same($taken->pathname, $this->temp);

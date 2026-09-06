@@ -26,40 +26,73 @@ namespace Phplrt\Compiler\Syntax\PP3;
  * @template TResult of mixed = mixed
  *
  * @template-extends \Phplrt\Parser\Parser<TResult>
+ *
+ * @readonly
  */
-readonly class PP3Parser extends \Phplrt\Parser\Parser
+class PP3Parser extends \Phplrt\Parser\Parser
 {
-    public const int T_WHITESPACE = 0;
-    public const int T_COMMENT = 1;
-    public const int T_DOC = 2;
-    public const int T_PRAGMA = 3;
-    public const int T_INCLUDE = 4;
-    public const int T_PHP = 5;
-    public const int T_ANNOTATION = 6;
-    public const int T_SEMICOLON = 7;
-    public const int T_OR = 8;
-    public const int T_PARENTHESIS_OPEN = 9;
-    public const int T_PARENTHESIS_CLOSE = 10;
-    public const int T_ANGLE_OPEN = 11;
-    public const int T_ANGLE_CLOSE = 12;
-    public const int T_QUESTION_MARK = 13;
-    public const int T_PLUS = 14;
-    public const int T_ASTERISK = 15;
-    public const int T_BRACE_OPEN = 16;
-    public const int T_BRACE_CLOSE = 17;
-    public const int T_COMMA = 18;
-    public const int T_INT = 19;
-    public const int T_STRING = 20;
-    public const int T_NAME = 21;
-    public const int T_TOKEN = 22;
-    public const int T_SKIP = 23;
-    public const int T_FRAGMENT = 24;
-    public const int T_LEXER = 25;
-    public const int T_DOUBLE_COLON = 26;
-    public const int T_COLON = 27;
-    public const int T_AMPERSAND = 28;
-    public const int T_EXCLAMATION = 29;
-    public const int T_REGEX = 30;
+    /** @var int */
+    public const T_WHITESPACE = 0;
+    /** @var int */
+    public const T_COMMENT = 1;
+    /** @var int */
+    public const T_DOC = 2;
+    /** @var int */
+    public const T_PRAGMA = 3;
+    /** @var int */
+    public const T_INCLUDE = 4;
+    /** @var int */
+    public const T_PHP = 5;
+    /** @var int */
+    public const T_ANNOTATION = 6;
+    /** @var int */
+    public const T_SEMICOLON = 7;
+    /** @var int */
+    public const T_OR = 8;
+    /** @var int */
+    public const T_PARENTHESIS_OPEN = 9;
+    /** @var int */
+    public const T_PARENTHESIS_CLOSE = 10;
+    /** @var int */
+    public const T_ANGLE_OPEN = 11;
+    /** @var int */
+    public const T_ANGLE_CLOSE = 12;
+    /** @var int */
+    public const T_QUESTION_MARK = 13;
+    /** @var int */
+    public const T_PLUS = 14;
+    /** @var int */
+    public const T_ASTERISK = 15;
+    /** @var int */
+    public const T_BRACE_OPEN = 16;
+    /** @var int */
+    public const T_BRACE_CLOSE = 17;
+    /** @var int */
+    public const T_COMMA = 18;
+    /** @var int */
+    public const T_INT = 19;
+    /** @var int */
+    public const T_STRING = 20;
+    /** @var int */
+    public const T_NAME = 21;
+    /** @var int */
+    public const T_TOKEN = 22;
+    /** @var int */
+    public const T_SKIP = 23;
+    /** @var int */
+    public const T_FRAGMENT = 24;
+    /** @var int */
+    public const T_LEXER = 25;
+    /** @var int */
+    public const T_DOUBLE_COLON = 26;
+    /** @var int */
+    public const T_COLON = 27;
+    /** @var int */
+    public const T_AMPERSAND = 28;
+    /** @var int */
+    public const T_EXCLAMATION = 29;
+    /** @var int */
+    public const T_REGEX = 30;
 
     public function __construct()
     {

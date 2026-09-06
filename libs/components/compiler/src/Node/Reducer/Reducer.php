@@ -10,5 +10,7 @@ use Phplrt\Compiler\Node\Node;
  * Converts a rule of the parser into a node of the syntax tree.
  *
  * @phpstan-sealed ClassReducer|CodeReducer
+ *
+ * @readonly
  */
-abstract readonly class Reducer extends Node {}
+abstract class Reducer extends Node {}

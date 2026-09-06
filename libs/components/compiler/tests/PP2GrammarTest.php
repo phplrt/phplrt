@@ -151,7 +151,7 @@ final class PP2GrammarTest extends TestCase
 
     public function testInlinePatternQuotes(): void
     {
-        $declarations = new PP2Parser()
+        $declarations = (new PP2Parser())
             ->parse(StringSource::createFromString('A : "\"" ;'));
 
         $rule = $declarations[0];
@@ -205,7 +205,7 @@ final class PP2GrammarTest extends TestCase
 
     public function testCodeReducer(): void
     {
-        $declarations = new PP2Parser()->parse(StringSource::createFromString(<<<'PP2'
+        $declarations = (new PP2Parser())->parse(StringSource::createFromString(<<<'PP2'
             A -> {
                 if ($children === []) {
                     return null;
@@ -232,7 +232,7 @@ final class PP2GrammarTest extends TestCase
 
     public function testDeclarationOffsets(): void
     {
-        $declarations = new PP2Parser()->parse(StringSource::createFromString(<<<'PP2'
+        $declarations = (new PP2Parser())->parse(StringSource::createFromString(<<<'PP2'
             %token T_A a
 
             A : <T_A> ;
@@ -249,7 +249,7 @@ final class PP2GrammarTest extends TestCase
 
     public function testStatementOffsets(): void
     {
-        $declarations = new PP2Parser()->parse(StringSource::createFromString('A : <T_A> ::T_B:: ;'));
+        $declarations = (new PP2Parser())->parse(StringSource::createFromString('A : <T_A> ::T_B:: ;'));
 
         $rule = $declarations[0];
 
@@ -264,6 +264,6 @@ final class PP2GrammarTest extends TestCase
     {
         Expect::exception(UnexpectedTokenException::class);
 
-        new PP2Parser()->parse(StringSource::createFromString('A : ;'));
+        (new PP2Parser())->parse(StringSource::createFromString('A : ;'));
     }
 }

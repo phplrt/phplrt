@@ -29,19 +29,19 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
     /**
      * @var non-empty-string
      */
-    private const string TEMPLATE_DIRECTORY = __DIR__ . '/../../resources/php';
+    private const TEMPLATE_DIRECTORY = __DIR__ . '/../../resources/php';
 
     /**
      * @var non-empty-string
      */
-    private const string TEMPLATE_ENTRYPOINT = 'parser.php.twig';
+    private const TEMPLATE_ENTRYPOINT = 'parser.php.twig';
 
     /**
      * The names a class may be declared under.
      *
      * @var non-empty-string
      */
-    private const string CLASS_NAME_PATTERN = '/^[a-z_\x80-\xff][a-z0-9_\x80-\xff]*+$/iu';
+    private const CLASS_NAME_PATTERN = '/^[a-z_\x80-\xff][a-z0-9_\x80-\xff]*+$/iu';
 
     private readonly Environment $twig;
 
@@ -79,6 +79,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
                 'imports' => $context->imports,
                 'includes' => $context->includes,
                 'class' => $context->class,
+                'php' => $context->php,
                 'lexer' => $result->lexer,
                 'parser' => $result->parser,
                 'methods' => $this->printer->createMethodNames(

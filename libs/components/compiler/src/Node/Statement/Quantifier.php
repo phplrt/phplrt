@@ -8,8 +8,10 @@ use Phplrt\Compiler\Node\Node;
 
 /**
  * States how many times a statement may repeat.
+ *
+ * @readonly
  */
-final readonly class Quantifier extends Node
+final class Quantifier extends Node
 {
     /**
      * @param int<0, max> $offset
@@ -21,7 +23,7 @@ final readonly class Quantifier extends Node
          *
          * @var int<0, max>
          */
-        public int $min = 0,
+        public readonly int $min = 0,
         /**
          * The greatest number of times the statement may repeat, or
          * {@see \INF} in case of the number is not limited.
@@ -31,7 +33,7 @@ final readonly class Quantifier extends Node
          *
          * @var int<0, max>|float
          */
-        public int|float $max = \INF,
+        public readonly int|float $max = \INF,
         int $offset = 0,
         int $length = 0,
     ) {

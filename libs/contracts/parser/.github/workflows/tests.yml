@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ '8.4', '8.5', '8.6' ]
+        php: [ '8.2', '8.3', '8.4', '8.5', '8.6' ]
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         stability: [ prefer-lowest, prefer-stable ]
     steps:
@@ -40,12 +40,10 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Install Dependencies
-        continue-on-error: ${{ matrix.php == '8.6' }}
         uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --ignore-platform-reqs --prefer-dist --no-interaction --no-progress
       - name: Execute Tests
-        continue-on-error: ${{ matrix.php == '8.6' }}
         run: php vendor/bin/testo

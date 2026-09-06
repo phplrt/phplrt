@@ -10,5 +10,7 @@ use Phplrt\Compiler\Node\Node;
  * A top level element of a grammar file.
  *
  * @phpstan-sealed FragmentDeclaration|IncludeDeclaration|LexerDeclaration|PragmaDeclaration|RuleDeclaration|TokenDeclaration
+ *
+ * @readonly
  */
-abstract readonly class Declaration extends Node {}
+abstract class Declaration extends Node {}

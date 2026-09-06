@@ -33,13 +33,17 @@ final class ArrayBuffer implements BufferInterface
 
     /**
      * @var TToken
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) TokenInterface $current;
+    public TokenInterface $current;
 
     /**
      * @var int<0, max>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) int $key = 0;
+    public int $key = 0;
 
     /**
      * @param iterable<mixed, TToken> $tokens

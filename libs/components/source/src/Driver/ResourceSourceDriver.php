@@ -9,8 +9,10 @@ use Phplrt\Source\ResourceSource;
 
 /**
  * Creates a source out of an open resource.
+ *
+ * @readonly
  */
-final readonly class ResourceSourceDriver implements SourceDriverInterface
+final class ResourceSourceDriver implements SourceDriverInterface
 {
     /**
      * @throws NotCreatableException in case the resource is not a stream

@@ -12,8 +12,10 @@ trait HasChildRuleDefinitions
 {
     /**
      * @var list<RuleDefinition>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $rules = [];
+    public array $rules = [];
 
     /**
      * Updates the rules of the current definition and returns itself as the
@@ -61,5 +63,13 @@ trait HasChildRuleDefinitions
         }
 
         $this->rules = $result;
+    }
+
+    /**
+     * @return list<RuleDefinition>
+     */
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return $this->rules;
     }
 }

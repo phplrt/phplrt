@@ -15,8 +15,10 @@ enum FailureLevel: string
 
     /**
      * The severity of an error that tells nothing about the one of its own.
+     *
+     * @var self
      */
-    public const self DEFAULT = self::Error;
+    public const DEFAULT = self::Error;
 
     /**
      * Returns the severity the given error tells about itself, or the default

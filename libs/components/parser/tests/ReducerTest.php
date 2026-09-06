@@ -251,15 +251,15 @@ final class ReducerTest extends TestCase
         Assert::same($parser->parse(StringSource::createFromString('1')), []);
     }
 
-    private const int RULE_EXPRESSION = 0;
+    private const RULE_EXPRESSION = 0;
 
-    private const int RULE_NUMBER = 1;
+    private const RULE_NUMBER = 1;
 
-    private const int RULE_TAIL = 2;
+    private const RULE_TAIL = 2;
 
-    private const int RULE_SIGN = 4;
+    private const RULE_SIGN = 4;
 
-    private const int RULE_OPERATOR = 5;
+    private const RULE_OPERATOR = 5;
 
     private static function createGrammar(): array
     {

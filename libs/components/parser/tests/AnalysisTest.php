@@ -375,11 +375,11 @@ final class AnalysisTest extends TestCase
         Assert::same($actual->value, []);
     }
 
-    private const int RULE_EXPRESSION = 0;
+    private const RULE_EXPRESSION = 0;
 
-    private const int RULE_NUMBER = 1;
+    private const RULE_NUMBER = 1;
 
-    private const int RULE_OPERATOR = 4;
+    private const RULE_OPERATOR = 4;
 
     private static function createGrammar(): array
     {

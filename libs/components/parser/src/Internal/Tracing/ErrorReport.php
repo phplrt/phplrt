@@ -36,14 +36,16 @@ final class ErrorReport
      *
      * @var int<1, max>
      */
-    private const int RULES_LIMIT = 4;
+    private const RULES_LIMIT = 4;
 
     /**
      * The position of the failure the report describes.
      *
      * @var int<-1, max>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) int $furthest = -1;
+    public int $furthest = -1;
 
     private ?TokenInterface $token = null;
 

@@ -14,8 +14,10 @@ use Phplrt\Parser\Grammar\SequenceInterface;
 
 /**
  * Describes the rules that are kept in the resulting tree.
+ *
+ * @readonly
  */
-final readonly class KeptRuleConstructionParserAnalysisPass implements
+final class KeptRuleConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
     public function process(ParserResultContext $context): void

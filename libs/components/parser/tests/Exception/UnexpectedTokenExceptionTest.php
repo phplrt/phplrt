@@ -19,7 +19,7 @@ use Testo\Test;
 #[Test]
 final class UnexpectedTokenExceptionTest extends TestCase
 {
-    private const string SOURCE = "first line\nsecond line\nthird line";
+    private const SOURCE = "first line\nsecond line\nthird line";
 
     public function testSource(): void
     {

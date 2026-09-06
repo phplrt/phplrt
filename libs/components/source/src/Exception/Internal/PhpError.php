@@ -13,7 +13,7 @@ namespace Phplrt\Source\Exception\Internal;
  *     message: string,
  *     file: string,
  *     line: int,
- *     ...
+ *     ...<string, mixed>
  * }
  *
  * @internal this is an internal library class, please do not use it in your code
@@ -21,7 +21,7 @@ namespace Phplrt\Source\Exception\Internal;
  */
 final class PhpError
 {
-    private const string DEFAULT_MESSAGE = 'An unknown internal error occurred while accessing to the source';
+    private const DEFAULT_MESSAGE = 'An unknown internal error occurred while accessing to the source';
 
     /**
      * Gets the error as a throwable one, which is what carries it over as the

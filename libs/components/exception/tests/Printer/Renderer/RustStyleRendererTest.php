@@ -25,7 +25,7 @@ use Testo\Test;
 #[Test]
 final class RustStyleRendererTest extends TestCase
 {
-    private const string SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
+    private const SOURCE = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7";
 
     public function testPrintsLinesWithTheUnderlinedFragment(): void
     {
@@ -222,7 +222,7 @@ final class RustStyleRendererTest extends TestCase
     {
         $e = new \LogicException();
 
-        Assert::true(\str_ends_with(new RawRustStyleRenderer()->render(self::createFailure(self::SOURCE, 23, 2), $e), "\n" . $e->getTraceAsString()));
+        Assert::true(\str_ends_with((new RawRustStyleRenderer())->render(self::createFailure(self::SOURCE, 23, 2), $e), "\n" . $e->getTraceAsString()));
     }
 
     public function testRawRendererPrintsNoEscapeSequences(): void
@@ -302,7 +302,7 @@ final class RustStyleRendererTest extends TestCase
             source: $source,
             position: $offset === null
                 ? new Position()
-                : new PositionFactory()->createFromOffset($source, $offset),
+                : (new PositionFactory())->createFromOffset($source, $offset),
             level: $level,
             interval: $offset === null ? null : new FailureInterval($offset, $length),
         );

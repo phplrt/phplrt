@@ -29,6 +29,16 @@ use Phplrt\Source\Exception\StreamReadingException;
  * longer available. Reading such a source in an arbitrary order is a matter of
  * taking its data over first ({@see toSeekableSource()}).
  *
+ * Note: Starting with PHP 8.4, in the future, all property annotations
+ *       described below will be expressed as full properties.
+ *
+ * @property-read string $content The whole content of the source.
+ *
+ *         Reading it throws a {@see ClosedStreamException} when the stream has
+ *         been closed from the outside and a {@see NotReadableException} when
+ *         the stream cannot be read, or cannot be rewound and has already been
+ *         read past the position the source begins at.
+ *
  * @final please do not inherit from this class
  */
 class ResourceSource extends Readable
@@ -39,7 +49,7 @@ class ResourceSource extends Readable
      *
      * @var int<1, max>
      */
-    private const int CHUNK_SIZE = 65536;
+    private const CHUNK_SIZE = 65536;
 
     /**
      * The position of the stream this source begins at.
@@ -53,28 +63,12 @@ class ResourceSource extends Readable
      *
      * @var resource
      */
-    private mixed $stream {
-        /**
-         * @throws ClosedStreamException When the resource has been closed from the outside
-         */
-        get {
-            if (!\is_resource($this->stream)) {
-                throw ClosedStreamException::becauseStreamIsClosed();
-            }
+    private mixed $stream;
 
-            return $this->stream;
-        }
-    }
-
-    public private(set) string $content {
-        /**
-         * @throws ClosedStreamException When the stream has been closed from the outside
-         * @throws NotReadableException When the stream cannot be read, or cannot
-         *         be rewound and has already been read past the position the
-         *         source begins at
-         */
-        get => $this->content ??= $this->readAll();
-    }
+    /**
+     * The data of the source, in case it has already been read.
+     */
+    private ?string $data = null;
 
     /**
      * Gets stream URI string (can be optional)
@@ -197,13 +191,42 @@ class ResourceSource extends Readable
      */
     public function toSeekableSource(): StringSource|VirtualSource
     {
-        $content = $this->content;
+        $content = $this->getContents();
 
         if ($this->uri === null) {
             return new StringSource($content);
         }
 
         return new VirtualSource($this->uri, new StringSource($content));
+    }
+
+    /**
+     * @throws ClosedStreamException When the stream has been closed from the outside
+     * @throws NotReadableException When the stream cannot be read, or cannot be
+     *         rewound and has already been read past the position the source
+     *         begins at
+     */
+    public function __get(string $property): mixed
+    {
+        switch ($property) {
+            case 'content':
+                return $this->getContents();
+
+            default:
+                throw new \Error(\sprintf('Undefined property %s::$%s', static::class, $property));
+        }
+    }
+
+    /**
+     * An alias of the {@see $content} property.
+     *
+     * @throws ClosedStreamException When the resource has been closed from the outside
+     * @throws NotReadableException When the stream cannot be read, or cannot be
+     *         rewound to the position the source begins at
+     */
+    public function getContents(): string
+    {
+        return $this->data ??= $this->readAll();
     }
 
     /**
@@ -219,7 +242,7 @@ class ResourceSource extends Readable
 
         \error_clear_last();
 
-        $result = @\stream_get_contents($this->stream);
+        $result = @\stream_get_contents($this->requireStream());
 
         if ($result === false) {
             throw StreamReadingException::becauseStreamCannotBeRead(\error_get_last());
@@ -240,7 +263,7 @@ class ResourceSource extends Readable
     {
         \error_clear_last();
 
-        $result = @\fread($this->stream, $bytes);
+        $result = @\fread($this->requireStream(), $bytes);
 
         if ($result === false) {
             throw StreamReadingException::becauseStreamCannotBeRead(\error_get_last());
@@ -262,14 +285,16 @@ class ResourceSource extends Readable
      */
     private function seek(int $offset): void
     {
-        $current = \max(0, (int) @\ftell($this->stream));
+        $stream = $this->requireStream();
+
+        $current = \max(0, (int) @\ftell($stream));
 
         if ($current === $offset) {
             return;
         }
 
         if ($this->isSeekable) {
-            @\fseek($this->stream, $offset);
+            @\fseek($stream, $offset);
 
             return;
         }
@@ -290,6 +315,21 @@ class ResourceSource extends Readable
                 return;
             }
         }
+    }
+
+    /**
+     * Gives the resource back, in case it has not been closed from the outside.
+     *
+     * @return resource
+     * @throws ClosedStreamException When the resource has been closed from the outside
+     */
+    private function requireStream(): mixed
+    {
+        if (!\is_resource($this->stream)) {
+            throw ClosedStreamException::becauseStreamIsClosed();
+        }
+
+        return $this->stream;
     }
 
     /**
@@ -322,7 +362,7 @@ class ResourceSource extends Readable
      *     uri: non-empty-string,
      *     mode: non-empty-string,
      *     initial: int<0, max>,
-     *     ...
+     *     ...<string, mixed>
      * } $data
      * @throws StreamNotOpenedException When the stream cannot be opened
      * @throws StreamNotSeekableException When the stream cannot be moved to the
@@ -362,7 +402,7 @@ class ResourceSource extends Readable
         }
 
         try {
-            \fclose($this->stream);
+            \fclose($this->requireStream());
         } catch (ClosedStreamException) {
             // Note: The stream has been closed from the outside, so there is
             //       nothing left for this object to give up.

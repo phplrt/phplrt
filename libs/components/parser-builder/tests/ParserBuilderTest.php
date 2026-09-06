@@ -145,9 +145,9 @@ final class ParserBuilderTest extends TestCase
 
         $result = $parser->build(self::createLexerBuilder()->build());
 
-        Assert::true(\array_all(
+        Assert::same([], \array_filter(
             $result->reducers,
-            static fn(object $reducer): bool => $reducer instanceof PhpCodeReducer,
+            static fn(object $reducer): bool => !$reducer instanceof PhpCodeReducer,
         ));
         Assert::false($result->reducers[0] instanceof CallableReducer);
     }

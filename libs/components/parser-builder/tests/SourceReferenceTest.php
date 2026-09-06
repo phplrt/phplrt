@@ -18,9 +18,9 @@ use Testo\Test;
 #[Test]
 final class SourceReferenceTest extends TestCase
 {
-    private const string SOURCE = "%token T_NUMBER \\d++\n\nRoot : ;\n";
+    private const SOURCE = "%token T_NUMBER \\d++\n\nRoot : ;\n";
 
-    private const int RULE_OFFSET = 22;
+    private const RULE_OFFSET = 22;
 
     public function testDefinitionRefersToTheSource(): void
     {
@@ -98,7 +98,7 @@ final class SourceReferenceTest extends TestCase
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([
             $parser->addTokenReference('T_NUMBER'),
-        ], 'Root')->setReducer(new PhpCodeReducer('return $children')->setSource($source, 10)));
+        ], 'Root')->setReducer((new PhpCodeReducer('return $children'))->setSource($source, 10)));
 
         try {
             $parser->build($lexer->build())

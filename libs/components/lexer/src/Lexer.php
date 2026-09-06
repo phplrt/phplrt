@@ -19,28 +19,31 @@ use Phplrt\Lexer\Token\EndOfInputToken;
 use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 
-readonly class Lexer implements LexerInterface
+/**
+ * @readonly
+ */
+class Lexer implements LexerInterface
 {
     /**
      * The channels a lexer says nothing about are not reported.
      *
      * @var non-empty-list<ChannelInterface>
      */
-    public const array DEFAULT_SKIP_CHANNELS = [
+    public const DEFAULT_SKIP_CHANNELS = [
         Channel::Hidden,
     ];
 
     /**
      * Reads everything this lexer recognizes on its own.
      */
-    private Tokenizer $tokenizer;
+    private readonly Tokenizer $tokenizer;
 
     /**
      * A map of token ID and what the token does to the reading.
      *
      * @var array<int, LexerInterface|null>
      */
-    private array $transitions;
+    private readonly array $transitions;
 
     /**
      * The channels that are not reported, keyed by name, so that a token read
@@ -49,7 +52,7 @@ readonly class Lexer implements LexerInterface
      *
      * @var array<non-empty-string, true>
      */
-    private array $excluded;
+    private readonly array $excluded;
 
     /**
      * The pattern, channels and names are fully consumed by the executor, so

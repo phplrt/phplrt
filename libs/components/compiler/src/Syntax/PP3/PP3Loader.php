@@ -43,28 +43,28 @@ final class PP3Loader extends PPLoader
      *
      * @var non-empty-string
      */
-    private const string STATE_SHARED = '*';
+    private const STATE_SHARED = '*';
 
     /**
      * Hands the reading over to the lexer of the named state.
      *
      * @var non-empty-string
      */
-    private const string ACTION_STATE = 'state';
+    private const ACTION_STATE = 'state';
 
     /**
      * Gives the control back to the lexer that has entered this one.
      *
      * @var non-empty-string
      */
-    private const string ACTION_EXIT = 'exit';
+    private const ACTION_EXIT = 'exit';
 
     /**
      * Emits the token to the named channel.
      *
      * @var non-empty-string
      */
-    private const string ACTION_CHANNEL = 'channel';
+    private const ACTION_CHANNEL = 'channel';
 
     /**
      * The settings compiling the pattern of the lexer with a PCRE modifier and
@@ -72,9 +72,9 @@ final class PP3Loader extends PPLoader
      *
      * @var non-empty-string
      */
-    private const string PRAGMA_LEXER_FLAG = 'lexer.pcre.flag';
+    private const PRAGMA_LEXER_FLAG = 'lexer.pcre.flag';
 
-    private const string PRAGMA_LEXER_NO_FLAG = 'lexer.pcre.disable';
+    private const PRAGMA_LEXER_NO_FLAG = 'lexer.pcre.disable';
 
     /**
      * The settings registering a pass of the lexer, named after the moment it
@@ -82,7 +82,7 @@ final class PP3Loader extends PPLoader
      *
      * @var array<non-empty-string, int>
      */
-    private const array PRAGMA_LEXER_PASSES = [
+    private const PRAGMA_LEXER_PASSES = [
         'lexer.pass' => LexerBuilder::PASS_PRIORITY_NORMALIZE,
         'lexer.check' => LexerBuilder::PASS_PRIORITY_CHECK,
         'lexer.optimize' => LexerBuilder::PASS_PRIORITY_OPTIMIZE,
@@ -94,7 +94,7 @@ final class PP3Loader extends PPLoader
      *
      * @var array<non-empty-string, int>
      */
-    private const array PRAGMA_PARSER_PASSES = [
+    private const PRAGMA_PARSER_PASSES = [
         'parser.pass' => ParserBuilder::PASS_PRIORITY_NORMALIZE,
         'parser.check' => ParserBuilder::PASS_PRIORITY_CHECK,
         'parser.optimize' => ParserBuilder::PASS_PRIORITY_OPTIMIZE,
@@ -106,9 +106,9 @@ final class PP3Loader extends PPLoader
      *
      * @var non-empty-string
      */
-    private const string PRAGMA_LEXER_DISABLE = 'lexer.disable';
+    private const PRAGMA_LEXER_DISABLE = 'lexer.disable';
 
-    private const string PRAGMA_PARSER_DISABLE = 'parser.disable';
+    private const PRAGMA_PARSER_DISABLE = 'parser.disable';
 
     protected function createParser(): ParserInterface
     {

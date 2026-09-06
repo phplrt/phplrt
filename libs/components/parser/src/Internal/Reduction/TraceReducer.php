@@ -15,10 +15,12 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @readonly
  */
-final readonly class TraceReducer
+final class TraceReducer
 {
-    private Context $context;
+    private readonly Context $context;
 
     /**
      * @param int<0, max> $rule
@@ -31,14 +33,14 @@ final readonly class TraceReducer
          *
          * @var array<int<0, max>, ReducerType>
          */
-        private array $reducers,
+        private readonly array $reducers,
         /**
          * The rules reduced to the list of their children, indexed by the rule
          * identifiers
          *
          * @var array<int, bool>
          */
-        private array $merged,
+        private readonly array $merged,
         int $rule,
         ReadableInterface $source,
     ) {

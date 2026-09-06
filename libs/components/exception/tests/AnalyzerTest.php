@@ -20,11 +20,11 @@ use Testo\Test;
 #[Test]
 final class AnalyzerTest extends TestCase
 {
-    private const string SOURCE = "line 1\nline 2\nline 3\nline 4";
+    private const SOURCE = "line 1\nline 2\nline 3\nline 4";
 
     public function testNameAndMessageAreGivenBack(): void
     {
-        $result = new Analyzer()->analyze(new \LogicException('Something went wrong'));
+        $result = (new Analyzer())->analyze(new \LogicException('Something went wrong'));
 
         Assert::same($result->class, \LogicException::class);
         Assert::same($result->message, 'Something went wrong');
@@ -32,19 +32,19 @@ final class AnalyzerTest extends TestCase
 
     public function testSeverityOfArbitraryExceptionIsTheDefaultOne(): void
     {
-        Assert::same(new Analyzer()->analyze(new \LogicException())->level, FailureLevel::DEFAULT);
+        Assert::same((new Analyzer())->analyze(new \LogicException())->level, FailureLevel::DEFAULT);
     }
 
     public function testSeverityIsTakenFromTheError(): void
     {
-        $result = new Analyzer()->analyze(new \ErrorException('', severity: \E_USER_WARNING));
+        $result = (new Analyzer())->analyze(new \ErrorException('', severity: \E_USER_WARNING));
 
         Assert::same($result->level, FailureLevel::Warning);
     }
 
     public function testSourceOfArbitraryExceptionIsItsOwnFile(): void
     {
-        $info = new Analyzer()->analyze(new \LogicException());
+        $info = (new Analyzer())->analyze(new \LogicException());
 
         Assert::instanceOf($info->source, FileInterface::class);
         Assert::same($info->source->pathname, __FILE__);
@@ -53,7 +53,7 @@ final class AnalyzerTest extends TestCase
     public function testPositionOfArbitraryExceptionIsItsOwnLine(): void
     {
         $line = __LINE__ + 1;
-        $info = new Analyzer()->analyze(new \LogicException());
+        $info = (new Analyzer())->analyze(new \LogicException());
 
         Assert::same($info->position->line, $line);
         Assert::same($info->position->column, 1);
@@ -61,12 +61,12 @@ final class AnalyzerTest extends TestCase
 
     public function testArbitraryExceptionHasNoInterval(): void
     {
-        Assert::null(new Analyzer()->analyze(new \LogicException())->interval);
+        Assert::null((new Analyzer())->analyze(new \LogicException())->interval);
     }
 
     public function testExceptionWithoutFileIsLocatedInEmptySource(): void
     {
-        $info = new Analyzer()->analyze(new FilelessExceptionStub());
+        $info = (new Analyzer())->analyze(new FilelessExceptionStub());
 
         Assert::false($info->source instanceof FileInterface);
         Assert::same($info->source->content, '');
@@ -78,7 +78,7 @@ final class AnalyzerTest extends TestCase
     {
         $source = new StringSource(self::SOURCE);
 
-        $info = new Analyzer()->analyze(new LexerRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new LexerRuntimeExceptionStub(
             source: $source,
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
@@ -88,7 +88,7 @@ final class AnalyzerTest extends TestCase
 
     public function testPositionOfLexerExceptionIsTheOneOfItsToken(): void
     {
-        $info = new Analyzer()->analyze(new LexerRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new LexerRuntimeExceptionStub(
             source: new StringSource(self::SOURCE),
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
@@ -99,7 +99,7 @@ final class AnalyzerTest extends TestCase
 
     public function testIntervalOfLexerExceptionIsTheOneOfItsToken(): void
     {
-        $info = new Analyzer()->analyze(new LexerRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new LexerRuntimeExceptionStub(
             source: new StringSource(self::SOURCE),
             token: new TokenStub(offset: 16, value: 'ne 3'),
         ));
@@ -111,7 +111,7 @@ final class AnalyzerTest extends TestCase
 
     public function testIntervalOfParserExceptionIsTheOneItTellsAbout(): void
     {
-        $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new ParserRuntimeExceptionStub(
             source: new StringSource(self::SOURCE),
             token: new TokenStub(offset: 14, value: 'line'),
             length: 12,
@@ -124,7 +124,7 @@ final class AnalyzerTest extends TestCase
 
     public function testIntervalOfParserExceptionFallsBackToItsToken(): void
     {
-        $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new ParserRuntimeExceptionStub(
             source: new StringSource(self::SOURCE),
             token: new TokenStub(offset: 14, value: 'line'),
         ));
@@ -136,7 +136,7 @@ final class AnalyzerTest extends TestCase
 
     public function testPositionOfParserExceptionIsTheBeginningOfItsFragment(): void
     {
-        $info = new Analyzer()->analyze(new ParserRuntimeExceptionStub(
+        $info = (new Analyzer())->analyze(new ParserRuntimeExceptionStub(
             source: new StringSource(self::SOURCE),
             token: new TokenStub(offset: 14, value: 'line'),
             length: 12,
@@ -148,7 +148,7 @@ final class AnalyzerTest extends TestCase
 
     public function testTheOnlyExceptionHasNoPrevious(): void
     {
-        Assert::null(new Analyzer()->analyze(new \LogicException())->previous);
+        Assert::null((new Analyzer())->analyze(new \LogicException())->previous);
     }
 
     public function testEveryExceptionOfTheChainIsDescribed(): void
@@ -166,7 +166,7 @@ final class AnalyzerTest extends TestCase
             previous: $inner,
         );
 
-        $info = new Analyzer()->analyze(new \LogicException('Compilation failed', 0, $outer));
+        $info = (new Analyzer())->analyze(new \LogicException('Compilation failed', 0, $outer));
 
         Assert::null($info->interval);
 
@@ -189,7 +189,7 @@ final class AnalyzerTest extends TestCase
             $exception = new \LogicException('#' . $i, 0, $exception);
         }
 
-        $info = new Analyzer()->analyze($exception);
+        $info = (new Analyzer())->analyze($exception);
 
         for ($i = 999; $i > 0; --$i) {
             Assert::same($info->message, '#' . $i);

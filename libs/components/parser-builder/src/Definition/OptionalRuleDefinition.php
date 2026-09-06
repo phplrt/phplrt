@@ -9,11 +9,10 @@ namespace Phplrt\Parser\Builder\Definition;
  */
 final class OptionalRuleDefinition extends ProductionRuleDefinition
 {
-    public private(set) RuleDefinition $rule;
-
-    public array $children {
-        get => [$this->rule];
-    }
+    /**
+     * @phpstan-readonly-allow-private-mutation
+     */
+    public RuleDefinition $rule;
 
     /**
      * @param non-empty-string|null $name
@@ -45,6 +44,11 @@ final class OptionalRuleDefinition extends ProductionRuleDefinition
     public function replaceChildren(\Closure $replace): void
     {
         $this->rule = $replace($this->rule);
+    }
+
+    protected function getChildrenRuleDefinitions(): array
+    {
+        return [$this->rule];
     }
 
     protected function printValue(): string

@@ -12,7 +12,7 @@ final class UnknownToken extends Token
      * An identifier of the pseudo-token describing a source fragment
      * that could not be read.
      */
-    public const int TOKEN_ID = -2;
+    public const TOKEN_ID = -2;
 
     /**
      * @param int<0, max> $offset

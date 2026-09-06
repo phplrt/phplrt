@@ -77,7 +77,7 @@ final class SourceFactoryTest extends TestCase
     {
         Expect::exception(NotCreatableException::class);
 
-        new SourceFactory()
+        (new SourceFactory())
             ->create('2 + 2');
     }
 
@@ -85,7 +85,7 @@ final class SourceFactoryTest extends TestCase
     {
         $expected = new StringSource('2 + 2');
 
-        Assert::same(new SourceFactory()->create($expected), $expected);
+        Assert::same((new SourceFactory())->create($expected), $expected);
     }
 
     public function testFailsInCaseOfNonStreamResource(): void

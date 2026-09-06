@@ -8,31 +8,20 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Exception\OutOfRangeException;
 
 /**
+ * All properties described below SHOULD BE considered actual interface
+ * requirements. Their absence in the code is due to support requirements
+ * for PHP versions prior to 8.4.
+ *
  * @template-covariant TToken of TokenInterface = TokenInterface
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
+ *
+ * @property-read TToken $current The token at the current position.
+ * @property-read int<0, max> $key The position of the current token.
  */
 interface BufferInterface
 {
-    /**
-     * The token at the current position.
-     *
-     * @var TToken
-     */
-    public TokenInterface $current {
-        get;
-    }
-
-    /**
-     * The position of the current token.
-     *
-     * @var int<0, max>
-     */
-    public int $key {
-        get;
-    }
-
     /**
      * Rewinds the cursor back to a position it has already been at.
      *

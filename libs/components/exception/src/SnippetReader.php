@@ -19,27 +19,29 @@ use Phplrt\Position\PositionFactory;
 /**
  * Reads the fragment of the source code an error occurred in, along with the
  * lines around it.
+ *
+ * @readonly
  */
-final readonly class SnippetReader
+final class SnippetReader
 {
     /**
      * The number of lines read before and after the fragment by default.
      *
      * @var int<0, max>
      */
-    public const int DEFAULT_LINES_AROUND = 2;
+    public const DEFAULT_LINES_AROUND = 2;
 
     /**
      * The default number of bytes read at once.
      *
      * @var int<1, max>
      */
-    public const int DEFAULT_CHUNK_SIZE = 8192;
+    public const DEFAULT_CHUNK_SIZE = 8192;
 
     /**
      * The reader of the lines the source consists of.
      */
-    private LineReader $lines;
+    private readonly LineReader $lines;
 
     /**
      * @param int<1, max> $chunkSize the number of bytes read at once
@@ -49,7 +51,7 @@ final readonly class SnippetReader
          * The factory telling which line of the source a fragment starts on
          * and where a line of it begins.
          */
-        private PositionFactoryInterface $positions = new PositionFactory(),
+        private readonly PositionFactoryInterface $positions = new PositionFactory(),
         int $chunkSize = self::DEFAULT_CHUNK_SIZE,
     ) {
         $this->lines = new LineReader($chunkSize);

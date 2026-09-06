@@ -19,13 +19,13 @@ use Testo\Test;
 #[Test]
 final class PP2LexerTest extends TestCase
 {
-    private const string GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
+    private const GRAMMAR = __DIR__ . '/../resources/pp2.pp3';
 
     private static ?LexerInterface $lexer = null;
 
     private static function tokenize(string $source): array
     {
-        $lexer = self::$lexer ??= new Compiler()
+        $lexer = self::$lexer ??= (new Compiler())
             ->load(FileSource::createFromPathname(self::GRAMMAR))
             ->build()
             ->lexer

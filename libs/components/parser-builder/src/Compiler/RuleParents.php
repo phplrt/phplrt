@@ -11,14 +11,16 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  *
  * The grammar is described from the top down, so a rule knows its children, but
  * not the other way round.
+ *
+ * @readonly
  */
-final readonly class RuleParents
+final class RuleParents
 {
     /**
      * @param \SplObjectStorage<RuleDefinition, list<RuleDefinition>> $parents
      */
     private function __construct(
-        private \SplObjectStorage $parents,
+        private readonly \SplObjectStorage $parents,
     ) {}
 
     /**

@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.1"
     },
     "autoload": {
         "psr-4": {
@@ -24,7 +24,7 @@
         }
     },
     "require-dev": {
-        "testo/testo": "^0.10.44",
+        "testo/testo": "^0.10.45",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {

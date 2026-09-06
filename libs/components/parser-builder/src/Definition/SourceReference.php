@@ -8,25 +8,27 @@ use Phplrt\Contracts\Source\ReadableInterface;
 
 /**
  * The place of the source code a definition has been written in.
+ *
+ * @readonly
  */
-final readonly class SourceReference
+final class SourceReference
 {
     public function __construct(
         /**
          * The source the definition has been written in.
          */
-        public ReadableInterface $source,
+        public readonly ReadableInterface $source,
         /**
          * The byte offset the definition starts at.
          *
          * @var int<0, max>
          */
-        public int $offset,
+        public readonly int $offset,
         /**
          * The size of the definition in bytes.
          *
          * @var int<0, max>
          */
-        public int $length = 0,
+        public readonly int $length = 0,
     ) {}
 }

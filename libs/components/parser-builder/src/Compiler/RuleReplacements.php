@@ -12,7 +12,13 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  *
  * Rewriting the grammar while it is being walked would make a pass depend on
  * the order the rules are reached, so the replacements are gathered first and
- * applied afterwards.
+ * applied afterward.
+ *
+ * @property-read bool $isEmpty Contains {@see true} in case of no rule has been
+ *                collected, or {@see false} instead.
+ *
+ *                Note: Starting with PHP 8.4, in the future, this annotation
+ *                will be expressed as a full-fledged property.
  */
 final class RuleReplacements
 {
@@ -20,10 +26,6 @@ final class RuleReplacements
      * @var \SplObjectStorage<RuleDefinition, RuleDefinition>
      */
     private readonly \SplObjectStorage $replacements;
-
-    public bool $isEmpty {
-        get => $this->replacements->count() === 0;
-    }
 
     public function __construct()
     {
@@ -45,7 +47,7 @@ final class RuleReplacements
      */
     public function applyTo(ParserBuildingContext $context): void
     {
-        if ($this->isEmpty) {
+        if ($this->replacements->count() === 0) {
             return;
         }
 
@@ -80,5 +82,13 @@ final class RuleReplacements
         }
 
         return $rule;
+    }
+
+    public function __get(string $property): mixed
+    {
+        return match ($property) {
+            'isEmpty' => $this->replacements->count() === 0,
+            default => throw new \Error(\sprintf('Undefined property %s::$%s', static::class, $property)),
+        };
     }
 }

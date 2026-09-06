@@ -10,14 +10,16 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the lexer does not contain "unmatchable" regular expressions
+ *
+ * @readonly
  */
-final readonly class RegexExcessiveGreedLexerCompilerPass implements
+final class RegexExcessiveGreedLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**
      * @var list<non-empty-string>
      */
-    private const array WIDE_PATTERNS = ['.+', '.*'];
+    private const WIDE_PATTERNS = ['.+', '.*'];
 
     public function process(LexerBuildingContext $context): void
     {

@@ -11,8 +11,10 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 
 /**
  * Replaces every reference by the rule it points at.
+ *
+ * @readonly
  */
-final readonly class RuleReferenceResolutionParserCompilerPass implements
+final class RuleReferenceResolutionParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

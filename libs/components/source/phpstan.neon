@@ -1,5 +1,8 @@
 parameters:
   level: max
+  phpVersion:
+    min: 80100
+    max: 80599
   fileExtensions:
     - php
   paths:

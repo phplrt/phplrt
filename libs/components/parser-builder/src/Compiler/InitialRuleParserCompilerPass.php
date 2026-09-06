@@ -11,8 +11,10 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
  *
  * The first rule added to the builder is used, so the grammar defined from the
  * top-down needs no marking at all.
+ *
+ * @readonly
  */
-final readonly class InitialRuleParserCompilerPass implements
+final class InitialRuleParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

@@ -10,9 +10,7 @@ use Phplrt\Contracts\Lexer\TokenInterface;
 
 final class TokenStub implements TokenInterface
 {
-    public int $size {
-        get => \strlen($this->value);
-    }
+    public readonly int $size;
 
     public function __construct(
         public readonly int $offset = self::MIN_OFFSET,
@@ -20,7 +18,9 @@ final class TokenStub implements TokenInterface
         public readonly int $id = 0,
         public readonly ?string $name = null,
         public readonly ChannelInterface $channel = Channel::Default,
-    ) {}
+    ) {
+        $this->size = \strlen($this->value);
+    }
 
     public function __toString(): string
     {

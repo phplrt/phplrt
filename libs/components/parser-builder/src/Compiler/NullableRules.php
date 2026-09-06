@@ -13,14 +13,16 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
  * Tells which rules of the grammar may be recognized without reading a token.
+ *
+ * @readonly
  */
-final readonly class NullableRules
+final class NullableRules
 {
     /**
      * @param \SplObjectStorage<RuleDefinition, bool> $rules
      */
     private function __construct(
-        private \SplObjectStorage $rules,
+        private readonly \SplObjectStorage $rules,
     ) {}
 
     /**

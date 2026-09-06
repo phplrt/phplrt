@@ -9,38 +9,40 @@ use Phplrt\Exception\Analysis\FailureLevel;
 /**
  * Prints the diagnostics decorated by the ANSI escape sequences supported by
  * the terminals.
+ *
+ * @readonly
  */
-final readonly class AnsiRustStyleRenderer extends RustStyleRenderer
+final class AnsiRustStyleRenderer extends RustStyleRenderer
 {
     /**
      * @var non-empty-string
      */
-    private const string DELIMITER = '␤';
+    private const DELIMITER = '␤';
 
     /**
      * @var non-empty-string
      */
-    private const string SEQUENCE_ERROR = '31';
+    private const SEQUENCE_ERROR = '31';
 
     /**
      * @var non-empty-string
      */
-    private const string SEQUENCE_WARNING = '33';
+    private const SEQUENCE_WARNING = '33';
 
     /**
      * @var non-empty-string
      */
-    private const string SEQUENCE_DEBUG = '1';
+    private const SEQUENCE_DEBUG = '1';
 
     /**
      * @var non-empty-string
      */
-    private const string SEQUENCE_DIMMED = '90';
+    private const SEQUENCE_DIMMED = '90';
 
     /**
      * @var non-empty-string
      */
-    private const string SEQUENCE_FRAME = '94';
+    private const SEQUENCE_FRAME = '94';
 
     /**
      * Returns {@see true} in case the output understands the escape sequences.

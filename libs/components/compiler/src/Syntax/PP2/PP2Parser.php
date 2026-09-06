@@ -26,36 +26,65 @@ namespace Phplrt\Compiler\Syntax\PP2;
  * @template TResult of mixed = mixed
  *
  * @template-extends \Phplrt\Parser\Parser<TResult>
+ *
+ * @readonly
  */
-readonly class PP2Parser extends \Phplrt\Parser\Parser
+class PP2Parser extends \Phplrt\Parser\Parser
 {
-    public const int T_WHITESPACE = 0;
-    public const int T_COMMENT = 1;
-    public const int T_DOC = 2;
-    public const int T_PRAGMA = 3;
-    public const int T_INCLUDE = 4;
-    public const int T_PHP = 5;
-    public const int T_SEMICOLON = 6;
-    public const int T_OR = 7;
-    public const int T_PARENTHESIS_OPEN = 8;
-    public const int T_PARENTHESIS_CLOSE = 9;
-    public const int T_ANGLE_OPEN = 10;
-    public const int T_ANGLE_CLOSE = 11;
-    public const int T_QUESTION_MARK = 12;
-    public const int T_PLUS = 13;
-    public const int T_ASTERISK = 14;
-    public const int T_BRACE_OPEN = 15;
-    public const int T_BRACE_CLOSE = 16;
-    public const int T_COMMA = 17;
-    public const int T_INT = 18;
-    public const int T_STRING = 19;
-    public const int T_NAME = 20;
-    public const int T_TOKEN = 21;
-    public const int T_SKIP = 22;
-    public const int T_ARROW = 23;
-    public const int T_DOUBLE_COLON = 24;
-    public const int T_EQ = 25;
-    public const int T_HASH = 26;
+    /** @var int */
+    public const T_WHITESPACE = 0;
+    /** @var int */
+    public const T_COMMENT = 1;
+    /** @var int */
+    public const T_DOC = 2;
+    /** @var int */
+    public const T_PRAGMA = 3;
+    /** @var int */
+    public const T_INCLUDE = 4;
+    /** @var int */
+    public const T_PHP = 5;
+    /** @var int */
+    public const T_SEMICOLON = 6;
+    /** @var int */
+    public const T_OR = 7;
+    /** @var int */
+    public const T_PARENTHESIS_OPEN = 8;
+    /** @var int */
+    public const T_PARENTHESIS_CLOSE = 9;
+    /** @var int */
+    public const T_ANGLE_OPEN = 10;
+    /** @var int */
+    public const T_ANGLE_CLOSE = 11;
+    /** @var int */
+    public const T_QUESTION_MARK = 12;
+    /** @var int */
+    public const T_PLUS = 13;
+    /** @var int */
+    public const T_ASTERISK = 14;
+    /** @var int */
+    public const T_BRACE_OPEN = 15;
+    /** @var int */
+    public const T_BRACE_CLOSE = 16;
+    /** @var int */
+    public const T_COMMA = 17;
+    /** @var int */
+    public const T_INT = 18;
+    /** @var int */
+    public const T_STRING = 19;
+    /** @var int */
+    public const T_NAME = 20;
+    /** @var int */
+    public const T_TOKEN = 21;
+    /** @var int */
+    public const T_SKIP = 22;
+    /** @var int */
+    public const T_ARROW = 23;
+    /** @var int */
+    public const T_DOUBLE_COLON = 24;
+    /** @var int */
+    public const T_EQ = 25;
+    /** @var int */
+    public const T_HASH = 26;
 
     public function __construct()
     {

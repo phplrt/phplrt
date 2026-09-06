@@ -10,8 +10,10 @@ use Phplrt\Compiler\Node\Statement\Statement;
 
 /**
  * Declares a rule of the parser.
+ *
+ * @readonly
  */
-final readonly class RuleDeclaration extends Declaration
+final class RuleDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -23,28 +25,28 @@ final readonly class RuleDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * What the rule recognizes.
          */
-        public Statement $body,
+        public readonly Statement $body,
         /**
          * Converts the rule into a node of the syntax tree, or {@see null} in
          * case of the rule is reduced to its children.
          */
-        public ?Reducer $reducer = null,
+        public readonly ?Reducer $reducer = null,
         /**
          * Contains {@see true} in case of the rule is kept in the syntax tree
          * even when it recognizes a single child
          */
-        public bool $isKept = false,
+        public readonly bool $isKept = false,
         /**
          * What is said about the rule apart from what it recognizes, in the
          * order it is written.
          *
          * @var list<Annotation>
          */
-        public array $annotations = [],
+        public readonly array $annotations = [],
         int $offset = 0,
         int $length = 0,
     ) {

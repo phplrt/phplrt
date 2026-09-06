@@ -18,18 +18,20 @@ use Phplrt\Exception\Snippet\SourceLine;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Exception
+ *
+ * @readonly
  */
-final readonly class LineReader
+final class LineReader
 {
     /**
      * @var non-empty-string
      */
-    private const string DELIMITER_ANCHOR = "\n";
+    private const DELIMITER_ANCHOR = "\n";
 
     /**
      * @var non-empty-string
      */
-    private const string DELIMITER_EXTRA = "\r";
+    private const DELIMITER_EXTRA = "\r";
 
     public function __construct(
         /**
@@ -37,7 +39,7 @@ final readonly class LineReader
          *
          * @var int<1, max>
          */
-        private int $chunkSize,
+        private readonly int $chunkSize,
     ) {}
 
     /**

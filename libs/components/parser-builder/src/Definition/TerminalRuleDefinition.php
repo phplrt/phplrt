@@ -13,8 +13,10 @@ abstract class TerminalRuleDefinition extends RuleDefinition
      * Contains {@see true} in case of the token should be kept in the syntax
      * tree (a name, a literal), or {@see false} in case of it is only consumed
      * (punctuation, such as a comma or a bracket)
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) bool $isKept = true;
+    public bool $isKept = true;
 
     /**
      * @api

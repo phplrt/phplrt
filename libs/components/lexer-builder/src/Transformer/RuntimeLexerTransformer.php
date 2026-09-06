@@ -22,8 +22,10 @@ use Phplrt\Lexer\Lexer;
  * A name is what a grammar refers to a lexer by, and nothing refers to a lexer
  * once it has been built, so the names are resolved here and the compiled
  * lexer is given the lexers themselves.
+ *
+ * @readonly
  */
-final readonly class RuntimeLexerTransformer
+final class RuntimeLexerTransformer
 {
     /**
      * @param iterable<mixed, ChannelInterface> $skip
@@ -35,7 +37,7 @@ final readonly class RuntimeLexerTransformer
          * A lexer reading a fragment is built the same way as the one entering
          * it, so what is not reported is not reported anywhere.
          */
-        private iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS,
+        private readonly iterable $skip = Lexer::DEFAULT_SKIP_CHANNELS,
     ) {}
 
     /**

@@ -11,8 +11,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that no two token definitions recognize the same fragment
+ *
+ * @readonly
  */
-final readonly class RegexDuplicationLexerCompilerPass implements
+final class RegexDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**
@@ -21,14 +23,14 @@ final readonly class RegexDuplicationLexerCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string PATTERN_LITERAL = '/^(?:\\\\[^\p{L}\p{N}]|[^\\\\^$.\[\]|()?*+{}])++$/u';
+    private const PATTERN_LITERAL = '/^(?:\\\\[^\p{L}\p{N}]|[^\\\\^$.\[\]|()?*+{}])++$/u';
 
     /**
      * Everything such an expression escapes.
      *
      * @var non-empty-string
      */
-    private const string PATTERN_ESCAPE = '/\\\\(.)/su';
+    private const PATTERN_ESCAPE = '/\\\\(.)/su';
 
     public function process(LexerBuildingContext $context): void
     {

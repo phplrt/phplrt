@@ -28,7 +28,7 @@ class ParserCompilerException extends \Exception
         $context = $this->context;
 
         try {
-            $result = new ErrorPrinter()
+            $result = (new ErrorPrinter())
                 ->print($this);
 
             if ($context !== null) {

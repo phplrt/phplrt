@@ -20,8 +20,8 @@ jobs:
           # - '7.4'
           # - '8.0'
           # - '8.1'
-          # - '8.2'
-          # - '8.3'
+          - '8.2'
+          - '8.3'
           - '8.4'
           - '8.5'
           - '8.6'
@@ -38,13 +38,15 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:v2
           ini-values: "memory_limit=-1"
+      - name: Resolve Dependencies For PHP ${{ matrix.php }}
+        run: |
+          composer config --unset platform.php
+          composer config --unset require-dev
       - name: Install Dependencies
-        continue-on-error: ${{ contains(fromJSON('["7.4", "8.0", "8.1", "8.2", "8.3"]'), matrix.php) }}
         uses: nick-invision/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
-          command: composer update --no-dev --ignore-platform-reqs
+          command: composer update --no-dev
       - name: Execute Tests
-        continue-on-error: ${{ contains(fromJSON('["7.4", "8.0", "8.1", "8.2", "8.3"]'), matrix.php) }}
         run: php tests/syntax-check.php

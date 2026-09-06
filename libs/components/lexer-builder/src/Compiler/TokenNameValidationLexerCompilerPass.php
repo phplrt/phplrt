@@ -9,8 +9,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the token name is valid
+ *
+ * @readonly
  */
-final readonly class TokenNameValidationLexerCompilerPass implements
+final class TokenNameValidationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuildingContext $context): void

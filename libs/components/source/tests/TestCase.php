@@ -7,14 +7,27 @@ namespace Phplrt\Source\Tests;
 use Testo\Core\Exception\SkipTest;
 use Testo\Lifecycle\AfterTest;
 
+/**
+ * @property-read string $temp
+ */
 abstract class TestCase
 {
-    private const string TEMP_DIRECTORY = __DIR__ . '/temp';
+    private const TEMP_DIRECTORY = __DIR__ . '/temp';
 
-    protected string $temp {
-        get => $this->temp ??= self::TEMP_DIRECTORY
-            . \DIRECTORY_SEPARATOR
-            . \uniqid('phplrt_test_', true) . '.txt';
+    private ?string $tempPathname = null;
+
+    public function __get(string $property): mixed
+    {
+        return match ($property) {
+            'temp' => $this->tempPathname ??= self::TEMP_DIRECTORY
+                . \DIRECTORY_SEPARATOR
+                . \uniqid('phplrt_test_', true) . '.txt',
+            default => throw new \Error(\sprintf(
+                'Undefined property %s::$%s',
+                static::class,
+                $property,
+            )),
+        };
     }
 
     protected function createNonSeekableResource(string $content = '')

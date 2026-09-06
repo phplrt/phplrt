@@ -24,8 +24,10 @@ final class PhpCodeEmbeddedLexer implements EmbeddedLexerInterface
     /**
      * The place of the source code this lexer has been written in, in case it
      * has been written at all rather than built by hand.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?SourceReference $context = null;
+    public ?SourceReference $context = null;
 
     /**
      * @param non-empty-string $code

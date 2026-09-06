@@ -12,8 +12,10 @@ use Phplrt\Exception\Analysis\FailureInterval;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Exception
+ *
+ * @readonly
  */
-final readonly class ParserFailureLocator implements FailureLocatorInterface
+final class ParserFailureLocator implements FailureLocatorInterface
 {
     public function tryLocate(\Throwable $e): ?FailureLocation
     {

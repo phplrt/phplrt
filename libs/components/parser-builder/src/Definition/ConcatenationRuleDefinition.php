@@ -12,10 +12,6 @@ final class ConcatenationRuleDefinition extends ProductionRuleDefinition impleme
 {
     use HasChildRuleDefinitions;
 
-    public array $children {
-        get => $this->rules;
-    }
-
     /**
      * @param list<RuleDefinition> $rules
      * @param non-empty-string|null $name

@@ -11,8 +11,10 @@ use Phplrt\Parser\Builder\ParserBuilder;
 /**
  * Copies the grammar of the builder into the context the compiler passes work
  * on, so that a pass rewriting the rules does not reach the builder.
+ *
+ * @readonly
  */
-final readonly class ParserBuildingContextTransformer
+final class ParserBuildingContextTransformer
 {
     public function transform(ParserBuilder $builder): ParserBuildingContext
     {

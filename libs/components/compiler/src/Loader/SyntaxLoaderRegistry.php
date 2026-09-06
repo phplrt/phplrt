@@ -25,24 +25,18 @@ final class SyntaxLoaderRegistry
      * named with.
      *
      * @var array<non-empty-string, SyntaxLoaderInterface>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $loaders;
+    public array $loaders;
 
     /**
      * The loader reading a grammar that is written in no file, or in a file
      * named with an extension of no format.
-     */
-    public private(set) SyntaxLoaderInterface $default;
-
-    /**
-     * The extensions a grammar file may be named with, in the order they are
-     * tried while a reference is being resolved.
      *
-     * @var list<non-empty-string>
+     * @phpstan-readonly-allow-private-mutation
      */
-    public array $extensions {
-        get => \array_keys($this->loaders);
-    }
+    public SyntaxLoaderInterface $default;
 
     /**
      * @param array<non-empty-string, SyntaxLoaderInterface>|null $loaders
@@ -53,6 +47,17 @@ final class SyntaxLoaderRegistry
     ) {
         $this->loaders = $loaders ?? $this->createDefaultLoaders();
         $this->default = $default ?? $this->createDefaultLoader();
+    }
+
+    /**
+     * The extensions a grammar file may be named with, in the order they are
+     * tried while a reference is being resolved.
+     *
+     * @return list<non-empty-string>
+     */
+    public function getSupportedExtensions(): array
+    {
+        return \array_keys($this->loaders);
     }
 
     private function createDefaultLoader(): SyntaxLoaderInterface

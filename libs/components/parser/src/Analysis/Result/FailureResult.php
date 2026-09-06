@@ -11,14 +11,16 @@ use Phplrt\Contracts\Parser\Exception\RuntimeExceptionInterface;
  * The grammar has read nothing of the source.
  *
  * @template-extends Result<never>
+ *
+ * @readonly
  */
-final readonly class FailureResult extends Result
+final class FailureResult extends Result
 {
     public function __construct(
         /**
          * The token the grammar has stopped on.
          */
-        public TokenInterface $token,
+        public readonly TokenInterface $token,
         /**
          * What the analysis has to say about the source: the very error the
          * source would be rejected with, ready to be thrown as it is.
@@ -26,7 +28,7 @@ final readonly class FailureResult extends Result
          * The reading stops where it can no longer go on, so there is exactly
          * one thing to say and this is it.
          */
-        public RuntimeExceptionInterface $error,
+        public readonly RuntimeExceptionInterface $error,
     ) {
         parent::__construct();
     }

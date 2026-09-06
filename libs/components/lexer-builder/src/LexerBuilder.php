@@ -43,90 +43,116 @@ final class LexerBuilder implements LoggerAwareInterface
      * Brings the lexer to the form the rest of the passes expect: the lexers
      * that cannot be entered are dropped, and what a token definition refers
      * to is written into it.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_NORMALIZE = 0;
+    public const PASS_PRIORITY_NORMALIZE = 0;
 
     /**
      * Reports the lexer that cannot be compiled.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK = 100;
+    public const PASS_PRIORITY_CHECK = 100;
 
     /**
      * Rewrites the token definitions, keeping the input they recognize the
      * same.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_OPTIMIZE = 200;
+    public const PASS_PRIORITY_OPTIMIZE = 200;
 
     /**
      * Reports the lexer that has been broken by a rewrite.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
+    public const PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
      * Contains {@see true} in case of the lexer is called by another one, so
      * it is allowed to stop reading and give the control back
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) bool $isEmbedded = false;
+    public bool $isEmbedded = false;
 
     /**
      * The token definitions the lexer recognizes on its own, in the order they
      * are tried.
      *
      * @var array<array-key, TokenDefinition>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $tokens = [];
+    public array $tokens = [];
 
     /**
      * A map of modifier value and the modifier the pattern is compiled with.
      *
      * @var array<non-empty-string, RegexModifier>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $flags = [
-        RegexModifier::Compiled->value => RegexModifier::Compiled,
-        RegexModifier::DotAll->value => RegexModifier::DotAll,
-        RegexModifier::Utf8->value => RegexModifier::Utf8,
-        RegexModifier::Multiline->value => RegexModifier::Multiline,
-    ];
+    public array $flags = [];
 
     /**
      * A map of name and the piece of an expression it stands for.
      *
      * @var array<non-empty-string, FragmentDefinition>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $fragments = [];
+    public array $fragments = [];
 
     /**
      * A map of name and the lexer reading the fragment it stands for.
      *
      * @var array<non-empty-string, self|EmbeddedLexerInterface>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $lexers = [];
+    public array $lexers = [];
 
     /**
      * The passes rewriting and checking the token definitions, indexed by
      * their priority.
      *
      * @var array<int, list<LexerCompilerPassInterface>>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $compilerPasses = [];
+    public array $compilerPasses = [];
 
     /**
      * The passes describing the assembled lexer, in the order they have been
      * registered.
      *
      * @var list<LexerAnalysisPassInterface>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $analysisPasses = [];
+    public array $analysisPasses = [];
 
     /**
      * Reports what the passes do to the token definitions while the lexer is
      * built.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) LoggerInterface $logger;
+    public LoggerInterface $logger;
 
     public function __construct()
     {
         $this->logger = new NullLogger();
+
+        $this->flags = [
+            RegexModifier::Compiled->value => RegexModifier::Compiled,
+            RegexModifier::DotAll->value => RegexModifier::DotAll,
+            RegexModifier::Utf8->value => RegexModifier::Utf8,
+            RegexModifier::Multiline->value => RegexModifier::Multiline,
+        ];
 
         $this->compilerPasses = [
             /**
@@ -374,9 +400,12 @@ final class LexerBuilder implements LoggerAwareInterface
      */
     public function addCompilerPass(LexerCompilerPassInterface $pass, int $priority = self::PASS_PRIORITY_CHECK): self
     {
-        $this->compilerPasses[$priority][] = $pass;
+        $passes = $this->compilerPasses;
+        $passes[$priority][] = $pass;
 
-        \ksort($this->compilerPasses);
+        \ksort($passes);
+
+        $this->compilerPasses = $passes;
 
         return $this;
     }
@@ -448,12 +477,12 @@ final class LexerBuilder implements LoggerAwareInterface
             'tokens' => \count($this->tokens),
         ]);
 
-        $building = new LexerBuildingContextTransformer()
+        $building = (new LexerBuildingContextTransformer())
             ->transform($this);
 
         $this->process($building);
 
-        $result = new LexerResultContextTransformer()
+        $result = (new LexerResultContextTransformer())
             ->transform($building);
 
         $this->analyze($result);
@@ -462,7 +491,7 @@ final class LexerBuilder implements LoggerAwareInterface
             'tokens' => \count($result->tokens),
         ]);
 
-        return new LexerBuilderResultTransformer()
+        return (new LexerBuilderResultTransformer())
             ->transform($result);
     }
 

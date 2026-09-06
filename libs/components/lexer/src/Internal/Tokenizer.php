@@ -20,32 +20,34 @@ use Phplrt\Lexer\Token\UnknownToken;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
+ *
+ * @readonly
  */
-final readonly class Tokenizer
+final class Tokenizer
 {
     /**
      * Max length (in bytes) of the source fragment mentioned in error messages.
      *
      * @var int<1, max>
      */
-    private const int ERROR_FRAGMENT_LENGTH = 64;
+    private const ERROR_FRAGMENT_LENGTH = 64;
 
     /**
      * Stands in for the tokens the configuration says nothing about.
      */
-    private Token $fallback;
+    private readonly Token $fallback;
 
     public function __construct(
         /**
          * @var non-empty-string
          */
-        private string $pattern,
+        private readonly string $pattern,
         /**
          * A ready-made token per token ID, cloned and filled in while reading.
          *
          * @var array<int, Token>
          */
-        private array $prototypes,
+        private readonly array $prototypes,
         /**
          * A set of token IDs the analysis must stop after.
          *
@@ -55,20 +57,20 @@ final readonly class Tokenizer
          *
          * @var array<int, true>
          */
-        private array $breaks,
+        private readonly array $breaks,
         /**
          * A set of token IDs that are read but never reported.
          *
          * @var array<int, true>
          */
-        private array $skip = [],
+        private readonly array $skip = [],
         /**
          * The number of subgroups each token definition has, indexed by the
          * token IDs. A token that is not mentioned captures nothing.
          *
          * @var array<int, int<1, max>>
          */
-        private array $subgroups = [],
+        private readonly array $subgroups = [],
     ) {
         $this->fallback = TokenPrototypeLoader::createFallbackPrototype();
     }

@@ -19,24 +19,26 @@ use Phplrt\Parser\Builder\Exception\CompilationFailedException;
  *
  * Such a rule would be entered over and over again at the very same position
  * of the input, so the analysis would never end.
+ *
+ * @readonly
  */
-final readonly class LeftRecursionValidationParserCompilerPass implements
+final class LeftRecursionValidationParserCompilerPass implements
     ParserCompilerPassInterface
 {
     /**
      * The rule has not been visited yet.
      */
-    private const int STATUS_PENDING = 0;
+    private const STATUS_PENDING = 0;
 
     /**
      * The rule is being visited, so reaching it again closes the cycle.
      */
-    private const int STATUS_ENTERED = 1;
+    private const STATUS_ENTERED = 1;
 
     /**
      * The rule and everything it may begin with is known to be correct.
      */
-    private const int STATUS_COMPLETED = 2;
+    private const STATUS_COMPLETED = 2;
 
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {

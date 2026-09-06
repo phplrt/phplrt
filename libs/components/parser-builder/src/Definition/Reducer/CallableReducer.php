@@ -10,13 +10,15 @@ use Phplrt\Parser\Context;
  * Converts the rule into the node of the syntax tree using the given callback.
  *
  * @phpstan-type CallbackType callable(Context, mixed): mixed
+ *
+ * @readonly
  */
-final readonly class CallableReducer implements ReducerInterface
+final class CallableReducer implements ReducerInterface
 {
     /**
      * @var CallbackType&\Closure
      */
-    public \Closure $callback;
+    public readonly \Closure $callback;
 
     /**
      * @param CallbackType $callback

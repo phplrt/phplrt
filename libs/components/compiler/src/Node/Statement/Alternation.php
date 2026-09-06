@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Statement;
 
 /**
  * Recognizes the first of the given statements that matches the input.
+ *
+ * @readonly
  */
-final readonly class Alternation extends Statement
+final class Alternation extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -17,7 +19,7 @@ final readonly class Alternation extends Statement
         /**
          * @var non-empty-list<Statement>
          */
-        public array $statements,
+        public readonly array $statements,
         int $offset = 0,
         int $length = 0,
     ) {

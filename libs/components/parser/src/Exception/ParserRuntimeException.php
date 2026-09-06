@@ -39,7 +39,7 @@ abstract class ParserRuntimeException extends ParserException implements
     public function __toString(): string
     {
         try {
-            return (string) new ErrorPrinter()
+            return (string) (new ErrorPrinter())
                 ->print($this);
         } catch (\Throwable) {
             return parent::__toString();

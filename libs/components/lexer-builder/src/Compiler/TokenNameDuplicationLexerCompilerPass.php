@@ -12,8 +12,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
  * Each named token is exposed as a class constant of the generated lexer, so
  * a name cannot be reused. A lexer reading a fragment of its own is a class of
  * its own, which is why its names are none of this one's business.
+ *
+ * @readonly
  */
-final readonly class TokenNameDuplicationLexerCompilerPass implements
+final class TokenNameDuplicationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuildingContext $context): void

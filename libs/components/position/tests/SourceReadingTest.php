@@ -15,7 +15,7 @@ use Testo\Test;
 #[Test]
 final class SourceReadingTest extends TestCase
 {
-    private const string CODE = "first\nsecond\nthird";
+    private const CODE = "first\nsecond\nthird";
 
     public function testSourceIsReadFromItsBeginning(): void
     {
@@ -70,7 +70,7 @@ final class SourceReadingTest extends TestCase
     public function testNonSeekableSourceIsReadAfterAPartOfItHasBeenTaken(): void
     {
         $factory = new PositionFactory();
-        $source = new ResourceSource($this->createNonSeekableResource(self::CODE))
+        $source = (new ResourceSource($this->createNonSeekableResource(self::CODE)))
             ->toSeekableSource();
 
         Assert::same($source->read(0, 5), 'first');

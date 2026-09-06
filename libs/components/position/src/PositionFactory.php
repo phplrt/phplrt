@@ -12,27 +12,29 @@ use Phplrt\Position\Exception\InvalidArgumentException;
 
 /**
  * Calculates positions by counting the line delimiters the source holds.
+ *
+ * @readonly
  */
-final readonly class PositionFactory implements PositionFactoryInterface
+final class PositionFactory implements PositionFactoryInterface
 {
     /**
      * The number of bytes read at once by default.
      *
      * @var int<1, max>
      */
-    public const int DEFAULT_CHUNK_SIZE = 65536;
+    public const DEFAULT_CHUNK_SIZE = 65536;
 
     /**
      * @var non-empty-string
      */
-    private const string LINE_DELIMITER = "\n";
+    private const LINE_DELIMITER = "\n";
 
     /**
      * The number of bytes read at once.
      *
      * @var int<1, max>
      */
-    private int $chunkSize;
+    private readonly int $chunkSize;
 
     /**
      * @throws InvalidArgumentException When the number of bytes is not positive

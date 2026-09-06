@@ -19,8 +19,10 @@ use Phplrt\Source\FileSource;
  * relative and its extension may be omitted: what it stands for is decided
  * here, by looking for the file next to the grammar the reference is written
  * in.
+ *
+ * @readonly
  */
-final readonly class ReferenceLoader
+final class ReferenceLoader
 {
     /**
      * The directory a reference is relative to in case of the grammar it is
@@ -28,11 +30,11 @@ final readonly class ReferenceLoader
      *
      * @var non-empty-string
      */
-    private const string DIRECTORY_CURRENT = '.';
+    private const DIRECTORY_CURRENT = '.';
 
     public function __construct(
-        private Compiler $context,
-        private SyntaxLoaderRegistry $loaders,
+        private readonly Compiler $context,
+        private readonly SyntaxLoaderRegistry $loaders,
     ) {}
 
     /**
@@ -71,7 +73,7 @@ final readonly class ReferenceLoader
 
         // A reference is allowed to omit the extension, so every format there
         // is gets tried in turn
-        foreach ($this->loaders->extensions as $extension) {
+        foreach ($this->loaders->getSupportedExtensions() as $extension) {
             if (\is_file($pathname . '.' . $extension)) {
                 return $pathname . '.' . $extension;
             }

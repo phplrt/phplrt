@@ -10,8 +10,10 @@ use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
 
 /**
  * Checks that the lexer hands the reading over to the lexers it knows.
+ *
+ * @readonly
  */
-final readonly class TransitionValidationLexerCompilerPass implements
+final class TransitionValidationLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     public function process(LexerBuildingContext $context): void

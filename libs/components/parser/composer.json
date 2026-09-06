@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.1",
         "ext-pcre": "*",
         "ext-json": "*",
         "phplrt/lexer": "^4.0",
@@ -36,7 +36,7 @@
         "phplrt/exception": "^4.0",
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
-        "testo/testo": "^0.10.44",
+        "testo/testo": "^0.10.45",
         "phpstan/phpstan": "^2.2"
     },
     "autoload-dev": {

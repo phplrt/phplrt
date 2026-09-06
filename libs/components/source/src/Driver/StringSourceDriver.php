@@ -8,8 +8,10 @@ use Phplrt\Source\StringSource;
 
 /**
  * Creates a source out of a string containing the source code itself.
+ *
+ * @readonly
  */
-final readonly class StringSourceDriver implements SourceDriverInterface
+final class StringSourceDriver implements SourceDriverInterface
 {
     public function tryCreate(mixed $source): ?StringSource
     {

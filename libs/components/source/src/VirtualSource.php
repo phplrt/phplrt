@@ -14,18 +14,18 @@ use Phplrt\Contracts\Source\ReadableInterface;
  * The pathname is the only thing this object adds: everything that is read
  * comes from the source it has been given, whatever kind it is.
  *
+ * Note: Starting with PHP 8.4, in the future, all property annotations
+ *       described below will be expressed as full properties.
+ *
+ * @property-read string $content The whole content of the source.
+ *
+ *         Reading it throws a {@see SourceExceptionInterface} when it is not
+ *         possible to read source's data and/or convert it to a string.
+ *
  * @final please do not inherit from this class
  */
 class VirtualSource extends Readable implements FileInterface
 {
-    /**
-     * @throws SourceExceptionInterface may occur when it is not possible to
-     *         read source's data and/or convert it to a string
-     */
-    public string $content {
-        get => $this->source->content;
-    }
-
     public function __construct(
         /**
          * The virtual file pathname
@@ -87,5 +87,37 @@ class VirtualSource extends Readable implements FileInterface
     public function read(int $offset, int $bytes): string
     {
         return $this->source->read($offset, $bytes);
+    }
+
+    /**
+     * An alias of the {@see $content} property.
+     *
+     * @throws SourceExceptionInterface may occur when it is not possible to
+     *         read source's data and/or convert it to a string
+     */
+    public function getContents(): string
+    {
+        $source = $this->source;
+
+        if ($source instanceof Readable) {
+            return $source->getContents();
+        }
+
+        return $source->content;
+    }
+
+    /**
+     * @throws SourceExceptionInterface may occur when it is not possible to
+     *         read source's data and/or convert it to a string
+     */
+    public function __get(string $property): mixed
+    {
+        switch ($property) {
+            case 'content':
+                return $this->getContents();
+
+            default:
+                throw new \Error(\sprintf('Undefined property %s::$%s', static::class, $property));
+        }
     }
 }

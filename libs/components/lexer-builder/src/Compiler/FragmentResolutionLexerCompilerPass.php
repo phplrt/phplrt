@@ -23,8 +23,10 @@ use Psr\Log\LoggerInterface;
  *
  * The states are reached through the lexer they belong to, so a piece declared
  * once is written into every expression of every state.
+ *
+ * @readonly
  */
-final readonly class FragmentResolutionLexerCompilerPass implements
+final class FragmentResolutionLexerCompilerPass implements
     LexerCompilerPassInterface
 {
     /**
@@ -34,14 +36,14 @@ final readonly class FragmentResolutionLexerCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const string PATTERN_REFERENCE = '/\\\\.|\(\?&([a-zA-Z_][a-zA-Z0-9_]*+)\)/s';
+    private const PATTERN_REFERENCE = '/\\\\.|\(\?&([a-zA-Z_][a-zA-Z0-9_]*+)\)/s';
 
     /**
      * The name an expression captures a subpattern under.
      *
      * @var non-empty-string
      */
-    private const string PATTERN_CAPTURE = '/\(\?P?[<\'](%s)[>\']/';
+    private const PATTERN_CAPTURE = '/\(\?P?[<\'](%s)[>\']/';
 
     public function process(LexerBuildingContext $context): void
     {

@@ -16,7 +16,7 @@ use Testo\Test;
 #[Test]
 final class SourceReferenceTest extends TestCase
 {
-    private const string SOURCE = "%token T_NAME [a-z]++\n%token T_END \" -> default\n";
+    private const SOURCE = "%token T_NAME [a-z]++\n%token T_END \" -> default\n";
 
     public function testDefinitionRefersToTheSource(): void
     {

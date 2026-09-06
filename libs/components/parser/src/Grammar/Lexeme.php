@@ -32,15 +32,17 @@ namespace Phplrt\Parser\Grammar;
  *       reading as a single pass over the source. Here it is split in two, so
  *       a terminal is a token: the lexer has turned the characters into them
  *       beforehand.
+ *
+ * @readonly
  */
-final readonly class Lexeme implements TerminalInterface
+final class Lexeme implements TerminalInterface
 {
     public function __construct(
-        public int $tokenId,
+        public readonly int $tokenId,
         /**
          * Whether the token is kept in the result (a name, a literal) or only
          * consumed (punctuation such as a comma or a bracket).
          */
-        public bool $keep = true,
+        public readonly bool $keep = true,
     ) {}
 }

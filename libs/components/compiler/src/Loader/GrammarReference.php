@@ -11,8 +11,10 @@ namespace Phplrt\Compiler\Loader;
  * node it has read: the pathname is spelled the way the grammar spells it,
  * with everything belonging to the format (the quotes, the directive itself)
  * already gone.
+ *
+ * @readonly
  */
-final readonly class GrammarReference
+final class GrammarReference
 {
     public function __construct(
         /**
@@ -24,19 +26,19 @@ final readonly class GrammarReference
          *
          * @var non-empty-string
          */
-        public string $target,
+        public readonly string $target,
         /**
          * The position of the grammar file the reference is written at, which
          * is what an error refers to.
          *
          * @var int<0, max>
          */
-        public int $offset = 0,
+        public readonly int $offset = 0,
         /**
          * The number of bytes the reference is written of.
          *
          * @var int<0, max>
          */
-        public int $length = 0,
+        public readonly int $length = 0,
     ) {}
 }

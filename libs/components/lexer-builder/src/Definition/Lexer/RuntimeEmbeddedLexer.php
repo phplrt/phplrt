@@ -13,11 +13,13 @@ use Phplrt\Contracts\Lexer\LexerInterface;
  * ```php
  * $builder->addEmbeddedLexer('php', new PhpTokenLexer());
  * ```
+ *
+ * @readonly
  */
-final readonly class RuntimeEmbeddedLexer implements EmbeddedLexerInterface
+final class RuntimeEmbeddedLexer implements EmbeddedLexerInterface
 {
     public function __construct(
-        public LexerInterface $lexer,
+        public readonly LexerInterface $lexer,
     ) {}
 
     public function __toString(): string

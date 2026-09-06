@@ -12,8 +12,10 @@ use Phplrt\Position\Exception\InvalidArgumentException;
  * it points at.
  *
  * A position created with no arguments points at the beginning of any source.
+ *
+ * @readonly
  */
-final readonly class Position implements
+final class Position implements
     PositionInterface,
     \Stringable
 {
@@ -27,14 +29,14 @@ final readonly class Position implements
          *
          * @var int<1, max>
          */
-        public int $line = self::MIN_LINE,
+        public readonly int $line = self::MIN_LINE,
         /**
          * The number of the column within its own {@see $line} the position
          * points at.
          *
          * @var int<1, max>
          */
-        public int $column = self::MIN_COLUMN,
+        public readonly int $column = self::MIN_COLUMN,
     ) {
         if ($line < self::MIN_LINE) {
             throw InvalidArgumentException::becauseLineIsOutOfRange($line);

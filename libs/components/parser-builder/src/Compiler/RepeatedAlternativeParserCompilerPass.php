@@ -15,8 +15,10 @@ use Phplrt\Parser\Builder\Definition\RuleDefinition;
  * that is recognized wins, so an alternative repeating an earlier one is never
  * reached and only costs an attempt at every input the rule above it is tried
  * on.
+ *
+ * @readonly
  */
-final readonly class RepeatedAlternativeParserCompilerPass implements
+final class RepeatedAlternativeParserCompilerPass implements
     ParserCompilerPassInterface
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void

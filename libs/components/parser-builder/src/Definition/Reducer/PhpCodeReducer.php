@@ -21,8 +21,10 @@ final class PhpCodeReducer implements ReducerInterface
     /**
      * The place of the source code this reducer has been written in, in case
      * it has been written at all rather than built by hand.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?SourceReference $context = null;
+    public ?SourceReference $context = null;
 
     /**
      * @param non-empty-string $code

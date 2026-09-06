@@ -162,11 +162,11 @@ final class MessageTest extends TestCase
         Assert::instanceOf($labelled, SuccessfulResult::class);
     }
 
-    private const int RULE_EXPRESSION = 0;
+    private const RULE_EXPRESSION = 0;
 
-    private const int RULE_NUMBER = 1;
+    private const RULE_NUMBER = 1;
 
-    private const int RULE_OPERATOR = 4;
+    private const RULE_OPERATOR = 4;
 
     /**
      * @param array<int, non-empty-string> $messages

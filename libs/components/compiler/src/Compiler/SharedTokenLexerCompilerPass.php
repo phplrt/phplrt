@@ -25,12 +25,13 @@ use Psr\Log\LoggerInterface;
 final class SharedTokenLexerCompilerPass implements LexerCompilerPassInterface
 {
     /**
-     * The definitions belonging to every state, in the order they are
-     * declared.
+     * The definitions belonging to every state, in the order they are declared.
      *
      * @var list<TokenDefinition>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $tokens = [];
+    public array $tokens = [];
 
     /**
      * @api

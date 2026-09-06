@@ -21,8 +21,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * @phpstan-type KeptTableType array<int, bool>
  * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
  * @phpstan-type MessageTableType array<int, non-empty-string>
+ *
+ * @readonly
  */
-final readonly class GrammarTable
+final class GrammarTable
 {
     /**
      * The tokens each rule can start with, or "null" if the rule accepts
@@ -37,7 +39,7 @@ final readonly class GrammarTable
      *
      * @var LookaheadTableType
      */
-    public array $lookahead;
+    public readonly array $lookahead;
 
     /**
      * The rules that become a node of the result.
@@ -48,7 +50,7 @@ final readonly class GrammarTable
      *
      * @var KeptTableType
      */
-    public array $kept;
+    public readonly array $kept;
 
     /**
      * @param LookaheadTableType $lookahead
@@ -58,13 +60,13 @@ final readonly class GrammarTable
         /**
          * @var list<RuleInterface>
          */
-        public array $rules,
+        public readonly array $rules,
         /**
          * The identifier of the rule the recognition starts at.
          *
          * @var int<0, max>
          */
-        public int $initial,
+        public readonly int $initial,
         array $lookahead = [],
         array $kept = [],
         /**
@@ -87,14 +89,14 @@ final readonly class GrammarTable
          *
          * @var ChoicePredictionTableType
          */
-        public array $choicePrediction = [],
+        public readonly array $choicePrediction = [],
         /**
          * The message describing the failure of a rule, indexed by the rule
          * identifiers.
          *
          * @var MessageTableType
          */
-        public array $messages = [],
+        public readonly array $messages = [],
     ) {
         // A grammar that has not been described is recognized all the same: it
         // reads exactly the same sources, only slower, and errors get reported

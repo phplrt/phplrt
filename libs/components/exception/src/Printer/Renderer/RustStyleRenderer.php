@@ -19,29 +19,31 @@ use Phplrt\Exception\SnippetReader;
  *
  * A line is printed as long as it is, so the output is as wide as the widest
  * line of the source code it contains.
+ *
+ * @readonly
  */
-abstract readonly class RustStyleRenderer implements RendererInterface
+abstract class RustStyleRenderer implements RendererInterface
 {
     /**
      * @var non-empty-string
      */
-    private const string GUTTER = ' | ';
+    private const GUTTER = ' | ';
 
     /**
      * @var non-empty-string
      */
-    private const string ARROW = '--> ';
+    private const ARROW = '--> ';
 
     /**
      * @var non-empty-string
      */
-    private const string UNDERLINE = '^';
+    private const UNDERLINE = '^';
 
     public function __construct(
         /**
          * The reader of the source code lines the error is printed along with.
          */
-        private SnippetReader $reader = new SnippetReader(),
+        private readonly SnippetReader $reader = new SnippetReader(),
     ) {}
 
     /**
@@ -308,7 +310,13 @@ abstract readonly class RustStyleRenderer implements RendererInterface
      */
     private function findCapturedIndex(array $lines): ?int
     {
-        return \array_find_key($lines, static fn(SourceLine $line): bool => $line instanceof CapturedSourceLine);
+        foreach ($lines as $index => $line) {
+            if ($line instanceof CapturedSourceLine) {
+                return $index;
+            }
+        }
+
+        return null;
     }
 
     /**

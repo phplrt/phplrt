@@ -44,6 +44,6 @@ final class SyntaxLoaderRegistryTest extends TestCase
 
     public function testExtensions(): void
     {
-        Assert::same(new SyntaxLoaderRegistry()->extensions, ['pp', 'pp2', 'pp3']);
+        Assert::same((new SyntaxLoaderRegistry())->getSupportedExtensions(), ['pp', 'pp2', 'pp3']);
     }
 }

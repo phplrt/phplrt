@@ -44,7 +44,7 @@ final class PositionFactoryTest extends TestCase
     #[DataSet([\PHP_INT_MAX], 'max')]
     public function testEveryOffsetOfAnEmptySourcePointsAtItsBeginning(int $offset): void
     {
-        $position = new PositionFactory()->createFromOffset(new StringSource(), $offset);
+        $position = (new PositionFactory())->createFromOffset(new StringSource(), $offset);
 
         Assert::same($position->line, PositionInterface::MIN_LINE);
         Assert::same($position->column, PositionInterface::MIN_COLUMN);

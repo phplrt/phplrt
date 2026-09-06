@@ -12,8 +12,10 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
  * A token handing the reading over is described by the name of the lexer it
  * hands it over to, while the one ending the reading is described by
  * {@see null}.
+ *
+ * @readonly
  */
-final readonly class TransitionConstructionLexerAnalysisPass implements
+final class TransitionConstructionLexerAnalysisPass implements
     LexerAnalysisPassInterface
 {
     public function process(LexerResultContext $context): void

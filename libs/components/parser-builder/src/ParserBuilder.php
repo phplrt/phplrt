@@ -51,30 +51,40 @@ final class ParserBuilder implements LoggerAwareInterface
      * Brings the grammar to the form the rest of the passes expect: the
      * references are replaced by the rules they point at and the rules that
      * cannot be reached are dropped.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_NORMALIZE = 0;
+    public const PASS_PRIORITY_NORMALIZE = 0;
 
     /**
      * Reports the grammar that cannot be compiled into a parser.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK = 100;
+    public const PASS_PRIORITY_CHECK = 100;
 
     /**
      * Rewrites the grammar, keeping the input it recognizes and the result it
      * builds the same.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_OPTIMIZE = 200;
+    public const PASS_PRIORITY_OPTIMIZE = 200;
 
     /**
      * Reports the grammar that has been broken by a rewrite.
+     *
+     * @var int<0, max>
      */
-    public const int PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
+    public const PASS_PRIORITY_CHECK_AFTER_OPTIMIZE = 300;
 
     /**
      * Contains the rule the analysis starts at, or {@see null} in case of the
      * first rule added to the builder is used
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) ?RuleDefinition $initial = null;
+    public ?RuleDefinition $initial = null;
 
     /**
      * The rules added to the builder.
@@ -83,33 +93,40 @@ final class ParserBuilder implements LoggerAwareInterface
      * added is a part of the grammar even before another one refers to it.
      *
      * @var \SplObjectStorage<RuleDefinition, null>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) \SplObjectStorage $rules {
-        get => $this->rules ??= new \SplObjectStorage();
-    }
+    public \SplObjectStorage $rules;
 
     /**
      * The passes rewriting and checking the rules, indexed by their priority.
      *
      * @var array<int, list<ParserCompilerPassInterface>>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $compilerPasses = [];
+    public array $compilerPasses = [];
 
     /**
      * The passes describing the assembled grammar, in the order they have been
      * registered.
      *
      * @var list<ParserAnalysisPassInterface>
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) array $analysisPasses = [];
+    public array $analysisPasses = [];
 
     /**
      * Reports what the passes do to the grammar while the parser is built.
+     *
+     * @phpstan-readonly-allow-private-mutation
      */
-    public private(set) LoggerInterface $logger;
+    public LoggerInterface $logger;
 
     public function __construct()
     {
+        $this->rules = new \SplObjectStorage();
         $this->logger = new NullLogger();
 
         $this->compilerPasses = [
@@ -376,9 +393,12 @@ final class ParserBuilder implements LoggerAwareInterface
         ParserCompilerPassInterface $pass,
         int $priority = self::PASS_PRIORITY_CHECK,
     ): self {
-        $this->compilerPasses[$priority][] = $pass;
+        $passes = $this->compilerPasses;
+        $passes[$priority][] = $pass;
 
-        \ksort($this->compilerPasses);
+        \ksort($passes);
+
+        $this->compilerPasses = $passes;
 
         return $this;
     }
@@ -450,12 +470,12 @@ final class ParserBuilder implements LoggerAwareInterface
             'rules' => $this->rules->count(),
         ]);
 
-        $building = new ParserBuildingContextTransformer()
+        $building = (new ParserBuildingContextTransformer())
             ->transform($this);
 
         $this->process($building, $lexer);
 
-        $result = new ParserResultContextTransformer()
+        $result = (new ParserResultContextTransformer())
             ->transform($building, $lexer);
 
         $this->analyze($result);
@@ -464,7 +484,7 @@ final class ParserBuilder implements LoggerAwareInterface
             'rules' => \count($result->grammar),
         ]);
 
-        return new ParserBuilderResultTransformer()
+        return (new ParserBuilderResultTransformer())
             ->transform($result);
     }
 
