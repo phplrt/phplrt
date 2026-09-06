@@ -10,5 +10,7 @@ use Phplrt\Compiler\Node\Node;
  * A part of what a rule of the parser recognizes.
  *
  * @phpstan-sealed Alternation|Annotated|Concatenation|InlinePattern|InlineValue|Predicate|Repetition|RuleReference|TokenReference
+ *
+ * @readonly
  */
-abstract readonly class Statement extends Node {}
+abstract class Statement extends Node {}

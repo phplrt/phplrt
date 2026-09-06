@@ -24,8 +24,10 @@ use Phplrt\Compiler\Node\Statement\Statement;
  * format that has been read and lives with the parser reading it.
  *
  * @phpstan-sealed Annotation|Declaration|Quantifier|Reducer|Statement|TokenAction
+ *
+ * @readonly
  */
-abstract readonly class Node
+abstract class Node
 {
     public function __construct(
         /**
@@ -34,19 +36,19 @@ abstract readonly class Node
          *
          * @var list<Node>
          */
-        public array $children = [],
+        public readonly array $children = [],
         /**
          * The position in the grammar file the node starts at.
          *
          * @var int<0, max>
          */
-        public int $offset = 0,
+        public readonly int $offset = 0,
         /**
          * The number of bytes of the grammar file the node is written of, or
          * "0" in case of the node ends where it starts.
          *
          * @var int<0, max>
          */
-        public int $length = 0,
+        public readonly int $length = 0,
     ) {}
 }

@@ -13,8 +13,10 @@ use Phplrt\Compiler\Node\Node;
  * whether such an action exists at all is decided while the grammar is being
  * read into a lexer, so that an unknown one is reported by the place it is
  * written at.
+ *
+ * @readonly
  */
-final readonly class TokenAction extends Node
+final class TokenAction extends Node
 {
     /**
      * @param int<0, max> $offset
@@ -26,14 +28,14 @@ final readonly class TokenAction extends Node
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The value the action is given, or {@see null} in case of the action
          * is written with no value at all.
          *
          * @var non-empty-string|null
          */
-        public ?string $argument = null,
+        public readonly ?string $argument = null,
         int $offset = 0,
         int $length = 0,
     ) {

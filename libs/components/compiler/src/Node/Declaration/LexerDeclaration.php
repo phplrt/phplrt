@@ -13,8 +13,10 @@ use Phplrt\Compiler\Node\Reducer\CodeReducer;
  * recognizes, which is how a fragment that no regular expression can describe
  * is read: the grammar names the fragment and hands the reading over to
  * something written by hand.
+ *
+ * @readonly
  */
-final readonly class LexerDeclaration extends Declaration
+final class LexerDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -27,11 +29,11 @@ final readonly class LexerDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The code building the lexer.
          */
-        public CodeReducer $lexer,
+        public readonly CodeReducer $lexer,
         int $offset = 0,
         int $length = 0,
     ) {

@@ -14,30 +14,32 @@ use Phplrt\Compiler\Exception\OutputFileException;
  *
  * The code is written the moment it is asked for, so the place it is written
  * into may still be told after the compilation is over.
+ *
+ * @readonly
  */
-final readonly class GeneratedOutput implements \Stringable
+final class GeneratedOutput implements \Stringable
 {
     public function __construct(
         /**
          * The result of the compilation the code is written of.
          */
-        private CompilerResult $result,
+        private readonly CompilerResult $result,
         /**
          * Writes the result down.
          */
-        private OutputGeneratorInterface $generator = new PhpOutputGenerator(),
+        private readonly OutputGeneratorInterface $generator = new PhpOutputGenerator(),
         /**
          * The place the code is written into.
          */
-        private OutputContext $context = new OutputContext(),
+        private readonly OutputContext $context = new OutputContext(),
         /**
          * Finds the contracts the code loads before it refers to them.
          */
-        private ContractsPreloader $contracts = new ContractsPreloader(),
+        private readonly ContractsPreloader $contracts = new ContractsPreloader(),
         /**
          * Whether the contracts of the runtime are loaded by the code itself.
          */
-        private bool $preloadContracts = true,
+        private readonly bool $preloadContracts = true,
     ) {}
 
     /**

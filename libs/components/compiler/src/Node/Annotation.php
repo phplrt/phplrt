@@ -11,8 +11,10 @@ namespace Phplrt\Compiler\Node;
  * What an annotation means is decided by the format that has been read, so the
  * name is kept the way it is spelled and an annotation the compiler knows
  * nothing about is still readable here.
+ *
+ * @readonly
  */
-final readonly class Annotation extends Node
+final class Annotation extends Node
 {
     /**
      * @param int<0, max> $offset
@@ -25,14 +27,14 @@ final readonly class Annotation extends Node
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The values the annotation is written with, in the order they are
          * written.
          *
          * @var list<string>
          */
-        public array $arguments = [],
+        public readonly array $arguments = [],
         int $offset = 0,
         int $length = 0,
     ) {

@@ -10,8 +10,10 @@ namespace Phplrt\Compiler\Node\Statement;
  *
  * Such a token has no name of its own and is never kept in the syntax tree, so
  * it stands for the punctuation a rule reads but says nothing about.
+ *
+ * @readonly
  */
-final readonly class InlineValue extends Statement
+final class InlineValue extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -25,7 +27,7 @@ final readonly class InlineValue extends Statement
          * The value is matched as it is written rather than as an expression,
          * so whatever is special to a regular expression is not special here.
          */
-        public string $value,
+        public readonly string $value,
         int $offset = 0,
         int $length = 0,
     ) {

@@ -16,8 +16,10 @@ use Phplrt\Parser\Builder\ParserBuilder;
  * The format is the one phplrt has read up to its 3.x versions and does not
  * read anymore. Such a grammar is still recognized by its extension, so that
  * it is reported as what it is instead of being read as something else.
+ *
+ * @readonly
  */
-final readonly class PPLoader implements SyntaxLoaderInterface
+final class PPLoader implements SyntaxLoaderInterface
 {
     /**
      * @var non-empty-string

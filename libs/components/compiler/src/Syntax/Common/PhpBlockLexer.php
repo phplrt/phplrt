@@ -18,8 +18,10 @@ use Phplrt\Lexer\Token\EndOfInputToken;
  *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Compiler
+ *
+ * @readonly
  */
-final readonly class PhpBlockLexer implements LexerInterface
+final class PhpBlockLexer implements LexerInterface
 {
     private const BRACE_OPEN = '{';
 
@@ -35,7 +37,7 @@ final readonly class PhpBlockLexer implements LexerInterface
     private const INTERPOLATION_TOKENS = [\T_CURLY_OPEN, \T_DOLLAR_OPEN_CURLY_BRACES];
 
     public function __construct(
-        private LexerInterface $lexer = new PhpLexer(),
+        private readonly LexerInterface $lexer = new PhpLexer(),
     ) {}
 
     public function lex(ReadableInterface $source, int $offset = 0): iterable

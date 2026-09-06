@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Statement;
 
 /**
  * Recognizes all of the given statements, one after another.
+ *
+ * @readonly
  */
-final readonly class Concatenation extends Statement
+final class Concatenation extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -17,7 +19,7 @@ final readonly class Concatenation extends Statement
         /**
          * @var non-empty-list<Statement>
          */
-        public array $statements,
+        public readonly array $statements,
         int $offset = 0,
         int $length = 0,
     ) {

@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Declaration;
 
 /**
  * Configures the compilation of the grammar.
+ *
+ * @readonly
  */
-final readonly class PragmaDeclaration extends Declaration
+final class PragmaDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -22,13 +24,13 @@ final readonly class PragmaDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The value of the setting, as it is written.
          *
          * @var non-empty-string
          */
-        public string $value,
+        public readonly string $value,
         int $offset = 0,
         int $length = 0,
     ) {

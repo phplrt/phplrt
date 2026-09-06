@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Reducer;
 
 /**
  * Converts a rule into an instance of the given class.
+ *
+ * @readonly
  */
-final readonly class ClassReducer extends Reducer
+final class ClassReducer extends Reducer
 {
     /**
      * @param int<0, max> $offset
@@ -22,7 +24,7 @@ final readonly class ClassReducer extends Reducer
          *
          * @var non-empty-string
          */
-        public string $class,
+        public readonly string $class,
         int $offset = 0,
         int $length = 0,
     ) {

@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Statement;
 
 /**
  * Recognizes the declared token of the lexer.
+ *
+ * @readonly
  */
-final readonly class TokenReference extends Statement
+final class TokenReference extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -19,13 +21,13 @@ final readonly class TokenReference extends Statement
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * Contains {@see true} in case of the value of the token is kept in
          * the syntax tree, or {@see false} in case of the token is only
          * consumed, such as a comma or a bracket
          */
-        public bool $isKept = true,
+        public readonly bool $isKept = true,
         int $offset = 0,
         int $length = 0,
     ) {

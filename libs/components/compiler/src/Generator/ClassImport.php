@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Generator;
 
 /**
  * A class the generated code refers to by its short name.
+ *
+ * @readonly
  */
-final readonly class ClassImport implements \Stringable
+final class ClassImport implements \Stringable
 {
     public function __construct(
         /**
@@ -15,14 +17,14 @@ final readonly class ClassImport implements \Stringable
          *
          * @var non-empty-string
          */
-        public string $class,
+        public readonly string $class,
         /**
          * The name the class is referred to by, or {@see null} in case of the
          * class is referred to by the last part of its own name.
          *
          * @var non-empty-string|null
          */
-        public ?string $alias = null,
+        public readonly ?string $alias = null,
     ) {}
 
     public function __toString(): string

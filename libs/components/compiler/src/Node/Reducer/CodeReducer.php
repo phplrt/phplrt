@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Reducer;
 
 /**
  * Converts a rule into a node of the syntax tree using the given PHP code.
+ *
+ * @readonly
  */
-final readonly class CodeReducer extends Reducer
+final class CodeReducer extends Reducer
 {
     /**
      * @param int<0, max> $offset
@@ -22,7 +24,7 @@ final readonly class CodeReducer extends Reducer
          * and the value it returns are the business of the generator. An empty
          * body is written the same way a missing reducer is meant.
          */
-        public string $code,
+        public readonly string $code,
         int $offset = 0,
         int $length = 0,
     ) {

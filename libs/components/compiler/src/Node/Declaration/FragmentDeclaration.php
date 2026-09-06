@@ -9,8 +9,10 @@ namespace Phplrt\Compiler\Node\Declaration;
  *
  * A piece recognizes nothing on its own: every expression referring to it is
  * written with that piece instead of spelling it again.
+ *
+ * @readonly
  */
-final readonly class FragmentDeclaration extends Declaration
+final class FragmentDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -22,13 +24,13 @@ final readonly class FragmentDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The piece of an expression the name stands for, as it is written.
          *
          * @var non-empty-string
          */
-        public string $pattern,
+        public readonly string $pattern,
         int $offset = 0,
         int $length = 0,
     ) {

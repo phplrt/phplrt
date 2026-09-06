@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Generator;
 
 /**
  * A symbol the generated code loads before it is referred to.
+ *
+ * @readonly
  */
-final readonly class SymbolInclude implements \Stringable
+final class SymbolInclude implements \Stringable
 {
     public function __construct(
         /**
@@ -15,11 +17,11 @@ final readonly class SymbolInclude implements \Stringable
          *
          * @var non-empty-string
          */
-        public string $symbol,
+        public readonly string $symbol,
         /**
          * The kind of declaration the symbol is declared by.
          */
-        public SymbolType $type = SymbolType::ClassType,
+        public readonly SymbolType $type = SymbolType::ClassType,
     ) {}
 
     public function __toString(): string

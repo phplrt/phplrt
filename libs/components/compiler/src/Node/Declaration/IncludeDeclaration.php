@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Declaration;
 
 /**
  * Pulls the declarations of another grammar file into this one.
+ *
+ * @readonly
  */
-final readonly class IncludeDeclaration extends Declaration
+final class IncludeDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -23,7 +25,7 @@ final readonly class IncludeDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $target,
+        public readonly string $target,
         int $offset = 0,
         int $length = 0,
     ) {

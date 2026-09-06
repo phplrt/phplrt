@@ -11,18 +11,20 @@ use Phplrt\Parser\Builder\ParserBuilderResult;
 
 /**
  * Represents the result of reading a grammar.
+ *
+ * @readonly
  */
-final readonly class CompilerResult implements \Stringable
+final class CompilerResult implements \Stringable
 {
     public function __construct(
         /**
          * Everything the tokens are read by.
          */
-        public LexerBuilderResult $lexer,
+        public readonly LexerBuilderResult $lexer,
         /**
          * Everything the tokens are recognized by.
          */
-        public ParserBuilderResult $parser,
+        public readonly ParserBuilderResult $parser,
     ) {}
 
     /**

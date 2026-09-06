@@ -19,8 +19,10 @@ use Phplrt\Source\FileSource;
  * relative and its extension may be omitted: what it stands for is decided
  * here, by looking for the file next to the grammar the reference is written
  * in.
+ *
+ * @readonly
  */
-final readonly class ReferenceLoader
+final class ReferenceLoader
 {
     /**
      * The directory a reference is relative to in case of the grammar it is
@@ -31,8 +33,8 @@ final readonly class ReferenceLoader
     private const DIRECTORY_CURRENT = '.';
 
     public function __construct(
-        private Compiler $context,
-        private SyntaxLoaderRegistry $loaders,
+        private readonly Compiler $context,
+        private readonly SyntaxLoaderRegistry $loaders,
     ) {}
 
     /**

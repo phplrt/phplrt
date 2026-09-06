@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Statement;
 
 /**
  * Recognizes another rule of the parser.
+ *
+ * @readonly
  */
-final readonly class RuleReference extends Statement
+final class RuleReference extends Statement
 {
     /**
      * @param int<0, max> $offset
@@ -19,7 +21,7 @@ final readonly class RuleReference extends Statement
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         int $offset = 0,
         int $length = 0,
     ) {

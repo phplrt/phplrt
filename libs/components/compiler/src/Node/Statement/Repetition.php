@@ -6,16 +6,18 @@ namespace Phplrt\Compiler\Node\Statement;
 
 /**
  * Recognizes the given statement as many times as the quantifier allows.
+ *
+ * @readonly
  */
-final readonly class Repetition extends Statement
+final class Repetition extends Statement
 {
     /**
      * @param int<0, max> $offset
      * @param int<0, max> $length
      */
     public function __construct(
-        public Statement $statement,
-        public Quantifier $quantifier,
+        public readonly Statement $statement,
+        public readonly Quantifier $quantifier,
         int $offset = 0,
         int $length = 0,
     ) {

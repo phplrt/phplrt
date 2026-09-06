@@ -6,8 +6,10 @@ namespace Phplrt\Compiler\Node\Declaration;
 
 /**
  * Declares a token of the lexer.
+ *
+ * @readonly
  */
-final readonly class TokenDeclaration extends Declaration
+final class TokenDeclaration extends Declaration
 {
     /**
      * @param int<0, max> $offset
@@ -19,20 +21,20 @@ final readonly class TokenDeclaration extends Declaration
          *
          * @var non-empty-string
          */
-        public string $name,
+        public readonly string $name,
         /**
          * The regular expression recognizing the token, as it is written.
          *
          * @var non-empty-string
          */
-        public string $pattern,
+        public readonly string $pattern,
         /**
          * The name of the lexer state the token belongs to, or {@see null} in
          * case of the token belongs to the initial state.
          *
          * @var non-empty-string|null
          */
-        public ?string $state = null,
+        public readonly ?string $state = null,
         /**
          * The name of the lexer state the token switches to, or {@see null} in
          * case of the token does not affect the lexer state.
@@ -43,12 +45,12 @@ final readonly class TokenDeclaration extends Declaration
          *
          * @var non-empty-string|null
          */
-        public ?string $next = null,
+        public readonly ?string $next = null,
         /**
          * Contains {@see true} in case of the token is read but never reaches
          * the parser, such as the whitespace and the comments
          */
-        public bool $isHidden = false,
+        public readonly bool $isHidden = false,
         /**
          * Everything the token does to the reading, in the order it is
          * written, or an empty list in case of the token does nothing but
@@ -56,7 +58,7 @@ final readonly class TokenDeclaration extends Declaration
          *
          * @var list<TokenAction>
          */
-        public array $actions = [],
+        public readonly array $actions = [],
         int $offset = 0,
         int $length = 0,
     ) {

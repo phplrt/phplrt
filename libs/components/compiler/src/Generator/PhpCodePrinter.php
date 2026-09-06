@@ -29,8 +29,10 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * Everything a parser is built of is either a value the templates dump as it
  * is, or a definition that has to be spelled: the spelling is done here, so
  * that the templates are left with nothing but the shape of the file.
+ *
+ * @readonly
  */
-final readonly class PhpCodePrinter
+final class PhpCodePrinter
 {
     /**
      * The class the constants standing for the tokens are declared in.
