@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 require __DIR__ . '/bootstrap.php';
 
 $app = new Application(PHPLRT_NAME, PHPLRT_VERSION);
-$app->addCommand(new GrammarCompileCommand());
+$app->addCommands([new GrammarCompileCommand()]);
 
 const COMMANDS = [
     [
