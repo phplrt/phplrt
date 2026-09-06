@@ -51,6 +51,14 @@ final class OutputContext
          * Provides PHP target version
          */
         ?TargetPhpVersion $php = null,
+        /**
+         * Whether the parser is written down as readonly.
+         */
+        public readonly bool $readonly = true,
+        /**
+         * Whether the parser is written down as abstract.
+         */
+        public readonly bool $abstract = false,
     ) {
         $this->php = $php
             ?? TargetPhpVersion::current();

@@ -8,10 +8,12 @@ return new class extends \Phplrt\Parser\Parser {
  * @template TResult of mixed = mixed
  *
  * @template-extends \Phplrt\Parser\Parser<TResult>
+{% if readonly %}
  *
  * @readonly
+{% endif %}
  */
-class {{ class }} extends \Phplrt\Parser\Parser
+{% if abstract %}abstract {% endif %}class {{ class }} extends \Phplrt\Parser\Parser
 {
 {% endif %}
 {% for id, name in lexer.names %}

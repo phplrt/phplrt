@@ -54,6 +54,8 @@ final class GeneratedOutput implements \Stringable
             imports: $this->context->imports,
             class: $this->context->class,
             php: $this->context->php,
+            readonly: $this->context->readonly,
+            abstract: $this->context->abstract,
         ));
     }
 
@@ -72,6 +74,8 @@ final class GeneratedOutput implements \Stringable
             imports: $this->context->imports,
             class: $class,
             php: $this->context->php,
+            readonly: $this->context->readonly,
+            abstract: $this->context->abstract,
         ));
     }
 
@@ -90,6 +94,8 @@ final class GeneratedOutput implements \Stringable
             imports: [...$this->context->imports, new ClassImport($class, $as)],
             class: $this->context->class,
             php: $this->context->php,
+            readonly: $this->context->readonly,
+            abstract: $this->context->abstract,
         ));
     }
 
@@ -105,6 +111,45 @@ final class GeneratedOutput implements \Stringable
             imports: $this->context->imports,
             class: $this->context->class,
             php: $version,
+            readonly: $this->context->readonly,
+            abstract: $this->context->abstract,
+        ));
+    }
+
+    /**
+     * Returns the output annotating the parser as readonly.
+     *
+     * @api
+     */
+    public function withReadonly(bool $readonly = true): self
+    {
+        return $this->withContext(new OutputContext(
+            namespace: $this->context->namespace,
+            imports: $this->context->imports,
+            class: $this->context->class,
+            php: $this->context->php,
+            readonly: $readonly,
+            abstract: $this->context->abstract,
+        ));
+    }
+
+    /**
+     * Returns the output declaring the parser as abstract.
+     *
+     * A parser that is abstract is declared rather than returned, so it is
+     * only written down along with a name of its own.
+     *
+     * @api
+     */
+    public function withAbstract(bool $abstract = true): self
+    {
+        return $this->withContext(new OutputContext(
+            namespace: $this->context->namespace,
+            imports: $this->context->imports,
+            class: $this->context->class,
+            php: $this->context->php,
+            readonly: $this->context->readonly,
+            abstract: $abstract,
         ));
     }
 

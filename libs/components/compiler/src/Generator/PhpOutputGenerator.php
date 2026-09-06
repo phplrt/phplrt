@@ -8,6 +8,7 @@ use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\CodeGenerationException;
 use Phplrt\Compiler\Exception\GeneratorException;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
+use Phplrt\Compiler\Exception\UnsupportedAbstractClassException;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
@@ -72,6 +73,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
     {
         self::assertFragmentsAreDefined($result->lexer);
         self::assertClassNameIsValid($context->class);
+        self::assertAbstractClassIsNamed($context);
 
         try {
             $generated = $this->twig->render(self::TEMPLATE_ENTRYPOINT, [
@@ -80,6 +82,8 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
                 'includes' => $context->includes,
                 'class' => $context->class,
                 'php' => $context->php,
+                'readonly' => $context->readonly,
+                'abstract' => $context->abstract,
                 'lexer' => $result->lexer,
                 'parser' => $result->parser,
                 'methods' => $this->printer->createMethodNames(
@@ -116,6 +120,24 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
         }
 
         throw InvalidClassNameException::becauseClassNameIsInvalid($class);
+    }
+
+    /**
+     * Checks that the parser that is abstract is named.
+     *
+     * An anonymous class is written down as the very expression building it,
+     * which leaves nothing an abstract declaration could be written as.
+     *
+     * @throws UnsupportedAbstractClassException in case of the parser is
+     *         abstract and is named by nothing
+     */
+    private static function assertAbstractClassIsNamed(OutputContext $context): void
+    {
+        if (!$context->abstract || $context->class !== null) {
+            return;
+        }
+
+        throw UnsupportedAbstractClassException::becauseAbstractClassIsNotNamed();
     }
 
     /**

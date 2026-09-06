@@ -8,6 +8,7 @@ use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
+use Phplrt\Compiler\Exception\UnsupportedAbstractClassException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Exception\UnsupportedValueException;
 use Phplrt\Compiler\Generator\GeneratedOutput;
@@ -263,6 +264,56 @@ final class GeneratorTest extends TestCase
         (string) $this->compile('grammar.pp2')
             ->generate()
             ->withClassName('App\\Parser');
+    }
+
+    public function testReadonlyAnnotationIsGenerated(): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser');
+
+        Assert::string($code)->contains(" * @readonly\n */\nclass LanguageParser extends \\Phplrt\\Parser\\Parser\n");
+    }
+
+    public function testReadonlyAnnotationIsOmitted(): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser')
+            ->withReadonly(false);
+
+        Assert::string($code)
+            ->contains("\nclass LanguageParser extends \\Phplrt\\Parser\\Parser\n")
+            ->notContains('@readonly');
+    }
+
+    public function testAbstractParserIsDeclared(): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser')
+            ->withAbstract();
+
+        Assert::string($code)->contains("\nabstract class LanguageParser extends \\Phplrt\\Parser\\Parser\n");
+    }
+
+    public function testParserIsNotAbstractByDefault(): void
+    {
+        $code = (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withClassName('LanguageParser');
+
+        Assert::string($code)->notContains('abstract class');
+    }
+
+    public function testAnonymousAbstractParserIsReported(): void
+    {
+        Expect::exception(UnsupportedAbstractClassException::class)
+        ->withMessageContaining('An abstract parser cannot be anonymous');
+
+        (string) $this->compile('grammar.pp2')
+            ->generate()
+            ->withAbstract();
     }
 
     private function generate(string $name): ParserInterface
