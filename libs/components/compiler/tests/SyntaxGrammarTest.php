@@ -25,6 +25,10 @@ final class SyntaxGrammarTest extends TestCase
 
     private const BUILD_MODIFIER = ClassModifier::Final;
 
+    private const HEADER_PATTERN = '/^<\?php\b.*?declare\(strict_types=1\);/s';
+
+    private const HEADER_REPLACEMENT = '<?php declare(strict_types=1);';
+
     public static function formatsDataProvider(): iterable
     {
         yield 'pp2' => [
@@ -57,7 +61,22 @@ final class SyntaxGrammarTest extends TestCase
             ->withTargetPhpVersion(self::BUILD_TARGET)
             ->withClassModifier(self::BUILD_MODIFIER);
 
-        Assert::same($expected, \file_get_contents($pathname), \sprintf('The grammar has changed, run "php %s"', self::BUILD_SCRIPT));
+        $actual = (string) \file_get_contents($pathname);
+
+        Assert::same(
+            self::withoutHeader($expected),
+            self::withoutHeader($actual),
+            \sprintf('The grammar has changed, run "php %s"', self::BUILD_SCRIPT),
+        );
+    }
+
+    private static function withoutHeader(string $code): string
+    {
+        $result = \preg_replace(self::HEADER_PATTERN, self::HEADER_REPLACEMENT, $code);
+
+        \assert($result !== null, 'The generated code begins with an opening tag and a strict types declaration');
+
+        return $result;
     }
 
     public function testPP3GrammarIsReadByItsOwnParser(): void
