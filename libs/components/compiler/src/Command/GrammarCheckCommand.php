@@ -15,15 +15,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'check', description: 'Check the passed grammar', aliases: ['validate'], usages: [
-    './resources/grammar.pp2',
-    './resources/grammar.pp3',
-])]
+#[AsCommand(name: 'check', description: 'Check the passed grammar', aliases: ['validate'])]
 final class GrammarCheckCommand extends Command
 {
     #[\Override]
     protected function configure(): void
     {
+        $this->addUsage('./resources/grammar.pp2');
+        $this->addUsage('./resources/grammar.pp3');
+
         $this->addArgument(
             name: 'grammar',
             mode: InputArgument::REQUIRED,
@@ -136,7 +136,8 @@ final class GrammarCheckCommand extends Command
         return $count;
     }
 
-    public function __invoke(InputInterface $input, OutputInterface $output): int
+    #[\Override]
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $grammar = $this->getGrammarPathname($input);
 

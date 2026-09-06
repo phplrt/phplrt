@@ -15,13 +15,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'compile', description: 'Compile the passed grammar', usages: [
-    './resources/grammar.pp3 ./resources/grammar.php',
-])]
+#[AsCommand(name: 'compile', description: 'Compile the passed grammar')]
 final class GrammarCompileCommand extends Command
 {
     protected function configure(): void
     {
+        $this->addUsage('./resources/grammar.pp3 ./resources/grammar.php');
+
         $this->addArgument(
             name: 'grammar',
             mode: InputArgument::REQUIRED,
@@ -34,35 +34,40 @@ final class GrammarCompileCommand extends Command
             description: 'The output file to use',
         );
 
-        $this->addOption(
+        // Note: An option carrying the values it is completed by is built as
+        //       the definition itself, which is the only spelling symfony/console
+        //       6.4 shares with the versions after it
+        $inputDefinition = $this->getDefinition();
+
+        $inputDefinition->addOption(new InputOption(
             name: 'class',
             shortcut: 'c',
             mode: InputOption::VALUE_OPTIONAL,
             description: 'The class name of the generated parser',
             suggestedValues: ['Parser'],
-        );
+        ));
 
-        $this->addOption(
+        $inputDefinition->addOption(new InputOption(
             name: 'namespace',
             mode: InputOption::VALUE_OPTIONAL,
             description: 'The namespace name of the generated parser',
             suggestedValues: ['App\\Parser'],
-        );
+        ));
 
-        $this->addOption(
+        $inputDefinition->addOption(new InputOption(
             name: 'use',
             shortcut: 'u',
             mode: InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
             description: 'The list of class imports',
             default: [],
-        );
+        ));
 
-        $this->addOption(
+        $inputDefinition->addOption(new InputOption(
             name: 'php',
             mode: InputOption::VALUE_OPTIONAL,
             description: 'The target PHP version',
             suggestedValues: ['8.1', '8.2', '8.3', '8.4', '8.5', '8.6'],
-        );
+        ));
     }
 
     /**
@@ -168,7 +173,8 @@ final class GrammarCompileCommand extends Command
         return $result;
     }
 
-    public function __invoke(InputInterface $input, OutputInterface $output): int
+    #[\Override]
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $grammar = $this->getGrammarPathname($input);
         $pathname = $this->getOutputPathname($input);
