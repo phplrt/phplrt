@@ -5,3 +5,5 @@ parameters:
   paths:
     - src
   treatPhpDocTypesAsCertain: false
+  ignoreErrors:
+    - identifier: instanceof.alwaysTrue

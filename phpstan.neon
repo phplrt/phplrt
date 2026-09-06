@@ -19,6 +19,9 @@ includes:
   - libs/contracts/source-factory/phpstan.neon
 parameters:
   level: max
+  phpVersion:
+    min: 80100
+    max: 80599
   strictRules:
     allRules: true
   fileExtensions:
@@ -26,11 +29,3 @@ parameters:
   tmpDir: vendor/.cache.phpstan
   treatPhpDocTypesAsCertain: false
   reportUnmatchedIgnoredErrors: true
-  ignoreErrors:
-    # Design By Contract assertions should not affect the statistical analysis
-    # - identifier: if.alwaysTrue
-    # - identifier: if.alwaysFalse
-    # - identifier: booleanNot.alwaysTrue
-    # - identifier: booleanNot.alwaysFalse
-    - identifier: instanceof.alwaysTrue
-    #  - identifier: instanceof.alwaysFalse
