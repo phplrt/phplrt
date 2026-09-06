@@ -209,7 +209,7 @@ final class GeneratorTest extends TestCase
 
     public function testUnsupportedValueIsReported(): void
     {
-        Expect::exception(UnsupportedValueException::class)
+        Expect::exception(\ValueError::class)
         ->withMessageContaining('A value of type stdClass cannot be generated');
 
         (new PhpCodePrinter())->printValue(new \stdClass());
