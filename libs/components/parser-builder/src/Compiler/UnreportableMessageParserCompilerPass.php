@@ -112,7 +112,7 @@ final class UnreportableMessageParserCompilerPass implements
         $result = new \SplObjectStorage();
 
         foreach ($context->rules as $rule) {
-            if ($rule->message !== null && !$context->isKept($rule)) {
+            if ($rule->message !== null && !$context->isEntrypoint($rule)) {
                 $result->offsetSet($rule);
             }
         }

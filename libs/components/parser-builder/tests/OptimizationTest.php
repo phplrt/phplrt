@@ -495,7 +495,7 @@ final class OptimizationTest extends TestCase
             $parser->addTokenReference('T_NUMBER'),
         ], 'Expression'));
         $parser->addConcatenation([$parser->addTokenReference('T_PLUS')], 'Sign')
-            ->setKept();
+            ->setEntrypoint();
 
         $result = self::compile($parser);
 
@@ -514,7 +514,7 @@ final class OptimizationTest extends TestCase
         $parser = new ParserBuilder();
         $parser->setInitialRule($parser->addConcatenation([
             $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Number')
-                ->setKept(),
+                ->setEntrypoint(),
             $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')]),
         ], 'Expression'));
 

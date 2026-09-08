@@ -39,19 +39,15 @@ final class ParserBuildingContext
     ) {}
 
     /**
-     * Tells whether the given rule is kept.
+     * Tells whether the analysis may be started at the given rule.
      */
-    public function isKept(RuleDefinition $rule): bool
+    public function isEntrypoint(RuleDefinition $rule): bool
     {
-        if ($rule === $this->initial) {
-            return true;
-        }
-
-        return !$rule instanceof TerminalRuleDefinition && $rule->isKept;
+        return $rule === $this->initial || $rule->isEntrypoint;
     }
 
     /**
-     * Returns the rules reached from the kept ones, in the order they are
+     * Returns the rules reached from the entrypoints, in the order they are
      * reached.
      *
      * @return list<RuleDefinition>
@@ -61,8 +57,8 @@ final class ParserBuildingContext
         /** @var \SplObjectStorage<RuleDefinition, null> $reached */
         $reached = new \SplObjectStorage();
 
-        foreach ($this->collectKeptRules() as $kept) {
-            foreach ($kept->collectRules() as $rule) {
+        foreach ($this->collectEntrypoints() as $entrypoint) {
+            foreach ($entrypoint->collectRules() as $rule) {
                 $reached->offsetSet($rule);
             }
         }
@@ -72,16 +68,16 @@ final class ParserBuildingContext
     }
 
     /**
-     * Returns the kept rules, the initial one first.
+     * Returns the entrypoints, the initial rule first.
      *
      * @return list<RuleDefinition>
      */
-    private function collectKeptRules(): array
+    private function collectEntrypoints(): array
     {
         $result = $this->initial === null ? [] : [$this->initial];
 
         foreach ($this->rules as $rule) {
-            if ($this->isKept($rule) && $rule !== $this->initial) {
+            if ($this->isEntrypoint($rule) && $rule !== $this->initial) {
                 $result[] = $rule;
             }
         }

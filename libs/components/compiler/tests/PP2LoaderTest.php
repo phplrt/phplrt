@@ -123,19 +123,15 @@ final class PP2LoaderTest extends TestCase
         Assert::false($terminal->isKept);
     }
 
-    public function testKeptRuleOfASingleTokenIsAProduction(): void
+    public function testKeptRuleOfASingleTokenIsShapedLikeAPlainOne(): void
     {
         $this->load('#A ::= <T_A> ;');
 
         $rule = $this->parser->initial;
 
-        Assert::instanceOf($rule, ConcatenationRuleDefinition::class);
+        Assert::instanceOf($rule, TerminalRuleDefinition::class);
+        Assert::true($rule->isEntrypoint);
         Assert::true($rule->isKept);
-
-        [$terminal] = $rule->children;
-
-        Assert::instanceOf($terminal, TerminalRuleDefinition::class);
-        Assert::true($terminal->isKept);
     }
 
     public function testEntrypointsContainTheKeptRulesOnly(): void

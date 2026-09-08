@@ -61,7 +61,7 @@ final class GeneratorTest extends TestCase
 
             Sum : Number()+ ;
 
-            #Number -> { return (int) $children[0]->value; }
+            #Number -> { return (int) $children->value; }
               : <T_NUMBER>
               ;
             PP3)->withClassName('KeptRuleParser');

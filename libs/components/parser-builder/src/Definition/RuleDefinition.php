@@ -25,11 +25,12 @@ abstract class RuleDefinition extends Definition
     public ?string $name = null;
 
     /**
-     * Contains {@see true} in case of the rule is kept on the compiled parser
+     * Contains {@see true} in case of the analysis may be started at the rule,
+     * so it is kept on the compiled parser under its own identifier
      *
      * @phpstan-readonly-allow-private-mutation
      */
-    public bool $isKept = false;
+    public bool $isEntrypoint = false;
 
     /**
      * Contains the reducer converting the rule into the node of the syntax
@@ -143,16 +144,16 @@ abstract class RuleDefinition extends Definition
     }
 
     /**
-     * Updates whether the rule is kept and returns itself as the fluent
-     * interface.
+     * Updates whether the analysis may be started at the rule and returns
+     * itself as the fluent interface.
      *
      * @api
      *
      * @return $this
      */
-    public function setKept(bool $kept = true): self
+    public function setEntrypoint(bool $isEntrypoint = true): self
     {
-        $this->isKept = $kept;
+        $this->isEntrypoint = $isEntrypoint;
 
         return $this;
     }

@@ -79,7 +79,7 @@ final class NestedRepetitionParserCompilerPass implements
          * initial rule is always present in the result, so none of them may be
          * joined.
          */
-        if ($child->reducer !== null || $child->message !== null || $context->isKept($child)) {
+        if ($child->reducer !== null || $child->message !== null || $context->isEntrypoint($child)) {
             return null;
         }
 

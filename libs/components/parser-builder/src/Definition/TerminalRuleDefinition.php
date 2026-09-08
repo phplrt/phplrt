@@ -37,4 +37,16 @@ abstract class TerminalRuleDefinition extends RuleDefinition
     {
         return $this->setKept(false);
     }
+
+    /**
+     * @api
+     *
+     * @return $this
+     */
+    public function setKept(bool $kept = true): self
+    {
+        $this->isKept = $kept;
+
+        return $this;
+    }
 }

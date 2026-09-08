@@ -99,7 +99,7 @@ final class RedundantProductionParserCompilerPass implements
          * rules that refer to it. The value of the initial rule is the result
          * of the analysis, so there is nothing above it to join with.
          */
-        if ($context->isKept($rule)) {
+        if ($context->isEntrypoint($rule)) {
             return null;
         }
 
@@ -235,7 +235,7 @@ final class RedundantProductionParserCompilerPass implements
              * initial rule is the result of the analysis, so both of them see
              * the value instead of passing it through.
              */
-            if ($referrer->reducer !== null || $context->isKept($referrer)) {
+            if ($referrer->reducer !== null || $context->isEntrypoint($referrer)) {
                 return false;
             }
 
