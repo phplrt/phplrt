@@ -119,6 +119,32 @@ final class PP3LoaderTest extends TestCase
         Assert::notNull($result->parser->constants['B'] ?? null);
     }
 
+    public function testEntrypointsContainTheKeptRulesAndTheInitialOne(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %token T_A a
+                %token T_B b
+                %token T_C c
+
+                A : <T_A> Plain() ;
+
+                Plain : <T_B> ;
+
+                #Kept : <T_C> ;
+                PP3))
+            ->build();
+
+        $entrypoints = $result->parser->entrypoints;
+
+        \ksort($entrypoints);
+
+        Assert::same(\array_keys($entrypoints), ['A', 'Kept']);
+        Assert::same($entrypoints['A'], $result->parser->initial);
+        Assert::same($entrypoints['Kept'], $result->parser->constants['Kept'] ?? null);
+        Assert::notNull($result->parser->constants['Plain'] ?? null);
+    }
+
     public function testKeptRuleOfASingleTokenIsAProduction(): void
     {
         $this->load("%token T_A a\n#A : <T_A> ;");
