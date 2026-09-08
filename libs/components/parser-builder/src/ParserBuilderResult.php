@@ -64,6 +64,12 @@ final class ParserBuilderResult
          */
         public readonly array $constants = [],
         /**
+         * A map of name and ID of every kept rule.
+         *
+         * @var array<non-empty-string, int<0, max>>
+         */
+        public readonly array $entrypoints = [],
+        /**
          * The alternatives of every alternation worth trying, indexed by the
          * token the reading is at and then by the rule identifiers.
          *
