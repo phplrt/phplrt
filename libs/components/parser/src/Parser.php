@@ -15,6 +15,7 @@ use Phplrt\Parser\Analysis\Result\PartialResult;
 use Phplrt\Parser\Analysis\Result\SuccessfulResult;
 use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Parser\Exception\UnknownInitialRuleException;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
@@ -54,6 +55,15 @@ class Parser implements ParserInterface
     private readonly MessageInterpolator $interpolator;
 
     /**
+     * The identifier of the rule the analysis starts at.
+     *
+     * @var int<0, max>
+     *
+     * @phpstan-readonly-allow-private-mutation
+     */
+    private int $initial;
+
+    /**
      * @param list<RuleInterface> $grammar
      * @param int<0, max> $initial the identifier of the rule the analysis
      *        starts at
@@ -89,9 +99,10 @@ class Parser implements ParserInterface
          */
         private readonly array $messages = [],
     ) {
+        $this->initial = $initial;
+
         $this->table = new GrammarTable(
             rules: $grammar,
-            initial: $initial,
             lookahead: $lookahead,
             kept: $kept,
             choicePrediction: $choicePrediction,
@@ -101,10 +112,30 @@ class Parser implements ParserInterface
         $this->reducers = new ReducerTable(
             grammar: $grammar,
             reducers: $reducers,
-            rule: $initial,
         );
 
         $this->interpolator = new MessageInterpolator();
+    }
+
+    /**
+     * Returns the parser starting the analysis at the given rule.
+     *
+     * @api
+     *
+     * @param int<0, max> $rule
+     * @throws UnknownInitialRuleException in case of the analysis may not be
+     *         started at the given rule
+     */
+    public function withInitial(int $rule): static
+    {
+        if (!isset($this->table->rules[$rule])) {
+            throw UnknownInitialRuleException::becauseRuleIsNotDefined($rule);
+        }
+
+        $self = clone $this;
+        $self->initial = $rule;
+
+        return $self;
     }
 
     /**
@@ -173,7 +204,7 @@ class Parser implements ParserInterface
             return null;
         }
 
-        return $this->reducers->createReducer($source)
+        return $this->reducers->createReducer($source, $this->initial)
             ->reduce($result);
     }
 
@@ -217,7 +248,7 @@ class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        return RecursiveDescentTracer::trace($this->table, $buffer);
+        return RecursiveDescentTracer::trace($this->table, $buffer, $this->initial);
     }
 
     /**
