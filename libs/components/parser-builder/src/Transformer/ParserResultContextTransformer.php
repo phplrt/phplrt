@@ -7,6 +7,7 @@ namespace Phplrt\Parser\Builder\Transformer;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
+use Phplrt\Parser\Builder\Definition\AdjacencyRuleDefinition;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
@@ -19,6 +20,7 @@ use Phplrt\Parser\Builder\Definition\TokenNameRuleDefinition;
 use Phplrt\Parser\Builder\Definition\TokenRuleDefinition;
 use Phplrt\Parser\Builder\Exception\CompilationFailedException;
 use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -156,6 +158,9 @@ final class ParserResultContextTransformer
             ),
             $definition instanceof PredicateRuleDefinition => new Predicate(
                 ruleId: $identifiers[$definition->rule],
+                isExpected: $definition->isExpected,
+            ),
+            $definition instanceof AdjacencyRuleDefinition => new Adjacency(
                 isExpected: $definition->isExpected,
             ),
             $definition instanceof RepetitionRuleDefinition => new Repetition(
