@@ -9,7 +9,10 @@ use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\EmptyLexerException;
 use Phplrt\Compiler\Exception\UnsupportedPragmaValueException;
 use Phplrt\Compiler\Exception\UnsupportedTokenActionException;
+use Phplrt\Compiler\Node\Declaration\RuleDeclaration;
+use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Syntax\PP3\PP3Loader;
+use Phplrt\Compiler\Syntax\PP3\PP3Parser;
 use Phplrt\Compiler\Tests\Stub\LexerPassStub;
 use Phplrt\Compiler\Tests\Stub\ParserPassStub;
 use Phplrt\Contracts\Lexer\Channel;
@@ -66,11 +69,35 @@ final class PP3LoaderTest extends TestCase
         $this->load(\sprintf("%%token T_A a\nA %s <T_A> ;", $separator));
     }
 
-    public function testKeptMarkerIsReported(): void
+    public function testKeptMarkerIsRead(): void
+    {
+        $declaration = self::readRule('#A : <T_A> ;');
+
+        Assert::same($declaration->name, 'A');
+        Assert::true($declaration->isKept);
+    }
+
+    public function testRuleIsNotKeptWithoutTheMarker(): void
+    {
+        $declaration = self::readRule('A : <T_A> ;');
+
+        Assert::same($declaration->name, 'A');
+        Assert::false($declaration->isKept);
+    }
+
+    public function testKeptMarkerIsReadAlongWithAReducer(): void
+    {
+        $declaration = self::readRule('#A -> { return 42; } : <T_A> ;');
+
+        Assert::true($declaration->isKept);
+        Assert::instanceOf($declaration->reducer, CodeReducer::class);
+    }
+
+    public function testKeptMarkerWithoutANameIsReported(): void
     {
         Expect::exception(UnexpectedTokenException::class);
 
-        $this->load("%token T_A a\n#A : <T_A> ;");
+        self::readRule('# : <T_A> ;');
     }
 
     public function testClassReducerIsReported(): void
@@ -519,6 +546,20 @@ final class PP3LoaderTest extends TestCase
         $compiler->load(VirtualSource::createFromString(self::PATHNAME, $source));
 
         return $compiler->build();
+    }
+
+    private static function readRule(string $source): RuleDeclaration
+    {
+        $declarations = (new PP3Parser())
+            ->parse(StringSource::createFromString($source));
+
+        \assert(\is_array($declarations), 'A grammar file is read into a list of declarations');
+
+        $declaration = $declarations[0] ?? null;
+
+        Assert::instanceOf($declaration, RuleDeclaration::class);
+
+        return $declaration;
     }
 
     private function compile(string $source): ParserInterface
