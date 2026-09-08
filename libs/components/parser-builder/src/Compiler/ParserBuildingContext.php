@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Compiler;
 
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
-use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
