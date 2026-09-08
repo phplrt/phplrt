@@ -138,7 +138,7 @@ final class PP2LoaderTest extends TestCase
         Assert::true($terminal->isKept);
     }
 
-    public function testEntrypointsContainTheKeptRulesAndTheInitialOne(): void
+    public function testEntrypointsContainTheKeptRulesOnly(): void
     {
         $result = (new Compiler())
             ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP2'
@@ -156,10 +156,9 @@ final class PP2LoaderTest extends TestCase
 
         $entrypoints = $result->parser->entrypoints;
 
-        \ksort($entrypoints);
-
-        Assert::same(\array_keys($entrypoints), ['A', 'Kept']);
-        Assert::same($entrypoints['A'], $result->parser->initial);
+        Assert::same(\array_keys($entrypoints), ['Kept']);
+        Assert::same($entrypoints['Kept'], $result->parser->constants['Kept'] ?? null);
+        Assert::notNull($result->parser->constants['A'] ?? null);
         Assert::notNull($result->parser->constants['Plain'] ?? null);
     }
 
