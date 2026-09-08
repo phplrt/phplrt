@@ -78,7 +78,7 @@ final class ParserResultContextTransformer
             if ($definition->name !== null) {
                 $constants[$definition->name] = $id;
 
-                if ($context->isKept($definition)) {
+                if ($definition !== $initial && $context->isKept($definition)) {
                     $entrypoints[$definition->name] = $id;
                 }
 
