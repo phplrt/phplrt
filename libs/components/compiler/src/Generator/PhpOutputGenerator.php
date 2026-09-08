@@ -7,6 +7,7 @@ namespace Phplrt\Compiler\Generator;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\CodeGenerationException;
+use Phplrt\Compiler\Exception\DuplicateConstantException;
 use Phplrt\Compiler\Exception\GeneratorException;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedClassModifierException;
@@ -75,6 +76,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
         self::assertFragmentsAreDefined($result->lexer);
         self::assertClassNameIsValid($context->class);
         self::assertClassModifierIsNamed($context);
+        self::assertConstantsAreUnique($result);
 
         try {
             $generated = $this->twig->render(self::TEMPLATE_ENTRYPOINT, [
@@ -122,6 +124,23 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
         }
 
         throw InvalidClassNameException::becauseClassNameIsInvalid($class);
+    }
+
+    /**
+     * Checks that every constant of the parser is declared once.
+     *
+     * @throws DuplicateConstantException in case of a token and a kept rule are
+     *         named the same way
+     */
+    private static function assertConstantsAreUnique(CompilerResult $result): void
+    {
+        $tokens = \array_flip($result->lexer->names);
+
+        foreach (\array_keys($result->parser->entrypoints) as $name) {
+            if (isset($tokens[$name])) {
+                throw DuplicateConstantException::becauseNameIsTaken($name);
+            }
+        }
     }
 
     /**

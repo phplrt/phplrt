@@ -97,9 +97,9 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     public const T_REGEX = 31;
 
     /**
-     * @var \Phplrt\Contracts\Parser\ParserInterface<TResult>
+     * @var \Phplrt\Parser\Parser<TResult>
      */
-    protected readonly \Phplrt\Contracts\Parser\ParserInterface $parser;
+    protected readonly \Phplrt\Parser\Parser $parser;
 
     protected readonly \Phplrt\Contracts\Lexer\LexerInterface $lexer;
 
