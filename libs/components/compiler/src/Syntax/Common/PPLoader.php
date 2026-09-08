@@ -18,6 +18,7 @@ use Phplrt\Compiler\Node\Declaration\RuleDeclaration;
 use Phplrt\Compiler\Node\Declaration\TokenDeclaration;
 use Phplrt\Compiler\Node\Reducer\ClassReducer;
 use Phplrt\Compiler\Node\Reducer\CodeReducer;
+use Phplrt\Compiler\Node\Statement\Adjacency;
 use Phplrt\Compiler\Node\Statement\Alternation;
 use Phplrt\Compiler\Node\Statement\Annotated;
 use Phplrt\Compiler\Node\Statement\Concatenation;
@@ -468,6 +469,9 @@ abstract class PPLoader implements SyntaxLoaderInterface
             $statement instanceof Repetition => $this->createRepetition($statement, $source, $parser, $lexer),
             $statement instanceof Predicate => $parser->addPredicate(
                 rule: $this->loadStatement($statement->statement, $source, $parser, $lexer),
+                isExpected: $statement->isExpected,
+            ),
+            $statement instanceof Adjacency => $parser->addAdjacency(
                 isExpected: $statement->isExpected,
             ),
             $statement instanceof Annotated => $this->createAnnotated($statement, $source, $parser, $lexer),

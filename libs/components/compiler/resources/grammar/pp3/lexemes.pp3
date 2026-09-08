@@ -106,6 +106,8 @@
 %token T_AMPERSAND        &
 %token T_EXCLAMATION      !
 
+%token T_TILDE            ~
+
 /**
  * A token a rule declares by the expression recognizing it. The comments are
  * declared before it, so a slash still opens a comment where it always did.

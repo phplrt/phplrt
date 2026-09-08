@@ -92,7 +92,9 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     /** @var int */
     public const T_EXCLAMATION = 29;
     /** @var int */
-    public const T_REGEX = 30;
+    public const T_TILDE = 30;
+    /** @var int */
+    public const T_REGEX = 31;
 
     /**
      * @var \Phplrt\Contracts\Parser\ParserInterface<TResult>
@@ -124,12 +126,12 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
 
         $this->lexer = new \Phplrt\Lexer\Lexer(
-            pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:3))|(?:(?:%include\\h++(\\S++))(*MARK:4))|(?:(?:->\\s*+(?=\\{))(*MARK:5))|(?:(?:@([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:6))|(?:(?:;)(*MARK:7))|(?:(?:\\|)(*MARK:8))|(?:(?:\\()(*MARK:9))|(?:(?:\\))(*MARK:10))|(?:(?:<)(*MARK:11))|(?:(?:>)(*MARK:12))|(?:(?:\\?)(*MARK:13))|(?:(?:\\+)(*MARK:14))|(?:(?:\\*)(*MARK:15))|(?:(?:\\{)(*MARK:16))|(?:(?:\\})(*MARK:17))|(?:(?:,)(*MARK:18))|(?:(?:\\d++)(*MARK:19))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:20))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:21))|(?:(?:%token(?=\\h))(*MARK:22))|(?:(?:%skip(?=\\h))(*MARK:23))|(?:(?:%fragment(?=\\h))(*MARK:24))|(?:(?:%lexer\\h++([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:25))|(?:(?:::)(*MARK:26))|(?:(?::)(*MARK:27))|(?:(?:&)(*MARK:28))|(?:(?:!)(*MARK:29))|(?:(?:\\/([^\\/\\\\]*+(?:\\\\.[^\\/\\\\]*+)*+)\\/)(*MARK:30))|(?:(?:[^\\s]++)(*MARK:31)))/Ssum',
+            pattern: '/\\G(?|(?:(?:\\s++)(*MARK:0))|(?:(?:\\/\\/[^\\r\\n]*+)(*MARK:1))|(?:(?:\\/\\*(.*?)\\*\\/)(*MARK:2))|(?:(?:%pragma\\h++([a-zA-Z_][a-zA-Z0-9_.]*+)\\h++(\\S++))(*MARK:3))|(?:(?:%include\\h++(\\S++))(*MARK:4))|(?:(?:->\\s*+(?=\\{))(*MARK:5))|(?:(?:@([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:6))|(?:(?:;)(*MARK:7))|(?:(?:\\|)(*MARK:8))|(?:(?:\\()(*MARK:9))|(?:(?:\\))(*MARK:10))|(?:(?:<)(*MARK:11))|(?:(?:>)(*MARK:12))|(?:(?:\\?)(*MARK:13))|(?:(?:\\+)(*MARK:14))|(?:(?:\\*)(*MARK:15))|(?:(?:\\{)(*MARK:16))|(?:(?:\\})(*MARK:17))|(?:(?:,)(*MARK:18))|(?:(?:\\d++)(*MARK:19))|(?:(?:"[^"\\\\]*+(?:\\\\.[^"\\\\]*+)*+")(*MARK:20))|(?:(?:\\\\?+[a-zA-Z_][a-zA-Z0-9_]*+(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*+)*+)(*MARK:21))|(?:(?:%token(?=\\h))(*MARK:22))|(?:(?:%skip(?=\\h))(*MARK:23))|(?:(?:%fragment(?=\\h))(*MARK:24))|(?:(?:%lexer\\h++([a-zA-Z_][a-zA-Z0-9_]*+))(*MARK:25))|(?:(?:::)(*MARK:26))|(?:(?::)(*MARK:27))|(?:(?:&)(*MARK:28))|(?:(?:!)(*MARK:29))|(?:(?:~)(*MARK:30))|(?:(?:\\/([^\\/\\\\]*+(?:\\\\.[^\\/\\\\]*+)*+)\\/)(*MARK:31))|(?:(?:[^\\s]++)(*MARK:32)))/Ssum',
             channels: [
                 'Hidden',
                 'Hidden',
                 'Hidden',
-                31 => 'Unknown',
+                32 => 'Unknown',
             ],
             names: [
                 'T_WHITESPACE',
@@ -162,6 +164,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 'T_COLON',
                 'T_AMPERSAND',
                 'T_EXCLAMATION',
+                'T_TILDE',
                 'T_REGEX',
             ],
             transitions: [
@@ -176,7 +179,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 1,
                 6 => 1,
                 25 => 1,
-                30 => 1,
+                31 => 1,
             ],
         );
 
@@ -194,7 +197,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Concatenation([9, 10]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LEXER, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PHP, true),
-                new \Phplrt\Parser\Grammar\Concatenation([12, 13, 25, 26, 27, 63]),
+                new \Phplrt\Parser\Grammar\Concatenation([12, 13, 25, 26, 27, 65]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NAME, true),
                 new \Phplrt\Parser\Grammar\Optional(14),
                 new \Phplrt\Parser\Grammar\Repetition(15, 1, \INF),
@@ -210,43 +213,45 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_CLOSE, false),
                 new \Phplrt\Parser\Grammar\Optional(10),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([28, 60]),
+                new \Phplrt\Parser\Grammar\Concatenation([28, 62]),
                 new \Phplrt\Parser\Grammar\Repetition(29, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([30, 34, 13]),
-                new \Phplrt\Parser\Grammar\Optional(31),
-                new \Phplrt\Parser\Grammar\Alternation([32, 33]),
+                new \Phplrt\Parser\Grammar\Alternation([30, 31]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_TILDE, true),
+                new \Phplrt\Parser\Grammar\Concatenation([32, 36, 13]),
+                new \Phplrt\Parser\Grammar\Optional(33),
+                new \Phplrt\Parser\Grammar\Alternation([34, 35]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_AMPERSAND, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCLAMATION, true),
-                new \Phplrt\Parser\Grammar\Concatenation([35, 46]),
-                new \Phplrt\Parser\Grammar\Alternation([36, 37, 40, 42, 43]),
+                new \Phplrt\Parser\Grammar\Concatenation([37, 48]),
+                new \Phplrt\Parser\Grammar\Alternation([38, 39, 42, 44, 45]),
                 new \Phplrt\Parser\Grammar\Concatenation([17, 27, 24]),
-                new \Phplrt\Parser\Grammar\Concatenation([38, 12, 39]),
+                new \Phplrt\Parser\Grammar\Concatenation([40, 12, 41]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_OPEN, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Concatenation([41, 12, 41]),
+                new \Phplrt\Parser\Grammar\Concatenation([43, 12, 43]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DOUBLE_COLON, false),
                 new \Phplrt\Parser\Grammar\Concatenation([12, 17, 24]),
-                new \Phplrt\Parser\Grammar\Alternation([44, 45]),
+                new \Phplrt\Parser\Grammar\Alternation([46, 47]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_REGEX, true),
-                new \Phplrt\Parser\Grammar\Optional(47),
-                new \Phplrt\Parser\Grammar\Alternation([48, 49, 50, 51]),
+                new \Phplrt\Parser\Grammar\Optional(49),
+                new \Phplrt\Parser\Grammar\Alternation([50, 51, 52, 53]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUESTION_MARK, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ASTERISK, true),
-                new \Phplrt\Parser\Grammar\Concatenation([52, 53, 59]),
+                new \Phplrt\Parser\Grammar\Concatenation([54, 55, 61]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_OPEN, false),
-                new \Phplrt\Parser\Grammar\Alternation([54, 56, 57, 58]),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 23, 55]),
+                new \Phplrt\Parser\Grammar\Alternation([56, 58, 59, 60]),
+                new \Phplrt\Parser\Grammar\Concatenation([57, 23, 57]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 23]),
-                new \Phplrt\Parser\Grammar\Concatenation([23, 55]),
+                new \Phplrt\Parser\Grammar\Concatenation([57, 23]),
+                new \Phplrt\Parser\Grammar\Concatenation([23, 57]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Repetition(61, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([62, 28]),
+                new \Phplrt\Parser\Grammar\Repetition(63, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([64, 28]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(64),
+                new \Phplrt\Parser\Grammar\Optional(66),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
             ],
             initial: 0,
@@ -261,20 +266,21 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 15 => self::reduceAnnotation(...),
                 27 => self::reduceAlternation(...),
                 28 => self::reduceConcatenation(...),
-                29 => self::reduceElement(...),
-                34 => self::reduceSuffixed(...),
-                37 => self::reduceKeptTokenReference(...),
-                40 => self::reduceSkippedTokenReference(...),
-                42 => self::reduceRuleReference(...),
-                44 => self::reduceInlineValue(...),
-                45 => self::reduceInlinePattern(...),
-                48 => self::reduceZeroOrOne(...),
-                49 => self::reduceOneOrMore(...),
-                50 => self::reduceZeroOrMore(...),
-                54 => self::reduceRangeFromTo(...),
-                56 => self::reduceRangeFrom(...),
-                57 => self::reduceRangeTo(...),
-                58 => self::reduceRangeExactly(...),
+                30 => self::reduceAdjacency(...),
+                31 => self::reduceElement(...),
+                36 => self::reduceSuffixed(...),
+                39 => self::reduceKeptTokenReference(...),
+                42 => self::reduceSkippedTokenReference(...),
+                44 => self::reduceRuleReference(...),
+                46 => self::reduceInlineValue(...),
+                47 => self::reduceInlinePattern(...),
+                50 => self::reduceZeroOrOne(...),
+                51 => self::reduceOneOrMore(...),
+                52 => self::reduceZeroOrMore(...),
+                56 => self::reduceRangeFromTo(...),
+                58 => self::reduceRangeFrom(...),
+                59 => self::reduceRangeTo(...),
+                60 => self::reduceRangeExactly(...),
             ],
             lookahead: [
                 null,
@@ -364,15 +370,6 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     28 => true,
                     true,
                     true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    28 => true,
-                    true,
                     true,
                 ],
                 [
@@ -384,6 +381,31 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     28 => true,
                     true,
                     true,
+                    true,
+                ],
+                [
+                    9 => true,
+                    11 => true,
+                    20 => true,
+                    true,
+                    26 => true,
+                    28 => true,
+                    true,
+                    true,
+                    true,
+                ],
+                [
+                    30 => true,
+                ],
+                [
+                    9 => true,
+                    11 => true,
+                    20 => true,
+                    true,
+                    26 => true,
+                    28 => true,
+                    true,
+                    31 => true,
                 ],
                 null,
                 [
@@ -402,7 +424,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     20 => true,
                     true,
                     26 => true,
-                    30 => true,
+                    31 => true,
                 ],
                 [
                     9 => true,
@@ -410,7 +432,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     20 => true,
                     true,
                     26 => true,
-                    30 => true,
+                    31 => true,
                 ],
                 [
                     9 => true,
@@ -435,13 +457,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 ],
                 [
                     20 => true,
-                    30 => true,
+                    31 => true,
                 ],
                 [
                     20 => true,
                 ],
                 [
-                    30 => true,
+                    31 => true,
                 ],
                 null,
                 [
@@ -529,6 +551,8 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 false,
                 true,
                 true,
+                false,
+                true,
                 true,
                 false,
                 false,
@@ -598,64 +622,93 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         4,
                     ],
                 ],
-                31 => [
-                    28 => [
-                        32,
+                29 => [
+                    30 => [
+                        30,
                     ],
-                    [
-                        33,
-                    ],
-                ],
-                35 => [
                     9 => [
-                        36,
+                        31,
                     ],
                     11 => [
-                        37,
+                        31,
                     ],
-                    26 => [
-                        40,
+                    20 => [
+                        31,
                     ],
                     21 => [
-                        42,
+                        31,
                     ],
-                    20 => [
-                        43,
+                    26 => [
+                        31,
                     ],
-                    30 => [
-                        43,
+                    28 => [
+                        31,
+                    ],
+                    29 => [
+                        31,
+                    ],
+                    [
+                        31,
                     ],
                 ],
-                43 => [
-                    20 => [
+                33 => [
+                    28 => [
+                        34,
+                    ],
+                    [
+                        35,
+                    ],
+                ],
+                37 => [
+                    9 => [
+                        38,
+                    ],
+                    11 => [
+                        39,
+                    ],
+                    26 => [
+                        42,
+                    ],
+                    21 => [
                         44,
                     ],
-                    30 => [
+                    20 => [
+                        45,
+                    ],
+                    31 => [
                         45,
                     ],
                 ],
-                47 => [
+                45 => [
+                    20 => [
+                        46,
+                    ],
+                    31 => [
+                        47,
+                    ],
+                ],
+                49 => [
                     13 => [
-                        48,
-                    ],
-                    [
-                        49,
-                    ],
-                    [
                         50,
                     ],
                     [
                         51,
                     ],
+                    [
+                        52,
+                    ],
+                    [
+                        53,
+                    ],
                 ],
-                53 => [
+                55 => [
                     19 => [
-                        54,
                         56,
                         58,
+                        60,
                     ],
                     18 => [
-                        57,
+                        59,
                     ],
                 ],
             ],
@@ -690,6 +743,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 'T_COLON',
                 'T_AMPERSAND',
                 'T_EXCLAMATION',
+                'T_TILDE',
                 'T_REGEX',
                 '/[^\\s]++/',
             ],
@@ -1043,6 +1097,16 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
             statements: $statements,
             offset: $statements[0]->offset,
             length: \max(0, $last->offset + $last->length - $statements[0]->offset),
+        );
+    }
+
+    private static function reduceAdjacency(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+        return new \Phplrt\Compiler\Node\Statement\Adjacency(
+            offset: $children->offset,
+            length: $children->size,
         );
     }
 
