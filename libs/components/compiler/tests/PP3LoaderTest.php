@@ -29,6 +29,7 @@ use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Parser\Exception\UnknownInitialRuleException;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 use Testo\Assert;
@@ -117,6 +118,47 @@ final class PP3LoaderTest extends TestCase
 
         Assert::same($result->parser->initial, $result->parser->constants['A'] ?? null);
         Assert::notNull($result->parser->constants['B'] ?? null);
+    }
+
+    public function testAnalysisStartsAtAKeptRule(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %skip  T_WHITESPACE \s++
+                %token T_NUMBER     \d++
+                %token T_PLUS       \+
+
+                Sum -> { return \array_sum($children); }
+                  : Number() (::T_PLUS:: Number())*
+                  ;
+
+                #Number -> { return (int) $children[0]->value; }
+                  : <T_NUMBER>
+                  ;
+                PP3))
+            ->build();
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2')), 3);
+
+        $numbers = $parser->withInitial($result->parser->entrypoints['Number']);
+
+        Assert::same($numbers->parse(StringSource::createFromString('42')), 42);
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2')), 3);
+    }
+
+    public function testAnalysisIsNotStartedAtAnUndefinedRule(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, "%token T_A a\nA : <T_A> ;"))
+            ->build();
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        Expect::exception(UnknownInitialRuleException::class);
+
+        $parser->withInitial(\count($result->parser->grammar));
     }
 
     public function testEntrypointsContainTheKeptRulesAndTheInitialOne(): void
