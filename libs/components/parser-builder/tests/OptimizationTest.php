@@ -488,6 +488,47 @@ final class OptimizationTest extends TestCase
         Assert::same(self::collectValues($compiled->parse(StringSource::createFromString('1 + 2 - 3'))), ['1', '2', '3']);
     }
 
+    public function testKeptRuleSurvivesBeingUnreachable(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+        ], 'Expression'));
+        $parser->addConcatenation([$parser->addTokenReference('T_PLUS')], 'Sign')
+            ->setKept();
+
+        $result = self::compile($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Concatenation(1)',
+            '1: Lexeme(1, keep)',
+            '2: Concatenation(3)',
+            '3: Lexeme(2, keep)',
+        ]);
+
+        Assert::same($result->constants['Sign'] ?? null, 2);
+    }
+
+    public function testKeptRuleIsNeitherInlinedNorMerged(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')], 'Number')
+                ->setKept(),
+            $parser->addConcatenation([$parser->addTokenReference('T_NUMBER')]),
+        ], 'Expression'));
+
+        $result = self::compile($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Concatenation(1, 2)',
+            '1: Concatenation(2)',
+            '2: Lexeme(1, keep)',
+        ]);
+
+        Assert::same($result->constants['Number'] ?? null, 1);
+    }
+
     private static function compile(ParserBuilder $parser): ParserBuilderResult
     {
         return $parser->build(self::createLexerBuilder()->build());

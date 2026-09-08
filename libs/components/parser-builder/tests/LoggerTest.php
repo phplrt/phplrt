@@ -40,7 +40,7 @@ final class LoggerTest extends TestCase
 
         Assert::contains(
             $logger->records,
-            'info: Rule Unused = <name is "T_MINUS"> is removed, since it is not reachable from Expression',
+            'info: Rule Unused = <name is "T_MINUS"> is removed, since the analysis cannot reach it',
         );
     }
 
