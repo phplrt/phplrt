@@ -61,15 +61,11 @@ final class ParserResultContextTransformer
         $grammar = [];
         $reducers = [];
         $constants = [];
+        $entrypoints = [];
         $messages = [];
-        $keptRules = [];
 
         foreach ($context->rules as $id => $definition) {
             $grammar[] = $this->createRule($definition, $identifiers, $lexer);
-
-            if ($context->isKept($definition)) {
-                $keptRules[$id] = true;
-            }
 
             if ($definition->reducer !== null) {
                 $reducers[$id] = $definition->reducer;
@@ -82,6 +78,10 @@ final class ParserResultContextTransformer
             if ($definition->name !== null) {
                 $constants[$definition->name] = $id;
 
+                if ($context->isKept($definition)) {
+                    $entrypoints[$definition->name] = $id;
+                }
+
                 $context->logger->debug('Rule {rule} is compiled into the rule #{id}', [
                     'rule' => $definition->name,
                     'id' => $id,
@@ -92,9 +92,9 @@ final class ParserResultContextTransformer
         return new ParserResultContext(
             grammar: $grammar,
             initial: $identifiers[$initial],
-            keptRules: $keptRules,
             reducers: $reducers,
             constants: $constants,
+            entrypoints: $entrypoints,
             expectations: $this->createExpectations($lexer),
             messages: $messages,
             logger: $context->logger,

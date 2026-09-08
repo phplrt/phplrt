@@ -308,7 +308,12 @@ abstract class PPLoader implements SyntaxLoaderInterface
     ): void {
         $body = $this->loadStatement($declaration->body, $source, $parser, $lexer);
 
-        $rule = $this->nameRule($body, $declaration->name, $parser);
+        $rule = $this->nameRule($declaration, $body, $parser);
+
+        if ($declaration->isKept) {
+            $rule->setKept();
+        }
+
         $rule->setSource($source, $declaration->offset, $declaration->length);
 
         $this->loadReducer($rule, $declaration, $source);
@@ -325,16 +330,17 @@ abstract class PPLoader implements SyntaxLoaderInterface
 
     /**
      * Returns the rule the declaration is known by.
-     *
-     * @param non-empty-string $name
      */
-    private function nameRule(RuleDefinition $body, string $name, ParserBuilder $parser): RuleDefinition
+    private function nameRule(RuleDeclaration $declaration, RuleDefinition $body, ParserBuilder $parser): RuleDefinition
     {
+        $name = $declaration->name;
+
         // Generate virtual concat production for:
         // - Any production reference
         // - Non-kept token definition
+        // - Kept rule
         $hasVirtualConcatenation = $body instanceof RuleReferenceDefinition
-            || ($body instanceof TerminalRuleDefinition && !$body->isKept);
+            || ($body instanceof TerminalRuleDefinition && (!$body->isKept || $declaration->isKept));
 
         if ($hasVirtualConcatenation) {
             return $parser->addConcatenation([$body], $name);

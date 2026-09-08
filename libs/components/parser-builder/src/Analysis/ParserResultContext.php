@@ -29,12 +29,6 @@ final class ParserResultContext
          */
         public readonly int $initial,
         /**
-         * The identifiers of the kept rules, the initial one among them.
-         *
-         * @var array<int<0, max>, true>
-         */
-        public readonly array $keptRules = [],
-        /**
          * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
          *
@@ -47,6 +41,12 @@ final class ParserResultContext
          * @var array<non-empty-string, int>
          */
         public readonly array $constants = [],
+        /**
+         * A map of name and ID of every kept rule.
+         *
+         * @var array<non-empty-string, int<0, max>>
+         */
+        public readonly array $entrypoints = [],
         /**
          * The identifiers of the tokens a rule may begin with, indexed by the
          * rule identifiers, or {@see null} for a rule that may begin with any
