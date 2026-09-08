@@ -24,7 +24,9 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
@@ -98,6 +100,38 @@ final class PP3LoaderTest extends TestCase
         Expect::exception(UnexpectedTokenException::class);
 
         self::readRule('# : <T_A> ;');
+    }
+
+    public function testKeptRuleIsNotRemovedWhenUnreachable(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %token T_A a
+                %token T_B b
+
+                A : <T_A> ;
+
+                #B : <T_B> ;
+                PP3))
+            ->build();
+
+        Assert::same($result->parser->initial, $result->parser->constants['A'] ?? null);
+        Assert::notNull($result->parser->constants['B'] ?? null);
+    }
+
+    public function testKeptRuleOfASingleTokenIsAProduction(): void
+    {
+        $this->load("%token T_A a\n#A : <T_A> ;");
+
+        $rule = $this->parser->initial;
+
+        Assert::instanceOf($rule, ConcatenationRuleDefinition::class);
+        Assert::true($rule->isKept);
+
+        [$terminal] = $rule->children;
+
+        Assert::instanceOf($terminal, TerminalRuleDefinition::class);
+        Assert::true($terminal->isKept);
     }
 
     public function testClassReducerIsReported(): void

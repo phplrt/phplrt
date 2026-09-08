@@ -31,10 +31,14 @@ abstract class TestCase
 
     protected static function analyze(array $grammar, int $initial, array $reducers = []): ParserResultContext
     {
-        $context = new ParserResultContext($grammar, $initial, \array_map(
-            static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
-            $reducers,
-        ));
+        $context = new ParserResultContext(
+            grammar: $grammar,
+            initial: $initial,
+            reducers: \array_map(
+                static fn(callable $reducer): CallableReducer => new CallableReducer($reducer),
+                $reducers,
+            ),
+        );
 
         $passes = [
             new LookaheadConstructionParserAnalysisPass(),
