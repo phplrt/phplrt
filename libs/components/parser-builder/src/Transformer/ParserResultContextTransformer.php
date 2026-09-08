@@ -62,9 +62,14 @@ final class ParserResultContextTransformer
         $reducers = [];
         $constants = [];
         $messages = [];
+        $keptRules = [];
 
         foreach ($context->rules as $id => $definition) {
             $grammar[] = $this->createRule($definition, $identifiers, $lexer);
+
+            if ($context->isKept($definition)) {
+                $keptRules[$id] = true;
+            }
 
             if ($definition->reducer !== null) {
                 $reducers[$id] = $definition->reducer;
@@ -87,6 +92,7 @@ final class ParserResultContextTransformer
         return new ParserResultContext(
             grammar: $grammar,
             initial: $identifiers[$initial],
+            keptRules: $keptRules,
             reducers: $reducers,
             constants: $constants,
             expectations: $this->createExpectations($lexer),

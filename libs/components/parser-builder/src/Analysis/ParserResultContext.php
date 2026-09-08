@@ -29,6 +29,12 @@ final class ParserResultContext
          */
         public readonly int $initial,
         /**
+         * The identifiers of the kept rules, the initial one among them.
+         *
+         * @var array<int<0, max>, true>
+         */
+        public readonly array $keptRules = [],
+        /**
          * The reducers converting the rules into the nodes, indexed by the
          * rule identifiers.
          *

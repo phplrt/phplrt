@@ -62,7 +62,7 @@ final class RuleReplacements
         }
 
         // A replaced rule is no longer a part of the grammar
-        $context->rules = $context->initial?->collectRules() ?? [];
+        $context->rules = $context->collectReachableRules();
     }
 
     /**

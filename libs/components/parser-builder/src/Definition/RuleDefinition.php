@@ -25,6 +25,13 @@ abstract class RuleDefinition extends Definition
     public ?string $name = null;
 
     /**
+     * Contains {@see true} in case of the rule is kept on the compiled parser
+     *
+     * @phpstan-readonly-allow-private-mutation
+     */
+    public bool $isKept = false;
+
+    /**
      * Contains the reducer converting the rule into the node of the syntax
      * tree, or {@see null} in case of the rule is reduced to its children
      *
@@ -133,6 +140,21 @@ abstract class RuleDefinition extends Definition
         ?string $name = null,
     ) {
         $this->name = $name;
+    }
+
+    /**
+     * Updates whether the rule is kept and returns itself as the fluent
+     * interface.
+     *
+     * @api
+     *
+     * @return $this
+     */
+    public function setKept(bool $kept = true): self
+    {
+        $this->isKept = $kept;
+
+        return $this;
     }
 
     /**

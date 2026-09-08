@@ -49,7 +49,7 @@ final class NestedRepetitionParserCompilerPass implements
              * must not stay in the grammar on its own.
              */
             if ($joined) {
-                $context->rules = $context->initial?->collectRules() ?? [];
+                $context->rules = $context->collectReachableRules();
             }
         } while ($joined);
     }
@@ -79,7 +79,7 @@ final class NestedRepetitionParserCompilerPass implements
          * initial rule is always present in the result, so none of them may be
          * joined.
          */
-        if ($child->reducer !== null || $child->message !== null || $child === $context->initial) {
+        if ($child->reducer !== null || $child->message !== null || $context->isKept($child)) {
             return null;
         }
 
