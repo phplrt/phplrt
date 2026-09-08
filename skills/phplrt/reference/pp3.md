@@ -52,6 +52,20 @@ Number -> { return (int) $children->value; }
 
 Class names inside reducers: pass `--use "App\Ast\Node"` to `compile` so the grammar can write `new Node(...)` instead of the FQCN.
 
+## Custom error messages — `@error`
+
+`@error("message")` replaces the default `Syntax error, unexpected ...` when the thing it is written on fails to match. It rides along into the generated parser (compiled into its message table), so it works in the shipped runtime — no compiler needed at parse time.
+
+```pp3
+Root : ::T_OPEN:: Pair() @error("a pair of names is expected") ::T_CLOSE:: ;
+Pair @error("write it as name, name") : <T_NAME> ::T_COMMA:: <T_NAME> ;
+```
+
+- Write it **after** the element it annotates — a token, a `Rule()` reference, a group, or a quantified thing (`Number()* @error(...)`) — or after the rule's own name, before the `:` and before any `-> { reducer }`. On a predicate it annotates the lookahead: `&<T_NAME> @error("a name is expected")`.
+- **The innermost / furthest failure wins.** An `@error` on an outer rule does not mask a more specific one deeper in, and a plain syntax error that got *further* into the input still beats a shallower `@error` — the message reports the real failure point, same "furthest position reached" rule as `reference/parser.md` describes. So an `@error` fires only when its element is genuinely where parsing stalled.
+- Placeholders, filled from the token parsing stopped on: `{name}` (token name), `{line}`, `{column}`, `{expected}` (shortened token list), `{expected_list}` (full list). A literal brace is doubled: `{{name}}` → `{name}`.
+- Compile-time checks: exactly one non-empty argument, and not two `@error` on the same rule — either is a `CompilationFailedException` / `UnsupportedAnnotationException` at `check`.
+
 ## States and embedded lexers
 
 - `%token string:T_TEXT [^"]++` declares a token in state `string`; the actions `-> state(string)` and `-> exit()` move the reading in and out. `*:T_X` adds a token to every state (tried after the state's own tokens).

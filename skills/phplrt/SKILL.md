@@ -19,7 +19,7 @@ phplrt splits in two:
 - **Runtime** (`phplrt/runtime` = `phplrt/lexer` + `phplrt/parser` + `phplrt/source`) — what a shipped parser needs, and *all* it needs. A shipped parser is a plain PHP class that `extends \Phplrt\Parser\Parser`.
 - **Build-time describers** that turn a grammar into that class: the `.pp3` language read by `phplrt/compiler`, and the in-PHP `phplrt/lexer-builder` + `phplrt/parser-builder`. **Every one of these is a dev dependency.** `phplrt/compiler` alone drags in `laminas/laminas-code`, `symfony/console`, and `twig` — none of which belong in production.
 
-**The anti-pattern (do not do this):** calling `new Compiler()->...->getParser()`, or `$builder->build()->toParser()`, at request time. It forces a describer into `require`, recompiles the whole grammar on every boot, and in a real deploy — where the compiler is `require-dev` and simply isn't installed — fatals with a "class not found". "Give me a parser from what I just built" is a dev-loop convenience, never a shipping architecture.
+**The anti-pattern (do not do this):** calling `(new Compiler())->...->getParser()`, or `$builder->build()->toParser()`, at request time. It forces a describer into `require`, recompiles the whole grammar on every boot, and in a real deploy — where the compiler is `require-dev` and simply isn't installed — fatals with a "class not found". "Give me a parser from what I just built" is a dev-loop convenience, never a shipping architecture.
 
 **The correct flow — generate once, commit the output, depend only on the runtime:**
 
@@ -39,7 +39,7 @@ $parser = new App\Parser\MyParser();
 $ast = $parser->parse(Phplrt\Source\StringSource::createFromString($input));
 ```
 
-The generated class inlines the whole lexer as one regex and every reducer as a real method you can step through — there is no hidden runtime compilation left. `new Compiler()->load(new FileSource('grammar.pp3'))->generate()->withClassName(...)->withNamespaceName(...)->save('src/MyParser.php')` is the same thing from PHP if you would rather generate from a build script than the CLI.
+The generated class inlines the whole lexer as one regex and every reducer as a real method you can step through — there is no hidden runtime compilation left. `(new Compiler())->load(new FileSource('grammar.pp3'))->generate()->withClassName(...)->withNamespaceName(...)->save('src/MyParser.php')` is the same thing from PHP if you would rather generate from a build script than the CLI. (Wrap the `new` in parens: phplrt 4 runs on PHP 8.1+, and the parenthesis-free `new Compiler()->load(...)` chain is 8.4-only syntax that fatals on 8.1–8.3.)
 
 **Corollary — don't fight the codegen.** If you compile a grammar into a `ParserBuilderResult` and then bolt a hand-written lexer onto it at runtime, or keep a static-cached `getParser()`, you have turned a code generator into a runtime interpreter — the same dead-weight trap, most of the code doing work `save()` would have done once. Put the hand-written lexer *inside* the grammar (`%lexer name -> { new App\MyLexer() }`, or a lexer state — see `reference/nested.md`) so one generated class is self-contained, then generate it. And reduce rules into **typed AST nodes**, not one generic catch-all node — a parser that returns a single `Node` type for everything threw away the structure that was the point of parsing.
 
@@ -56,7 +56,7 @@ Phplrt is split into components; each class lives in its own package. A "class n
 Resolve the PHP and composer binaries **once, in this preparatory phase**, and reuse the absolute paths everywhere — including inside subagents, which may not share the parent shell's `PATH` and would otherwise fail with `php: command not found`.
 
 ```bash
-PHP_BIN="$(command -v php || command -v php8.4 || command -v php8.3)"
+PHP_BIN="$(command -v php || command -v php8.4 || command -v php8.3 || command -v php8.2 || command -v php8.1)"  # phplrt 4 needs 8.1+
 COMPOSER="$(command -v composer || echo "$PHP_BIN $(command -v composer.phar)")"
 "$PHP_BIN" -v   # confirm it actually runs
 ```
