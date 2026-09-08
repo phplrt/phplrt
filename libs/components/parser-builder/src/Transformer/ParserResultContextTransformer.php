@@ -89,6 +89,13 @@ final class ParserResultContextTransformer
             }
         }
 
+        if ($entrypoints !== []) {
+            $context->logger->info('{count} rule(s) are kept out of the optimization: {rules}', [
+                'count' => \count($entrypoints),
+                'rules' => \implode(', ', \array_keys($entrypoints)),
+            ]);
+        }
+
         return new ParserResultContext(
             grammar: $grammar,
             initial: $identifiers[$initial],

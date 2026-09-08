@@ -216,6 +216,20 @@ final class GrammarCheckCommand extends Command
         }
         $output->writeln(\sprintf('   After:  <info>%d</info>', $this->getRulesAfterOptimization($result)));
 
+        $entrypoints = $result->parser->entrypoints;
+
+        if ($entrypoints !== []) {
+            $output->writeln('');
+            $output->writeln(' <comment>Entrypoints:</comment>');
+            if ($output->isVeryVerbose()) {
+                $output->writeln('   <fg=gray>// The rules the analysis may be started at, declared with "#"</>');
+            }
+
+            foreach ($entrypoints as $name => $id) {
+                $output->writeln(\sprintf('   <info>%s</info> = %d', $name, $id));
+            }
+        }
+
         $output->writeln('');
         $output->writeln(' <comment>Tokens:</comment>');
         if ($output->isVeryVerbose()) {
