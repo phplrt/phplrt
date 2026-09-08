@@ -75,14 +75,6 @@ abstract class PPLoader implements SyntaxLoaderInterface
     private const ANNOTATION_ERROR = 'error';
 
     /**
-     * The body of the reducer standing for the "#" marker, which builds no
-     * node of its own.
-     *
-     * @var non-empty-string
-     */
-    private const REDUCER_KEEP = 'return $children;';
-
-    /**
      * The variables a reducer may be written of, along with what each of them
      * stands for.
      *
@@ -391,13 +383,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
             return $reducer->code;
         }
 
-        /**
-         * A rule declared with the "#" prefix is kept in the tree even when it
-         * recognizes a single child, and a rule building a node of its own is
-         * exactly what is kept, so the marker is honoured by a reducer handing
-         * the children over as they are.
-         */
-        return $declaration->isKept ? self::REDUCER_KEEP : '';
+        return '';
     }
 
     /**
