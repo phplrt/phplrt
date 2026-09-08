@@ -12,6 +12,7 @@ use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleReference;
@@ -115,10 +116,25 @@ final class PP2LoaderTest extends TestCase
     {
         $this->load('A : "\+" ;');
 
+        [$terminal] = $this->parser->initial?->children ?? [];
+
+        Assert::instanceOf($terminal, TerminalRuleDefinition::class);
+        Assert::false($terminal->isKept);
+    }
+
+    public function testRuleOfASkippedTokenIsAProduction(): void
+    {
+        $this->load('A : ::T_A:: ;');
+
         $rule = $this->parser->initial;
 
-        Assert::instanceOf($rule, TerminalRuleDefinition::class);
-        Assert::false($rule->isKept);
+        Assert::instanceOf($rule, ConcatenationRuleDefinition::class);
+        Assert::same($rule->name, 'A');
+
+        [$terminal] = $rule->children;
+
+        Assert::instanceOf($terminal, TerminalRuleDefinition::class);
+        Assert::false($terminal->isKept);
     }
 
     public function testTokenReferenceIsKept(): void
@@ -159,14 +175,11 @@ final class PP2LoaderTest extends TestCase
         $this->load('%pragma check_tokens false');
     }
 
-    public function testKeptRuleBuildsANodeOfItsOwn(): void
+    public function testKeptRuleBuildsNoNodeOfItsOwn(): void
     {
         $this->load('#A : <T_A> ;');
 
-        $reducer = $this->parser->initial?->reducer;
-
-        Assert::instanceOf($reducer, PhpCodeReducer::class);
-        Assert::same($reducer->code, 'return $children;');
+        Assert::null($this->parser->initial?->reducer);
     }
 
     public function testCodeReducer(): void

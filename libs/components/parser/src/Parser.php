@@ -65,11 +65,6 @@ class Parser implements ParserInterface
      * @param ChoicePredictionTableType $choicePrediction the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
-     * @param ExpectationsTableType $expectations the way an error has to
-     *        name each token: by its name, or by what an anonymous one is
-     *        recognized by
-     * @param MessageTableType $messages the message describing the failure of
-     *        a rule, indexed by the rule identifiers
      */
     public function __construct(
         private readonly LexerInterface $lexer,
@@ -79,7 +74,19 @@ class Parser implements ParserInterface
         array $lookahead = [],
         array $kept = [],
         array $choicePrediction = [],
+        /**
+         * The way an error has to name each token: by its name, or by what an
+         * anonymous one is recognized by
+         *
+         * @var ExpectationsTableType
+         */
         private readonly array $expectations = [],
+        /**
+         * The message describing the failure of a rule, indexed by the
+         * rule identifiers
+         *
+         * @var MessageTableType
+         */
         private readonly array $messages = [],
     ) {
         $this->table = new GrammarTable(

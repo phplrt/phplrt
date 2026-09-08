@@ -39,6 +39,7 @@ use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleReference as RuleReferenceDefinition;
+use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\MessagePlaceholder;
 
@@ -73,14 +74,6 @@ abstract class PPLoader implements SyntaxLoaderInterface
      * @var non-empty-string
      */
     private const ANNOTATION_ERROR = 'error';
-
-    /**
-     * The body of the reducer standing for the "#" marker, which builds no
-     * node of its own.
-     *
-     * @var non-empty-string
-     */
-    private const REDUCER_KEEP = 'return $children;';
 
     /**
      * The variables a reducer may be written of, along with what each of them
@@ -333,15 +326,17 @@ abstract class PPLoader implements SyntaxLoaderInterface
     /**
      * Returns the rule the declaration is known by.
      *
-     * A reference stands for another rule instead of being one and never
-     * reaches the compiled grammar, so a rule written of nothing but a
-     * reference is wrapped into a production to be named at all.
-     *
      * @param non-empty-string $name
      */
     private function nameRule(RuleDefinition $body, string $name, ParserBuilder $parser): RuleDefinition
     {
-        if ($body instanceof RuleReferenceDefinition) {
+        // Generate virtual concat production for:
+        // - Any production reference
+        // - Non-kept token definition
+        $hasVirtualConcatenation = $body instanceof RuleReferenceDefinition
+            || ($body instanceof TerminalRuleDefinition && !$body->isKept);
+
+        if ($hasVirtualConcatenation) {
             return $parser->addConcatenation([$body], $name);
         }
 
@@ -391,13 +386,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
             return $reducer->code;
         }
 
-        /**
-         * A rule declared with the "#" prefix is kept in the tree even when it
-         * recognizes a single child, and a rule building a node of its own is
-         * exactly what is kept, so the marker is honoured by a reducer handing
-         * the children over as they are.
-         */
-        return $declaration->isKept ? self::REDUCER_KEEP : '';
+        return '';
     }
 
     /**

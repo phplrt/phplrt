@@ -80,6 +80,36 @@ final class PP3LoaderTest extends TestCase
         $this->load("%token T_A a\nA -> \\App\\Node : <T_A> ;");
     }
 
+    public function testReducerOfASkippedTokenIsCalled(): void
+    {
+        $parser = $this->compile(<<<'PP3'
+            %token T_A a
+
+            A -> { return 42; }
+              : ::T_A::
+              ;
+            PP3);
+
+        Assert::same($parser->parse(StringSource::createFromString('a')), 42);
+    }
+
+    public function testReducerOfANestedSkippedTokenIsCalled(): void
+    {
+        $parser = $this->compile(<<<'PP3'
+            %token T_A a
+
+            A -> { return $children; }
+              : B()
+              ;
+
+            B -> { return 42; }
+              : ::T_A::
+              ;
+            PP3);
+
+        Assert::same($parser->parse(StringSource::createFromString('a')), [42]);
+    }
+
     public function testExpectedPredicate(): void
     {
         $parser = $this->compile(<<<'PP3'
