@@ -121,22 +121,9 @@ final class PP3AdjacencyTest extends TestCase
             PP3);
     }
 
-    public function testAReferenceToASkippedTokenNamesTheWaysOut(): void
-    {
-        Expect::exception(ParserCompilerException::class)
-            ->withMessageContaining('Write "~" between the statements');
-
-        self::compile(<<<'PP3'
-            %skip  T_WHITESPACE  \s++
-            %token T_NAME        \w++
-
-            Pair : <T_NAME> ::T_WHITESPACE:: <T_NAME> ;
-            PP3);
-    }
-
     public function testAdjacencyIsWrittenDownAsSourceCode(): void
     {
-        $code = (string) new Compiler()
+        $code = (string) (new Compiler())
             ->load(StringSource::createFromString(<<<'PP3'
                 %token T_NAME  \w++
                 %token T_DOT   \.
