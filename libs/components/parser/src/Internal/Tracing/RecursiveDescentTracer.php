@@ -6,6 +6,7 @@ namespace Phplrt\Parser\Internal\Tracing;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -209,6 +210,7 @@ final class RecursiveDescentTracer
             $definition instanceof Optional => $this->matchOptional($definition),
             $definition instanceof Repetition => $this->matchRepetition($definition),
             $definition instanceof Predicate => $this->matchPredicate($definition),
+            $definition instanceof Adjacency => $this->matchAdjacency($definition),
             default => throw new \LogicException(\sprintf(
                 'Unsupported grammar rule %s',
                 \get_debug_type($definition),
@@ -338,6 +340,21 @@ final class RecursiveDescentTracer
         $this->length = $mark;
 
         return $matched === $rule->isExpected;
+    }
+
+    /**
+     * Note: The rule reads nothing, so neither the input nor the trace moves,
+     *       and there is nothing to roll back afterward.
+     */
+    private function matchAdjacency(Adjacency $rule): bool
+    {
+        $buffer = $this->buffer;
+
+        $previous = $buffer->lookBehind();
+        $current = $buffer->current;
+
+        return ($previous->offset + $previous->size === $current->offset)
+            === $rule->isExpected;
     }
 
     private function matchRepetition(Repetition $rule): bool

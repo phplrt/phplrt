@@ -76,6 +76,16 @@ final class ArrayBuffer implements BufferInterface
         $this->current = $this->tokens[$offset];
     }
 
+    /**
+     * Gets previous token
+     */
+    public function lookBehind(): TokenInterface
+    {
+        \assert($this->key > 0, 'There is no token behind the beginning of the input');
+
+        return $this->tokens[$this->key - 1];
+    }
+
     public function next(): void
     {
         $next = $this->key + 1;
