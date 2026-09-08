@@ -15,7 +15,6 @@ while (dirname($directory) !== $directory) {
     $directory = dirname($directory);
 }
 
-
 // lookup source files
 $files = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator(__DIR__ . '/../src', FilesystemIterator::SKIP_DOTS),
@@ -43,7 +42,7 @@ foreach ($files as $file) {
 
     try {
         token_get_all(file_get_contents($pathname), TOKEN_PARSE);
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         $code = 1;
         echo \sprintf("> %s in %s on line %d\n", $e->getMessage(), $pathname, $e->getLine());
     }
