@@ -159,14 +159,11 @@ final class PP2LoaderTest extends TestCase
         $this->load('%pragma check_tokens false');
     }
 
-    public function testKeptRuleBuildsANodeOfItsOwn(): void
+    public function testKeptRuleBuildsNoNodeOfItsOwn(): void
     {
         $this->load('#A : <T_A> ;');
 
-        $reducer = $this->parser->initial?->reducer;
-
-        Assert::instanceOf($reducer, PhpCodeReducer::class);
-        Assert::same($reducer->code, 'return $children;');
+        Assert::null($this->parser->initial?->reducer);
     }
 
     public function testCodeReducer(): void
