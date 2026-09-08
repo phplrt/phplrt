@@ -36,8 +36,8 @@ final class RuleDeclaration extends Declaration
          */
         public readonly ?Reducer $reducer = null,
         /**
-         * Contains {@see true} in case of the rule is kept in the syntax tree
-         * even when it recognizes a single child
+         * Contains {@see true} in case of the name of the rule is kept on the
+         * compiled parser, so the analysis may be started at the rule
          */
         public readonly bool $isKept = false,
         /**
