@@ -2,17 +2,11 @@
  * -----------------------------------------------------------------------------
  *  Directives
  * -----------------------------------------------------------------------------
- *
- *  The settings of a grammar and the grammars it is written of.
- *
  */
 
 /**
  * A setting of the compilation, like:
  *  - %pragma root Expression
- *
- *  The name and the value are captured by the very token the directive is read
- *  as, and both of them have to be written for the directive to mean anything.
  */
 PragmaDeclaration -> {
     \assert($children instanceof \Phplrt\Lexer\Token\Token);

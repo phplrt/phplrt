@@ -2,10 +2,6 @@
  * -----------------------------------------------------------------------------
  *  Declarations Of The PP3 Format
  * -----------------------------------------------------------------------------
- *
- *  Everything a grammar file of this format is written of, apart from its
- *  directives.
- *
  */
 
 Declaration
@@ -21,19 +17,6 @@ Declaration
  * A token to read, like:
  *  - %token string:T_QUOTE " -> state(string), channel(strings)
  *  - %skip *:T_WHITESPACE \s++
- *
- *  The declaration is read by a lexer of its own, so it arrives here as the
- *  parts it is written of rather than as a single value: the state the token
- *  belongs to, its name, the expression recognizing it and everything it does
- *  to the reading. Each of them is a token, so each of them is pointed at by
- *  the place it is written at.
- *
- *  A token that is read but never reaches the parser is declared with "%skip"
- *  instead of "%token", and nothing else about it differs.
- *
- *  Everything the token does is read as a single part, because a lexer reading
- *  one action at a time could not tell an action from an expression spelled
- *  like one. They are told apart here.
  */
 TokenDeclaration -> {
     \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -126,11 +109,6 @@ TokenDeclaration -> {
 /**
  * A named piece of an expression, like:
  *  - %fragment DIGIT [0-9]
- *
- *  The declaration is read by the very lexer a token declaration is read by,
- *  so it arrives here as the same parts. A piece belongs to no state and does
- *  nothing to the reading, so the parts saying either of those are reported
- *  where they are written.
  */
 FragmentDeclaration -> {
     \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -183,10 +161,6 @@ FragmentDeclaration -> {
 /**
  * A lexer written by hand, like:
  *  - %lexer php -> { new \App\Lexer\PhpLexer() }
- *
- *  The body is an expression building the lexer rather than a block of
- *  statements, so it is read the way the body of a reducer is and is left for
- *  the compilation to make sense of.
  */
 LexerDeclaration -> {
     \assert(\is_array($children));
@@ -216,16 +190,16 @@ LexerDeclaration -> {
 /**
  * A rule of the parser, like:
  *  - Sum -> { return new SumNode($children); } : Number() ;
- *
- *  The name is written first, the reducer after it and what the rule recognizes
- *  past the colon, so the declaration is read from both ends: whatever is left
- *  between them is the reducer, in case it has been written at all.
- *
- *  Whatever is said about the rule apart from what it recognizes is written
- *  after its name.
+ *  - #Sum @error("a sum is expected") : Number() ;
  */
 RuleDeclaration -> {
     \assert(\is_array($children));
+
+    $isKept = ($children[0] ?? null) === true;
+
+    if ($isKept) {
+        \array_shift($children);
+    }
 
     $name = \array_shift($children);
     $body = \array_pop($children);
@@ -251,10 +225,13 @@ RuleDeclaration -> {
         name: $name->value,
         body: $body,
         reducer: $reducer,
+        isKept: $isKept,
         annotations: $annotations,
         offset: $name->offset,
         length: \max(0, $body->offset + $body->length - $name->offset),
     );
 }
-  : <T_NAME> AnnotationList()? CodeReducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
+  : KeptMarker()? <T_NAME> AnnotationList()? CodeReducer()? ::T_COLON:: Alternation() ::T_SEMICOLON::?
   ;
+
+KeptMarker -> { return true; } : <T_HASH> ;

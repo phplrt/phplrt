@@ -2,22 +2,11 @@
  * -----------------------------------------------------------------------------
  *  Statements Of The PP3 Format
  * -----------------------------------------------------------------------------
- *
- *  What a rule of the parser recognizes: the alternatives it is written of,
- *  each of them a sequence of statements. A statement may be written with a
- *  predicate before it.
- *
- *  What may be written before a statement in this format (a predicate) and the
- *  two ways a rule declares a token on the spot.
- *
  */
 
 /**
  * One of several things to recognize, like:
  *  - Number() | Name()
- *
- *  An alternative of a single statement is that statement: the choice a rule
- *  is written of is only a choice once there is something to choose from.
  */
 Alternation -> {
     \assert(\is_array($children));
@@ -52,9 +41,6 @@ AlternationTail : ::T_OR:: Concatenation() ;
 /**
  * Several things to recognize one after another, like:
  *  - Number() ::T_PLUS:: Number()
- *
- *  A sequence of a single statement is that statement, for the very same
- *  reason an alternative of one is.
  */
 Concatenation -> {
     \assert(\is_array($children));
@@ -87,9 +73,6 @@ Concatenation -> {
 /**
  * A statement along with the number of times it may repeat, like:
  *  - Number()*
- *
- *  A statement written with no quantifier repeats exactly once, which is what
- *  the statement itself already means.
  */
 Suffixed -> {
     \assert(\is_array($children));
@@ -113,10 +96,6 @@ Suffixed -> {
   : Primary() Quantifier()?
   ;
 
-/**
- * A token a rule declares on the spot is spelled differently by each format,
- * so "Inline" is what a format defines on its own.
- */
 Primary
   : Group()
   | KeptTokenReference()
@@ -128,9 +107,6 @@ Primary
 /**
  * A statement written apart from the ones surrounding it, like:
  *  - ( Number() | Name() )
- *
- *  The brackets say nothing of their own: they only decide what belongs to
- *  what, which the statement written between them already records.
  */
 Group : ::T_PARENTHESIS_OPEN:: Alternation() ::T_PARENTHESIS_CLOSE:: ;
 
@@ -181,9 +157,6 @@ SkippedTokenReference -> {
 /**
  * Another rule to recognize, like:
  *  - Number()
- *
- *  The rule is pointed at by name: it may well be declared in a grammar that
- *  has not been read yet.
  */
 RuleReference -> {
     \assert(\is_array($children));
@@ -206,23 +179,6 @@ RuleReference -> {
  * A single thing a sequence is written of, like:
  *  - &<T_ELSE>
  *  - Number()* @error("a number is expected")
- *
- *  A statement may be looked ahead at, and it may be said something about
- *  apart from what it recognizes.
- *
- *  The statement of a predicate is recognized the way any other one is, and
- *  whatever it has read is given back afterwards: an "&" carries on when it
- *  has been recognized, a "!" when it has not, and neither of them ever
- *  reaches the syntax tree.
- *
- *  The predicate stands before the quantifier rather than after it, so
- *  "&Number()*" looks ahead at any number of them at once instead of looking
- *  ahead any number of times.
- *
- *  Whatever is said about the statement is written after the predicate, so it
- *  is said about the looking ahead rather than about what is looked ahead at.
- *
- *  A statement written with nothing around it is that statement.
  */
 Element -> {
     \assert(\is_array($children));
@@ -276,18 +232,9 @@ Element -> {
  * What is said about a rule or about a statement apart from what it
  * recognizes, like:
  *  - @error("a closing parenthesis is expected")
- *
- *  Several of them are written one after another, with nothing in between.
  */
 AnnotationList : Annotation()+ ;
 
-/**
- * A single thing said about a rule or about a statement, written as a name
- * along with the values it is said with.
- *
- * What a name means is decided by the compilation rather than here, so a name
- * it knows nothing about is still read.
- */
 Annotation -> {
     \assert(\is_array($children));
 
@@ -338,13 +285,6 @@ Inline
  * A token declared by the statement reading it, written as the text it
  * recognizes, like:
  *  - "+"
- *
- *  The text is read as it is written: whatever is special to a regular
- *  expression is only itself here, which is what makes this the shorter way of
- *  spelling the punctuation a language is held together by.
- *
- *  The quotes surrounding it belong to the grammar rather than to the text, and
- *  a quote of the text is written escaped for the very same reason.
  */
 InlineValue -> {
     \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -362,10 +302,6 @@ InlineValue -> {
  * A token declared by the statement reading it, written as the expression
  * recognizing it, like:
  *  - /and|or|xor/
- *
- *  The slashes surrounding the expression belong to the grammar rather than to
- *  the expression itself, and a slash of the expression is written escaped for
- *  the very same reason.
  */
 InlinePattern -> {
     \assert($children instanceof \Phplrt\Lexer\Token\Token);
