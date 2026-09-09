@@ -11,6 +11,7 @@ use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Compiler\AdjacencyPositionValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\DuplicateRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\LeftRecursionValidationParserCompilerPass;
@@ -26,6 +27,7 @@ use Phplrt\Parser\Builder\Compiler\RuleReferenceResolutionParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\TokenReferenceValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\UnreachableRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\UnreportableMessageParserCompilerPass;
+use Phplrt\Parser\Builder\Definition\AdjacencyRuleDefinition;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
@@ -150,6 +152,7 @@ final class ParserBuilder implements LoggerAwareInterface
             self::PASS_PRIORITY_CHECK => [
                 new TokenReferenceValidationParserCompilerPass(),
                 new ProductionValidationParserCompilerPass(),
+                new AdjacencyPositionValidationParserCompilerPass(),
                 new LeftRecursionValidationParserCompilerPass(),
             ],
             self::PASS_PRIORITY_OPTIMIZE => [
@@ -325,6 +328,36 @@ final class ParserBuilder implements LoggerAwareInterface
         ?string $name = null,
     ): PredicateRuleDefinition {
         $definition = new PredicateRuleDefinition($rule, $isExpected, $name);
+
+        $this->addRule($definition);
+
+        return $definition;
+    }
+
+    /**
+     * Adds the requirement for the surrounding tokens to be written one right
+     * after another.
+     *
+     * The rule reads nothing and only answers whether the token behind it ends
+     * exactly where the token ahead of it begins, which is what tells a name
+     * written as "a\b" from the two names written as "a \b".
+     *
+     * ```php
+     * // A name and a separator with nothing written in between
+     * $parser->addConcatenation([
+     *     $parser->addTokenReference('T_NAME'),
+     *     $parser->addAdjacency(),
+     *     $parser->addTokenReference('T_SEPARATOR'),
+     * ]);
+     * ```
+     *
+     * @api
+     *
+     * @param non-empty-string|null $name
+     */
+    public function addAdjacency(bool $isExpected = true, ?string $name = null): AdjacencyRuleDefinition
+    {
+        $definition = new AdjacencyRuleDefinition($isExpected, $name);
 
         $this->addRule($definition);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Analysis;
 
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -146,6 +147,7 @@ final class LookaheadConstructionParserAnalysisPass implements
                 break;
 
             case $definition instanceof Predicate:
+            case $definition instanceof Adjacency:
                 /**
                  * A predicate reads nothing, so it begins with no token at all
                  * and the rule behind it decides what comes first.

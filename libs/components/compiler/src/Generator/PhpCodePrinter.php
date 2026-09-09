@@ -14,6 +14,7 @@ use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\Reducer\ReducerInterface;
 use Phplrt\Parser\Context;
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -208,6 +209,9 @@ final class PhpCodePrinter
             ]),
             $rule instanceof Predicate => self::printExpression(Predicate::class, [
                 (string) $rule->ruleId,
+                self::printBool($rule->isExpected),
+            ]),
+            $rule instanceof Adjacency => self::printExpression(Adjacency::class, [
                 self::printBool($rule->isExpected),
             ]),
             $rule instanceof Lexeme => self::printExpression(Lexeme::class, [

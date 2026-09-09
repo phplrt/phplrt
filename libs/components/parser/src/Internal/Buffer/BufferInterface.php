@@ -30,6 +30,13 @@ interface BufferInterface
     public function seek(int $offset): void;
 
     /**
+     * Gets the token right before the current one, without moving the cursor.
+     *
+     * @return TToken
+     */
+    public function lookBehind(): TokenInterface;
+
+    /**
      * Moves the cursor to the next token. Once the input has been read to its
      * end the cursor just stays on the terminal token.
      */

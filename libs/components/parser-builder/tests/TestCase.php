@@ -11,6 +11,7 @@ use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\Transformer\RuntimeLexerTransformer;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -89,6 +90,7 @@ abstract class TestCase
                 $rule->isExpected ? 'expect' : 'reject',
             ),
             $rule instanceof Repetition => \sprintf('Repetition(%d, %d, %s)', $rule->ruleId, $rule->min, $rule->max),
+            $rule instanceof Adjacency => \sprintf('Adjacency(%s)', $rule->isExpected ? 'expect' : 'reject'),
             default => $rule::class,
         };
     }

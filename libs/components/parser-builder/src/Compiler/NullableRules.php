@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Compiler;
 
+use Phplrt\Parser\Builder\Definition\AdjacencyRuleDefinition;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
@@ -88,7 +89,8 @@ final class NullableRules
 
         return match (true) {
             $rule instanceof OptionalRuleDefinition,
-            $rule instanceof PredicateRuleDefinition => true,
+            $rule instanceof PredicateRuleDefinition,
+            $rule instanceof AdjacencyRuleDefinition => true,
             $rule instanceof RepetitionRuleDefinition => $rule->min === 0
                 || $nullable[$rule->rule] === true,
             default => false,
