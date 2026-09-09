@@ -40,7 +40,8 @@
         }
     },
     "suggest": {
-        "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in"
+        "phplrt/exception": "Renders the syntax errors along with the fragment of the source code they occurred in",
+        "llm/skills": "Delivers the bundled phplrt agent skill (a lexer/parser authoring guide) into your AI coding assistant"
     },
     "provide": {
         "phplrt/lexer-contracts-implementation": "^4.0"
@@ -49,6 +50,15 @@
         "branch-alias": {
             "dev-master": "4.x-dev",
             "dev-main": "4.x-dev"
+        },
+        "skills": {
+            "sources": [
+                {
+                    "from": "github",
+                    "package": "phplrt/phplrt",
+                    "ref": "self.version"
+                }
+            ]
         }
     },
     "config": {

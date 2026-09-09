@@ -6,6 +6,7 @@ namespace Phplrt\Parser\Internal\Tracing;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Parser\Grammar\Adjacency;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
@@ -104,6 +105,15 @@ final class RecursiveDescentTracer
 
         $current = $buffer->current;
 
+        /**
+         * What no rule has asked for is stepped over here as well: a token of
+         * a channel of its own standing at the end of the source is not a part
+         * of the source left unread.
+         */
+        if (!$current->channel instanceof Channel) {
+            $current = $self->skipTrailing();
+        }
+
         if ($isMatched && $current->channel === Channel::EndOfInput) {
             return new SuccessfulTracingResult($self->entries, $self->length);
         }
@@ -145,16 +155,24 @@ final class RecursiveDescentTracer
         //      the code (do this and then benchmark it).
         if ($definition instanceof Lexeme) {
             $token = $buffer->current;
+            $tokenId = $definition->tokenId;
 
-            if ($token->id !== $definition->tokenId) {
-                $error = $this->error;
+            if ($token->id !== $tokenId) {
+                // Tokens on custom channels are ignored by the parser (like
+                // skipped tokens) unless a rule explicitly requests them by name.
+                //
+                // Tokens on default channels are always processed, and any
+                // unexpected occurrence triggers a mismatch error.
+                if ($token->channel instanceof Channel || ($token = $this->stepOver($tokenId)) === null) {
+                    $error = $this->error;
 
-                // A failure behind the reported one changes nothing
-                if ($buffer->key >= $error->furthest) {
-                    $error->record($rule);
+                    // A failure behind the reported one changes nothing
+                    if ($buffer->key >= $error->furthest) {
+                        $error->record($rule);
+                    }
+
+                    return false;
                 }
-
-                return false;
             }
 
             if ($definition->keep) {
@@ -183,7 +201,11 @@ final class RecursiveDescentTracer
 
         // The rule requires a token it cannot start with, so there is nothing
         // to recognize
-        if ($lookahead !== null && !isset($lookahead[$buffer->current->id])) {
+        $isCaptured = $lookahead !== null
+            && !isset($lookahead[$buffer->current->id])
+            && $buffer->current->channel instanceof Channel;
+
+        if ($isCaptured) {
             /**
              * Only a failure ahead of the reported one is worth remembering:
              * the rules rejected alongside this one are the ones it contains,
@@ -214,6 +236,7 @@ final class RecursiveDescentTracer
             $definition instanceof Optional => $this->matchOptional($definition),
             $definition instanceof Repetition => $this->matchRepetition($definition),
             $definition instanceof Predicate => $this->matchPredicate($definition),
+            $definition instanceof Adjacency => $this->matchAdjacency($definition),
             default => throw new \LogicException(\sprintf(
                 'Unsupported grammar rule %s',
                 \get_debug_type($definition),
@@ -343,6 +366,66 @@ final class RecursiveDescentTracer
         $this->length = $mark;
 
         return $matched === $rule->isExpected;
+    }
+
+    /**
+     * Note: The rule reads nothing, so neither the input nor the trace moves,
+     *       and there is nothing to roll back afterward.
+     */
+    private function matchAdjacency(Adjacency $rule): bool
+    {
+        $buffer = $this->buffer;
+
+        $previous = $buffer->lookBehind();
+        $current = $buffer->current;
+
+        return ($previous->offset + $previous->size === $current->offset)
+            === $rule->isExpected;
+    }
+
+    /**
+     * Walks the reading past the tokens no rule has asked for, once it has
+     * nothing left to recognize.
+     */
+    private function skipTrailing(): TokenInterface
+    {
+        $buffer = $this->buffer;
+
+        do {
+            $before = $buffer->key;
+
+            $buffer->next();
+            // A stream ending with such a token has nothing left to step onto,
+            // and the cursor stays where it is
+        } while ($buffer->key !== $before && !$buffer->current->channel instanceof Channel);
+
+        return $buffer->current;
+    }
+
+    /**
+     * Walks the reading past the tokens of the channels a grammar has declared
+     * on its own, up to the token of the given kind.
+     */
+    private function stepOver(int $tokenId): ?TokenInterface
+    {
+        $buffer = $this->buffer;
+        $rollback = $buffer->key;
+
+        do {
+            $before = $buffer->key;
+
+            $buffer->next();
+
+            $token = $buffer->current;
+
+            if ($token->id === $tokenId) {
+                return $token;
+            }
+        } while ($buffer->key !== $before && !$token->channel instanceof Channel);
+
+        $buffer->seek($rollback);
+
+        return null;
     }
 
     private function matchRepetition(Repetition $rule): bool

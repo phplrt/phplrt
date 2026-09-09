@@ -40,10 +40,22 @@
         "phplrt/position-contracts-implementation": "^4.0",
         "phplrt/position-factory-contracts-implementation": "^4.0"
     },
+    "suggest": {
+        "llm/skills": "Delivers the bundled phplrt agent skill (a lexer/parser authoring guide) into your AI coding assistant"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "4.x-dev",
             "dev-main": "4.x-dev"
+        },
+        "skills": {
+            "sources": [
+                {
+                    "from": "github",
+                    "package": "phplrt/phplrt",
+                    "ref": "self.version"
+                }
+            ]
         }
     },
     "config": {

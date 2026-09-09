@@ -67,7 +67,22 @@ Concatenation -> {
         length: \max(0, $last->offset + $last->length - $statements[0]->offset),
     );
 }
-  : Element()+
+  : (Adjacency() | Element())+
+  ;
+
+/**
+ * An "adjacency" sequence, like:
+ * - <T_NAME> ~ ::T_NS_SEPARATOR:: ~ <T_NAME>
+ */
+Adjacency -> {
+    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+
+    return new \Phplrt\Compiler\Node\Statement\Adjacency(
+        offset: $children->offset,
+        length: $children->size,
+    );
+}
+  : <T_TILDE>
   ;
 
 /**

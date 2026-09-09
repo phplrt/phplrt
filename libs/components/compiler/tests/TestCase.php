@@ -61,6 +61,7 @@ abstract class TestCase
                 ? \sprintf('<%s>', $node->name)
                 : \sprintf('::%s::', $node->name),
             $node instanceof Statement\RuleReference => \sprintf('%s()', $node->name),
+            $node instanceof Statement\Adjacency => $node->isExpected ? '~' : '!~',
             $node instanceof Statement\InlinePattern => \sprintf('"%s"', $node->pattern),
         };
     }

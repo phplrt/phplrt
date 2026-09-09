@@ -26,7 +26,7 @@
 /**
  * What is said about a rule or about a statement apart from what it
  * recognizes, like:
- *  - @error("a closing parenthesis is expected")
+ *  - `@error("a closing parenthesis is expected")`
  */
 %token T_ANNOTATION            @([a-zA-Z_][a-zA-Z0-9_]*+)
 
@@ -80,6 +80,8 @@
 // ahead for anything but it
 %token T_AMPERSAND        &
 %token T_EXCLAMATION      !
+
+%token T_TILDE            ~
 
 // The comments are declared before it, so a slash still opens a comment
 %token T_REGEX            /([^/\\]*+(?:\\.[^/\\]*+)*+)/
