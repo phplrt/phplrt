@@ -17,7 +17,7 @@ return new {% if readonly and php.value >= 80300 %}readonly {% endif %}class imp
 {
 {% endif %}
 {% for id, name in lexer.names %}
-    /** @var int */
+    {{ docblock(lexer.tokens[id].comment, ['@var int'])|indent(1) }}
     public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
 

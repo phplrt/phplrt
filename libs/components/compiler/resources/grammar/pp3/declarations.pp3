@@ -8,7 +8,46 @@
  *
  */
 
-Declaration
+/**
+ * A single element of a grammar file, along with what is written about it.
+ *
+ *  A comment is read rather than thrown away, so it arrives here together with
+ *  the element it stands before. Whether it is written about that element is
+ *  decided by the empty line PHP decides it by: a comment written right before
+ *  an element is written about it, and a comment written a line away from one
+ *  is written about the file it stands in.
+ *
+ *  Several comments may stand before a single element, and only the last of
+ *  them stands right before it.
+ */
+Declaration -> {
+    \assert(\is_array($children));
+
+    $declaration = \array_pop($children);
+    $comment = \array_pop($children);
+
+    \assert($declaration instanceof \Phplrt\Compiler\Node\Declaration\Declaration);
+
+    if ($comment === null) {
+        return $declaration;
+    }
+
+    \assert($comment instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+    \assert($comment->value !== '', 'The lexer never produces an empty token');
+
+    $end = $comment->offset + $comment->size;
+    $between = \substr($content, $end, \max(0, $declaration->offset - $end));
+
+    if (\preg_match('/\R\h*+\R/', $between) === 1) {
+        return $declaration;
+    }
+
+    return $declaration->setComment($comment->value);
+}
+  : <T_DOC>* DeclarationBody()
+  ;
+
+DeclarationBody
   : TokenDeclaration()
   | FragmentDeclaration()
   | PragmaDeclaration()

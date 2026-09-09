@@ -17,6 +17,7 @@ use Phplrt\Compiler\Node\Declaration\LexerDeclaration;
 use Phplrt\Compiler\Node\Declaration\PragmaDeclaration;
 use Phplrt\Compiler\Node\Declaration\TokenAction;
 use Phplrt\Compiler\Node\Declaration\TokenDeclaration;
+use Phplrt\Compiler\Syntax\Common\CommentReader;
 use Phplrt\Compiler\Syntax\Common\PPLoader;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
@@ -202,6 +203,7 @@ final class PP3Loader extends PPLoader
         $definition = new RegexTokenDefinition($declaration->pattern, $declaration->name);
         $definition->setHidden($declaration->isHidden);
         $definition->setSource($source, $declaration->offset, $declaration->length);
+        $definition->setComment(CommentReader::read($declaration->comment ?? ''));
 
         /**
          * The initial state is the one every grammar has, so the token joins

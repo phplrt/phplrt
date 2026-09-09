@@ -66,6 +66,7 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
         $this->twig->addFunction(new TwigFunction('method', $this->printer->printReducerMethod(...)));
         $this->twig->addFunction(new TwigFunction('callback', $this->printer->printReducerCallback(...)));
         $this->twig->addFunction(new TwigFunction('expression', $this->printer->printEmbeddedLexer(...)));
+        $this->twig->addFunction(new TwigFunction('docblock', $this->printer->printDocBlock(...)));
         $this->twig->addFilter(new TwigFilter('indent', $this->printer->indent(...)));
         $this->twig->addTest(new TwigTest('embedded', self::isEmbedded(...)));
     }

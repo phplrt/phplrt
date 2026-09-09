@@ -1,4 +1,7 @@
 {% for id, definition in parser.reducers %}
 
+{% if parser.comments[id] is defined %}
+{{ docblock(parser.comments[id]) }}
+{% endif %}
 {{ method(definition, id, methods[id]) }}
 {% endfor %}

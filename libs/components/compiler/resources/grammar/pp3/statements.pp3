@@ -204,8 +204,8 @@ RuleReference -> {
 
 /**
  * A single thing a sequence is written of, like:
- *  - &<T_ELSE>
- *  - Number()* @error("a number is expected")
+ *  - `&<T_ELSE>`
+ *  - `Number()*` with `@error("a number is expected")`
  *
  *  A statement may be looked ahead at, and it may be said something about
  *  apart from what it recognizes.
@@ -275,7 +275,7 @@ Element -> {
 /**
  * What is said about a rule or about a statement apart from what it
  * recognizes, like:
- *  - @error("a closing parenthesis is expected")
+ *  - `@error("a closing parenthesis is expected")`
  *
  *  Several of them are written one after another, with nothing in between.
  */

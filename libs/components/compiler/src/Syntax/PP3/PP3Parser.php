@@ -43,7 +43,16 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     public const T_INCLUDE = 4;
     /** @var int */
     public const T_PHP = 5;
-    /** @var int */
+    /**
+     * What is said about a rule or about a statement apart from what it
+     * recognizes, like:
+     *  - `@error("a closing parenthesis is expected")`
+     *
+     * The name is captured by the very token the annotation opens with, so it
+     * belongs to the "@" and is never written apart from it.
+     *
+     * @var int
+     */
     public const T_ANNOTATION = 6;
     /** @var int */
     public const T_SEMICOLON = 7;
@@ -75,7 +84,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     public const T_STRING = 20;
     /** @var int */
     public const T_NAME = 21;
-    /** @var int */
+    /**
+     * A token is declared on a line of its own and is read by a lexer of its own:
+     * the parts of a declaration are spelled in ways that only make sense next to
+     * each other, and none of them means anything anywhere else.
+     *
+     * @var int
+     */
     public const T_TOKEN = 22;
     /** @var int */
     public const T_SKIP = 23;
@@ -91,7 +106,12 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     public const T_AMPERSAND = 28;
     /** @var int */
     public const T_EXCLAMATION = 29;
-    /** @var int */
+    /**
+     * A token a rule declares by the expression recognizing it. The comments are
+     * declared before it, so a slash still opens a comment where it always did.
+     *
+     * @var int
+     */
     public const T_REGEX = 30;
 
     /**
@@ -128,7 +148,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
             channels: [
                 'Hidden',
                 'Hidden',
-                'Hidden',
+                'doc',
                 31 => 'Unknown',
             ],
             names: [
@@ -183,101 +203,123 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         $this->parser = new \Phplrt\Parser\Parser(
             lexer: $this->lexer,
             grammar: [
-                new \Phplrt\Parser\Grammar\Repetition(1, 0, \INF),
-                new \Phplrt\Parser\Grammar\Alternation([2, 5, 6, 7, 8, 11]),
-                new \Phplrt\Parser\Grammar\Alternation([3, 4]),
+                new \Phplrt\Parser\Grammar\Concatenation([1, 69]),
+                new \Phplrt\Parser\Grammar\Repetition(2, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([3, 5]),
+                new \Phplrt\Parser\Grammar\Repetition(4, 0, \INF),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_DOC, true),
+                new \Phplrt\Parser\Grammar\Alternation([6, 9, 10, 11, 12, 15]),
+                new \Phplrt\Parser\Grammar\Alternation([7, 8]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TOKEN, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SKIP, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FRAGMENT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PRAGMA, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INCLUDE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([9, 10]),
+                new \Phplrt\Parser\Grammar\Concatenation([13, 14]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LEXER, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PHP, true),
-                new \Phplrt\Parser\Grammar\Concatenation([12, 13, 25, 26, 27, 63]),
+                new \Phplrt\Parser\Grammar\Concatenation([16, 17, 29, 30, 31, 67]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NAME, true),
-                new \Phplrt\Parser\Grammar\Optional(14),
-                new \Phplrt\Parser\Grammar\Repetition(15, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([16, 17, 18, 24]),
+                new \Phplrt\Parser\Grammar\Optional(18),
+                new \Phplrt\Parser\Grammar\Repetition(19, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([20, 21, 22, 28]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANNOTATION, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_OPEN, false),
-                new \Phplrt\Parser\Grammar\Optional(19),
-                new \Phplrt\Parser\Grammar\Concatenation([20, 21]),
+                new \Phplrt\Parser\Grammar\Optional(23),
+                new \Phplrt\Parser\Grammar\Concatenation([24, 25]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
-                new \Phplrt\Parser\Grammar\Repetition(22, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([23, 20]),
+                new \Phplrt\Parser\Grammar\Repetition(26, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([27, 24]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PARENTHESIS_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Optional(10),
+                new \Phplrt\Parser\Grammar\Optional(14),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([28, 60]),
-                new \Phplrt\Parser\Grammar\Repetition(29, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([30, 34, 13]),
-                new \Phplrt\Parser\Grammar\Optional(31),
-                new \Phplrt\Parser\Grammar\Alternation([32, 33]),
+                new \Phplrt\Parser\Grammar\Concatenation([32, 64]),
+                new \Phplrt\Parser\Grammar\Repetition(33, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([34, 38, 17]),
+                new \Phplrt\Parser\Grammar\Optional(35),
+                new \Phplrt\Parser\Grammar\Alternation([36, 37]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_AMPERSAND, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCLAMATION, true),
-                new \Phplrt\Parser\Grammar\Concatenation([35, 46]),
-                new \Phplrt\Parser\Grammar\Alternation([36, 37, 40, 42, 43]),
-                new \Phplrt\Parser\Grammar\Concatenation([17, 27, 24]),
-                new \Phplrt\Parser\Grammar\Concatenation([38, 12, 39]),
+                new \Phplrt\Parser\Grammar\Concatenation([39, 50]),
+                new \Phplrt\Parser\Grammar\Alternation([40, 41, 44, 46, 47]),
+                new \Phplrt\Parser\Grammar\Concatenation([21, 31, 28]),
+                new \Phplrt\Parser\Grammar\Concatenation([42, 16, 43]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_OPEN, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ANGLE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Concatenation([41, 12, 41]),
+                new \Phplrt\Parser\Grammar\Concatenation([45, 16, 45]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DOUBLE_COLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([12, 17, 24]),
-                new \Phplrt\Parser\Grammar\Alternation([44, 45]),
+                new \Phplrt\Parser\Grammar\Concatenation([16, 21, 28]),
+                new \Phplrt\Parser\Grammar\Alternation([48, 49]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_REGEX, true),
-                new \Phplrt\Parser\Grammar\Optional(47),
-                new \Phplrt\Parser\Grammar\Alternation([48, 49, 50, 51]),
+                new \Phplrt\Parser\Grammar\Optional(51),
+                new \Phplrt\Parser\Grammar\Alternation([52, 53, 54, 55]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUESTION_MARK, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ASTERISK, true),
-                new \Phplrt\Parser\Grammar\Concatenation([52, 53, 59]),
+                new \Phplrt\Parser\Grammar\Concatenation([56, 57, 63]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_OPEN, false),
-                new \Phplrt\Parser\Grammar\Alternation([54, 56, 57, 58]),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 23, 55]),
+                new \Phplrt\Parser\Grammar\Alternation([58, 60, 61, 62]),
+                new \Phplrt\Parser\Grammar\Concatenation([59, 27, 59]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 23]),
-                new \Phplrt\Parser\Grammar\Concatenation([23, 55]),
+                new \Phplrt\Parser\Grammar\Concatenation([59, 27]),
+                new \Phplrt\Parser\Grammar\Concatenation([27, 59]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Repetition(61, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([62, 28]),
+                new \Phplrt\Parser\Grammar\Repetition(65, 0, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([66, 32]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(64),
+                new \Phplrt\Parser\Grammar\Optional(68),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
+                new \Phplrt\Parser\Grammar\Repetition(70, 0, \INF),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_DOC, false),
             ],
             initial: 0,
             reducers: [
-                2 => self::reduceTokenDeclaration(...),
-                5 => self::reduceFragmentDeclaration(...),
-                6 => self::reducePragmaDeclaration(...),
-                7 => self::reduceIncludeDeclaration(...),
-                8 => self::reduceLexerDeclaration(...),
-                10 => self::reduceCodeReducer(...),
-                11 => self::reduceRuleDeclaration(...),
-                15 => self::reduceAnnotation(...),
-                27 => self::reduceAlternation(...),
-                28 => self::reduceConcatenation(...),
-                29 => self::reduceElement(...),
-                34 => self::reduceSuffixed(...),
-                37 => self::reduceKeptTokenReference(...),
-                40 => self::reduceSkippedTokenReference(...),
-                42 => self::reduceRuleReference(...),
-                44 => self::reduceInlineValue(...),
-                45 => self::reduceInlinePattern(...),
-                48 => self::reduceZeroOrOne(...),
-                49 => self::reduceOneOrMore(...),
-                50 => self::reduceZeroOrMore(...),
-                54 => self::reduceRangeFromTo(...),
-                56 => self::reduceRangeFrom(...),
-                57 => self::reduceRangeTo(...),
-                58 => self::reduceRangeExactly(...),
+                2 => self::reduceDeclaration(...),
+                6 => self::reduceTokenDeclaration(...),
+                9 => self::reduceFragmentDeclaration(...),
+                10 => self::reducePragmaDeclaration(...),
+                11 => self::reduceIncludeDeclaration(...),
+                12 => self::reduceLexerDeclaration(...),
+                14 => self::reduceCodeReducer(...),
+                15 => self::reduceRuleDeclaration(...),
+                19 => self::reduceAnnotation(...),
+                31 => self::reduceAlternation(...),
+                32 => self::reduceConcatenation(...),
+                33 => self::reduceElement(...),
+                38 => self::reduceSuffixed(...),
+                41 => self::reduceKeptTokenReference(...),
+                44 => self::reduceSkippedTokenReference(...),
+                46 => self::reduceRuleReference(...),
+                48 => self::reduceInlineValue(...),
+                49 => self::reduceInlinePattern(...),
+                52 => self::reduceZeroOrOne(...),
+                53 => self::reduceOneOrMore(...),
+                54 => self::reduceZeroOrMore(...),
+                58 => self::reduceRangeFromTo(...),
+                60 => self::reduceRangeFrom(...),
+                61 => self::reduceRangeTo(...),
+                62 => self::reduceRangeExactly(...),
             ],
             lookahead: [
                 null,
+                null,
+                [
+                    2 => true,
+                    true,
+                    true,
+                    21 => true,
+                    true,
+                    true,
+                    true,
+                    true,
+                ],
+                null,
+                [
+                    2 => true,
+                ],
                 [
                     3 => true,
                     true,
@@ -498,6 +540,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 [
                     7 => true,
                 ],
+                null,
+                [
+                    2 => true,
+                ],
             ],
             kept: [
                 true,
@@ -505,6 +551,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 true,
                 false,
                 false,
+                false,
+                true,
+                false,
+                false,
                 true,
                 true,
                 true,
@@ -512,40 +562,19 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 false,
                 true,
                 true,
-                false,
-                false,
-                false,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                true,
-                true,
-                true,
-                false,
                 false,
                 false,
                 false,
                 true,
                 false,
                 false,
-                true,
                 false,
                 false,
-                true,
                 false,
-                true,
                 false,
-                true,
-                true,
+                false,
+                false,
+                false,
                 false,
                 false,
                 true,
@@ -554,11 +583,34 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 false,
                 false,
                 false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                false,
+                false,
+                true,
+                false,
+                true,
+                false,
+                true,
+                true,
+                false,
+                false,
+                true,
+                true,
+                true,
+                false,
+                false,
+                false,
                 true,
                 false,
                 true,
                 true,
                 true,
+                false,
+                false,
                 false,
                 false,
                 false,
@@ -567,95 +619,95 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 false,
             ],
             choicePrediction: [
-                1 => [
+                5 => [
                     22 => [
-                        2,
-                    ],
-                    [
-                        2,
-                    ],
-                    [
-                        5,
-                    ],
-                    3 => [
                         6,
                     ],
+                    [
+                        6,
+                    ],
+                    [
+                        9,
+                    ],
+                    3 => [
+                        10,
+                    ],
                     4 => [
+                        11,
+                    ],
+                    [
+                        12,
+                    ],
+                    21 => [
+                        15,
+                    ],
+                ],
+                [
+                    22 => [
                         7,
                     ],
                     [
                         8,
                     ],
-                    21 => [
-                        11,
-                    ],
-                ],
-                [
-                    22 => [
-                        3,
-                    ],
-                    [
-                        4,
-                    ],
-                ],
-                31 => [
-                    28 => [
-                        32,
-                    ],
-                    [
-                        33,
-                    ],
                 ],
                 35 => [
-                    9 => [
+                    28 => [
                         36,
                     ],
-                    11 => [
+                    [
                         37,
                     ],
-                    26 => [
+                ],
+                39 => [
+                    9 => [
                         40,
                     ],
-                    21 => [
-                        42,
+                    11 => [
+                        41,
                     ],
-                    20 => [
-                        43,
-                    ],
-                    30 => [
-                        43,
-                    ],
-                ],
-                43 => [
-                    20 => [
+                    26 => [
                         44,
                     ],
+                    21 => [
+                        46,
+                    ],
+                    20 => [
+                        47,
+                    ],
                     30 => [
-                        45,
+                        47,
                     ],
                 ],
                 47 => [
-                    13 => [
+                    20 => [
                         48,
                     ],
-                    [
+                    30 => [
                         49,
                     ],
-                    [
-                        50,
+                ],
+                51 => [
+                    13 => [
+                        52,
                     ],
                     [
-                        51,
+                        53,
+                    ],
+                    [
+                        54,
+                    ],
+                    [
+                        55,
                     ],
                 ],
-                53 => [
+                57 => [
                     19 => [
-                        54,
-                        56,
                         58,
+                        60,
+                        62,
                     ],
                     18 => [
-                        57,
+                        61,
                     ],
                 ],
             ],
@@ -701,6 +753,66 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         return $this->parser->parse($source);
     }
 
+    /**
+     * A single element of a grammar file, along with what is written about it.
+     *
+     *  A comment is read rather than thrown away, so it arrives here together with
+     *  the element it stands before. Whether it is written about that element is
+     *  decided by the empty line PHP decides it by: a comment written right before
+     *  an element is written about it, and a comment written a line away from one
+     *  is written about the file it stands in.
+     *
+     *  Several comments may stand before a single element, and only the last of
+     *  them stands right before it.
+     */
+    private static function reduceDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        // The variables below are declared by the compiler
+        $content = $ctx->source->content;
+        $end = $ctx->begin + $ctx->length;
+
+        \assert(\is_array($children));
+
+        $declaration = \array_pop($children);
+        $comment = \array_pop($children);
+
+        \assert($declaration instanceof \Phplrt\Compiler\Node\Declaration\Declaration);
+
+        if ($comment === null) {
+            return $declaration;
+        }
+
+        \assert($comment instanceof \Phplrt\Contracts\Lexer\TokenInterface);
+        \assert($comment->value !== '', 'The lexer never produces an empty token');
+
+        $end = $comment->offset + $comment->size;
+        $between = \substr($content, $end, \max(0, $declaration->offset - $end));
+
+        if (\preg_match('/\R\h*+\R/', $between) === 1) {
+            return $declaration;
+        }
+
+        return $declaration->setComment($comment->value);
+    }
+
+    /**
+     * A token to read, like:
+     *  - %token string:T_QUOTE " -> state(string), channel(strings)
+     *  - %skip *:T_WHITESPACE \s++
+     *
+     *  The declaration is read by a lexer of its own, so it arrives here as the
+     *  parts it is written of rather than as a single value: the state the token
+     *  belongs to, its name, the expression recognizing it and everything it does
+     *  to the reading. Each of them is a token, so each of them is pointed at by
+     *  the place it is written at.
+     *
+     *  A token that is read but never reaches the parser is declared with "%skip"
+     *  instead of "%token", and nothing else about it differs.
+     *
+     *  Everything the token does is read as a single part, because a lexer reading
+     *  one action at a time could not tell an action from an expression spelled
+     *  like one. They are told apart here.
+     */
     private static function reduceTokenDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -787,6 +899,15 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A named piece of an expression, like:
+     *  - %fragment DIGIT [0-9]
+     *
+     *  The declaration is read by the very lexer a token declaration is read by,
+     *  so it arrives here as the same parts. A piece belongs to no state and does
+     *  nothing to the reading, so the parts saying either of those are reported
+     *  where they are written.
+     */
     private static function reduceFragmentDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -834,6 +955,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A setting of the compilation, like:
+     *  - %pragma root Expression
+     *
+     *  The name and the value are captured by the very token the directive is read
+     *  as, and both of them have to be written for the directive to mean anything.
+     */
     private static function reducePragmaDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -853,6 +981,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Another grammar to read, like:
+     *  - %include grammar/pp3/lexemes
+     */
     private static function reduceIncludeDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -870,6 +1002,14 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A lexer written by hand, like:
+     *  - %lexer php -> { new \App\Lexer\PhpLexer() }
+     *
+     *  The body is an expression building the lexer rather than a block of
+     *  statements, so it is read the way the body of a reducer is and is left for
+     *  the compilation to make sense of.
+     */
     private static function reduceLexerDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -894,6 +1034,24 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A block of PHP code, like:
+     *  - -> { return new SumNode($children); }
+     *
+     *  The code is read by a lexer of its own, so it arrives here as the tokens
+     *  PHP has been read into rather than as a value: the braces surrounding it
+     *  belong to the grammar rather than to the code, and are dropped by taking
+     *  everything written between them.
+     *
+     *  What is left is taken out of the nesting the grammar has written it in. A
+     *  body is read from the grammar file exactly as it is written there, so the
+     *  nesting of the rule it belongs to is a part of it. The body is written into
+     *  something else afterwards (a generated method, an evaluated callback) which
+     *  nests it on its own, so a single level of nesting is taken away.
+     *
+     *  The line the body starts at is written after the brace opening it rather
+     *  than on a line of its own, so whatever precedes it is not nesting at all.
+     */
     private static function reduceCodeReducer(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -922,6 +1080,17 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A rule of the parser, like:
+     *  - Sum -> { return new SumNode($children); } : Number() ;
+     *
+     *  The name is written first, the reducer after it and what the rule recognizes
+     *  past the colon, so the declaration is read from both ends: whatever is left
+     *  between them is the reducer, in case it has been written at all.
+     *
+     *  Whatever is said about the rule apart from what it recognizes is written
+     *  after its name.
+     */
     private static function reduceRuleDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -956,6 +1125,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A single thing said about a rule or about a statement, written as a name
+     * along with the values it is said with.
+     *
+     * What a name means is decided by the compilation rather than here, so a name
+     * it knows nothing about is still read.
+     */
     private static function reduceAnnotation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -992,6 +1168,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * One of several things to recognize, like:
+     *  - Number() | Name()
+     *
+     *  An alternative of a single statement is that statement: the choice a rule
+     *  is written of is only a choice once there is something to choose from.
+     */
     private static function reduceAlternation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1019,6 +1202,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Several things to recognize one after another, like:
+     *  - Number() ::T_PLUS:: Number()
+     *
+     *  A sequence of a single statement is that statement, for the very same
+     *  reason an alternative of one is.
+     */
     private static function reduceConcatenation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1046,6 +1236,28 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A single thing a sequence is written of, like:
+     *  - `&<T_ELSE>`
+     *  - `Number()*` with `@error("a number is expected")`
+     *
+     *  A statement may be looked ahead at, and it may be said something about
+     *  apart from what it recognizes.
+     *
+     *  The statement of a predicate is recognized the way any other one is, and
+     *  whatever it has read is given back afterwards: an "&" carries on when it
+     *  has been recognized, a "!" when it has not, and neither of them ever
+     *  reaches the syntax tree.
+     *
+     *  The predicate stands before the quantifier rather than after it, so
+     *  "&Number()*" looks ahead at any number of them at once instead of looking
+     *  ahead any number of times.
+     *
+     *  Whatever is said about the statement is written after the predicate, so it
+     *  is said about the looking ahead rather than about what is looked ahead at.
+     *
+     *  A statement written with nothing around it is that statement.
+     */
     private static function reduceElement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1093,6 +1305,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A statement along with the number of times it may repeat, like:
+     *  - Number()*
+     *
+     *  A statement written with no quantifier repeats exactly once, which is what
+     *  the statement itself already means.
+     */
     private static function reduceSuffixed(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1114,6 +1333,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token whose value is kept in the syntax tree, like:
+     *  - <T_NAME>
+     */
     private static function reduceKeptTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1131,6 +1354,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token that is read and thrown away, like:
+     *  - ::T_COMMA::
+     */
     private static function reduceSkippedTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1148,6 +1375,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Another rule to recognize, like:
+     *  - Number()
+     *
+     *  The rule is pointed at by name: it may well be declared in a grammar that
+     *  has not been read yet.
+     */
     private static function reduceRuleReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1164,6 +1398,18 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token declared by the statement reading it, written as the text it
+     * recognizes, like:
+     *  - "+"
+     *
+     *  The text is read as it is written: whatever is special to a regular
+     *  expression is only itself here, which is what makes this the shorter way of
+     *  spelling the punctuation a language is held together by.
+     *
+     *  The quotes surrounding it belong to the grammar rather than to the text, and
+     *  a quote of the text is written escaped for the very same reason.
+     */
     private static function reduceInlineValue(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -1175,6 +1421,15 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token declared by the statement reading it, written as the expression
+     * recognizing it, like:
+     *  - /and|or|xor/
+     *
+     *  The slashes surrounding the expression belong to the grammar rather than to
+     *  the expression itself, and a slash of the expression is written escaped for
+     *  the very same reason.
+     */
     private static function reduceInlinePattern(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -1186,6 +1441,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Never or once, like:
+     *  - Number()?
+     */
     private static function reduceZeroOrOne(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -1198,6 +1457,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At least once, like:
+     *  - Number()+
+     */
     private static function reduceOneOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -1210,6 +1473,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Any number of times, like:
+     *  - Number()*
+     */
     private static function reduceZeroOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -1222,6 +1489,14 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Between two numbers of times, like:
+     *  - Number(){2,5}
+     *
+     *  The range is written by hand, so the greatest number may well be lower than
+     *  the least one. Whether it makes sense is decided while the grammar is being
+     *  compiled rather than while it is being read.
+     */
     private static function reduceRangeFromTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1245,6 +1520,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At least a number of times, like:
+     *  - Number(){2,}
+     */
     private static function reduceRangeFrom(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1265,6 +1544,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At most a number of times, like:
+     *  - Number(){,5}
+     */
     private static function reduceRangeTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -1285,6 +1568,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Exactly a number of times, like:
+     *  - Number(){5}
+     */
     private static function reduceRangeExactly(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);

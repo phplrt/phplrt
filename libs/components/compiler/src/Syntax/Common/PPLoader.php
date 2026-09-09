@@ -200,6 +200,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
         $definition = $target->addPattern($declaration->pattern, $declaration->name);
         $definition->setHidden($declaration->isHidden);
         $definition->setSource($source, $declaration->offset, $declaration->length);
+        $definition->setComment(CommentReader::read($declaration->comment ?? ''));
 
         $this->loadAction($definition, $declaration, $state, $source);
     }
@@ -310,6 +311,7 @@ abstract class PPLoader implements SyntaxLoaderInterface
 
         $rule = $this->nameRule($body, $declaration->name, $parser);
         $rule->setSource($source, $declaration->offset, $declaration->length);
+        $rule->setComment(CommentReader::read($declaration->comment ?? ''));
 
         $this->loadReducer($rule, $declaration, $source);
         $this->loadAnnotations($rule, $declaration->annotations, $source);

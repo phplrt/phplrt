@@ -73,7 +73,15 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
     public const T_STRING = 19;
     /** @var int */
     public const T_NAME = 20;
-    /** @var int */
+    /**
+     * The declaration of a token: the state it belongs to, its name, its pattern
+     * and the state it switches to.
+     *
+     * A declaration is read as a single token whose subgroups capture its parts, so
+     * which value is which is decided by its position rather than by its content.
+     *
+     * @var int
+     */
     public const T_TOKEN = 21;
     /** @var int */
     public const T_SKIP = 22;
@@ -566,6 +574,21 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         return $this->parser->parse($source);
     }
 
+    /**
+     * A token to read, like:
+     *  - %token string:T_QUOTE " -> default
+     *  - %skip T_WHITESPACE \s++
+     *
+     *  A declaration is read as a single token whose subgroups capture its parts,
+     *  so which value is which is decided by its position: the state it belongs to,
+     *  its name, its pattern and the state it switches to.
+     *
+     *  A token that is read but never reaches the parser is declared with "%skip"
+     *  instead of "%token", and nothing else about it differs.
+     *
+     *  The state the token switches to is recorded as it is written: what entering
+     *  it means is decided while the grammar is being read into a lexer.
+     */
     private static function reduceTokenDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -591,6 +614,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A setting of the compilation, like:
+     *  - %pragma root Expression
+     *
+     *  The name and the value are captured by the very token the directive is read
+     *  as, and both of them have to be written for the directive to mean anything.
+     */
     private static function reducePragmaDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -610,6 +640,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Another grammar to read, like:
+     *  - %include grammar/pp2/lexemes
+     */
     private static function reduceIncludeDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -627,6 +661,17 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A rule of the parser, like:
+     *  - #Sum -> { return new SumNode($children); } ::= Number() ;
+     *
+     *  The name is written first, the reducer after it and what the rule recognizes
+     *  past the separator, so the declaration is read from both ends: whatever is
+     *  left between them is the reducer, in case it has been written at all.
+     *
+     *  The "#" marker keeps the name of the rule on the compiled parser, so that
+     *  the grammar may still be modified once it has been built.
+     */
     private static function reduceRuleDeclaration(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -661,6 +706,24 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         return true;
     }
 
+    /**
+     * A block of PHP code, like:
+     *  - -> { return new SumNode($children); }
+     *
+     *  The code is read by a lexer of its own, so it arrives here as the tokens
+     *  PHP has been read into rather than as a value: the braces surrounding it
+     *  belong to the grammar rather than to the code, and are dropped by taking
+     *  everything written between them.
+     *
+     *  What is left is taken out of the nesting the grammar has written it in. A
+     *  body is read from the grammar file exactly as it is written there, so the
+     *  nesting of the rule it belongs to is a part of it. The body is written into
+     *  something else afterwards (a generated method, an evaluated callback) which
+     *  nests it on its own, so a single level of nesting is taken away.
+     *
+     *  The line the body starts at is written after the brace opening it rather
+     *  than on a line of its own, so whatever precedes it is not nesting at all.
+     */
     private static function reduceCodeReducer(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\TokenEmbedding);
@@ -689,6 +752,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A reducer written as the name of a class, like:
+     *  - -> \App\Ast\SumNode
+     *
+     *  The name is not resolved here: whether such a class exists is only known
+     *  where the parser is run.
+     */
     private static function reduceClassReducer(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -705,6 +775,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * One of several things to recognize, like:
+     *  - Number() | Name()
+     *
+     *  An alternative of a single statement is that statement: the choice a rule
+     *  is written of is only a choice once there is something to choose from.
+     */
     private static function reduceAlternation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -732,6 +809,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Several things to recognize one after another, like:
+     *  - Number() ::T_PLUS:: Number()
+     *
+     *  A sequence of a single statement is that statement, for the very same
+     *  reason an alternative of one is.
+     */
     private static function reduceConcatenation(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -759,6 +843,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A statement along with the number of times it may repeat, like:
+     *  - Number()*
+     *
+     *  A statement written with no quantifier repeats exactly once, which is what
+     *  the statement itself already means.
+     */
     private static function reduceSuffixed(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -780,6 +871,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token whose value is kept in the syntax tree, like:
+     *  - <T_NAME>
+     */
     private static function reduceKeptTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -797,6 +892,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token that is read and thrown away, like:
+     *  - ::T_COMMA::
+     */
     private static function reduceSkippedTokenReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -814,6 +913,13 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Another rule to recognize, like:
+     *  - Number()
+     *
+     *  The rule is pointed at by name: it may well be declared in a grammar that
+     *  has not been read yet.
+     */
     private static function reduceRuleReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -830,6 +936,14 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * A token declared by the statement reading it, like:
+     *  - "\+"
+     *
+     *  The quotes surrounding the pattern belong to the grammar rather than to the
+     *  pattern itself, and a quote of the pattern is written escaped for the very
+     *  same reason.
+     */
     private static function reduceInlinePattern(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -841,6 +955,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Never or once, like:
+     *  - Number()?
+     */
     private static function reduceZeroOrOne(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -853,6 +971,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At least once, like:
+     *  - Number()+
+     */
     private static function reduceOneOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -865,6 +987,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Any number of times, like:
+     *  - Number()*
+     */
     private static function reduceZeroOrMore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);
@@ -877,6 +1003,14 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Between two numbers of times, like:
+     *  - Number(){2,5}
+     *
+     *  The range is written by hand, so the greatest number may well be lower than
+     *  the least one. Whether it makes sense is decided while the grammar is being
+     *  compiled rather than while it is being read.
+     */
     private static function reduceRangeFromTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -900,6 +1034,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At least a number of times, like:
+     *  - Number(){2,}
+     */
     private static function reduceRangeFrom(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -920,6 +1058,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * At most a number of times, like:
+     *  - Number(){,5}
+     */
     private static function reduceRangeTo(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert(\is_array($children));
@@ -940,6 +1082,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         );
     }
 
+    /**
+     * Exactly a number of times, like:
+     *  - Number(){5}
+     */
     private static function reduceRangeExactly(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         \assert($children instanceof \Phplrt\Lexer\Token\Token);

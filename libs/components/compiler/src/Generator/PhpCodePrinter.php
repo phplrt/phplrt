@@ -163,6 +163,56 @@ final class PhpCodePrinter
     }
 
     /**
+     * Writes the given comment down as the block describing a declaration of
+     * PHP.
+     *
+     * A comment written of nothing but a single tag is written on the very
+     * line it opens at, the way such a comment is written by hand.
+     *
+     * @param non-empty-string|null $comment what the grammar says about the
+     *        declaration, or {@see null} in case of it says nothing
+     * @param list<non-empty-string> $tags what the language is told about the
+     *        declaration, written after the comment
+     */
+    public function printDocBlock(?string $comment, array $tags = []): string
+    {
+        if ($comment === null) {
+            return match (\count($tags)) {
+                0 => '',
+                1 => '/** ' . $tags[0] . ' */',
+                default => self::printDocBlockLines($tags),
+            };
+        }
+
+        $lines = \explode("\n", $comment);
+
+        if ($tags !== []) {
+            $lines[] = '';
+
+            foreach ($tags as $tag) {
+                $lines[] = $tag;
+            }
+        }
+
+        return self::printDocBlockLines($lines);
+    }
+
+    /**
+     * @param non-empty-list<string> $lines
+     * @return non-empty-string
+     */
+    private static function printDocBlockLines(array $lines): string
+    {
+        $result = "/**\n";
+
+        foreach ($lines as $line) {
+            $result .= $line === '' ? " *\n" : ' * ' . $line . "\n";
+        }
+
+        return $result . ' */';
+    }
+
+    /**
      * Writes the variable a lexer reading the given fragment is put into.
      *
      * A fragment may be read by a lexer reading a fragment of its own, so a

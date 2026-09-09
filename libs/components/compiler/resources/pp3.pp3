@@ -30,5 +30,9 @@
 /**
  * A grammar file is a list of declarations, each of them written either as a
  * "%" directive or as a rule of the parser.
+ *
+ * A comment is read rather than thrown away, so the file may as well end with
+ * one: a comment standing after the last declaration is written about the file
+ * and is read as nothing else.
  */
-Grammar : Declaration()* ;
+Grammar : Declaration()* ::T_DOC::* ;

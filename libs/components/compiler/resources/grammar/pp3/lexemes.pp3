@@ -19,7 +19,11 @@
 
 %skip  T_WHITESPACE            \s++
 %skip  T_COMMENT               //[^\r\n]*+
-%skip  T_DOC                   /\*(.*?)\*/
+
+// A comment written of several lines is written about the declaration it
+// stands before, so it is read rather than thrown away: it is put on a channel
+// of its own, where a rule asking for it reaches it and the rest steps over it
+%token T_DOC                   /\*(.*?)\*/  -> channel(doc)
 
 /**
  * -----------------------------------------------------------------------------
@@ -45,7 +49,7 @@
 /**
  * What is said about a rule or about a statement apart from what it
  * recognizes, like:
- *  - @error("a closing parenthesis is expected")
+ *  - `@error("a closing parenthesis is expected")`
  *
  * The name is captured by the very token the annotation opens with, so it
  * belongs to the "@" and is never written apart from it.
