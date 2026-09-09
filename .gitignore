@@ -9,6 +9,7 @@
 
 # Agent skills (auto-synced by testo/testo on composer update)
 /.agents
+/.claude
 
 # Testing
 /bench.php

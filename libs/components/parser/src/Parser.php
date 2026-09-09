@@ -137,7 +137,7 @@ class Parser implements ParserInterface
         $error = $this->createException($source, $result);
 
         // A grammar that has read nothing has built nothing either, so there is
-        // no fragment to report and the source is only described by the error
+        // no fragment to report, and the source is only described by the error
         if ($result->length === 0) {
             return new FailureResult(
                 token: $error->token,
