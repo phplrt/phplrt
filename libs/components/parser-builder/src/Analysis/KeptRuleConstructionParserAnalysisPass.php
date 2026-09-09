@@ -25,6 +25,9 @@ final class KeptRuleConstructionParserAnalysisPass implements
         $grammar = $context->grammar;
         $reducers = $context->reducers;
 
+        $entrypointIds = \array_fill_keys(\array_values($context->entrypoints), true);
+        $entrypointIds[$context->initial] = true;
+
         $result = [];
 
         foreach ($grammar as $rule => $definition) {
@@ -37,14 +40,14 @@ final class KeptRuleConstructionParserAnalysisPass implements
         $parents = $this->calculateParents($grammar);
 
         foreach ($grammar as $rule => $definition) {
-            if ($rule === $context->initial
+            if (isset($entrypointIds[$rule])
                 || isset($reducers[$rule])
                 || !$definition instanceof SequenceInterface
             ) {
                 continue;
             }
 
-            $observers = $this->findObservers($rule, $context->initial, $parents, $result, []);
+            $observers = $this->findObservers($rule, $entrypointIds, $parents, $result, []);
 
             if ($observers === []) {
                 continue;
@@ -100,12 +103,13 @@ final class KeptRuleConstructionParserAnalysisPass implements
     /**
      * Returns the rules that will see the value of the given one.
      *
+     * @param array<int, true> $entrypoints
      * @param array<int, list<int>> $parents
      * @param array<int, bool> $kept
      * @param array<int, true> $visited
      * @return list<int>
      */
-    private function findObservers(int $rule, int $initial, array $parents, array $kept, array $visited): array
+    private function findObservers(int $rule, array $entrypoints, array $parents, array $kept, array $visited): array
     {
         if (isset($visited[$rule])) {
             return [];
@@ -116,17 +120,17 @@ final class KeptRuleConstructionParserAnalysisPass implements
 
         foreach ($parents[$rule] ?? [] as $parent) {
             /**
-             * The value of the initial rule is the result of the analysis, so
-             * there is nothing above it to join the value with.
+             * The value of a kept rule is the result of the analysis, so there
+             * is nothing above it to join the value with.
              */
-            if ($kept[$parent] || $parent === $initial) {
+            if ($kept[$parent] || isset($entrypoints[$parent])) {
                 $result[] = $parent;
 
                 continue;
             }
 
             // A rule missing from the tree passes the value to its own observers
-            foreach ($this->findObservers($parent, $initial, $parents, $kept, $visited) as $observer) {
+            foreach ($this->findObservers($parent, $entrypoints, $parents, $kept, $visited) as $observer) {
                 $result[] = $observer;
             }
         }

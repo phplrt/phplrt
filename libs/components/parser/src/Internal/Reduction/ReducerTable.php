@@ -45,12 +45,6 @@ final class ReducerTable
          * @var array<int<0, max>, ReducerType>
          */
         private readonly array $reducers,
-        /**
-         * The identifier of the rule the analysis starts at.
-         *
-         * @var int<0, max>
-         */
-        private readonly int $rule,
     ) {
         $this->merged = self::calculateMerged($grammar);
     }
@@ -70,12 +64,16 @@ final class ReducerTable
         return $result;
     }
 
-    public function createReducer(ReadableInterface $source): TraceReducer
+    /**
+     * @param int<0, max> $rule the identifier of the rule the analysis has
+     *        started at
+     */
+    public function createReducer(ReadableInterface $source, int $rule): TraceReducer
     {
         return new TraceReducer(
             reducers: $this->reducers,
             merged: $this->merged,
-            rule: $this->rule,
+            rule: $rule,
             source: $source,
         );
     }

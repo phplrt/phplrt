@@ -36,4 +36,51 @@ final class ParserBuildingContext
          */
         public readonly LoggerInterface $logger = new NullLogger(),
     ) {}
+
+    /**
+     * Tells whether the analysis may be started at the given rule.
+     */
+    public function isEntrypoint(RuleDefinition $rule): bool
+    {
+        return $rule === $this->initial || $rule->isEntrypoint;
+    }
+
+    /**
+     * Returns the rules reached from the entrypoints, in the order they are
+     * reached.
+     *
+     * @return list<RuleDefinition>
+     */
+    public function collectReachableRules(): array
+    {
+        /** @var \SplObjectStorage<RuleDefinition, null> $reached */
+        $reached = new \SplObjectStorage();
+
+        foreach ($this->collectEntrypoints() as $entrypoint) {
+            foreach ($entrypoint->collectRules() as $rule) {
+                $reached->offsetSet($rule);
+            }
+        }
+
+        /** @var list<RuleDefinition> */
+        return \iterator_to_array($reached, false);
+    }
+
+    /**
+     * Returns the entrypoints, the initial rule first.
+     *
+     * @return list<RuleDefinition>
+     */
+    private function collectEntrypoints(): array
+    {
+        $result = $this->initial === null ? [] : [$this->initial];
+
+        foreach ($this->rules as $rule) {
+            if ($this->isEntrypoint($rule) && $rule !== $this->initial) {
+                $result[] = $rule;
+            }
+        }
+
+        return $result;
+    }
 }

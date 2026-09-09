@@ -6,11 +6,11 @@ namespace Phplrt\Compiler\Tests;
 
 use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\CompilerResult;
+use Phplrt\Compiler\Exception\DuplicateConstantException;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
-use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedClassModifierException;
+use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
-use Phplrt\Compiler\Exception\UnsupportedValueException;
 use Phplrt\Compiler\Generator\ClassModifier;
 use Phplrt\Compiler\Generator\GeneratedOutput;
 use Phplrt\Compiler\Generator\PhpCodePrinter;
@@ -25,7 +25,6 @@ use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Source\FileSource;
 use Phplrt\Source\StringSource;
 use Testo\Assert;
-use Testo\Data\DataProvider;
 use Testo\Data\DataSet;
 use Testo\Expect;
 use Testo\Filter\Group;
@@ -53,6 +52,51 @@ final class GeneratorTest extends TestCase
         $parser = $this->generate('grammar.pp2');
 
         Assert::same($parser->parse(StringSource::createFromString('1 + 2 + 39')), 42);
+    }
+
+    public function testKeptRuleIsDeclaredAsAConstant(): void
+    {
+        $output = (string) $this->generateOf(<<<'PP3'
+            %token T_NUMBER \d++
+
+            Sum : Number()+ ;
+
+            #Number -> { return (int) $children->value; }
+              : <T_NUMBER>
+              ;
+            PP3)->withClassName('KeptRuleParser');
+
+        $assertion = Assert::string($output)
+            ->contains('public function withInitial(int $rule)');
+
+        if (\PHP_VERSION_ID >= 80300) {
+            $assertion->contains('public const int Number = ');
+        } else {
+            $assertion->contains('public const Number = ');
+        }
+
+    }
+
+    public function testGrammarWithoutKeptRulesDeclaresNoEntrypoints(): void
+    {
+        $output = (string) $this->generateOf("%token T_A a\nA : <T_A> ;")
+            ->withClassName('PlainParser');
+
+        Assert::string($output)->notContains('public function withInitial(');
+    }
+
+    public function testTokenAndRuleNamedTheSameWayAreReported(): void
+    {
+        Expect::exception(DuplicateConstantException::class)
+        ->withMessageContaining('"Number" constant');
+
+        (string) $this->generateOf(<<<'PP3'
+            %token Number \d++
+
+            Sum : Number()+ ;
+
+            #Number : <Number> ;
+            PP3)->withClassName('ClashingParser');
     }
 
     public function testGeneratedLexerReadsTheFragments(): void

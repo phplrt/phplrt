@@ -61,12 +61,6 @@ final class GrammarTable
          * @var list<RuleInterface>
          */
         public readonly array $rules,
-        /**
-         * The identifier of the rule the recognition starts at.
-         *
-         * @var int<0, max>
-         */
-        public readonly int $initial,
         array $lookahead = [],
         array $kept = [],
         /**

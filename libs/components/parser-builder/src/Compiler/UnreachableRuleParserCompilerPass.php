@@ -8,7 +8,7 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 
 /**
- * Removes the rules that cannot be reached from the initial one.
+ * Removes the rules that cannot be reached from the kept ones.
  *
  * Such rules are dead code: none of them could ever be recognized, so they are
  * dropped instead of being compiled into the parser.
@@ -23,15 +23,13 @@ final class UnreachableRuleParserCompilerPass implements
 {
     public function process(ParserBuildingContext $context, LexerBuilderResult $lexer): void
     {
-        $initial = $context->initial;
+        $reachable = $context->collectReachableRules();
 
-        if ($initial === null) {
+        if ($reachable === []) {
             return;
         }
 
-        $reachable = $initial->collectRules();
-
-        $this->report($context, $initial, $reachable);
+        $this->report($context, $reachable);
 
         $context->rules = $reachable;
     }
@@ -39,11 +37,8 @@ final class UnreachableRuleParserCompilerPass implements
     /**
      * @param non-empty-list<RuleDefinition> $reachable
      */
-    private function report(
-        ParserBuildingContext $context,
-        RuleDefinition $initial,
-        array $reachable,
-    ): void {
+    private function report(ParserBuildingContext $context, array $reachable): void
+    {
         /** @var \SplObjectStorage<RuleDefinition, null> $known */
         $known = new \SplObjectStorage();
 
@@ -56,9 +51,8 @@ final class UnreachableRuleParserCompilerPass implements
                 continue;
             }
 
-            $context->logger->info('Rule {rule} is removed, since it is not reachable from {initial}', [
+            $context->logger->info('Rule {rule} is removed, since the analysis cannot reach it', [
                 'rule' => (string) $rule,
-                'initial' => $initial->printReference(),
             ]);
         }
     }

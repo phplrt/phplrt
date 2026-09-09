@@ -20,13 +20,17 @@ return new {% if readonly and php.value >= 80300 %}readonly {% endif %}class imp
     /** @var int */
     public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
+{% for name, id in parser.entrypoints %}
+    /** @var int */
+    public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
+{% endfor %}
 
 {% if class is not null %}
     /**
-     * @var \Phplrt\Contracts\Parser\ParserInterface<TResult>
+     * @var \Phplrt\Parser\Parser<TResult>
      */
 {% endif %}
-    protected readonly \Phplrt\Contracts\Parser\ParserInterface $parser;
+    protected readonly \Phplrt\Parser\Parser $parser;
 
     protected readonly \Phplrt\Contracts\Lexer\LexerInterface $lexer;
 
@@ -45,6 +49,19 @@ return new {% if readonly and php.value >= 80300 %}readonly {% endif %}class imp
     {
         return $this->parser->parse($source);
     }
+{% if parser.entrypoints is not empty %}
+
+    /**
+     * @param int<0, max> $rule
+{% if class is not null %}
+     * @return \Phplrt\Parser\Parser<TResult>
+{% endif %}
+     */
+    public function withInitial(int $rule): \Phplrt\Parser\Parser
+    {
+        return $this->parser->withInitial($rule);
+    }
+{% endif %}
 {% if parser.reducers is not empty %}
 {{ include('parser/methods.php.twig')|trim(side='right')|indent(1) }}
 {% endif %}

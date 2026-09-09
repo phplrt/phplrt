@@ -9,7 +9,10 @@ use Phplrt\Compiler\CompilerResult;
 use Phplrt\Compiler\Exception\EmptyLexerException;
 use Phplrt\Compiler\Exception\UnsupportedPragmaValueException;
 use Phplrt\Compiler\Exception\UnsupportedTokenActionException;
+use Phplrt\Compiler\Node\Declaration\RuleDeclaration;
+use Phplrt\Compiler\Node\Reducer\CodeReducer;
 use Phplrt\Compiler\Syntax\PP3\PP3Loader;
+use Phplrt\Compiler\Syntax\PP3\PP3Parser;
 use Phplrt\Compiler\Tests\Stub\LexerPassStub;
 use Phplrt\Compiler\Tests\Stub\ParserPassStub;
 use Phplrt\Contracts\Lexer\Channel;
@@ -21,9 +24,12 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
+use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
+use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
+use Phplrt\Parser\Exception\UnknownInitialRuleException;
 use Phplrt\Source\StringSource;
 use Phplrt\Source\VirtualSource;
 use Testo\Assert;
@@ -66,11 +72,139 @@ final class PP3LoaderTest extends TestCase
         $this->load(\sprintf("%%token T_A a\nA %s <T_A> ;", $separator));
     }
 
-    public function testKeptMarkerIsReported(): void
+    public function testKeptMarkerIsRead(): void
+    {
+        $declaration = self::readRule('#A : <T_A> ;');
+
+        Assert::same($declaration->name, 'A');
+        Assert::true($declaration->isKept);
+    }
+
+    public function testRuleIsNotKeptWithoutTheMarker(): void
+    {
+        $declaration = self::readRule('A : <T_A> ;');
+
+        Assert::same($declaration->name, 'A');
+        Assert::false($declaration->isKept);
+    }
+
+    public function testKeptMarkerIsReadAlongWithAReducer(): void
+    {
+        $declaration = self::readRule('#A -> { return 42; } : <T_A> ;');
+
+        Assert::true($declaration->isKept);
+        Assert::instanceOf($declaration->reducer, CodeReducer::class);
+    }
+
+    public function testKeptMarkerWithoutANameIsReported(): void
     {
         Expect::exception(UnexpectedTokenException::class);
 
+        self::readRule('# : <T_A> ;');
+    }
+
+    public function testKeptRuleIsNotRemovedWhenUnreachable(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %token T_A a
+                %token T_B b
+
+                A : <T_A> ;
+
+                #B : <T_B> ;
+                PP3))
+            ->build();
+
+        Assert::same($result->parser->initial, $result->parser->constants['A'] ?? null);
+        Assert::notNull($result->parser->constants['B'] ?? null);
+    }
+
+    public function testAnalysisStartsAtAKeptRule(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %skip  T_WHITESPACE \s++
+                %token T_NUMBER     \d++
+                %token T_PLUS       \+
+
+                Sum -> { return \array_sum($children); }
+                  : Number() (::T_PLUS:: Number())*
+                  ;
+
+                #Number -> { return (int) $children->value; }
+                  : <T_NUMBER>
+                  ;
+                PP3))
+            ->build();
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2')), 3);
+
+        $numbers = $parser->withInitial($result->parser->entrypoints['Number']);
+
+        Assert::same($numbers->parse(StringSource::createFromString('42')), 42);
+        Assert::same($parser->parse(StringSource::createFromString('1 + 2')), 3);
+    }
+
+    public function testAnalysisIsNotStartedAtAnUndefinedRule(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, "%token T_A a\nA : <T_A> ;"))
+            ->build();
+
+        $parser = $result->parser->toParser($result->lexer->toLexer());
+
+        Expect::exception(UnknownInitialRuleException::class);
+
+        $parser->withInitial(\count($result->parser->grammar));
+    }
+
+    public function testEntrypointsContainTheKeptRulesOnly(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP3'
+                %token T_A a
+                %token T_B b
+                %token T_C c
+
+                A : <T_A> Plain() ;
+
+                Plain : <T_B> ;
+
+                #Kept : <T_C> ;
+                PP3))
+            ->build();
+
+        $entrypoints = $result->parser->entrypoints;
+
+        Assert::same(\array_keys($entrypoints), ['Kept']);
+        Assert::same($entrypoints['Kept'], $result->parser->constants['Kept'] ?? null);
+        Assert::notNull($result->parser->constants['A'] ?? null);
+        Assert::notNull($result->parser->constants['Plain'] ?? null);
+    }
+
+    public function testKeptRuleOfASingleTokenIsShapedLikeAPlainOne(): void
+    {
         $this->load("%token T_A a\n#A : <T_A> ;");
+
+        $rule = $this->parser->initial;
+
+        Assert::instanceOf($rule, TerminalRuleDefinition::class);
+        Assert::true($rule->isEntrypoint);
+        Assert::true($rule->isKept);
+    }
+
+    public function testPlainRuleOfASingleTokenIsNoEntrypoint(): void
+    {
+        $this->load("%token T_A a\nA : <T_A> ;");
+
+        $rule = $this->parser->initial;
+
+        Assert::instanceOf($rule, TerminalRuleDefinition::class);
+        Assert::false($rule->isEntrypoint);
+        Assert::true($rule->isKept);
     }
 
     public function testClassReducerIsReported(): void
@@ -519,6 +653,20 @@ final class PP3LoaderTest extends TestCase
         $compiler->load(VirtualSource::createFromString(self::PATHNAME, $source));
 
         return $compiler->build();
+    }
+
+    private static function readRule(string $source): RuleDeclaration
+    {
+        $declarations = (new PP3Parser())
+            ->parse(StringSource::createFromString($source));
+
+        \assert(\is_array($declarations), 'A grammar file is read into a list of declarations');
+
+        $declaration = $declarations[0] ?? null;
+
+        Assert::instanceOf($declaration, RuleDeclaration::class);
+
+        return $declaration;
     }
 
     private function compile(string $source): ParserInterface

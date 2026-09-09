@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Compiler\Tests;
 
+use Phplrt\Compiler\Compiler;
 use Phplrt\Compiler\Exception\UnsupportedPragmaException;
 use Phplrt\Compiler\Exception\UnsupportedTransitionException;
 use Phplrt\Compiler\Syntax\PP2\PP2Loader;
@@ -120,6 +121,41 @@ final class PP2LoaderTest extends TestCase
 
         Assert::instanceOf($terminal, TerminalRuleDefinition::class);
         Assert::false($terminal->isKept);
+    }
+
+    public function testKeptRuleOfASingleTokenIsShapedLikeAPlainOne(): void
+    {
+        $this->load('#A ::= <T_A> ;');
+
+        $rule = $this->parser->initial;
+
+        Assert::instanceOf($rule, TerminalRuleDefinition::class);
+        Assert::true($rule->isEntrypoint);
+        Assert::true($rule->isKept);
+    }
+
+    public function testEntrypointsContainTheKeptRulesOnly(): void
+    {
+        $result = (new Compiler())
+            ->load(VirtualSource::createFromString(self::PATHNAME, <<<'PP2'
+                %token T_A a
+                %token T_B b
+                %token T_C c
+
+                A ::= <T_A> Plain() ;
+
+                Plain ::= <T_B> ;
+
+                #Kept ::= <T_C> ;
+                PP2))
+            ->build();
+
+        $entrypoints = $result->parser->entrypoints;
+
+        Assert::same(\array_keys($entrypoints), ['Kept']);
+        Assert::same($entrypoints['Kept'], $result->parser->constants['Kept'] ?? null);
+        Assert::notNull($result->parser->constants['A'] ?? null);
+        Assert::notNull($result->parser->constants['Plain'] ?? null);
     }
 
     public function testRuleOfASkippedTokenIsAProduction(): void
