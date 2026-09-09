@@ -61,6 +61,7 @@ final class ParserResultContextTransformer
         $grammar = [];
         $reducers = [];
         $constants = [];
+        $comments = [];
         $messages = [];
 
         foreach ($context->rules as $id => $definition) {
@@ -68,6 +69,10 @@ final class ParserResultContextTransformer
 
             if ($definition->reducer !== null) {
                 $reducers[$id] = $definition->reducer;
+            }
+
+            if ($definition->comment !== null) {
+                $comments[$id] = $definition->comment;
             }
 
             if ($definition->message !== null) {
@@ -89,6 +94,7 @@ final class ParserResultContextTransformer
             initial: $identifiers[$initial],
             reducers: $reducers,
             constants: $constants,
+            comments: $comments,
             expectations: $this->createExpectations($lexer),
             messages: $messages,
             logger: $context->logger,

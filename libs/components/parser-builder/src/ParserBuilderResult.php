@@ -64,6 +64,13 @@ final class ParserBuilderResult
          */
         public readonly array $constants = [],
         /**
+         * What has been written about the rules, indexed by the rule
+         * identifiers.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public readonly array $comments = [],
+        /**
          * The alternatives of every alternation worth trying, indexed by the
          * token the reading is at and then by the rule identifiers.
          *

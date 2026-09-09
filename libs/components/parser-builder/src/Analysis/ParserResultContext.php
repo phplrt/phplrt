@@ -42,6 +42,13 @@ final class ParserResultContext
          */
         public readonly array $constants = [],
         /**
+         * What has been written about the rules, indexed by the rule
+         * identifiers.
+         *
+         * @var array<int, non-empty-string>
+         */
+        public readonly array $comments = [],
+        /**
          * The identifiers of the tokens a rule may begin with, indexed by the
          * rule identifiers, or {@see null} for a rule that may begin with any
          * token at all.
