@@ -21,6 +21,10 @@ use Phplrt\Parser\Grammar\Lexeme;
  * has not been described is left alone: such an alternation is recognized by
  * trying every alternative it has.
  *
+ * An alternative that is a terminal reading the very token the row is chosen
+ * by needs no trying at all: it is written down negated ("-id - 1") and the
+ * token is read in place.
+ *
  * @readonly
  */
 final class ChoicePredictionConstructionParserAnalysisPass implements
@@ -81,9 +85,18 @@ final class ChoicePredictionConstructionParserAnalysisPass implements
             foreach ($rule->ruleIds as $alternative) {
                 $first = $firsts[$alternative];
 
-                if ($first === null || isset($first[$token])) {
-                    $candidates[] = $alternative;
+                if ($first !== null && !isset($first[$token])) {
+                    continue;
                 }
+
+                $definition = $context->grammar[$alternative] ?? null;
+
+                // A terminal reading the very token the row is chosen by is
+                // recognized by that token alone, so it is written down
+                // negated and read in place rather than entered
+                $candidates[] = $definition instanceof Lexeme && $definition->tokenId === $token
+                    ? -$alternative - 1
+                    : $alternative;
             }
 
             // A token that rules nothing out is a token the analysis has

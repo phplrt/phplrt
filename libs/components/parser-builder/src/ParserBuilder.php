@@ -11,6 +11,7 @@ use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
+use Phplrt\Parser\Builder\Analysis\SequenceConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Compiler\AdjacencyPositionValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\DuplicateRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
@@ -185,6 +186,7 @@ final class ParserBuilder implements LoggerAwareInterface
              * are known.
              */
             new ChoicePredictionConstructionParserAnalysisPass(),
+            new SequenceConstructionParserAnalysisPass(),
         ];
     }
 

@@ -28,6 +28,7 @@ final class ParserBuilderResultTransformer
             choicePrediction: $context->choicePrediction,
             expectations: $context->expectations,
             messages: $context->messages,
+            sequences: $context->sequences,
         );
     }
 }

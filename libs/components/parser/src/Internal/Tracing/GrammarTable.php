@@ -21,6 +21,7 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * @phpstan-type KeptTableType array<int, bool>
  * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
  * @phpstan-type MessageTableType array<int, non-empty-string>
+ * @phpstan-type SequenceTableType array<int, list<int>>
  *
  * @readonly
  */
@@ -73,6 +74,10 @@ final class GrammarTable
          * them. An alternation the grammar says nothing about is recognized by
          * trying every alternative it has, the way a regular PEG does.
          *
+         * An alternative that is a terminal reading the very token the row is
+         * chosen by is written down negated ("-id - 1"): the token is read in
+         * place, without entering the alternative.
+         *
          * ```php
          * [
          *     // alternation #7 is worth entering by its 2nd alternative alone
@@ -91,6 +96,25 @@ final class GrammarTable
          * @var MessageTableType
          */
         public readonly array $messages = [],
+        /**
+         * The elements of every sequence that may leave one of them out,
+         * indexed by the rule identifiers.
+         *
+         * An element that may be left out is written as the rule it wraps,
+         * negated ("-id - 1"), so the sequence reads that rule in place and
+         * goes on whether it has been read or not. A sequence missing from
+         * the table is read exactly as it is declared.
+         *
+         * ```php
+         * [
+         *     // sequence #3 reads rule #7, then rule #9 in case it is there
+         *     3 => [7, -10],
+         * ]
+         * ```
+         *
+         * @var SequenceTableType
+         */
+        public readonly array $sequences = [],
     ) {
         // A grammar that has not been described is recognized all the same: it
         // reads exactly the same sources, only slower, and errors get reported

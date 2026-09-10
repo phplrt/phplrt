@@ -90,6 +90,14 @@ final class ParserBuilderResult
          * @var array<int, non-empty-string>
          */
         public readonly array $messages = [],
+        /**
+         * The elements of every sequence that may leave one of them out,
+         * indexed by the rule identifiers, an element that may be left out
+         * written as the rule it wraps, negated ("-id - 1").
+         *
+         * @var array<int, list<int>>
+         */
+        public readonly array $sequences = [],
     ) {}
 
     /**

@@ -39,6 +39,7 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @phpstan-import-type KeptTableType from GrammarTable
  * @phpstan-import-type ChoicePredictionTableType from GrammarTable
  * @phpstan-import-type MessageTableType from GrammarTable
+ * @phpstan-import-type SequenceTableType from GrammarTable
  *
  * @readonly
  */
@@ -75,6 +76,9 @@ class Parser implements ParserInterface
      * @param ChoicePredictionTableType $choicePrediction the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
+     * @param SequenceTableType $sequences the elements of every sequence
+     *        that may leave one of them out, such an element written as the
+     *        rule it wraps, negated
      */
     public function __construct(
         private readonly LexerInterface $lexer,
@@ -98,6 +102,7 @@ class Parser implements ParserInterface
          * @var MessageTableType
          */
         private readonly array $messages = [],
+        array $sequences = [],
     ) {
         $this->initial = $initial;
 
@@ -107,6 +112,7 @@ class Parser implements ParserInterface
             kept: $kept,
             choicePrediction: $choicePrediction,
             messages: $messages,
+            sequences: $sequences,
         );
 
         $this->reducers = new ReducerTable(

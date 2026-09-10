@@ -123,6 +123,21 @@ final class GrammarCheckCommand extends Command
         return $count;
     }
 
+    private function getInlinedElementsCount(CompilerResult $result): int
+    {
+        $count = 0;
+
+        foreach ($result->parser->sequences as $elements) {
+            foreach ($elements as $element) {
+                if ($element < 0) {
+                    ++$count;
+                }
+            }
+        }
+
+        return $count;
+    }
+
     private function getKeptTableSize(CompilerResult $result): int
     {
         $count = 0;
@@ -189,6 +204,11 @@ final class GrammarCheckCommand extends Command
             $output->writeln(' <fg=gray>// List of rules that requires tracing (less is better)</>');
         }
         $output->writeln(\sprintf(' Kept:      <info>%d</info>', $this->getKeptTableSize($result)));
+        if ($output->isVeryVerbose()) {
+            $output->writeln('');
+            $output->writeln(' <fg=gray>// Optional elements of the sequences read in place (more is better)</>');
+        }
+        $output->writeln(\sprintf(' Inlined:   <info>%d</info>', $this->getInlinedElementsCount($result)));
         if ($output->isVeryVerbose()) {
             $output->writeln('');
             $output->writeln(' <fg=gray>// List of tokens that have specific (non-default) channels</>');
