@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Tracing;
+namespace Phplrt\Parser\Internal\Engine\Tracing;
 
 use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Contracts\Lexer\TokenInterface;
@@ -15,8 +15,8 @@ use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
-use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
+use Phplrt\Parser\Internal\Engine\Tracing\Result\FailureTracingResult;
+use Phplrt\Parser\Internal\Engine\Tracing\Result\SuccessfulTracingResult;
 
 /**
  * Recognizes an input against a PEG grammar.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Tracing;
+namespace Phplrt\Parser\Internal\Engine\Tracing;
 
 use Phplrt\Parser\Grammar\RuleInterface;
 

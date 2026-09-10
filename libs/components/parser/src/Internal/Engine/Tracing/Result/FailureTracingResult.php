@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Tracing\Result;
+namespace Phplrt\Parser\Internal\Engine\Tracing\Result;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 

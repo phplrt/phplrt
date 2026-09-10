@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Tracing;
+namespace Phplrt\Parser\Internal\Engine\Tracing;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
 use Phplrt\Parser\Grammar\Lexeme;
 use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
-use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
+use Phplrt\Parser\Internal\Engine\Tracing\Result\FailureTracingResult;
 
 /**
  * Collects the furthest point the input failed to match, for error reporting.

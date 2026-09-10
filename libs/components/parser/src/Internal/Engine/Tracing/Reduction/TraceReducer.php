@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Reduction;
+namespace Phplrt\Parser\Internal\Engine\Tracing\Reduction;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
-use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
+use Phplrt\Parser\Internal\Engine\Tracing\Result\TracingResult;
 
 /**
  * Builds the traces of a single source into whatever the grammar describes.

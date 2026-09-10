@@ -17,15 +17,15 @@ use Phplrt\Parser\Exception\ParserRuntimeException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Exception\UnknownInitialRuleException;
 use Phplrt\Parser\Grammar\RuleInterface;
-use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
-use Phplrt\Parser\Internal\Buffer\BufferInterface;
+use Phplrt\Parser\Internal\Engine\Building;
+use Phplrt\Parser\Internal\Engine\EngineInterface;
+use Phplrt\Parser\Internal\Engine\Failure;
+use Phplrt\Parser\Internal\Engine\Result\FailureEngineResult;
+use Phplrt\Parser\Internal\Engine\Result\SuccessfulEngineResult;
+use Phplrt\Parser\Internal\Engine\Tracing\TracingEngine;
 use Phplrt\Parser\Internal\MessageInterpolator;
-use Phplrt\Parser\Internal\Reduction\ReducerTable;
-use Phplrt\Parser\Internal\Tracing\GrammarTable;
-use Phplrt\Parser\Internal\Tracing\RecursiveDescentTracer;
-use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
-use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
-use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
+use Phplrt\Parser\Internal\Engine\Tracing\Reduction\ReducerTable;
+use Phplrt\Parser\Internal\Engine\Tracing\GrammarTable;
 
 /**
  * @template TResult of mixed = mixed
@@ -44,29 +44,16 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  */
 class Parser implements ParserInterface
 {
-    private readonly GrammarTable $table;
-
-    private readonly ReducerTable $reducers;
-
     /**
-     * Fills the placeholders of a message in with what the reading has broken
-     * on.
-     */
-    private readonly MessageInterpolator $interpolator;
-
-    /**
-     * The identifier of the rule the analysis starts at.
+     * Reads the sources on behalf of the parser.
      *
-     * @var int<0, max>
-     *
-     * @phpstan-readonly-allow-private-mutation
+     * Every engine reads the same sources into the same values, so the one
+     * chosen is the one that is cheaper for the sources the parser is given,
+     * and nothing but the parser itself knows which one it is.
      */
-    private int $initial;
+    private readonly EngineInterface $tracing;
 
     /**
-     * @param list<RuleInterface> $grammar
-     * @param int<0, max> $initial the identifier of the rule the analysis
-     *        starts at
      * @param array<int<0, max>, ReducerType> $reducers
      * @param LookaheadTableType $lookahead the tokens a rule may begin with,
      *        or {@see null} for a rule that may begin with any of them
@@ -77,9 +64,19 @@ class Parser implements ParserInterface
      *        reading is at
      */
     public function __construct(
-        private readonly LexerInterface $lexer,
-        array $grammar,
-        int $initial,
+        LexerInterface $lexer,
+        /**
+         * The rules the analysis may start at.
+         *
+         * @var list<RuleInterface>
+         */
+        private readonly array $grammar,
+        /**
+         * The identifier of the rule the analysis starts at.
+         *
+         * @var int<0, max>
+         */
+        private int $initial,
         array $reducers = [],
         array $lookahead = [],
         array $kept = [],
@@ -99,22 +96,15 @@ class Parser implements ParserInterface
          */
         private readonly array $messages = [],
     ) {
-        $this->initial = $initial;
-
-        $this->table = new GrammarTable(
-            rules: $grammar,
+        $this->tracing = new TracingEngine(
+            lexer: $lexer,
+            grammar: $grammar,
+            reducers: $reducers,
             lookahead: $lookahead,
             kept: $kept,
             choicePrediction: $choicePrediction,
             messages: $messages,
         );
-
-        $this->reducers = new ReducerTable(
-            grammar: $grammar,
-            reducers: $reducers,
-        );
-
-        $this->interpolator = new MessageInterpolator();
     }
 
     /**
@@ -128,12 +118,12 @@ class Parser implements ParserInterface
      */
     public function withInitial(int $rule): static
     {
-        if (!isset($this->table->rules[$rule])) {
+        if (!isset($this->grammar[$rule])) {
             throw UnknownInitialRuleException::becauseRuleIsNotDefined($rule);
         }
 
         $self = clone $this;
-        $self->initial = $rule;
+        $self->initial = $rule;   // @phpstan-ignore property.readOnlyByPhpDocAssignNotInConstructor
 
         return $self;
     }
@@ -156,20 +146,21 @@ class Parser implements ParserInterface
      */
     public function analyze(ReadableInterface $source, Mode $mode = Mode::Tolerant): SuccessfulResult|FailureResult
     {
-        $result = $this->trace($source);
+        $result = $this->tracing->read($source, $this->initial, match ($mode) {
+            Mode::SyntaxCheck => Building::Nothing,
+            Mode::Tolerant => Building::Anything,
+        });
 
-        if (!$result instanceof FailureTracingResult) {
+        if ($result instanceof SuccessfulEngineResult) {
             /** @var SuccessfulResult<TResult>|SuccessfulResult<null> */
             return new SuccessfulResult(
-                value: $this->reduce($source, $result, $mode),
+                value: $result->value,
             );
         }
 
-        $error = $this->createException($source, $result);
+        $error = $this->createException($source, $result->failure);
 
-        // A grammar that has read nothing has built nothing either, so there is
-        // no fragment to report, and the source is only described by the error
-        if ($result->length === 0) {
+        if ($result instanceof FailureEngineResult) {
             return new FailureResult(
                 token: $error->token,
                 error: $error,
@@ -178,7 +169,7 @@ class Parser implements ParserInterface
 
         /** @var PartialResult<TResult>|PartialResult<null> */
         return new PartialResult(
-            value: $this->reduce($source, $result, $mode),
+            value: $result->value,
             token: $result->stoppedAt,
             error: $error,
         );
@@ -186,33 +177,20 @@ class Parser implements ParserInterface
 
     public function parse(ReadableInterface $source): mixed
     {
-        $result = $this->trace($source);
+        $result = $this->tracing->read($source, $this->initial, Building::Whole);
 
-        if ($result instanceof FailureTracingResult) {
-            throw $this->createException($source, $result);
+        if (!$result instanceof SuccessfulEngineResult) {
+            throw $this->createException($source, $result->failure);
         }
 
-        return $this->reduce($source, $result, Mode::Tolerant);
+        return $result->value;
     }
 
-    /**
-     * @return ($mode is Mode::SyntaxCheck ? null : TResult)
-     */
-    private function reduce(ReadableInterface $source, TracingResult $result, Mode $mode): mixed
-    {
-        if ($mode === Mode::SyntaxCheck) {
-            return null;
-        }
-
-        return $this->reducers->createReducer($source, $this->initial)
-            ->reduce($result);
-    }
-
-    private function createException(ReadableInterface $source, FailureTracingResult $result): ParserRuntimeException
+    private function createException(ReadableInterface $source, Failure $failure): ParserRuntimeException
     {
         $expected = [];
 
-        foreach ($result->expected as $tokenId) {
+        foreach ($failure->expected as $tokenId) {
             $expectation = $this->expectations[$tokenId] ?? null;
 
             if ($expectation !== null) {
@@ -220,9 +198,8 @@ class Parser implements ParserInterface
             }
         }
 
-        $token = $result->token ?? $result->stoppedAt;
-
-        $rule = $result->labelled;
+        $token = $failure->token;
+        $rule = $failure->labelled;
         $message = $rule === null ? null : $this->messages[$rule] ?? null;
 
         // The grammar says nothing about this failure, so it is described by
@@ -238,31 +215,10 @@ class Parser implements ParserInterface
         return UnexpectedTokenException::becauseGrammarDescribesTheError(
             source: $source,
             token: $token,
-            message: $this->interpolator->interpolate($message, $source, $token, $expected),
+            message: (new MessageInterpolator())
+                ->interpolate($message, $source, $token, $expected),
             expected: $expected,
             rule: $rule,
         );
-    }
-
-    private function trace(ReadableInterface $source): SuccessfulTracingResult|FailureTracingResult
-    {
-        $buffer = $this->lex($source);
-
-        return RecursiveDescentTracer::trace($this->table, $buffer, $this->initial);
-    }
-
-    /**
-     * Which tokens reach the grammar is decided by the lexer: a token it does
-     * not report is a token the grammar is not written in terms of.
-     *
-     * @throws LexerExceptionInterface in case of the source cannot be read into
-     *         tokens
-     * @throws LexerRuntimeExceptionInterface in case of the source contains
-     *         what no token recognizes
-     */
-    private function lex(ReadableInterface $source): BufferInterface
-    {
-        // TODO Add lexer's try/catch
-        return new ArrayBuffer($this->lexer->lex($source));
     }
 }

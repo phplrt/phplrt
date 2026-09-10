@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Phplrt\Parser\Internal\Reduction;
+namespace Phplrt\Parser\Internal\Engine\Tracing\Reduction;
 
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Context;
