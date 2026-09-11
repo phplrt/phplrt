@@ -10,15 +10,15 @@ expectations: {{ value(parser.expectations) }},
 {% if parser.messages is not empty %}
 messages: {{ value(parser.messages) }},
 {% endif %}
-{% if parser.lookahead is not empty %}
-lookahead: {{ value(parser.lookahead) }},
-{% endif %}
 {% if parser.kept is not empty %}
 kept: {{ value(parser.kept) }},
+{% endif %}
+{% if parser.startPrediction is not empty %}
+startPrediction: {{ value(parser.startPrediction) }},
 {% endif %}
 {% if parser.choicePrediction is not empty %}
 choicePrediction: {{ value(parser.choicePrediction) }},
 {% endif %}
-{% if parser.sequences is not empty %}
-sequences: {{ value(parser.sequences) }},
+{% if parser.sequencePrediction is not empty %}
+sequencePrediction: {{ value(parser.sequencePrediction) }},
 {% endif %}

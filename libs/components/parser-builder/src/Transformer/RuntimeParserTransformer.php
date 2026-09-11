@@ -33,12 +33,12 @@ final class RuntimeParserTransformer
             grammar: $result->grammar,
             initial: $result->initial,
             reducers: $this->transformReducers($result),
-            lookahead: $result->lookahead,
-            kept: $result->kept,
-            choicePrediction: $result->choicePrediction,
             expectations: $result->expectations,
             messages: $result->messages,
-            sequences: $result->sequences,
+            kept: $result->kept,
+            startPrediction: $result->startPrediction,
+            choicePrediction: $result->choicePrediction,
+            sequencePrediction: $result->sequencePrediction,
         );
     }
 

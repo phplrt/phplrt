@@ -33,7 +33,7 @@ final class ChoicePredictionConstructionParserAnalysisPass implements
     public function process(ParserResultContext $context): void
     {
         // Nothing is known about the rules, so nothing may be ruled out
-        if ($context->lookahead === []) {
+        if ($context->startPrediction === []) {
             return;
         }
 
@@ -125,6 +125,6 @@ final class ChoicePredictionConstructionParserAnalysisPass implements
             return [$definition->tokenId => true];
         }
 
-        return $context->lookahead[$rule] ?? null;
+        return $context->startPrediction[$rule] ?? null;
     }
 }

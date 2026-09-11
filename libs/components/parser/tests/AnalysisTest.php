@@ -195,7 +195,7 @@ final class AnalysisTest extends TestCase
         throw $result->error;
     }
 
-    public function testExpectedTokensWithoutLookaheadTables(): void
+    public function testExpectedTokensWithoutStartPrediction(): void
     {
         $parser = new Parser(
             lexer: new ArithmeticLexer(),
@@ -217,7 +217,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
         );
@@ -243,7 +243,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),
@@ -262,7 +262,7 @@ final class AnalysisTest extends TestCase
             $actual = $parser->analyze(StringSource::createFromString('1'), Mode::SyntaxCheck);
 
             Assert::instanceOf($actual, FailureResult::class);
-            Assert::same($actual->error->getMessage(), $expected, \sprintf('Both branches are expected to be told %s the lookahead tables', $name));
+            Assert::same($actual->error->getMessage(), $expected, \sprintf('Both branches are expected to be told %s the start prediction', $name));
         }
     }
 
@@ -282,7 +282,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),
@@ -311,7 +311,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),
@@ -337,7 +337,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),
@@ -363,7 +363,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),
@@ -411,7 +411,7 @@ final class AnalysisTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             expectations: self::createExpectations(),

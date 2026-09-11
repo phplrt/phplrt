@@ -7,9 +7,9 @@ namespace Phplrt\Parser\Builder\Tests;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Analysis\ChoicePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
-use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\StartPredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
-use Phplrt\Parser\Builder\Analysis\SequenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\SequencePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
@@ -116,10 +116,10 @@ final class PassPriorityTest extends TestCase
             static fn(ParserAnalysisPassInterface $pass): string => $pass::class,
             $parser->analysisPasses,
         ), [
-            LookaheadConstructionParserAnalysisPass::class,
+            StartPredictionConstructionParserAnalysisPass::class,
             KeptRuleConstructionParserAnalysisPass::class,
             ChoicePredictionConstructionParserAnalysisPass::class,
-            SequenceConstructionParserAnalysisPass::class,
+            SequencePredictionConstructionParserAnalysisPass::class,
         ]);
     }
 

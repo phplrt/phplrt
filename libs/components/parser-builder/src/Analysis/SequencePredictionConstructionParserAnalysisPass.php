@@ -21,7 +21,7 @@ use Phplrt\Parser\Grammar\Optional;
  *
  * @readonly
  */
-final class SequenceConstructionParserAnalysisPass implements
+final class SequencePredictionConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
     public function process(ParserResultContext $context): void
@@ -61,7 +61,7 @@ final class SequenceConstructionParserAnalysisPass implements
             }
         }
 
-        $context->sequences = $result;
+        $context->sequencePrediction = $result;
 
         $context->logger->info('{elements} optional element(s) of {rules} sequence(s) are read in place', [
             'elements' => $inlined,

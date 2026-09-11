@@ -6,9 +6,9 @@ namespace Phplrt\Parser\Tests;
 
 use Phplrt\Parser\Builder\Analysis\ChoicePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
-use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\StartPredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
-use Phplrt\Parser\Builder\Analysis\SequenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\SequencePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Definition\Reducer\CallableReducer;
 use Testo\Core\Exception\SkipTest;
 
@@ -42,10 +42,10 @@ abstract class TestCase
         );
 
         $passes = [
-            new LookaheadConstructionParserAnalysisPass(),
+            new StartPredictionConstructionParserAnalysisPass(),
             new KeptRuleConstructionParserAnalysisPass(),
             new ChoicePredictionConstructionParserAnalysisPass(),
-            new SequenceConstructionParserAnalysisPass(),
+            new SequencePredictionConstructionParserAnalysisPass(),
         ];
 
         foreach ($passes as $pass) {

@@ -21,7 +21,7 @@ use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal
  *
- * @phpstan-import-type LookaheadTableType from RecursiveDescentTracer
+ * @phpstan-import-type StartPredictionTableType from RecursiveDescentTracer
  */
 final class ErrorReport
 {
@@ -87,9 +87,9 @@ final class ErrorReport
          */
         private readonly array $grammar,
         /**
-         * @var LookaheadTableType
+         * @var StartPredictionTableType
          */
-        private readonly array $lookahead,
+        private readonly array $startPrediction,
     ) {}
 
     /**
@@ -207,7 +207,7 @@ final class ErrorReport
         $result = [];
 
         foreach ($this->rules as $rule) {
-            $expected = $this->lookahead[$rule] ?? null;
+            $expected = $this->startPrediction[$rule] ?? null;
 
             if ($expected !== null) {
                 $result += $expected;
@@ -216,7 +216,7 @@ final class ErrorReport
             }
 
             /**
-             * A grammar that has been given no lookahead table is recognized
+             * A grammar that has been given no start prediction is recognized
              * the same way, so the terminals it has failed on are read off the
              * rules themselves.
              */

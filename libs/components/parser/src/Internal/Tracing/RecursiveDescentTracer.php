@@ -42,11 +42,11 @@ use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  *
- * @phpstan-type LookaheadTableType array<int, array<int, true>|null>
- * @phpstan-type KeptTableType array<int, bool>
- * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
  * @phpstan-type MessageTableType array<int, non-empty-string>
- * @phpstan-type SequenceTableType array<int, list<int>>
+ * @phpstan-type KeptTableType array<int, bool>
+ * @phpstan-type StartPredictionTableType array<int, array<int, true>|null>
+ * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
+ * @phpstan-type SequencePredictionTableType array<int, list<int>>
  */
 final class RecursiveDescentTracer
 {
@@ -69,9 +69,9 @@ final class RecursiveDescentTracer
      * The tokens each rule may begin with, or {@see null} for a rule that
      * may begin with any token at all.
      *
-     * @var LookaheadTableType
+     * @var StartPredictionTableType
      */
-    private readonly array $lookahead;
+    private readonly array $startPrediction;
 
     /**
      * The rules that become a node of the result.
@@ -91,8 +91,9 @@ final class RecursiveDescentTracer
     private ErrorReport $error;
 
     /**
-     * @param LookaheadTableType $lookahead the tokens a rule may begin with,
-     *        or {@see null} for a rule that may begin with any of them
+     * @param StartPredictionTableType $startPrediction the tokens a rule may
+     *        begin with, or {@see null} for a rule that may begin with any of
+     *        them
      * @param KeptTableType $kept the rules that become a node of the result
      */
     public function __construct(
@@ -100,16 +101,6 @@ final class RecursiveDescentTracer
          * @var list<RuleInterface>
          */
         private readonly array $grammar,
-        array $lookahead = [],
-        array $kept = [],
-        /**
-         * The alternatives of an alternation worth trying, by the token the
-         * reading is at. A negated identifier names a terminal reading that
-         * very token.
-         *
-         * @var ChoicePredictionTableType
-         */
-        private readonly array $choicePrediction = [],
         /**
          * The rules describing their own failure by a message of their own.
          *
@@ -120,29 +111,39 @@ final class RecursiveDescentTracer
          * @var MessageTableType
          */
         private readonly array $messages = [],
+        array $kept = [],
+        array $startPrediction = [],
+        /**
+         * The alternatives of an alternation worth trying, by the token the
+         * reading is at. A negated identifier names a terminal reading that
+         * very token.
+         *
+         * @var ChoicePredictionTableType
+         */
+        private readonly array $choicePrediction = [],
         /**
          * The elements of the sequences that may leave one of them out. A
          * negated identifier names the rule an optional element wraps.
          *
-         * @var SequenceTableType
+         * @var SequencePredictionTableType
          */
-        private readonly array $sequences = [],
+        private readonly array $sequencePrediction = [],
     ) {
-        // A grammar that has not been described is recognized all the same: it
-        // reads exactly the same sources, only slower, and its failures are
-        // reported deeper in the rules, since the rules alone do not say where
-        // the reading was supposed to go.
-        $this->lookahead = $lookahead === []
-            ? \array_fill_keys(\array_keys($grammar), null)
-            : $lookahead;
-
         // A rule that leaves nothing behind is not written into the trace at
-        // all, which is fewer entries to reduce afterwards. A grammar that has
+        // all, which is fewer entries to reduce afterward. A grammar that has
         // not been described is traced whole: every rule is taken for one that
         // matters.
         $this->kept = $kept === []
             ? \array_fill_keys(\array_keys($grammar), true)
             : $kept;
+
+        // A grammar that has not been described is recognized all the same: it
+        // reads exactly the same sources, only slower, and its failures are
+        // reported deeper in the rules, since the rules alone do not say where
+        // the reading was supposed to go.
+        $this->startPrediction = $startPrediction === []
+            ? \array_fill_keys(\array_keys($grammar), null)
+            : $startPrediction;
     }
 
     /**
@@ -166,7 +167,7 @@ final class RecursiveDescentTracer
         }
 
         $this->buffer = $buffer;
-        $this->error = new ErrorReport($buffer, $this->grammar, $this->lookahead);
+        $this->error = new ErrorReport($buffer, $this->grammar, $this->startPrediction);
         $this->entries = [];
         $this->length = 0;
 
@@ -252,9 +253,9 @@ final class RecursiveDescentTracer
 
         // --- A production is entered only in case it stands a chance --------
 
-        $lookahead = $this->lookahead[$rule];
+        $startTokens = $this->startPrediction[$rule];
 
-        if ($lookahead !== null && !isset($lookahead[$token->id]) && $token->channel instanceof Channel) {
+        if ($startTokens !== null && !isset($startTokens[$token->id]) && $token->channel instanceof Channel) {
             /**
              * Only a failure ahead of the reported one is worth remembering:
              * the rules rejected alongside this one are the ones it contains,
@@ -283,7 +284,7 @@ final class RecursiveDescentTracer
         // --- A sequence reads its elements one after another ----------------
 
         if ($definition instanceof Concatenation) {
-            foreach ($this->sequences[$rule] ?? $definition->ruleIds as $inner) {
+            foreach ($this->sequencePrediction[$rule] ?? $definition->ruleIds as $inner) {
                 if ($inner >= 0) {
                     if ($this->match($inner)) {
                         continue;
@@ -324,9 +325,9 @@ final class RecursiveDescentTracer
                         continue;
                     }
                 } else {
-                    $entry = $this->lookahead[$inner];
+                    $elementTokens = $this->startPrediction[$inner];
 
-                    if ($entry !== null && !isset($entry[$token->id]) && $token->channel instanceof Channel) {
+                    if ($elementTokens !== null && !isset($elementTokens[$token->id]) && $token->channel instanceof Channel) {
                         if ($buffer->key > $this->error->furthest) {
                             $this->error->record($inner);
                         }
@@ -426,15 +427,15 @@ final class RecursiveDescentTracer
             // The last turn is the one that is given up, and most of the time
             // by the very first token, so the body is asked whether it stands
             // a chance before it is entered
-            $entry = $this->lookahead[$inner];
+            $bodyTokens = $this->startPrediction[$inner];
 
             while ($matched < $max) {
                 $before = $buffer->key;
 
-                if ($entry !== null) {
+                if ($bodyTokens !== null) {
                     $token = $buffer->current;
 
-                    if (!isset($entry[$token->id]) && $token->channel instanceof Channel) {
+                    if (!isset($bodyTokens[$token->id]) && $token->channel instanceof Channel) {
                         // The body is remembered the way it would have
                         // remembered itself: a terminal at the very position
                         // it is rejected at, a production only ahead of the

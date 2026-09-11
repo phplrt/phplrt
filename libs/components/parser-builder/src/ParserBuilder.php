@@ -8,10 +8,10 @@ use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Analysis\ChoicePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
-use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\StartPredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
-use Phplrt\Parser\Builder\Analysis\SequenceConstructionParserAnalysisPass;
+use Phplrt\Parser\Builder\Analysis\SequencePredictionConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Compiler\AdjacencyPositionValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\DuplicateRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
@@ -178,7 +178,7 @@ final class ParserBuilder implements LoggerAwareInterface
         ];
 
         $this->analysisPasses = [
-            new LookaheadConstructionParserAnalysisPass(),
+            new StartPredictionConstructionParserAnalysisPass(),
             new KeptRuleConstructionParserAnalysisPass(),
             /**
              * Which alternative may be entered is decided by the tokens a rule
@@ -186,7 +186,7 @@ final class ParserBuilder implements LoggerAwareInterface
              * are known.
              */
             new ChoicePredictionConstructionParserAnalysisPass(),
-            new SequenceConstructionParserAnalysisPass(),
+            new SequencePredictionConstructionParserAnalysisPass(),
         ];
     }
 

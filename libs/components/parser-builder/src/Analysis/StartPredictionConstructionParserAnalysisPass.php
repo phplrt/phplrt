@@ -20,11 +20,11 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * along the way, and it is the same answer: a rule reading the empty input may
  * begin with anything at all.
  *
- * TODO Refactor lookahead table builder (expand method is sucks)
+ * TODO Refactor start prediction builder (expand method is sucks)
  *
  * @readonly
  */
-final class LookaheadConstructionParserAnalysisPass implements
+final class StartPredictionConstructionParserAnalysisPass implements
     ParserAnalysisPassInterface
 {
     public function process(ParserResultContext $context): void
@@ -53,11 +53,11 @@ final class LookaheadConstructionParserAnalysisPass implements
             }
         } while ($changed);
 
-        $context->lookahead = self::merge($startTokens, $matchesEmptyInput);
+        $context->startPrediction = self::merge($startTokens, $matchesEmptyInput);
 
-        $context->logger->info('Lookahead is known for {rules} rule(s), {empty} of them read an empty input', [
-            'rules' => \count($context->lookahead),
-            'empty' => \count(\array_filter($context->lookahead, static fn(?array $t): bool => $t === null)),
+        $context->logger->info('Start prediction is known for {rules} rule(s), {empty} of them read an empty input', [
+            'rules' => \count($context->startPrediction),
+            'empty' => \count(\array_filter($context->startPrediction, static fn(?array $t): bool => $t === null)),
         ]);
     }
 

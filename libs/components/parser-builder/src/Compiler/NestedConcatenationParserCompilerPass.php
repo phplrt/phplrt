@@ -36,7 +36,7 @@ final class NestedConcatenationParserCompilerPass implements
                  *          The analysis skips a rule as soon as the token it
                  *          reads cannot start it, so a nested alternation is
                  *          skipped along with every rule of it by a single
-                 *          lookup in the lookahead table. Joining the two turns
+                 *          lookup in the start prediction. Joining the two turns
                  *          that single lookup into a lookup per rule, and a
                  *          grammar fails to recognize an alternative far more
                  *          often than it recognizes one.

@@ -207,15 +207,15 @@ final class ParserBuilderTest extends TestCase
     {
         $result = self::compile();
 
-        Assert::same($result->lookahead[0], [1 => true]);
+        Assert::same($result->startPrediction[0], [1 => true]);
     }
 
     public function testNullable(): void
     {
         $result = self::compile();
 
-        Assert::null($result->lookahead[2]);
-        Assert::notNull($result->lookahead[0], 'The expression requires a number');
+        Assert::null($result->startPrediction[2]);
+        Assert::notNull($result->startPrediction[0], 'The expression requires a number');
     }
 
     public function testKeptRules(): void
