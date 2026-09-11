@@ -4,6 +4,12 @@ initial: {{ parser.initial }},
 {% if parser.reducers is not empty %}
 reducers: {{ include('parser/reducers.php.twig')|trim }},
 {% endif %}
+{% if parser.expectations is not empty %}
+expectations: {{ value(parser.expectations) }},
+{% endif %}
+{% if parser.messages is not empty %}
+messages: {{ value(parser.messages) }},
+{% endif %}
 {% if parser.lookahead is not empty %}
 lookahead: {{ value(parser.lookahead) }},
 {% endif %}
@@ -12,12 +18,6 @@ kept: {{ value(parser.kept) }},
 {% endif %}
 {% if parser.choicePrediction is not empty %}
 choicePrediction: {{ value(parser.choicePrediction) }},
-{% endif %}
-{% if parser.expectations is not empty %}
-expectations: {{ value(parser.expectations) }},
-{% endif %}
-{% if parser.messages is not empty %}
-messages: {{ value(parser.messages) }},
 {% endif %}
 {% if parser.sequences is not empty %}
 sequences: {{ value(parser.sequences) }},

@@ -89,9 +89,6 @@ class Parser implements ParserInterface
         private readonly array $grammar,
         int $initial,
         array $reducers = [],
-        array $lookahead = [],
-        array $kept = [],
-        array $choicePrediction = [],
         /**
          * The way an error has to name each token: by its name, or by what an
          * anonymous one is recognized by
@@ -106,6 +103,9 @@ class Parser implements ParserInterface
          * @var MessageTableType
          */
         private readonly array $messages = [],
+        array $lookahead = [],
+        array $kept = [],
+        array $choicePrediction = [],
         array $sequences = [],
     ) {
         $this->initial = $initial;
