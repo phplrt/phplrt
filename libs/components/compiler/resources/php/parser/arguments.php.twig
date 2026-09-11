@@ -4,21 +4,21 @@ initial: {{ parser.initial }},
 {% if parser.reducers is not empty %}
 reducers: {{ include('parser/reducers.php.twig')|trim }},
 {% endif %}
-{% if parser.lookahead is not empty %}
-lookahead: {{ value(parser.lookahead) }},
-{% endif %}
-{% if parser.kept is not empty %}
-kept: {{ value(parser.kept) }},
-{% endif %}
-{% if parser.choicePrediction is not empty %}
-choicePrediction: {{ value(parser.choicePrediction) }},
-{% endif %}
 {% if parser.expectations is not empty %}
-expectations: {{ value(parser.expectations) }},
+expectations: self::PARSER_EXPECTATIONS,
 {% endif %}
 {% if parser.messages is not empty %}
-messages: {{ value(parser.messages) }},
+messages: self::PARSER_MESSAGES,
 {% endif %}
-{% if parser.sequences is not empty %}
-sequences: {{ value(parser.sequences) }},
+{% if parser.kept is not empty %}
+kept: self::PARSER_KEPT_TABLE,
+{% endif %}
+{% if parser.startPrediction is not empty %}
+startPrediction: self::PARSER_START_PREDICTION_TABLE,
+{% endif %}
+{% if parser.choicePrediction is not empty %}
+choicePrediction: self::PARSER_CHOICE_PREDICTION_TABLE,
+{% endif %}
+{% if parser.sequencePrediction is not empty %}
+sequencePrediction: self::PARSER_SEQUENCE_PREDICTION_TABLE,
 {% endif %}

@@ -34,11 +34,11 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  * @phpstan-type ExpectationsTableType array<int, non-empty-string>
  *
  * @phpstan-import-type ReducerType from TraceReducer
- * @phpstan-import-type LookaheadTableType from RecursiveDescentTracer
  * @phpstan-import-type KeptTableType from RecursiveDescentTracer
+ * @phpstan-import-type StartPredictionTableType from RecursiveDescentTracer
  * @phpstan-import-type ChoicePredictionTableType from RecursiveDescentTracer
+ * @phpstan-import-type SequencePredictionTableType from RecursiveDescentTracer
  * @phpstan-import-type MessageTableType from RecursiveDescentTracer
- * @phpstan-import-type SequenceTableType from RecursiveDescentTracer
  *
  * @readonly
  */
@@ -68,16 +68,19 @@ class Parser implements ParserInterface
      * @param int<0, max> $initial the identifier of the rule the analysis
      *        starts at
      * @param array<int<0, max>, ReducerType> $reducers
-     * @param LookaheadTableType $lookahead the tokens a rule may begin with,
-     *        or {@see null} for a rule that may begin with any of them
-     * @param KeptTableType $kept The rule identifiers that become a node
-     *        of the result
+     * @param KeptTableType $kept the rule identifiers that become a node of
+     *        the result
+     * @param StartPredictionTableType $startPrediction the tokens a rule may
+     *        begin with, or {@see null} for a rule that may begin with any
+     *        of them
      * @param ChoicePredictionTableType $choicePrediction the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
-     * @param SequenceTableType $sequences the elements of every sequence
-     *        that may leave one of them out, such an element written as the
-     *        rule it wraps, negated
+     * @param SequencePredictionTableType $sequencePrediction the elements of
+     *        every sequence that may leave one of them out, such an element
+     *        written as the rule it wraps, negated
+     * @param StartPredictionTableType|null $lookahead the former name of
+     *        {@see $startPrediction}
      */
     public function __construct(
         private readonly LexerInterface $lexer,
@@ -89,9 +92,6 @@ class Parser implements ParserInterface
         private readonly array $grammar,
         int $initial,
         array $reducers = [],
-        array $lookahead = [],
-        array $kept = [],
-        array $choicePrediction = [],
         /**
          * The way an error has to name each token: by its name, or by what an
          * anonymous one is recognized by
@@ -106,17 +106,21 @@ class Parser implements ParserInterface
          * @var MessageTableType
          */
         private readonly array $messages = [],
-        array $sequences = [],
+        array $kept = [],
+        array $startPrediction = [],
+        array $choicePrediction = [],
+        array $sequencePrediction = [],
+        ?array $lookahead = null,
     ) {
         $this->initial = $initial;
 
         $this->tracer = new RecursiveDescentTracer(
             grammar: $grammar,
-            lookahead: $lookahead,
-            kept: $kept,
-            choicePrediction: $choicePrediction,
             messages: $messages,
-            sequences: $sequences,
+            kept: $kept,
+            startPrediction: $lookahead ?? $startPrediction,
+            choicePrediction: $choicePrediction,
+            sequencePrediction: $sequencePrediction,
         );
 
         $this->reducer = new TraceReducer(

@@ -42,7 +42,7 @@ final class ParserBuilderResult
          *
          * @var array<int, array<int, true>|null>
          */
-        public readonly array $lookahead,
+        public readonly array $startPrediction,
         /**
          * The rules that are kept in the resulting tree, indexed by the rule
          * identifiers.
@@ -97,7 +97,7 @@ final class ParserBuilderResult
          *
          * @var array<int, list<int>>
          */
-        public readonly array $sequences = [],
+        public readonly array $sequencePrediction = [],
     ) {}
 
     /**

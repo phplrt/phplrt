@@ -20,7 +20,7 @@ final class ParserBuilderResultTransformer
         return new ParserBuilderResult(
             grammar: $context->grammar,
             initial: $context->initial,
-            lookahead: $context->lookahead,
+            startPrediction: $context->startPrediction,
             kept: $context->kept,
             reducers: $context->reducers,
             constants: $context->constants,
@@ -28,7 +28,7 @@ final class ParserBuilderResultTransformer
             choicePrediction: $context->choicePrediction,
             expectations: $context->expectations,
             messages: $context->messages,
-            sequences: $context->sequences,
+            sequencePrediction: $context->sequencePrediction,
         );
     }
 }

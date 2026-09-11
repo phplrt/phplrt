@@ -54,7 +54,7 @@ final class ParserResultContext
          *
          * @var array<int, array<int, true>|null>
          */
-        public array $lookahead = [],
+        public array $startPrediction = [],
         /**
          * A map of token ID and the way an error has to name it: a name, or
          * what an anonymous token is recognized by.
@@ -90,7 +90,7 @@ final class ParserResultContext
          *
          * @var array<int, list<int>>
          */
-        public array $sequences = [],
+        public array $sequencePrediction = [],
         /**
          * Reports what the passes have found out about the grammar.
          */

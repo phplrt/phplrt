@@ -35,7 +35,7 @@ final class AnalysisTest extends TestCase
         ]);
 
         // The optional #2 is written as the rule #3 it wraps, negated
-        Assert::same($result->sequences, [0 => [1, -4, 1]]);
+        Assert::same($result->sequencePrediction, [0 => [1, -4, 1]]);
     }
 
     public function testKeptOptionalIsLeftAsItIs(): void
@@ -50,7 +50,7 @@ final class AnalysisTest extends TestCase
         $result = self::compile($parser);
 
         Assert::true($result->kept[2], 'An optional with a reducer becomes a node');
-        Assert::same($result->sequences, [], 'A sequence written as it is declared is not listed');
+        Assert::same($result->sequencePrediction, [], 'A sequence written as it is declared is not listed');
     }
 
     public function testSequenceWithoutOptionalElementsIsNotListed(): void
@@ -61,7 +61,7 @@ final class AnalysisTest extends TestCase
             $parser->addRepetition($parser->addTokenReference('T_PLUS')),
         ]));
 
-        Assert::same(self::compile($parser)->sequences, []);
+        Assert::same(self::compile($parser)->sequencePrediction, []);
     }
 
     public function testOptionalElementsAreReadEitherWay(): void

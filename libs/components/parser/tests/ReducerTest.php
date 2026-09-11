@@ -243,7 +243,7 @@ final class ReducerTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
         );
@@ -283,7 +283,7 @@ final class ReducerTest extends TestCase
             lexer: new ArithmeticLexer(),
             grammar: $analysis->grammar,
             initial: $analysis->initial,
-            lookahead: $analysis->lookahead,
+            startPrediction: $analysis->startPrediction,
             kept: $analysis->kept,
             choicePrediction: $analysis->choicePrediction,
             reducers: $reducers,
