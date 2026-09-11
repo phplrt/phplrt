@@ -343,7 +343,6 @@ final class RecursiveDescentTracer
             }
 
         // --- An alternation reads the first of its alternatives that fits ---
-
         } elseif ($definition instanceof Alternation) {
             /**
              * Which of the alternatives are worth entering is decided by the
@@ -419,7 +418,6 @@ final class RecursiveDescentTracer
             return false;
 
         // --- A repetition reads its body as long as the body reads ----------
-
         } elseif ($definition instanceof Repetition) {
             $inner = $definition->ruleId;
             $max = $definition->max;
@@ -475,7 +473,6 @@ final class RecursiveDescentTracer
             }
 
         // --- The rare kinds ------------------------------------------------
-
         } elseif ($definition instanceof Optional) {
             if (!$this->match($definition->ruleId) && $buffer->key !== $origin) {
                 $buffer->seek($origin);
