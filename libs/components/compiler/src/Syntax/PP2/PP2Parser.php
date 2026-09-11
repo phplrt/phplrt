@@ -458,10 +458,10 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         2,
                     ],
                     3 => [
-                        5,
+                        -6,
                     ],
                     4 => [
-                        6,
+                        -7,
                     ],
                     20 => [
                         7,
@@ -472,15 +472,15 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 ],
                 [
                     21 => [
-                        3,
+                        -4,
                     ],
                     [
-                        4,
+                        -5,
                     ],
                 ],
                 12 => [
                     5 => [
-                        13,
+                        -14,
                     ],
                     23 => [
                         14,
@@ -500,18 +500,18 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         29,
                     ],
                     19 => [
-                        30,
+                        -31,
                     ],
                 ],
                 32 => [
                     12 => [
-                        33,
+                        -34,
                     ],
                     [
-                        34,
+                        -35,
                     ],
                     [
-                        35,
+                        -36,
                     ],
                     [
                         36,
@@ -521,7 +521,7 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     18 => [
                         39,
                         42,
-                        44,
+                        -45,
                     ],
                     17 => [
                         43,
@@ -557,6 +557,20 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 'T_EQ',
                 'T_HASH',
                 '/[^\\s]++/',
+            ],
+            sequences: [
+                7 => [
+                    -10,
+                    10,
+                    -13,
+                    16,
+                    17,
+                    -51,
+                ],
+                19 => [
+                    20,
+                    -33,
+                ],
             ],
         );
     }

@@ -84,6 +84,14 @@ final class ParserResultContext
          */
         public array $choicePrediction = [],
         /**
+         * The elements of every sequence that may leave one of them out,
+         * indexed by the rule identifiers, an element that may be left out
+         * written as the rule it wraps, negated ("-id - 1").
+         *
+         * @var array<int, list<int>>
+         */
+        public array $sequences = [],
+        /**
          * Reports what the passes have found out about the grammar.
          */
         public readonly LoggerInterface $logger = new NullLogger(),

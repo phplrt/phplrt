@@ -613,13 +613,13 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         2,
                     ],
                     [
-                        5,
+                        -6,
                     ],
                     3 => [
-                        6,
+                        -7,
                     ],
                     4 => [
-                        7,
+                        -8,
                     ],
                     [
                         8,
@@ -633,15 +633,15 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 ],
                 [
                     22 => [
-                        3,
+                        -4,
                     ],
                     [
-                        4,
+                        -5,
                     ],
                 ],
                 31 => [
                     31 => [
-                        32,
+                        -33,
                     ],
                     9 => [
                         33,
@@ -670,10 +670,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 ],
                 35 => [
                     29 => [
-                        36,
+                        -37,
                     ],
                     [
-                        37,
+                        -38,
                     ],
                 ],
                 39 => [
@@ -698,21 +698,21 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 ],
                 47 => [
                     20 => [
-                        48,
+                        -49,
                     ],
                     32 => [
-                        49,
+                        -50,
                     ],
                 ],
                 51 => [
                     13 => [
-                        52,
+                        -53,
                     ],
                     [
-                        53,
+                        -54,
                     ],
                     [
-                        54,
+                        -55,
                     ],
                     [
                         55,
@@ -722,7 +722,7 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     19 => [
                         58,
                         60,
-                        62,
+                        -63,
                     ],
                     18 => [
                         61,
@@ -764,6 +764,32 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 'T_TILDE',
                 'T_REGEX',
                 '/[^\\s]++/',
+            ],
+            sequences: [
+                11 => [
+                    -14,
+                    14,
+                    -17,
+                    -11,
+                    28,
+                    29,
+                    -69,
+                ],
+                17 => [
+                    18,
+                    19,
+                    -22,
+                    26,
+                ],
+                33 => [
+                    -36,
+                    38,
+                    -17,
+                ],
+                38 => [
+                    39,
+                    -52,
+                ],
             ],
         );
     }

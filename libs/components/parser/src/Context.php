@@ -9,6 +9,12 @@ use Phplrt\Contracts\Source\ReadableInterface;
 /**
  * The state of the analysis at the moment a grammar rule is reduced.
  *
+ * The very same context describes every rule of a single source, filled in
+ * anew before each rule is reduced, so it is only valid while the rule it
+ * describes is being built: a reducer that keeps it past its own call reads
+ * whatever rule has been reduced since. Anything worth keeping is to be read
+ * off the context and kept on its own.
+ *
  * @readonly
  */
 final class Context

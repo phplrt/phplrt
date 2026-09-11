@@ -20,8 +20,7 @@ use Phplrt\Parser\Grammar\RuleInterface;
 use Phplrt\Parser\Internal\Buffer\ArrayBuffer;
 use Phplrt\Parser\Internal\Buffer\BufferInterface;
 use Phplrt\Parser\Internal\MessageInterpolator;
-use Phplrt\Parser\Internal\Reduction\ReducerTable;
-use Phplrt\Parser\Internal\Tracing\GrammarTable;
+use Phplrt\Parser\Internal\Reduction\TraceReducer;
 use Phplrt\Parser\Internal\Tracing\RecursiveDescentTracer;
 use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
 use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
@@ -34,25 +33,27 @@ use Phplrt\Parser\Internal\Tracing\Result\TracingResult;
  *
  * @phpstan-type ExpectationsTableType array<int, non-empty-string>
  *
- * @phpstan-import-type ReducerType from ReducerTable
- * @phpstan-import-type LookaheadTableType from GrammarTable
- * @phpstan-import-type KeptTableType from GrammarTable
- * @phpstan-import-type ChoicePredictionTableType from GrammarTable
- * @phpstan-import-type MessageTableType from GrammarTable
+ * @phpstan-import-type ReducerType from TraceReducer
+ * @phpstan-import-type LookaheadTableType from RecursiveDescentTracer
+ * @phpstan-import-type KeptTableType from RecursiveDescentTracer
+ * @phpstan-import-type ChoicePredictionTableType from RecursiveDescentTracer
+ * @phpstan-import-type MessageTableType from RecursiveDescentTracer
+ * @phpstan-import-type SequenceTableType from RecursiveDescentTracer
  *
  * @readonly
  */
 class Parser implements ParserInterface
 {
-    private readonly GrammarTable $table;
-
-    private readonly ReducerTable $reducers;
+    /**
+     * Recognizes a source against the grammar.
+     */
+    private readonly RecursiveDescentTracer $tracer;
 
     /**
-     * Fills the placeholders of a message in with what the reading has broken
-     * on.
+     * Builds what has been recognized into the values the grammar
+     * describes.
      */
-    private readonly MessageInterpolator $interpolator;
+    private readonly TraceReducer $reducer;
 
     /**
      * The identifier of the rule the analysis starts at.
@@ -64,7 +65,6 @@ class Parser implements ParserInterface
     private int $initial;
 
     /**
-     * @param list<RuleInterface> $grammar
      * @param int<0, max> $initial the identifier of the rule the analysis
      *        starts at
      * @param array<int<0, max>, ReducerType> $reducers
@@ -75,10 +75,18 @@ class Parser implements ParserInterface
      * @param ChoicePredictionTableType $choicePrediction the alternatives
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
+     * @param SequenceTableType $sequences the elements of every sequence
+     *        that may leave one of them out, such an element written as the
+     *        rule it wraps, negated
      */
     public function __construct(
         private readonly LexerInterface $lexer,
-        array $grammar,
+        /**
+         * The rules the reading is described by.
+         *
+         * @var list<RuleInterface>
+         */
+        private readonly array $grammar,
         int $initial,
         array $reducers = [],
         array $lookahead = [],
@@ -98,23 +106,23 @@ class Parser implements ParserInterface
          * @var MessageTableType
          */
         private readonly array $messages = [],
+        array $sequences = [],
     ) {
         $this->initial = $initial;
 
-        $this->table = new GrammarTable(
-            rules: $grammar,
+        $this->tracer = new RecursiveDescentTracer(
+            grammar: $grammar,
             lookahead: $lookahead,
             kept: $kept,
             choicePrediction: $choicePrediction,
             messages: $messages,
+            sequences: $sequences,
         );
 
-        $this->reducers = new ReducerTable(
+        $this->reducer = new TraceReducer(
             grammar: $grammar,
             reducers: $reducers,
         );
-
-        $this->interpolator = new MessageInterpolator();
     }
 
     /**
@@ -128,7 +136,7 @@ class Parser implements ParserInterface
      */
     public function withInitial(int $rule): static
     {
-        if (!isset($this->table->rules[$rule])) {
+        if (!isset($this->grammar[$rule])) {
             throw UnknownInitialRuleException::becauseRuleIsNotDefined($rule);
         }
 
@@ -204,8 +212,7 @@ class Parser implements ParserInterface
             return null;
         }
 
-        return $this->reducers->createReducer($source, $this->initial)
-            ->reduce($result);
+        return $this->reducer->reduce($result, $source, $this->initial);
     }
 
     private function createException(ReadableInterface $source, FailureTracingResult $result): ParserRuntimeException
@@ -238,7 +245,8 @@ class Parser implements ParserInterface
         return UnexpectedTokenException::becauseGrammarDescribesTheError(
             source: $source,
             token: $token,
-            message: $this->interpolator->interpolate($message, $source, $token, $expected),
+            message: (new MessageInterpolator())
+                ->interpolate($message, $source, $token, $expected),
             expected: $expected,
             rule: $rule,
         );
@@ -248,7 +256,7 @@ class Parser implements ParserInterface
     {
         $buffer = $this->lex($source);
 
-        return RecursiveDescentTracer::trace($this->table, $buffer, $this->initial);
+        return $this->tracer->trace($buffer, $this->initial);
     }
 
     /**

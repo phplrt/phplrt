@@ -19,3 +19,6 @@ expectations: {{ value(parser.expectations) }},
 {% if parser.messages is not empty %}
 messages: {{ value(parser.messages) }},
 {% endif %}
+{% if parser.sequences is not empty %}
+sequences: {{ value(parser.sequences) }},
+{% endif %}

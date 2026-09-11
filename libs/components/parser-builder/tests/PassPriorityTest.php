@@ -9,6 +9,7 @@ use Phplrt\Parser\Builder\Analysis\ChoicePredictionConstructionParserAnalysisPas
 use Phplrt\Parser\Builder\Analysis\KeptRuleConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\LookaheadConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserAnalysisPassInterface;
+use Phplrt\Parser\Builder\Analysis\SequenceConstructionParserAnalysisPass;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
@@ -118,6 +119,7 @@ final class PassPriorityTest extends TestCase
             LookaheadConstructionParserAnalysisPass::class,
             KeptRuleConstructionParserAnalysisPass::class,
             ChoicePredictionConstructionParserAnalysisPass::class,
+            SequenceConstructionParserAnalysisPass::class,
         ]);
     }
 

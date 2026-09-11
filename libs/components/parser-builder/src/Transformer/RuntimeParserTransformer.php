@@ -38,6 +38,7 @@ final class RuntimeParserTransformer
             choicePrediction: $result->choicePrediction,
             expectations: $result->expectations,
             messages: $result->messages,
+            sequences: $result->sequences,
         );
     }
 
