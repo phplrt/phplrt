@@ -24,6 +24,36 @@ return new {% if readonly and php.value >= 80300 %}readonly {% endif %}class imp
     /** @var int */
     public const {% if php.value >= 80300 %}int {% endif %}{{ name }} = {{ id }};
 {% endfor %}
+{% if parser.expectations is not empty %}
+
+    /** @var array<int, non-empty-string> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_EXPECTATIONS = {{ value(parser.expectations)|indent(1) }};
+{% endif %}
+{% if parser.messages is not empty %}
+
+    /** @var array<int, non-empty-string> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_MESSAGES = {{ value(parser.messages)|indent(1) }};
+{% endif %}
+{% if parser.kept is not empty %}
+
+    /** @var array<int, bool> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_KEPT_TABLE = {{ value(parser.kept)|indent(1) }};
+{% endif %}
+{% if parser.startPrediction is not empty %}
+
+    /** @var array<int, array<int, true>|null> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_START_PREDICTION_TABLE = {{ value(parser.startPrediction)|indent(1) }};
+{% endif %}
+{% if parser.choicePrediction is not empty %}
+
+    /** @var array<int, array<int, list<int>>> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_CHOICE_PREDICTION_TABLE = {{ value(parser.choicePrediction)|indent(1) }};
+{% endif %}
+{% if parser.sequencePrediction is not empty %}
+
+    /** @var array<int, list<int>> */
+    private const {% if php.value >= 80300 %}array {% endif %}PARSER_SEQUENCE_PREDICTION_TABLE = {{ value(parser.sequencePrediction)|indent(1) }};
+{% endif %}
 
 {% if class is not null %}
     /**

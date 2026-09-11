@@ -98,6 +98,519 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     /** @var int */
     public const T_REGEX = 32;
 
+    /** @var array<int, non-empty-string> */
+    private const PARSER_EXPECTATIONS = [
+        'T_WHITESPACE',
+        'T_COMMENT',
+        'T_DOC',
+        'T_PRAGMA',
+        'T_INCLUDE',
+        'T_PHP',
+        'T_ANNOTATION',
+        'T_SEMICOLON',
+        'T_OR',
+        'T_PARENTHESIS_OPEN',
+        'T_PARENTHESIS_CLOSE',
+        'T_ANGLE_OPEN',
+        'T_ANGLE_CLOSE',
+        'T_QUESTION_MARK',
+        'T_PLUS',
+        'T_ASTERISK',
+        'T_BRACE_OPEN',
+        'T_BRACE_CLOSE',
+        'T_COMMA',
+        'T_INT',
+        'T_STRING',
+        'T_NAME',
+        'T_TOKEN',
+        'T_SKIP',
+        'T_FRAGMENT',
+        'T_LEXER',
+        'T_DOUBLE_COLON',
+        'T_COLON',
+        'T_HASH',
+        'T_AMPERSAND',
+        'T_EXCLAMATION',
+        'T_TILDE',
+        'T_REGEX',
+        '/[^\\s]++/',
+    ];
+
+    /** @var array<int, bool> */
+    private const PARSER_KEPT_TABLE = [
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+    ];
+
+    /** @var array<int, array<int, true>|null> */
+    private const PARSER_START_PREDICTION_TABLE = [
+        null,
+        [
+            3 => true,
+            true,
+            21 => true,
+            true,
+            true,
+            true,
+            true,
+            28 => true,
+        ],
+        [
+            22 => true,
+            true,
+        ],
+        [
+            22 => true,
+        ],
+        [
+            23 => true,
+        ],
+        [
+            24 => true,
+        ],
+        [
+            3 => true,
+        ],
+        [
+            4 => true,
+        ],
+        [
+            25 => true,
+        ],
+        [
+            25 => true,
+        ],
+        [
+            5 => true,
+        ],
+        [
+            21 => true,
+            28 => true,
+        ],
+        null,
+        [
+            28 => true,
+        ],
+        [
+            21 => true,
+        ],
+        null,
+        [
+            6 => true,
+        ],
+        [
+            6 => true,
+        ],
+        [
+            6 => true,
+        ],
+        [
+            9 => true,
+        ],
+        null,
+        [
+            20 => true,
+        ],
+        [
+            20 => true,
+        ],
+        null,
+        [
+            18 => true,
+        ],
+        [
+            18 => true,
+        ],
+        [
+            10 => true,
+        ],
+        null,
+        [
+            27 => true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            29 => true,
+            true,
+            true,
+            true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            29 => true,
+            true,
+            true,
+            true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            29 => true,
+            true,
+            true,
+            true,
+        ],
+        [
+            31 => true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            29 => true,
+            true,
+            32 => true,
+        ],
+        null,
+        [
+            29 => true,
+            true,
+        ],
+        [
+            29 => true,
+        ],
+        [
+            30 => true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            32 => true,
+        ],
+        [
+            9 => true,
+            11 => true,
+            20 => true,
+            true,
+            26 => true,
+            32 => true,
+        ],
+        [
+            9 => true,
+        ],
+        [
+            11 => true,
+        ],
+        [
+            11 => true,
+        ],
+        [
+            12 => true,
+        ],
+        [
+            26 => true,
+        ],
+        [
+            26 => true,
+        ],
+        [
+            21 => true,
+        ],
+        [
+            20 => true,
+            32 => true,
+        ],
+        [
+            20 => true,
+        ],
+        [
+            32 => true,
+        ],
+        null,
+        [
+            13 => true,
+            true,
+            true,
+            true,
+        ],
+        [
+            13 => true,
+        ],
+        [
+            14 => true,
+        ],
+        [
+            15 => true,
+        ],
+        [
+            16 => true,
+        ],
+        [
+            16 => true,
+        ],
+        [
+            18 => true,
+            true,
+        ],
+        [
+            19 => true,
+        ],
+        [
+            19 => true,
+        ],
+        [
+            19 => true,
+        ],
+        [
+            18 => true,
+        ],
+        [
+            19 => true,
+        ],
+        [
+            17 => true,
+        ],
+        null,
+        [
+            8 => true,
+        ],
+        [
+            8 => true,
+        ],
+        null,
+        [
+            7 => true,
+        ],
+    ];
+
+    /** @var array<int, array<int, list<int>>> */
+    private const PARSER_CHOICE_PREDICTION_TABLE = [
+        1 => [
+            22 => [
+                2,
+            ],
+            [
+                2,
+            ],
+            [
+                -6,
+            ],
+            3 => [
+                -7,
+            ],
+            4 => [
+                -8,
+            ],
+            [
+                8,
+            ],
+            21 => [
+                11,
+            ],
+            28 => [
+                11,
+            ],
+        ],
+        [
+            22 => [
+                -4,
+            ],
+            [
+                -5,
+            ],
+        ],
+        31 => [
+            31 => [
+                -33,
+            ],
+            9 => [
+                33,
+            ],
+            11 => [
+                33,
+            ],
+            20 => [
+                33,
+            ],
+            21 => [
+                33,
+            ],
+            26 => [
+                33,
+            ],
+            29 => [
+                33,
+            ],
+            30 => [
+                33,
+            ],
+            [
+                33,
+            ],
+        ],
+        35 => [
+            29 => [
+                -37,
+            ],
+            [
+                -38,
+            ],
+        ],
+        39 => [
+            9 => [
+                40,
+            ],
+            11 => [
+                41,
+            ],
+            26 => [
+                44,
+            ],
+            21 => [
+                46,
+            ],
+            20 => [
+                47,
+            ],
+            32 => [
+                47,
+            ],
+        ],
+        47 => [
+            20 => [
+                -49,
+            ],
+            32 => [
+                -50,
+            ],
+        ],
+        51 => [
+            13 => [
+                -53,
+            ],
+            [
+                -54,
+            ],
+            [
+                -55,
+            ],
+            [
+                55,
+            ],
+        ],
+        57 => [
+            19 => [
+                58,
+                60,
+                -63,
+            ],
+            18 => [
+                61,
+            ],
+        ],
+    ];
+
+    /** @var array<int, list<int>> */
+    private const PARSER_SEQUENCE_PREDICTION_TABLE = [
+        11 => [
+            -14,
+            14,
+            -17,
+            -11,
+            28,
+            29,
+            -69,
+        ],
+        17 => [
+            18,
+            19,
+            -22,
+            26,
+        ],
+        33 => [
+            -36,
+            38,
+            -17,
+        ],
+        38 => [
+            39,
+            -52,
+        ],
+    ];
+
     /**
      * @var \Phplrt\Parser\Parser<TResult>
      */
@@ -288,509 +801,11 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 61 => self::reduceRangeTo(...),
                 62 => self::reduceRangeExactly(...),
             ],
-            expectations: [
-                'T_WHITESPACE',
-                'T_COMMENT',
-                'T_DOC',
-                'T_PRAGMA',
-                'T_INCLUDE',
-                'T_PHP',
-                'T_ANNOTATION',
-                'T_SEMICOLON',
-                'T_OR',
-                'T_PARENTHESIS_OPEN',
-                'T_PARENTHESIS_CLOSE',
-                'T_ANGLE_OPEN',
-                'T_ANGLE_CLOSE',
-                'T_QUESTION_MARK',
-                'T_PLUS',
-                'T_ASTERISK',
-                'T_BRACE_OPEN',
-                'T_BRACE_CLOSE',
-                'T_COMMA',
-                'T_INT',
-                'T_STRING',
-                'T_NAME',
-                'T_TOKEN',
-                'T_SKIP',
-                'T_FRAGMENT',
-                'T_LEXER',
-                'T_DOUBLE_COLON',
-                'T_COLON',
-                'T_HASH',
-                'T_AMPERSAND',
-                'T_EXCLAMATION',
-                'T_TILDE',
-                'T_REGEX',
-                '/[^\\s]++/',
-            ],
-            kept: [
-                true,
-                false,
-                true,
-                false,
-                false,
-                true,
-                true,
-                true,
-                true,
-                false,
-                true,
-                true,
-                false,
-                true,
-                false,
-                false,
-                false,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                true,
-                true,
-                false,
-                true,
-                true,
-                false,
-                false,
-                false,
-                false,
-                true,
-                false,
-                false,
-                true,
-                false,
-                false,
-                true,
-                false,
-                true,
-                false,
-                true,
-                true,
-                false,
-                false,
-                true,
-                true,
-                true,
-                false,
-                false,
-                false,
-                true,
-                false,
-                true,
-                true,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-            ],
-            startPrediction: [
-                null,
-                [
-                    3 => true,
-                    true,
-                    21 => true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    28 => true,
-                ],
-                [
-                    22 => true,
-                    true,
-                ],
-                [
-                    22 => true,
-                ],
-                [
-                    23 => true,
-                ],
-                [
-                    24 => true,
-                ],
-                [
-                    3 => true,
-                ],
-                [
-                    4 => true,
-                ],
-                [
-                    25 => true,
-                ],
-                [
-                    25 => true,
-                ],
-                [
-                    5 => true,
-                ],
-                [
-                    21 => true,
-                    28 => true,
-                ],
-                null,
-                [
-                    28 => true,
-                ],
-                [
-                    21 => true,
-                ],
-                null,
-                [
-                    6 => true,
-                ],
-                [
-                    6 => true,
-                ],
-                [
-                    6 => true,
-                ],
-                [
-                    9 => true,
-                ],
-                null,
-                [
-                    20 => true,
-                ],
-                [
-                    20 => true,
-                ],
-                null,
-                [
-                    18 => true,
-                ],
-                [
-                    18 => true,
-                ],
-                [
-                    10 => true,
-                ],
-                null,
-                [
-                    27 => true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    29 => true,
-                    true,
-                    true,
-                    true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    29 => true,
-                    true,
-                    true,
-                    true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    29 => true,
-                    true,
-                    true,
-                    true,
-                ],
-                [
-                    31 => true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    29 => true,
-                    true,
-                    32 => true,
-                ],
-                null,
-                [
-                    29 => true,
-                    true,
-                ],
-                [
-                    29 => true,
-                ],
-                [
-                    30 => true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    32 => true,
-                ],
-                [
-                    9 => true,
-                    11 => true,
-                    20 => true,
-                    true,
-                    26 => true,
-                    32 => true,
-                ],
-                [
-                    9 => true,
-                ],
-                [
-                    11 => true,
-                ],
-                [
-                    11 => true,
-                ],
-                [
-                    12 => true,
-                ],
-                [
-                    26 => true,
-                ],
-                [
-                    26 => true,
-                ],
-                [
-                    21 => true,
-                ],
-                [
-                    20 => true,
-                    32 => true,
-                ],
-                [
-                    20 => true,
-                ],
-                [
-                    32 => true,
-                ],
-                null,
-                [
-                    13 => true,
-                    true,
-                    true,
-                    true,
-                ],
-                [
-                    13 => true,
-                ],
-                [
-                    14 => true,
-                ],
-                [
-                    15 => true,
-                ],
-                [
-                    16 => true,
-                ],
-                [
-                    16 => true,
-                ],
-                [
-                    18 => true,
-                    true,
-                ],
-                [
-                    19 => true,
-                ],
-                [
-                    19 => true,
-                ],
-                [
-                    19 => true,
-                ],
-                [
-                    18 => true,
-                ],
-                [
-                    19 => true,
-                ],
-                [
-                    17 => true,
-                ],
-                null,
-                [
-                    8 => true,
-                ],
-                [
-                    8 => true,
-                ],
-                null,
-                [
-                    7 => true,
-                ],
-            ],
-            choicePrediction: [
-                1 => [
-                    22 => [
-                        2,
-                    ],
-                    [
-                        2,
-                    ],
-                    [
-                        -6,
-                    ],
-                    3 => [
-                        -7,
-                    ],
-                    4 => [
-                        -8,
-                    ],
-                    [
-                        8,
-                    ],
-                    21 => [
-                        11,
-                    ],
-                    28 => [
-                        11,
-                    ],
-                ],
-                [
-                    22 => [
-                        -4,
-                    ],
-                    [
-                        -5,
-                    ],
-                ],
-                31 => [
-                    31 => [
-                        -33,
-                    ],
-                    9 => [
-                        33,
-                    ],
-                    11 => [
-                        33,
-                    ],
-                    20 => [
-                        33,
-                    ],
-                    21 => [
-                        33,
-                    ],
-                    26 => [
-                        33,
-                    ],
-                    29 => [
-                        33,
-                    ],
-                    30 => [
-                        33,
-                    ],
-                    [
-                        33,
-                    ],
-                ],
-                35 => [
-                    29 => [
-                        -37,
-                    ],
-                    [
-                        -38,
-                    ],
-                ],
-                39 => [
-                    9 => [
-                        40,
-                    ],
-                    11 => [
-                        41,
-                    ],
-                    26 => [
-                        44,
-                    ],
-                    21 => [
-                        46,
-                    ],
-                    20 => [
-                        47,
-                    ],
-                    32 => [
-                        47,
-                    ],
-                ],
-                47 => [
-                    20 => [
-                        -49,
-                    ],
-                    32 => [
-                        -50,
-                    ],
-                ],
-                51 => [
-                    13 => [
-                        -53,
-                    ],
-                    [
-                        -54,
-                    ],
-                    [
-                        -55,
-                    ],
-                    [
-                        55,
-                    ],
-                ],
-                57 => [
-                    19 => [
-                        58,
-                        60,
-                        -63,
-                    ],
-                    18 => [
-                        61,
-                    ],
-                ],
-            ],
-            sequencePrediction: [
-                11 => [
-                    -14,
-                    14,
-                    -17,
-                    -11,
-                    28,
-                    29,
-                    -69,
-                ],
-                17 => [
-                    18,
-                    19,
-                    -22,
-                    26,
-                ],
-                33 => [
-                    -36,
-                    38,
-                    -17,
-                ],
-                38 => [
-                    39,
-                    -52,
-                ],
-            ],
+            expectations: self::PARSER_EXPECTATIONS,
+            kept: self::PARSER_KEPT_TABLE,
+            startPrediction: self::PARSER_START_PREDICTION_TABLE,
+            choicePrediction: self::PARSER_CHOICE_PREDICTION_TABLE,
+            sequencePrediction: self::PARSER_SEQUENCE_PREDICTION_TABLE,
         );
     }
 
