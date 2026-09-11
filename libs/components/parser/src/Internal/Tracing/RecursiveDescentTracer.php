@@ -42,11 +42,11 @@ use Phplrt\Parser\Internal\Tracing\Result\SuccessfulTracingResult;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser
  *
- * @phpstan-import-type LookaheadTableType from GrammarTable
- * @phpstan-import-type KeptTableType from GrammarTable
- * @phpstan-import-type ChoicePredictionTableType from GrammarTable
- * @phpstan-import-type MessageTableType from GrammarTable
- * @phpstan-import-type SequenceTableType from GrammarTable
+ * @phpstan-type LookaheadTableType array<int, array<int, true>|null>
+ * @phpstan-type KeptTableType array<int, bool>
+ * @phpstan-type ChoicePredictionTableType array<int, array<int, list<int>>>
+ * @phpstan-type MessageTableType array<int, non-empty-string>
+ * @phpstan-type SequenceTableType array<int, list<int>>
  */
 final class RecursiveDescentTracer
 {
@@ -66,11 +66,6 @@ final class RecursiveDescentTracer
     private int $length = 0;
 
     /**
-     * @var list<RuleInterface>
-     */
-    private readonly array $grammar;
-
-    /**
      * The tokens each rule may begin with, or {@see null} for a rule that
      * may begin with any token at all.
      *
@@ -86,65 +81,96 @@ final class RecursiveDescentTracer
     private readonly array $kept;
 
     /**
-     * The alternatives of an alternation worth trying, by the token the
-     * reading is at. A negated identifier names a terminal reading that very
-     * token.
-     *
-     * @var ChoicePredictionTableType
+     * The tokens of the source the trace is being written for.
      */
-    private readonly array $choicePrediction;
+    private BufferInterface $buffer;
 
     /**
-     * The elements of the sequences that may leave one of them out. A negated
-     * identifier names the rule an optional element wraps.
-     *
-     * @var SequenceTableType
+     * What has stood in the way of that reading.
      */
-    private readonly array $sequences;
+    private ErrorReport $error;
 
     /**
-     * The rules describing their own failure by a message of their own.
-     *
-     * Only the presence of a rule is asked about here: the message itself is
-     * read once the recognition is over, by the one reporting the error.
-     *
-     * @var MessageTableType
+     * @param LookaheadTableType $lookahead the tokens a rule may begin with,
+     *        or {@see null} for a rule that may begin with any of them
+     * @param KeptTableType $kept the rules that become a node of the result
      */
-    private readonly array $messages;
-
-    private readonly ErrorReport $error;
-
-    private function __construct(
-        GrammarTable $table,
-        private readonly BufferInterface $buffer,
+    public function __construct(
+        /**
+         * @var list<RuleInterface>
+         */
+        private readonly array $grammar,
+        array $lookahead = [],
+        array $kept = [],
+        /**
+         * The alternatives of an alternation worth trying, by the token the
+         * reading is at. A negated identifier names a terminal reading that
+         * very token.
+         *
+         * @var ChoicePredictionTableType
+         */
+        private readonly array $choicePrediction = [],
+        /**
+         * The rules describing their own failure by a message of their own.
+         *
+         * Only the presence of a rule is asked about here: the message itself
+         * is read once the recognition is over, by the one reporting the
+         * error.
+         *
+         * @var MessageTableType
+         */
+        private readonly array $messages = [],
+        /**
+         * The elements of the sequences that may leave one of them out. A
+         * negated identifier names the rule an optional element wraps.
+         *
+         * @var SequenceTableType
+         */
+        private readonly array $sequences = [],
     ) {
-        $this->grammar = $table->rules;
-        $this->lookahead = $table->lookahead;
-        $this->kept = $table->kept;
-        $this->choicePrediction = $table->choicePrediction;
-        $this->sequences = $table->sequences;
-        $this->messages = $table->messages;
+        // A grammar that has not been described is recognized all the same: it
+        // reads exactly the same sources, only slower, and its failures are
+        // reported deeper in the rules, since the rules alone do not say where
+        // the reading was supposed to go.
+        $this->lookahead = $lookahead === []
+            ? \array_fill_keys(\array_keys($grammar), null)
+            : $lookahead;
 
-        $this->error = new ErrorReport($buffer, $table->rules, $table->lookahead);
+        // A rule that leaves nothing behind is not written into the trace at
+        // all, which is fewer entries to reduce afterwards. A grammar that has
+        // not been described is traced whole: every rule is taken for one that
+        // matters.
+        $this->kept = $kept === []
+            ? \array_fill_keys(\array_keys($grammar), true)
+            : $kept;
     }
 
     /**
+     * Reads the given tokens against the grammar, starting at the given rule.
+     *
+     * A tracer belongs to the parser that has built it and writes one trace at
+     * a time: whatever it has read before is given up as soon as the next
+     * reading begins, so the result of a reading is to be taken before the
+     * next one starts.
+     *
      * @param int<0, max> $initial the identifier of the rule the recognition
      *        starts at
      */
-    public static function trace(
-        GrammarTable $table,
+    public function trace(
         BufferInterface $buffer,
         int $initial,
     ): SuccessfulTracingResult|FailureTracingResult {
-        if ($table->rules === []) {
+        if ($this->grammar === []) {
             // Fast-finish on empty grammar
             return new FailureTracingResult($buffer->current, $buffer->current);
         }
 
-        $self = new self($table, $buffer);
+        $this->buffer = $buffer;
+        $this->error = new ErrorReport($buffer, $this->grammar, $this->lookahead);
+        $this->entries = [];
+        $this->length = 0;
 
-        $isMatched = $self->match($initial);
+        $isMatched = $this->match($initial);
 
         $current = $buffer->current;
 
@@ -154,14 +180,14 @@ final class RecursiveDescentTracer
          * of the source left unread.
          */
         if (!$current->channel instanceof Channel) {
-            $current = $self->skipTrailing();
+            $current = $this->skipTrailing();
         }
 
         if ($isMatched && $current->channel === Channel::EndOfInput) {
-            return new SuccessfulTracingResult($self->entries, $self->length);
+            return new SuccessfulTracingResult($this->entries, $this->length);
         }
 
-        return $self->createFailure($initial, $current, $isMatched);
+        return $this->createFailure($initial, $current, $isMatched);
     }
 
     /**

@@ -21,7 +21,7 @@ use Phplrt\Parser\Internal\Tracing\Result\FailureTracingResult;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Parser\Internal
  *
- * @phpstan-import-type LookaheadTableType from GrammarTable
+ * @phpstan-import-type LookaheadTableType from RecursiveDescentTracer
  */
 final class ErrorReport
 {
