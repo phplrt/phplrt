@@ -177,13 +177,13 @@ class Parser implements ParserInterface
             );
         }
 
-        $error = $this->createException($source, $result);
+        $error = $this->createLazyException($source, $result);
 
         // A grammar that has read nothing has built nothing either, so there is
         // no fragment to report, and the source is only described by the error
         if ($result->length === 0) {
             return new FailureResult(
-                token: $error->token,
+                token: $result->token ?? $result->stoppedAt,
                 error: $error,
             );
         }
@@ -217,6 +217,16 @@ class Parser implements ParserInterface
         }
 
         return $this->reducer->reduce($result, $source, $this->initial);
+    }
+
+    /**
+     * @return \Closure(): ParserRuntimeException
+     */
+    private function createLazyException(ReadableInterface $source, FailureTracingResult $result): \Closure
+    {
+        return function () use ($source, $result): ParserRuntimeException {
+            return $this->createException($source, $result);
+        };
     }
 
     private function createException(ReadableInterface $source, FailureTracingResult $result): ParserRuntimeException
