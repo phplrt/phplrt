@@ -80,7 +80,7 @@ class Parser implements ParserInterface
      *        every sequence that may leave one of them out, such an element
      *        written as the rule it wraps, negated
      * @param StartPredictionTableType|null $lookahead the former name of
-     *        {@see $startPrediction}
+     *        {@see $startPrediction}. Please do not use it anymore.
      */
     public function __construct(
         private readonly LexerInterface $lexer,
