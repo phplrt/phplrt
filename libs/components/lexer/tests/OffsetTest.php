@@ -67,7 +67,7 @@ final class OffsetTest extends TestCase
         $lexer = self::createWordsLexer();
         $source = 'one two';
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source), \strlen($source)), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString($source), \strlen($source)));
 
         Assert::count($tokens, 1);
         Assert::same($tokens[0]->channel, Channel::EndOfInput);
@@ -88,6 +88,6 @@ final class OffsetTest extends TestCase
 
         Expect::exception(\InvalidArgumentException::class);
 
-        \iterator_to_array($lexer->lex(StringSource::createFromString('one two'), -1), false);
+        self::toArray($lexer->lex(StringSource::createFromString('one two'), -1));
     }
 }

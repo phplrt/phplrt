@@ -92,9 +92,22 @@ abstract class TestCase
         return $result;
     }
 
+    /**
+     * PHP 8.1's {@see \iterator_to_array()} rejects plain arrays, so lists
+     * coming through the {@see LexerInterface::lex()} `iterable` contract have
+     * to be normalized by hand.
+     *
+     * @param iterable<mixed> $items
+     * @return list<mixed>
+     */
+    protected static function toArray(iterable $items): array
+    {
+        return \is_array($items) ? \array_values($items) : \iterator_to_array($items, false);
+    }
+
     protected static function assertTerminatedStream(string $source, iterable $tokens): void
     {
-        $tokens = \iterator_to_array($tokens, false);
+        $tokens = self::toArray($tokens);
 
         Assert::notSame($tokens, [], 'A token stream is expected to never be empty');
 

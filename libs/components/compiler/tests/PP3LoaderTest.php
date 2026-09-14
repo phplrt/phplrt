@@ -24,7 +24,6 @@ use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\LexerBuilder;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
-use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\Reducer\PhpCodeReducer;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
 use Phplrt\Parser\Builder\ParserBuilder;
@@ -682,6 +681,6 @@ final class PP3LoaderTest extends TestCase
         $result = (new PP3Loader())
             ->load(VirtualSource::createFromString($pathname, $source), $this->parser, $this->lexer);
 
-        return \iterator_to_array($result, false);
+        return \is_array($result) ? \array_values($result) : \iterator_to_array($result, false);
     }
 }

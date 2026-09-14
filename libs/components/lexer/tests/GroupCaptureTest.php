@@ -63,7 +63,7 @@ final class GroupCaptureTest extends TestCase
         $lexer = self::createLexer(skip: []);
         $source = 'foo %token string:T_A';
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString($source)));
         $declaration = $tokens[2];
 
         Assert::same($declaration->name, 'T_TOKEN');
@@ -97,7 +97,7 @@ final class GroupCaptureTest extends TestCase
             });
         });
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('[note]hello')), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString('[note]hello')));
         $embedding = $tokens[0];
 
         Assert::instanceOf($embedding, TokenEmbedding::class);

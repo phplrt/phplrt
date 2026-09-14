@@ -340,7 +340,7 @@ final class PP2LoaderTest extends TestCase
         $result = (new PP2Loader())
             ->load(VirtualSource::createFromString($pathname, $source), $this->parser, $this->lexer);
 
-        return \iterator_to_array($result, false);
+        return \is_array($result) ? \array_values($result) : \iterator_to_array($result, false);
     }
 
     private function readSource(string $source, TokenDefinition|RuleDefinition|null $definition): string
