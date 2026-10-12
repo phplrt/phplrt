@@ -18,8 +18,8 @@
     "require": {
         "php": "^8.1",
         "ext-pcre": "*",
-        "phplrt/lexer-contracts": "^4.0",
-        "phplrt/source-contracts": "^4.0"
+        "phplrt/lexer-contracts": "^4.2",
+        "phplrt/source-contracts": "^4.2"
     },
     "autoload": {
         "psr-4": {
@@ -28,9 +28,9 @@
     },
     "require-dev": {
         "ext-mbstring": "*",
-        "phplrt/exception": "^4.0",
-        "phplrt/lexer-builder": "^4.0",
-        "phplrt/source": "^4.0",
+        "phplrt/exception": "^4.2",
+        "phplrt/lexer-builder": "^4.2",
+        "phplrt/source": "^4.2",
         "testo/testo": "^0.10.45",
         "phpstan/phpstan": "^2.3"
     },

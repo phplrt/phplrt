@@ -17,9 +17,9 @@
     ],
     "require": {
         "php": "^8.1",
-        "phplrt/exception": "^4.0",
-        "phplrt/lexer": "^4.0",
-        "phplrt/source-contracts": "^4.0",
+        "phplrt/exception": "^4.2",
+        "phplrt/lexer": "^4.2",
+        "phplrt/source-contracts": "^4.2",
         "psr/log": "^3.0"
     },
     "autoload": {
