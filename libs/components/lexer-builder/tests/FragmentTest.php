@@ -188,4 +188,79 @@ final class FragmentTest extends TestCase
 
         Assert::same($definition->setRegex('[a-z]')->regex, '[a-z]');
     }
+
+    public function testBuildingAgainWritesTheChangedFragment(): void
+    {
+        $lexer = new LexerBuilder();
+        $digit = $lexer->addFragment('DIGIT', '[0-9]');
+        $token = $lexer->addPattern('(?&DIGIT)++', 'T_NUMBER');
+
+        $lexer->build();
+
+        $digit->pattern = '[0-7]';
+
+        $lexer->build();
+
+        Assert::same($token->regex, '(?:[0-7])++');
+    }
+
+    public function testBuildingAgainWritesTheChangedFragmentIntoEveryState(): void
+    {
+        $lexer = new LexerBuilder();
+        $word = $lexer->addFragment('WORD', '[a-z]++');
+        $lexer->addPattern('"', 'T_QUOTE_OPEN')
+            ->enter('string');
+
+        $embedded = $lexer->addLexer('string');
+        $token = $embedded->addPattern('(?&WORD)', 'T_TEXT');
+
+        $lexer->build();
+
+        $word->pattern = '[a-f]++';
+
+        $lexer->build();
+
+        Assert::same($token->regex, '(?:[a-f]++)');
+    }
+
+    public function testBuildingAgainWritesFragmentsIntoTheChangedExpression(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addFragment('DIGIT', '[0-9]');
+        $token = $lexer->addPattern('(?&DIGIT)++', 'T_NUMBER');
+
+        $lexer->build();
+
+        $token->setRegex('-(?&DIGIT)');
+
+        $lexer->build();
+
+        Assert::same($token->regex, '-(?:[0-9])');
+    }
+
+    public function testBuildingAgainReportsTheExpressionAsWritten(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addFragment('DIGIT', '[0-9]');
+        $lexer->addPattern('(?&DIGIT)++(?&SIGN)?', 'T_NUMBER');
+        $lexer->addFragment('SIGN', '[+-]');
+
+        $lexer->build();
+
+        $lexer->removeFragment('SIGN');
+
+        Expect::exception(CompilationFailedException::class)
+            ->withMessageContaining('The /(?&DIGIT)++(?&SIGN)?/ (T_NUMBER) expression refers to the "SIGN" fragment');
+
+        $lexer->build();
+    }
+
+    public function testBuildingTwiceGivesTheSameLexer(): void
+    {
+        $lexer = new LexerBuilder();
+        $lexer->addFragment('DIGIT', '[0-9]');
+        $lexer->addPattern('(?&DIGIT)++', 'T_NUMBER');
+
+        Assert::same($lexer->build()->pattern, $lexer->build()->pattern);
+    }
 }

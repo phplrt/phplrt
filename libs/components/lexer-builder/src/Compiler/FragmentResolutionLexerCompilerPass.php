@@ -45,14 +45,29 @@ final class FragmentResolutionLexerCompilerPass implements
      */
     private const PATTERN_CAPTURE = '/\(\?P?[<\'](%s)[>\']/';
 
+    /**
+     * The expression of each token definition the fragments have been written
+     * into, as it has been written and as it has been left, so that building
+     * the lexer once again starts from what has been written rather than from
+     * what the previous build has left.
+     *
+     * @var \WeakMap<RegexTokenDefinition, array{non-empty-string, non-empty-string}>
+     */
+    private readonly \WeakMap $expansions;
+
+    public function __construct()
+    {
+        $this->expansions = new \WeakMap();
+    }
+
     public function process(LexerBuildingContext $context): void
     {
-        self::expandTokens($context->tokens, $context->fragments, $context->logger);
+        $this->expandTokens($context->tokens, $context->fragments, $context->logger);
 
         /** @var \SplObjectStorage<LexerBuilder, null> $visited */
         $visited = new \SplObjectStorage();
 
-        self::expandLexers($context->lexers, $context->fragments, $visited, $context->logger);
+        $this->expandLexers($context->lexers, $context->fragments, $visited, $context->logger);
     }
 
     /**
@@ -60,16 +75,24 @@ final class FragmentResolutionLexerCompilerPass implements
      * @param array<non-empty-string, FragmentDefinition> $fragments
      * @throws CompilationFailedException
      */
-    private static function expandTokens(array $tokens, array $fragments, LoggerInterface $logger): void
+    private function expandTokens(array $tokens, array $fragments, LoggerInterface $logger): void
     {
         foreach ($tokens as $definition) {
             if (!$definition instanceof RegexTokenDefinition) {
                 continue;
             }
 
-            $regex = self::expand($definition->regex, $definition, $fragments);
+            $written = $this->findWritten($definition);
 
-            if ($regex === '' || $regex === $definition->regex) {
+            // Note: An error is reported with the expression as it has been
+            //       written rather than as the previous build has left it.
+            $definition->regex = $written;
+
+            unset($this->expansions[$definition]);
+
+            $regex = self::expand($written, $definition, $fragments);
+
+            if ($regex === '' || $regex === $written) {
                 continue;
             }
 
@@ -79,6 +102,8 @@ final class FragmentResolutionLexerCompilerPass implements
             ]);
 
             $definition->regex = $regex;
+
+            $this->expansions[$definition] = [$written, $regex];
         }
     }
 
@@ -88,7 +113,7 @@ final class FragmentResolutionLexerCompilerPass implements
      * @param \SplObjectStorage<LexerBuilder, null> $visited
      * @throws CompilationFailedException
      */
-    private static function expandLexers(
+    private function expandLexers(
         array $lexers,
         array $fragments,
         \SplObjectStorage $visited,
@@ -106,9 +131,25 @@ final class FragmentResolutionLexerCompilerPass implements
             // with the ones it declares on its own
             $known = [...$fragments, ...$lexer->fragments];
 
-            self::expandTokens($lexer->tokens, $known, $logger);
-            self::expandLexers($lexer->lexers, $known, $visited, $logger);
+            $this->expandTokens($lexer->tokens, $known, $logger);
+            $this->expandLexers($lexer->lexers, $known, $visited, $logger);
         }
+    }
+
+    /**
+     * Returns the expression of the given definition as it has been written.
+     *
+     * An expression changed since the fragments have been written into it is
+     * the one written now: what the previous build has left is the expression
+     * the fragments of that build have been written into.
+     *
+     * @return non-empty-string
+     */
+    private function findWritten(RegexTokenDefinition $definition): string
+    {
+        [$written, $expanded] = $this->expansions[$definition] ?? [$definition->regex, $definition->regex];
+
+        return $definition->regex === $expanded ? $written : $definition->regex;
     }
 
     /**
