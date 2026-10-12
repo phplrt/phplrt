@@ -7,6 +7,7 @@ namespace Phplrt\Compiler\Tests;
 use Phplrt\Compiler\Compiler;
 use Phplrt\Contracts\Parser\ParserInterface;
 use Phplrt\Parser\Builder\Exception\ParserCompilerException;
+use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Source\StringSource;
 use Testo\Assert;
 use Testo\Expect;
@@ -149,6 +150,37 @@ final class PP3ChannelTest extends TestCase
             %token T_NAME         \w++
 
             Name : <T_DOC_COMMENT>? <T_NAME> ;
+            PP3);
+    }
+
+    /**
+     * A skipped token never reaches the stream, so there is nothing it could
+     * do once it has been read.
+     */
+    public function testSkippedTokenHandingTheReadingOverIsReported(): void
+    {
+        Expect::exception(UnexpectedTokenException::class)
+            ->withMessageContaining('unexpected "-> state(comment)"');
+
+        self::compile(<<<'PP3'
+            %skip  T_COMMENT  /\*  -> state(comment)
+            %token comment:T_COMMENT_END  \*/  -> exit()
+            %token T_NAME     \w++
+
+            Name : <T_NAME> ;
+            PP3);
+    }
+
+    public function testSkippedTokenOfAChannelIsReported(): void
+    {
+        Expect::exception(UnexpectedTokenException::class)
+            ->withMessageContaining('unexpected "-> channel(comment)"');
+
+        self::compile(<<<'PP3'
+            %skip  T_COMMENT  /\*.*?\*/  -> channel(comment)
+            %token T_NAME     \w++
+
+            Name : <T_NAME> ;
             PP3);
     }
 

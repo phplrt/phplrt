@@ -871,7 +871,9 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                     break;
 
                 case 'T_ACTIONS':
-                    if ($actions !== []) {
+                    // A skipped token never reaches the stream, so there is nothing
+                    // it could do once it has been read
+                    if ($actions !== [] || $children->value === '%skip') {
                         throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                     }
 

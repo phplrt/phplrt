@@ -207,10 +207,12 @@ class Lexer implements LexerInterface
 
         foreach ($channels as $id => $channel) {
             /**
-             * If exclude a token with a transition, the "state switching" will
-             * break. Therefore, it should be left in when passed to the
-             * {@see Tokenizer} and only excluded after it's created in the
-             * lexer {@see self::execute()} method.
+             * A token with a transition is the one the reading is handed over
+             * by, so it is reported even on a channel that is not: stepping
+             * over it would step over the transition too.
+             *
+             * Note: A lexer builder reports such a token as an error, so only
+             *       a lexer configured by hand ever reads one.
              */
             if (isset($excluded[$channel]) && !\array_key_exists($id, $transitions)) {
                 $result[$id] = true;

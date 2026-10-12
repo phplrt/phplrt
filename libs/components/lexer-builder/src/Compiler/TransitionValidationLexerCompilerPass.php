@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Compiler;
 
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TransitionType;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
@@ -19,9 +20,35 @@ final class TransitionValidationLexerCompilerPass implements
     public function process(LexerBuildingContext $context): void
     {
         foreach ($context->tokens as $definition) {
+            $this->validateHiddenOrFail($definition);
             $this->validateExitOrFail($context, $definition);
             $this->validateTargetOrFail($context, $definition);
         }
+    }
+
+    /**
+     * A hidden token never reaches the stream, so the reading cannot be handed
+     * over by it either.
+     */
+    private function validateHiddenOrFail(TokenDefinition $definition): void
+    {
+        $transition = $definition->transition;
+
+        if ($transition === null || $definition->channel !== Channel::Hidden) {
+            return;
+        }
+
+        throw new CompilationFailedException($definition, match ($transition->type) {
+            TransitionType::Enter => \sprintf(
+                'Token definition %s is hidden, so it cannot hand the reading over to the "%s" lexer',
+                $definition,
+                (string) $transition->lexer,
+            ),
+            TransitionType::Exit => \sprintf(
+                'Token definition %s is hidden, so it cannot end the reading',
+                $definition,
+            ),
+        });
     }
 
     /**
