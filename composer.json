@@ -24,7 +24,7 @@
         "composer-runtime-api": "^2.0",
         "psr/log": "^3.0",
         "symfony/console": "^6.4|^7.0|^8.0",
-        "twig/twig": "^3.28"
+        "twig/twig": "^3.30"
     },
     "autoload": {
         "psr-4": {
@@ -55,8 +55,8 @@
         "ext-intl": "*",
         "ext-mbstring": "*",
         "friendsofphp/php-cs-fixer": "^3.95",
-        "phpstan/phpstan": "^2.2",
-        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-strict-rules": "^2.1",
         "symfony/var-dumper": "^6.4|^7.0|^8.0",
         "testo/testo": "^0.10.45"
     },

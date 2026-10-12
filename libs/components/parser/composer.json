@@ -38,7 +38,7 @@
         "phplrt/parser-builder": "^4.0",
         "phplrt/source": "^4.0",
         "testo/testo": "^0.10.45",
-        "phpstan/phpstan": "^2.2"
+        "phpstan/phpstan": "^2.3"
     },
     "autoload-dev": {
         "psr-4": {

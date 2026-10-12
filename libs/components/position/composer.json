@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "phplrt/source": "^4.0",
-        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan": "^2.3",
         "testo/testo": "^0.10.45"
     },
     "autoload-dev": {

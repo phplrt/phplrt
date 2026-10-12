@@ -27,7 +27,7 @@
         "phplrt/source": "^4.0",
         "psr/log": "^3.0",
         "symfony/console": "^6.4|^7.0|^8.0",
-        "twig/twig": "^3.28"
+        "twig/twig": "^3.30"
     },
     "autoload": {
         "psr-4": {
@@ -36,7 +36,7 @@
     },
     "require-dev": {
         "testo/testo": "^0.10.45",
-        "phpstan/phpstan": "^2.2"
+        "phpstan/phpstan": "^2.3"
     },
     "autoload-dev": {
         "psr-4": {
