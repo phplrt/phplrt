@@ -529,8 +529,108 @@ final class OptimizationTest extends TestCase
         Assert::same($result->constants['Number'] ?? null, 1);
     }
 
+    public function testInitialOptionalOfAnAlwaysMatchingRuleIsKept(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addOptional(
+            $parser->addRepetition($parser->addTokenReference('T_NUMBER')),
+            'Document',
+        ));
+
+        $result = self::compileWithinTimeLimit($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Optional(1)',
+            '1: Repetition(2, 0, INF)',
+            '2: Lexeme(1, keep)',
+        ]);
+
+        Assert::same($result->initial, 0);
+    }
+
+    public function testEntrypointOptionalOfAnAlwaysMatchingRuleIsKept(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_PLUS'),
+            $parser->addOptional($parser->addRepetition($parser->addTokenReference('T_NUMBER')), 'Numbers')
+                ->setEntrypoint(),
+        ], 'Expression'));
+
+        $result = self::compileWithinTimeLimit($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(2, keep)',
+            '2: Optional(3)',
+            '3: Repetition(4, 0, INF)',
+            '4: Lexeme(1, keep)',
+        ]);
+
+        Assert::same($result->constants['Numbers'] ?? null, 2);
+    }
+
+    public function testInitialAlternationLeftWithASingleRuleIsKept(): void
+    {
+        $parser = new ParserBuilder();
+
+        $number = $parser->addTokenReference('T_NUMBER');
+
+        $parser->setInitialRule($parser->addAlternation([$number, $number], 'Document'));
+
+        $result = self::compileWithinTimeLimit($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Alternation(1)',
+            '1: Lexeme(1, keep)',
+        ]);
+
+        Assert::same($result->initial, 0);
+    }
+
+    public function testEntrypointAlternationLeftWithASingleRuleIsKept(): void
+    {
+        $parser = new ParserBuilder();
+
+        $number = $parser->addTokenReference('T_NUMBER');
+
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_PLUS'),
+            $parser->addAlternation([$number, $number], 'Number')
+                ->setEntrypoint(),
+        ], 'Expression'));
+
+        $result = self::compileWithinTimeLimit($parser);
+
+        Assert::same(self::describe($result), [
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(2, keep)',
+            '2: Alternation(3)',
+            '3: Lexeme(1, keep)',
+        ]);
+
+        Assert::same($result->constants['Number'] ?? null, 2);
+    }
+
     private static function compile(ParserBuilder $parser): ParserBuilderResult
     {
         return $parser->build(self::createLexerBuilder()->build());
+    }
+
+    /**
+     * A grammar the optimization keeps rewriting is never built, so a build
+     * running for too long is reported rather than waited for.
+     */
+    private static function compileWithinTimeLimit(ParserBuilder $parser): ParserBuilderResult
+    {
+        $limit = (int) \ini_get('max_execution_time');
+
+        \set_time_limit(10);
+
+        try {
+            return self::compile($parser);
+        } finally {
+            \set_time_limit($limit);
+        }
     }
 }

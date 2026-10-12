@@ -70,6 +70,12 @@ final class RedundantProductionParserCompilerPass implements
             return null;
         }
 
+        // An entrypoint is the rule the analysis starts at, so it may not be
+        // removed even when it recognizes the very same input as its child
+        if ($context->isEntrypoint($rule)) {
+            return null;
+        }
+
         // An alternation passes the value of the matched rule through
         if ($rule instanceof AlternationRuleDefinition) {
             return \count($rule->rules) === 1 ? $rule->rules[0] : null;
@@ -96,13 +102,8 @@ final class RedundantProductionParserCompilerPass implements
         /**
          * A sequence recognizes a list of values, so removing it keeps the
          * result the same only while its value is joined with the values of the
-         * rules that refer to it. The value of the initial rule is the result
-         * of the analysis, so there is nothing above it to join with.
+         * rules that refer to it.
          */
-        if ($context->isEntrypoint($rule)) {
-            return null;
-        }
-
         /** @var \SplObjectStorage<RuleDefinition, null> $visited */
         $visited = new \SplObjectStorage();
 
