@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Analysis;
 
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
+use Phplrt\Lexer\Builder\Internal\PatternFormatter;
 
 /**
  * Describes how many subgroups each token definition has.
@@ -29,7 +31,7 @@ final class SubgroupConstructionLexerAnalysisPass implements
                 continue;
             }
 
-            $count = self::countSubgroups($definition->regex);
+            $count = self::countSubgroups($definition->regex, $context->flags);
 
             if ($count > 0) {
                 $result[$id] = $count;
@@ -51,11 +53,15 @@ final class SubgroupConstructionLexerAnalysisPass implements
      * under its name and under its number.
      *
      * @param non-empty-string $regex
+     * @param list<RegexModifier> $flags
      * @return int<0, max>
      */
-    private static function countSubgroups(string $regex): int
+    private static function countSubgroups(string $regex, array $flags): int
     {
-        $pattern = \sprintf('/(?:%s)|/u', \addcslashes($regex, '/#'));
+        $pattern = PatternFormatter::formatPattern(
+            regex: '(?:' . PatternFormatter::formatExpression($regex, $flags) . ')|',
+            flags: $flags,
+        );
 
         if (@\preg_match($pattern, '', $matches, \PREG_UNMATCHED_AS_NULL) !== 1) {
             return 0;

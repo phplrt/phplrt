@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Definition;
 
+use Phplrt\Lexer\Builder\Internal\PatternFormatter;
+
 final class RegexTokenDefinition extends TokenDefinition
 {
     /**
@@ -39,6 +41,6 @@ final class RegexTokenDefinition extends TokenDefinition
 
     protected function printValue(): string
     {
-        return \sprintf('/%s/', \addcslashes($this->regex, '/'));
+        return \sprintf('/%s/', PatternFormatter::escapeDelimiter($this->regex));
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Definition;
 
+use Phplrt\Lexer\Builder\Internal\PatternFormatter;
+
 /**
  * A named piece of an expression, which every expression referring to it is
  * written with instead of spelling that piece again.
@@ -38,6 +40,6 @@ final class FragmentDefinition extends Definition
      */
     public function __toString(): string
     {
-        return \sprintf('/%s/ (%s)', \addcslashes($this->pattern, '/'), $this->name);
+        return \sprintf('/%s/ (%s)', PatternFormatter::escapeDelimiter($this->pattern), $this->name);
     }
 }

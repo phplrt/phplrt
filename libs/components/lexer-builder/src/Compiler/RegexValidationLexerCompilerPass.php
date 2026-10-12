@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Phplrt\Lexer\Builder\Compiler;
 
+use Phplrt\Lexer\Builder\Definition\RegexModifier;
 use Phplrt\Lexer\Builder\Definition\RegexTokenDefinition;
 use Phplrt\Lexer\Builder\Definition\TokenDefinition;
 use Phplrt\Lexer\Builder\Exception\CompilationFailedException;
+use Phplrt\Lexer\Builder\Internal\PatternFormatter;
 
 /**
  * Checks that the regular expression is specified correctly.
@@ -18,35 +20,37 @@ final class RegexValidationLexerCompilerPass implements
 {
     public function process(LexerBuildingContext $context): void
     {
-        $this->validateOrFail($context->tokens);
+        $this->validateOrFail($context->tokens, $context->flags);
     }
 
     /**
      * @param array<array-key, TokenDefinition> $definitions
+     * @param array<array-key, RegexModifier> $flags
      * @throws CompilationFailedException
      */
-    private function validateOrFail(array $definitions): void
+    private function validateOrFail(array $definitions, array $flags): void
     {
         foreach ($definitions as $definition) {
             if (!$definition instanceof RegexTokenDefinition) {
                 continue;
             }
 
-            $this->validateRegexOrFail($definition->regex, $definition);
+            $this->validateRegexOrFail($definition->regex, $flags, $definition);
         }
     }
 
     /**
      * @param non-empty-string $regex
+     * @param array<array-key, RegexModifier> $flags
      * @throws CompilationFailedException in case of token compilation failure
      */
-    private function validateRegexOrFail(string $regex, TokenDefinition $definition): void
+    private function validateRegexOrFail(string $regex, array $flags, TokenDefinition $definition): void
     {
         try {
             \error_clear_last();
             \set_error_handler(self::emptyErrorHandler(...));
 
-            @\preg_match($this->compile($regex), '');
+            @\preg_match(PatternFormatter::formatPattern(PatternFormatter::formatExpression($regex, $flags), $flags), '');
 
             if (($error = \error_get_last()) === null) {
                 return;
@@ -66,15 +70,6 @@ final class RegexValidationLexerCompilerPass implements
     {
         // NO-OP
         return false;
-    }
-
-    /**
-     * @param non-empty-string $regex
-     * @return non-empty-string
-     */
-    private function compile(string $regex): string
-    {
-        return \sprintf('/%s/u', \addcslashes($regex, '/#'));
     }
 
     /**

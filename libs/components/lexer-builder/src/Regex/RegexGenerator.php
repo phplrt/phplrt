@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Phplrt\Lexer\Builder\Regex;
 
 use Phplrt\Lexer\Builder\Definition\RegexModifier;
+use Phplrt\Lexer\Builder\Internal\PatternFormatter;
 
 /**
  * @readonly
@@ -12,47 +13,16 @@ use Phplrt\Lexer\Builder\Definition\RegexModifier;
 abstract class RegexGenerator implements RegexGeneratorInterface
 {
     /**
-     * @var list<non-empty-string>
-     */
-    private const ADDITIONAL_ESCAPED_CHARACTERS = ['#'];
-
-    /**
      * Default PCRE delimiter.
      */
     final public const DEFAULT_DELIMITER = '/';
-
-    /**
-     * List of characters that should be escaped in regex patterns.
-     *
-     * @var non-empty-string
-     */
-    private readonly string $escapedCharacters;
 
     public function __construct(
         /**
          * @var non-empty-string
          */
         protected readonly string $delimiter = self::DEFAULT_DELIMITER,
-    ) {
-        $this->escapedCharacters = $this->getEscapedCharacters($delimiter);
-    }
-
-    /**
-     * @param non-empty-string $delimiter
-     * @return non-empty-string
-     */
-    private function getEscapedCharacters(string $delimiter): string
-    {
-        $result = $delimiter;
-
-        foreach (self::ADDITIONAL_ESCAPED_CHARACTERS as $char) {
-            if ($char !== $delimiter) {
-                $result .= $char;
-            }
-        }
-
-        return $result;
-    }
+    ) {}
 
     /**
      * @param non-empty-string $name
@@ -70,31 +40,18 @@ abstract class RegexGenerator implements RegexGeneratorInterface
      */
     final protected function escapePattern(string $pattern): string
     {
-        /** @var non-empty-string */
-        return \addcslashes($pattern, $this->escapedCharacters);
+        return PatternFormatter::escapeDelimiter($pattern, $this->delimiter);
     }
 
     /**
-     * @param list<RegexModifier> $flags
-     */
-    private function flagsToString(array $flags): string
-    {
-        $result = [];
-
-        foreach ($flags as $flag) {
-            $result[] = $flag->value;
-        }
-
-        return \implode('', $result);
-    }
-
-    /**
+     * Writes the given expression down between the delimiters, along with
+     * the flags it is compiled with.
+     *
      * @param list<RegexModifier> $flags
      * @return non-empty-string
      */
     final protected function formatFullRegex(string $regex, array $flags): string
     {
-        return $this->delimiter . $regex . $this->delimiter
-            . $this->flagsToString($flags);
+        return PatternFormatter::formatPattern($regex, $flags, $this->delimiter);
     }
 }
