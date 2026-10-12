@@ -66,7 +66,7 @@ final class RegexValidationLexerCompilerPass implements
         ));
     }
 
-    private static function emptyErrorHandler(int $id, string $error, string $file, int $line): bool
+    private static function emptyErrorHandler(): bool
     {
         // NO-OP
         return false;

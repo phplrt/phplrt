@@ -8,3 +8,11 @@ parameters:
   paths:
     - src
   treatPhpDocTypesAsCertain: false
+  ignoreErrors:
+    # Every reducer of a generated parser is called by the parser with the
+    # same arguments, so a reducer keeps the whole signature even when its
+    # body does not read some of them.
+    - identifier: method.unusedParameter
+      paths:
+        - src/Syntax/PP2/PP2Parser.php
+        - src/Syntax/PP3/PP3Parser.php
