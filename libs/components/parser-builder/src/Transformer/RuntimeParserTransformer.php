@@ -110,8 +110,8 @@ final class RuntimeParserTransformer
      */
     private static function containsObjectReference(string $code): bool
     {
-        foreach (\token_get_all('<?php ' . $code) as $token) {
-            if (\is_array($token) && $token[0] === \T_VARIABLE && $token[1] === '$this') {
+        foreach (\PhpToken::tokenize('<?php ' . $code) as $token) {
+            if ($token->is(\T_VARIABLE) && $token->text === '$this') {
                 return true;
             }
         }

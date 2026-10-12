@@ -427,9 +427,9 @@ abstract class PPLoader implements SyntaxLoaderInterface
     {
         $variables = [];
 
-        foreach (\token_get_all('<?php ' . $code) as $token) {
-            if (\is_array($token) && $token[0] === \T_VARIABLE && $token[1] !== '') {
-                $variables[$token[1]] = true;
+        foreach (\PhpToken::tokenize('<?php ' . $code) as $token) {
+            if ($token->is(\T_VARIABLE) && $token->text !== '') {
+                $variables[$token->text] = true;
             }
         }
 

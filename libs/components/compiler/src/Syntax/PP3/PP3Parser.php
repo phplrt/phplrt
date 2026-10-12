@@ -1038,7 +1038,15 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
 
         $lines = \explode("\n", $code);
 
+        // Note: A line starting inside a string literal is a part of its value,
+        //       so the spaces it starts with are kept.
+        $literal = \Phplrt\Compiler\Internal\PhpStringLiterals::findLiteralLines($code, isFragment: true);
+
         foreach ($lines as $index => $line) {
+            if (isset($literal[$index])) {
+                continue;
+            }
+
             $lines[$index] = $index === 0
                 ? \ltrim($line)
                 : \preg_replace('/^ {1,4}/', '', $line);

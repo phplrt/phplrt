@@ -11,6 +11,7 @@ use Phplrt\Compiler\Exception\DuplicateConstantException;
 use Phplrt\Compiler\Exception\GeneratorException;
 use Phplrt\Compiler\Exception\InvalidClassNameException;
 use Phplrt\Compiler\Exception\UnsupportedClassModifierException;
+use Phplrt\Compiler\Internal\PhpStringLiterals;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Exception\LexerCompilerException;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
@@ -211,18 +212,36 @@ final class PhpOutputGenerator implements OutputGeneratorInterface
      * Writes the generated code down the way PHP code is written.
      *
      * A template says what the code is made of rather than how it is spaced, so
-     * whatever spacing it has left behind is evened out here.
+     * whatever spacing it has left behind is evened out here. The text of a
+     * string literal is a value rather than spacing, so it is left as it is.
      */
     private static function format(string $code): string
     {
+        $result = '';
+        $offset = 0;
+
+        foreach (PhpStringLiterals::findLiterals($code) as [$start, $length]) {
+            $result .= self::formatSpacing(\substr($code, $offset, $start - $offset))
+                . \substr($code, $start, $length);
+
+            $offset = $start + $length;
+        }
+
+        $result .= self::formatSpacing(\substr($code, $offset));
+
+        return \rtrim($result) . "\n";
+    }
+
+    private static function formatSpacing(string $code): string
+    {
         $result = \preg_replace(
-            ['/[ \t]++$/m', '/\n{3,}/'],
+            ['/[ \t]++(?=\n)/', '/\n{3,}/'],
             ['', "\n\n"],
             $code,
         );
 
         \assert($result !== null, 'The generated code is written of the characters PHP is written of');
 
-        return \rtrim($result) . "\n";
+        return $result;
     }
 }

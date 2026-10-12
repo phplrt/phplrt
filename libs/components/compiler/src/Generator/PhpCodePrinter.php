@@ -7,6 +7,7 @@ namespace Phplrt\Compiler\Generator;
 use Phplrt\Compiler\Exception\UnsupportedEmbeddedLexerException;
 use Phplrt\Compiler\Exception\UnsupportedReducerException;
 use Phplrt\Compiler\Exception\UnsupportedRuleException;
+use Phplrt\Compiler\Internal\PhpStringLiterals;
 use Phplrt\Lexer\Builder\Definition\Lexer\EmbeddedLexerInterface;
 use Phplrt\Lexer\Builder\Definition\Lexer\PhpCodeEmbeddedLexer;
 use Phplrt\Lexer\Builder\Definition\Lexer\RuntimeEmbeddedLexer;
@@ -360,17 +361,23 @@ final class PhpCodePrinter
      * Places the given code at the given level of nesting.
      *
      * A piece of code is written on its own and is placed by the code it is
-     * written into, so the line it starts at is already placed by then.
+     * written into, so the line it starts at is already placed by then. A line
+     * that starts inside a quoted string literal is a part of its value, so it
+     * stays where it is.
      *
      * @param int<0, max> $level
      */
     public function indent(string $code, int $level = 1, bool $first = false): string
     {
         $prefix = \str_repeat(self::INDENTATION, $level);
+        // Note: A heredoc is moved as a whole rather than left in place: the
+        //       indentation of the line closing it is taken off every line
+        //       of it, so its value stays the same.
+        $quoted = PhpStringLiterals::findLiteralLines($code, isFragment: true, isHeredocIncluded: false);
         $lines = \explode("\n", $code);
 
         foreach ($lines as $index => $line) {
-            if ($line === '' || ($index === 0 && !$first)) {
+            if ($line === '' || ($index === 0 && !$first) || isset($quoted[$index])) {
                 continue;
             }
 
@@ -430,8 +437,8 @@ final class PhpCodePrinter
      */
     private static function containsObjectReference(string $code): bool
     {
-        foreach (\token_get_all('<?php ' . $code) as $token) {
-            if (\is_array($token) && $token[0] === \T_VARIABLE && $token[1] === '$this') {
+        foreach (\PhpToken::tokenize('<?php ' . $code) as $token) {
+            if ($token->is(\T_VARIABLE) && $token->text === '$this') {
                 return true;
             }
         }
