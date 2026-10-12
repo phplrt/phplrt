@@ -73,16 +73,34 @@ Concatenation -> {
 /**
  * An "adjacency" sequence, like:
  * - <T_NAME> ~ ::T_NS_SEPARATOR:: ~ <T_NAME>
+ *
+ * Or its negation, where something must be written in between, like:
+ * - <T_DIGIT> !~ <T_DIGIT>
  */
 Adjacency -> {
-    \assert($children instanceof \Phplrt\Lexer\Token\Token);
+    if ($children instanceof \Phplrt\Lexer\Token\Token) {
+        return new \Phplrt\Compiler\Node\Statement\Adjacency(
+            offset: $children->offset,
+            length: $children->size,
+        );
+    }
+
+    \assert(\is_array($children));
+
+    $sign = $children[0] ?? null;
+    $tilde = $children[1] ?? null;
+
+    \assert($sign instanceof \Phplrt\Lexer\Token\Token);
+    \assert($tilde instanceof \Phplrt\Lexer\Token\Token);
 
     return new \Phplrt\Compiler\Node\Statement\Adjacency(
-        offset: $children->offset,
-        length: $children->size,
+        isExpected: false,
+        offset: $sign->offset,
+        length: \max(0, $tilde->offset + $tilde->size - $sign->offset),
     );
 }
-  : <T_TILDE>
+  : <T_EXCLAMATION> <T_TILDE>
+  | <T_TILDE>
   ;
 
 /**
