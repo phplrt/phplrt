@@ -432,6 +432,112 @@ final class ResourceSourceTest extends TestCase
         }
     }
 
+    public function testUnserializationDoesNotTruncateTheFile(): void
+    {
+        $stream = \fopen($this->temp, 'w+b');
+
+        try {
+            \fwrite($stream, 'test content');
+            \rewind($stream);
+
+            $unserialized = \unserialize(\serialize(new ResourceSource($stream)));
+
+            Assert::same($unserialized->content, 'test content');
+            Assert::same(\file_get_contents($this->temp), 'test content');
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testUnserializationOpensTheFileCreatedByTheStream(): void
+    {
+        $stream = \fopen($this->temp, 'x+b');
+
+        try {
+            \fwrite($stream, 'test content');
+            \rewind($stream);
+
+            $unserialized = \unserialize(\serialize(new ResourceSource($stream)));
+
+            Assert::same($unserialized->content, 'test content');
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testUnserializedStreamIsOpenedForReadingOnly(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $stream = \fopen($this->temp, 'r+b');
+
+        try {
+            $unserialized = \unserialize(\serialize(new ResourceSource($stream)));
+
+            Assert::same($unserialized->mode, 'rb');
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testUnserializationOfAWritingModeDoesNotTruncateTheFile(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $stream = \fopen($this->temp, 'rb');
+
+        try {
+            // A source serialized by a version that wrote the mode the stream
+            // had been opened with down
+            $serialized = \str_replace('s:2:"rb"', 's:2:"w+"', \serialize(new ResourceSource($stream)));
+
+            Assert::same(\unserialize($serialized)->content, 'test content');
+            Assert::same(\file_get_contents($this->temp), 'test content');
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testSerializationFailsForMemoryStream(): void
+    {
+        $stream = \fopen('php://memory', 'w+b');
+
+        try {
+            Expect::exception(StreamNotSerializableException::class)
+                ->withMessageContaining('php://memory');
+
+            \serialize(new ResourceSource($stream));
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testSerializationFailsForTemporaryStream(): void
+    {
+        $stream = \fopen('php://temp/maxmemory:1024', 'w+b');
+
+        try {
+            Expect::exception(StreamNotSerializableException::class);
+
+            \serialize(new ResourceSource($stream));
+        } finally {
+            \fclose($stream);
+        }
+    }
+
+    public function testSerializationOfFilterStream(): void
+    {
+        \file_put_contents($this->temp, 'test content');
+
+        $stream = \fopen('php://filter/read=string.toupper/resource=' . $this->temp, 'rb');
+
+        try {
+            Assert::same(\unserialize(\serialize(new ResourceSource($stream)))->content, 'TEST CONTENT');
+        } finally {
+            \fclose($stream);
+        }
+    }
+
     public function testSerializationFailsWithoutUri(): void
     {
         $stream = $this->createNonSeekableResource('test content');

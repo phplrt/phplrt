@@ -52,6 +52,12 @@ class ResourceSource extends Readable
     private const CHUNK_SIZE = 65536;
 
     /**
+     * The mode a stream is opened once again with, once its source is
+     * unserialized.
+     */
+    private const REOPEN_MODE = 'rb';
+
+    /**
      * The position of the stream this source begins at.
      *
      * @var int<0, max>
@@ -340,7 +346,8 @@ class ResourceSource extends Readable
      *     mode: non-empty-string,
      *     initial: int<0, max>,
      * }
-     * @throws StreamNotSerializableException When the stream does not have a URI
+     * @throws StreamNotSerializableException When the stream does not have a
+     *         URI, or cannot be opened once again with the very same data
      */
     public function __serialize(): array
     {
@@ -348,11 +355,35 @@ class ResourceSource extends Readable
             throw StreamNotSerializableException::becauseStreamHasNoUri($this->mode);
         }
 
+        if (self::isProcessStream($this->uri)) {
+            throw StreamNotSerializableException::becauseStreamBelongsToProcess($this->uri);
+        }
+
         return [
             'uri' => $this->uri,
-            'mode' => $this->mode,
+            // Note: The mode is the one the stream is opened once again with,
+            //       so a version reading it as it is opens it for reading only
+            //       rather than truncating or creating it.
+            'mode' => self::REOPEN_MODE,
             'initial' => $this->initial,
         ];
+    }
+
+    /**
+     * Tells whether the given URI stands for the data of the process it has
+     * been opened in, like a memory, a temporary or a standard stream, which
+     * holds other data (or none) once it is opened anew.
+     *
+     * @param non-empty-string $uri
+     */
+    private static function isProcessStream(string $uri): bool
+    {
+        $uri = \strtolower($uri);
+
+        // A filter is a view of the stream it refers to rather than a stream
+        // of its own
+        return \str_starts_with($uri, 'php://')
+            && !\str_starts_with($uri, 'php://filter/');
     }
 
     /**
@@ -372,7 +403,10 @@ class ResourceSource extends Readable
     {
         \error_clear_last();
 
-        $stream = @\fopen($data['uri'], $data['mode']);
+        // Note: The mode the stream has been opened with is not the one it is
+        //       opened once again with: a source only reads, while opening a
+        //       file to write truncates or creates it.
+        $stream = @\fopen($data['uri'], self::REOPEN_MODE);
 
         if ($stream === false) {
             throw StreamNotOpenedException::becauseStreamCannotBeOpened($data['uri'], \error_get_last());
@@ -380,7 +414,7 @@ class ResourceSource extends Readable
 
         $this->stream = $stream;
         $this->uri = $data['uri'];
-        $this->mode = $data['mode'];
+        $this->mode = self::REOPEN_MODE;
         $this->isLocal = \stream_is_local($data['uri']);
         $this->isSeekable = \stream_get_meta_data($stream)['seekable'];
 
