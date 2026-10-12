@@ -497,7 +497,14 @@ final class RecursiveDescentTracer
         } elseif ($definition instanceof Adjacency) {
             $previous = $buffer->lookBehind();
 
-            if (($previous->offset + $previous->size === $token->offset) !== $definition->isExpected) {
+            // Note: A token of a channel of its own is written in between the
+            //       tokens around the rule, even when a rule reads it by name
+            //       right after: the token the grammar reads next is not
+            //       known yet.
+            $isAdjacent = $token->channel instanceof Channel
+                && $previous->offset + $previous->size === $token->offset;
+
+            if ($isAdjacent !== $definition->isExpected) {
                 $this->length = $mark;
 
                 return false;

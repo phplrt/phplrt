@@ -32,7 +32,8 @@ namespace Phplrt\Parser\Grammar;
  * The answer is read off the source rather than off the stream, so it does not
  * depend on what has been written in between: a space a lexer never reports and
  * a comment it reports on a channel of its own are both something written
- * there.
+ * there. The latter stays something written in between even when a rule reads
+ * that very token right after this one.
  *
  * Note: A rule of this kind reads no input, so it recognizes the empty input
  *       the way a predicate does. The only question is whether it recognizes
