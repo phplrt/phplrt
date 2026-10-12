@@ -18,6 +18,12 @@ use Phplrt\Lexer\Token\UnknownToken;
  * a token that breaks the analysis has been read, leaving the decision on what
  * to do next to the {@see Lexer}.
  *
+ * @phpstan-type ResumableRun array{
+ *     array<array-key, list<string>>,
+ *     int<0, max>,
+ *     int<0, max>,
+ * }
+ *
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Phplrt\Lexer
  *
@@ -36,6 +42,12 @@ final class Tokenizer
      * Stands in for the tokens the configuration says nothing about.
      */
     private readonly Token $fallback;
+
+    /**
+     * Tells the run of this tokenizer apart from the runs of the others
+     * reading the same source code.
+     */
+    private readonly int $identity;
 
     public function __construct(
         /**
@@ -73,6 +85,7 @@ final class Tokenizer
         private readonly array $subgroups = [],
     ) {
         $this->fallback = TokenPrototypeLoader::createFallbackPrototype();
+        $this->identity = \spl_object_id($this);
     }
 
     /**
@@ -197,6 +210,148 @@ final class Tokenizer
                  */
                 return $offset;
             }
+        }
+
+        return $this->assertCompleted($source, $content, $offset);
+    }
+
+    /**
+     * Does the same as {@see tokenize()} for a lexer that hands the reading
+     * over and is handed it back, going on with what it has already found
+     * instead of searching the rest of the source code all over again.
+     *
+     * A match depends on nothing but the source code and the offset it is
+     * found at, so whatever follows a match is found the very same way no
+     * matter where the search has started. The run left in the given list is
+     * therefore gone on with as soon as the reading is handed back exactly
+     * where one of its matches ends, and the source code is searched anew
+     * otherwise.
+     *
+     * Note: The loop below is a copy of the one in {@see tokenize()} rather
+     *       than a shared one: going through a list from an arbitrary index
+     *       costs a lexer that never hands the reading over a few percent of
+     *       its speed, so the lexer that does is the one that pays for it.
+     *
+     * @param string $content the source code that has been read out of the
+     *        source object
+     * @param int<0, max> $offset
+     * @param list<Token> $tokens
+     * @param array<int, ResumableRun> $resumable the runs of every tokenizer
+     *        reading this very source code
+     *
+     * @param-out list<Token> $tokens
+     * @param-out array<int, ResumableRun> $resumable
+     *
+     * @return int<0, max> the offset the analysis has stopped at
+     */
+    public function tokenizeResumable(
+        ReadableInterface $source,
+        string $content,
+        int $offset,
+        array &$tokens,
+        array &$resumable,
+    ): int {
+        $identity = $this->identity;
+        $matches = null;
+        $start = 0;
+        $isResumed = false;
+
+        if (isset($resumable[$identity])) {
+            [$matches, $start, $end] = $resumable[$identity];
+
+            $foundValues = $matches[0];
+            $count = \count($foundValues);
+
+            // The reading may have been handed back anywhere the other lexer
+            // has stopped, so the matches it has read past are stepped over
+            while ($end < $offset && $start < $count) {
+                $end += \strlen($foundValues[$start++]);
+            }
+
+            if ($end === $offset) {
+                $isResumed = true;
+            } else {
+                $matches = null;
+                $start = 0;
+            }
+        }
+
+        if ($matches === null) {
+            \preg_match_all($this->pattern, $content, $matches, 0, $offset);
+        }
+
+        if (!isset($matches['MARK'])) {
+            return $this->assertCompleted($source, $content, $offset);
+        }
+
+        $foundValues = $matches[0];
+        $foundNames = $matches['MARK'];
+
+        $prototypes = $this->prototypes;
+        $fallback = $this->fallback;
+        $breaks = $this->breaks;
+        $skip = $this->skip;
+        $subgroups = $this->subgroups;
+
+        $isSkipping = $skip !== [];
+
+        for ($index = $start, $count = \count($foundNames); $index < $count; ++$index) {
+            $id = (int) $foundNames[$index];
+            $value = $foundValues[$index];
+            $length = \strlen($value);
+
+            if ($length === 0) {
+                $empty = clone ($prototypes[$id] ?? $fallback);
+
+                $empty->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+                $empty->size = $length;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+                throw EmptyTokenException::becauseTokenIsEmpty($source, $empty);
+            }
+
+            if ($isSkipping && isset($skip[$id])) {
+                $offset += $length;
+
+                continue;
+            }
+
+            $token = clone ($prototypes[$id] ?? $fallback);
+
+            $token->id = $id;           // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->offset = $offset;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->value = $value;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            $token->size = $length;     // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+
+            if (isset($subgroups[$id])) {
+                $captures = [];
+
+                for ($group = 1, $groups = $subgroups[$id]; $group <= $groups; ++$group) {
+                    $captures[] = $matches[$group][$index];
+                }
+
+                $token->captures = $captures;   // @phpstan-ignore property.readOnlyByPhpDocAssignOutOfClass
+            }
+
+            $tokens[] = $token;
+            $offset += $length;
+
+            if (isset($breaks[$id])) {
+                $resumable[$identity] = [$matches, $index + 1, $offset];
+
+                return $offset;
+            }
+        }
+
+        // Note: A run that has stopped short of the end may have been stopped
+        //       by a PCRE error, and the error itself is long gone by now, so
+        //       the rest is searched anew to tell it from the unrecognized
+        //       input.
+        if ($isResumed && $offset < \strlen($content)) {
+            unset($resumable[$identity]);
+
+            return $this->tokenizeResumable($source, $content, $offset, $tokens, $resumable);
         }
 
         return $this->assertCompleted($source, $content, $offset);

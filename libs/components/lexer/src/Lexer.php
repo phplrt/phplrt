@@ -20,6 +20,8 @@ use Phplrt\Lexer\Token\Token;
 use Phplrt\Lexer\Token\TokenEmbedding;
 
 /**
+ * @phpstan-import-type ResumableRun from Tokenizer
+ *
  * @readonly
  */
 class Lexer implements LexerInterface
@@ -231,7 +233,22 @@ class Lexer implements LexerInterface
             throw LexerSourceException::becauseSourceIsNotReadable($e);
         }
 
-        return $this->execute($source, $content, $offset);
+        // Note: A lexer that never hands the reading over reads the whole
+        //       source in a single pass, so it is spared everything the
+        //       hand-over costs, down to the call itself.
+        if ($this->transitions === []) {
+            $result = [];
+
+            $offset = $this->tokenizer->tokenize($source, $content, $offset, $result);
+
+            $result[] = new EndOfInputToken($offset);
+
+            return $result;
+        }
+
+        $resumable = [];
+
+        return $this->execute($source, $content, $offset, $resumable);
     }
 
     /**
@@ -240,11 +257,17 @@ class Lexer implements LexerInterface
      * refer to it.
      *
      * @param int<0, max> $offset
+     * @param array<int, ResumableRun> $resumable the runs of every lexer
+     *        taking part in the reading of this very source code, which
+     *        a lexer goes on with once the reading is handed back to it
+     *
+     * @param-out array<int, ResumableRun> $resumable
+     *
      * @return list<Token>
      * @throws LexerExceptionInterface
      * @throws RuntimeExceptionInterface
      */
-    private function execute(ReadableInterface $source, string $content, int $offset): array
+    private function execute(ReadableInterface $source, string $content, int $offset, array &$resumable): array
     {
         $length = \strlen($content);
 
@@ -254,7 +277,13 @@ class Lexer implements LexerInterface
         while ($offset < $length) {
             $indexBeforeExecution = \array_key_last($result);
 
-            $offset = $this->tokenizer->tokenize($source, $content, $offset, $result);
+            // Note: Only a lexer that hands the reading over is ever handed it
+            //       back, so the one that never does reads the source as it
+            //       always has and pays nothing for the runs it would never
+            //       go on with.
+            $offset = $this->transitions === []
+                ? $this->tokenizer->tokenize($source, $content, $offset, $result)
+                : $this->tokenizer->tokenizeResumable($source, $content, $offset, $result, $resumable);
 
             $indexAfterExecution = \array_key_last($result);
 
@@ -279,7 +308,7 @@ class Lexer implements LexerInterface
                 break;
             }
 
-            $embedding = $this->enter($lexer, $source, $content, $offset, $result[$indexAfterExecution]);
+            $embedding = $this->enter($lexer, $source, $content, $offset, $result[$indexAfterExecution], $resumable);
 
             $result[$indexAfterExecution] = $embedding;
             $offset = $embedding->offset + $embedding->size;
@@ -295,6 +324,10 @@ class Lexer implements LexerInterface
      * read by the token that called it.
      *
      * @param int<0, max> $offset
+     * @param array<int, ResumableRun> $resumable
+     *
+     * @param-out array<int, ResumableRun> $resumable
+     *
      * @throws LexerExceptionInterface
      * @throws RuntimeExceptionInterface
      */
@@ -304,6 +337,7 @@ class Lexer implements LexerInterface
         string $content,
         int $offset,
         Token $token,
+        array &$resumable,
     ): TokenEmbedding {
         /**
          * The source code has already been read, so a lexer of the same kind
@@ -311,7 +345,7 @@ class Lexer implements LexerInterface
          * source object and decides on its own how to read it.
          */
         $stream = $lexer instanceof self
-            ? $lexer->execute($source, $content, $offset)
+            ? $lexer->execute($source, $content, $offset, $resumable)
             : $lexer->lex($source, $offset);
 
         $excluded = $this->excluded;
