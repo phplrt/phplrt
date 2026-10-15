@@ -47,7 +47,7 @@ final class UnreportableMessageParserCompilerPass implements
      *
      * @var non-empty-string
      */
-    private const REASON_LOOKED_AHEAD ='a predicate only looks ahead '
+    private const REASON_LOOKED_AHEAD = 'a predicate only looks ahead '
         . 'and reports nothing it meets on the way';
 
     /**
