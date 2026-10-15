@@ -181,6 +181,50 @@ final class AnalyzerTest extends TestCase
         Assert::null($info->previous->previous->previous);
     }
 
+    public function testExceptionRepeatingThePreviousOneTakesItsPlace(): void
+    {
+        $source = new StringSource(self::SOURCE);
+        $token = new TokenStub(offset: 7, value: 'line 2');
+
+        $first = new \LogicException('Compilation failed');
+        $inner = new LexerRuntimeExceptionStub($source, $token, 'Unrecognized "line 2"', $first);
+        $outer = new ParserRuntimeExceptionStub($source, $token, message: 'Unrecognized "line 2"', previous: $inner);
+
+        $info = (new Analyzer())->analyze($outer);
+
+        Assert::same($info->class, ParserRuntimeExceptionStub::class);
+
+        Assert::notNull($info->previous);
+        Assert::same($info->previous->class, \LogicException::class);
+    }
+
+    public function testExceptionTellingAnotherThingIsNotRepeating(): void
+    {
+        $source = new StringSource(self::SOURCE);
+        $token = new TokenStub(offset: 7, value: 'line 2');
+
+        $inner = new LexerRuntimeExceptionStub($source, $token, 'Unrecognized "line 2"');
+        $outer = new ParserRuntimeExceptionStub($source, $token, message: 'Syntax error', previous: $inner);
+
+        $info = (new Analyzer())->analyze($outer);
+
+        Assert::notNull($info->previous);
+        Assert::same($info->previous->class, LexerRuntimeExceptionStub::class);
+    }
+
+    public function testExceptionOfAnotherPlaceIsNotRepeating(): void
+    {
+        $source = new StringSource(self::SOURCE);
+
+        $inner = new LexerRuntimeExceptionStub($source, new TokenStub(offset: 7, value: 'line 2'), 'Error');
+        $outer = new ParserRuntimeExceptionStub($source, new TokenStub(offset: 7, value: 'line'), message: 'Error', previous: $inner);
+
+        $info = (new Analyzer())->analyze($outer);
+
+        Assert::notNull($info->previous);
+        Assert::same($info->previous->class, LexerRuntimeExceptionStub::class);
+    }
+
     public function testChainOfAnyLengthIsDescribed(): void
     {
         $exception = new \LogicException('#0');

@@ -65,10 +65,30 @@ final class Analyzer
         $result = $this->describe(\array_pop($chain));
 
         while ($chain !== []) {
-            $result = $this->describe(\array_pop($chain), $result);
+            $current = $this->describe(\array_pop($chain), $result);
+
+            // An error raised in place of the one it refers to, telling the
+            // very same thing about the very same place, takes its place in
+            // the chain instead of repeating it
+            if ($this->isRepeating($current, $result)) {
+                $current = $current->with(previous: $result->previous);
+            }
+
+            $result = $current;
         }
 
         return $result;
+    }
+
+    /**
+     * Tells whether the given error says the same as the one it refers to.
+     */
+    private function isRepeating(FailureResult $error, FailureResult $previous): bool
+    {
+        return $error->message === $previous->message
+            && $error->source === $previous->source
+            && $error->interval?->offset === $previous->interval?->offset
+            && $error->interval?->length === $previous->interval?->length;
     }
 
     /**
