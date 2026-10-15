@@ -18,7 +18,9 @@ use Phplrt\Exception\SnippetReader;
  * captured fragment is underlined below the line containing it.
  *
  * A line is printed as long as it is, so the output is as wide as the widest
- * line of the source code it contains.
+ * line of the source code it contains. A tab is printed as the spaces up to
+ * the next stop of every four columns, so the underline stays below the very
+ * characters it marks whatever width the output gives to a tab.
  *
  * @readonly
  */
@@ -38,6 +40,11 @@ abstract class RustStyleRenderer implements RendererInterface
      * @var non-empty-string
      */
     private const UNDERLINE = '^';
+
+    /**
+     * @var int<1, max>
+     */
+    private const TAB_WIDTH = 4;
 
     public function __construct(
         /**
@@ -140,7 +147,7 @@ abstract class RustStyleRenderer implements RendererInterface
         $result = [$this->printRow(
             (string) $line->number,
             $digits,
-            $this->highlight($line->value, $from, $to, $level),
+            $this->highlight($this->expandTabs($line->value), $from, $to, $level),
             $closed ? $this->printDelimiter() : '',
         )];
 
@@ -336,7 +343,7 @@ abstract class RustStyleRenderer implements RendererInterface
 
     /**
      * @return array{int<0, max>, int<0, max>} the boundaries of the captured
-     *         fragment inside the line, in characters
+     *         fragment inside the line, in columns of the printed line
      */
     private function calculateFragment(SourceLine $line): array
     {
@@ -347,9 +354,41 @@ abstract class RustStyleRenderer implements RendererInterface
         $captured = $line->captured;
 
         return [
-            $this->calculateOffset($line->value, $captured->offset),
-            $this->calculateOffset($line->value, $captured->endsAt),
+            $this->calculateWidth(\substr($line->value, 0, $captured->offset)),
+            $this->calculateWidth(\substr($line->value, 0, $captured->endsAt)),
         ];
+    }
+
+    /**
+     * Returns the number of columns the given beginning of a line takes once
+     * printed.
+     *
+     * @return int<0, max>
+     */
+    private function calculateWidth(string $value): int
+    {
+        return $this->calculateLength($this->expandTabs($value));
+    }
+
+    /**
+     * Replaces every tab of the given beginning of a line by the spaces up to
+     * the next tab stop.
+     */
+    private function expandTabs(string $value): string
+    {
+        if (!\str_contains($value, "\t")) {
+            return $value;
+        }
+
+        $chunks = \explode("\t", $value);
+        $result = $chunks[0];
+
+        foreach (\array_slice($chunks, 1) as $chunk) {
+            $result .= \str_repeat(' ', self::TAB_WIDTH - $this->calculateLength($result) % self::TAB_WIDTH)
+                . $chunk;
+        }
+
+        return $result;
     }
 
     /**

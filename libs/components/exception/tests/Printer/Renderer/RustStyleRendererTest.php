@@ -169,6 +169,43 @@ final class RustStyleRendererTest extends TestCase
             OUT);
     }
 
+    public function testUnderlinesFragmentAfterTabs(): void
+    {
+        Assert::same(self::render(self::createFailure("\t\tvalue", 2, 5)), <<<'OUT'
+            error
+            1 |         value
+              |         ^^^^^
+            OUT);
+    }
+
+    public function testExpandsTabsUpToTheNextTabStop(): void
+    {
+        Assert::same(self::render(self::createFailure("ab\tВа\tc", 8, 1)), <<<'OUT'
+            error
+            1 | ab  Ва  c
+              |         ^
+            OUT);
+    }
+
+    public function testUnderlinesTabsInsideTheFragment(): void
+    {
+        Assert::same(self::render(self::createFailure("a\tb", 0, 3)), <<<'OUT'
+            error
+            1 | a   b
+              | ^^^^^
+            OUT);
+    }
+
+    public function testPrintsErrorLocationColumnCountingTabAsOneCharacter(): void
+    {
+        Assert::same(self::render(self::createFailure("\tvalue", 1, 5, pathname: '/app/example.php')), <<<'OUT'
+            error
+             --> /app/example.php:1:2
+            1 |     value
+              |     ^^^^^
+            OUT);
+    }
+
     public function testPrintsShortClassName(): void
     {
         Assert::same(self::render(self::createFailure(
