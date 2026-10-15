@@ -322,7 +322,7 @@ final class AnalysisTest extends TestCase
 
         Assert::instanceOf($actual, FailureResult::class);
 
-        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS)');
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS), T_PLUS expected');
     }
 
     public function testLookingAheadDoesNotMoveTheError(): void
@@ -480,6 +480,60 @@ final class AnalysisTest extends TestCase
 
         Assert::same($analysis->startPrediction[1], [ArithmeticLexer::T_NUMBER => true]);
         Assert::null($analysis->startPrediction[2]);
+    }
+
+    public function testPositivePredicateNarrowsTheSequence(): void
+    {
+        // &(<T_NUMBER> | <T_PLUS>) (<T_PLUS> | <T_MINUS>)
+        $grammar = [
+            0 => new Concatenation([1, 2]),
+            1 => new Predicate(3),
+            2 => new Alternation([5, 6]),
+            3 => new Alternation([4, 5]),
+            4 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            5 => new Lexeme(ArithmeticLexer::T_PLUS),
+            6 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        Assert::same($analysis->startPrediction[0], [ArithmeticLexer::T_PLUS => true]);
+    }
+
+    public function testNegativePredicateNarrowsTheSequence(): void
+    {
+        // !<T_PLUS> (<T_PLUS> | <T_MINUS>)
+        $grammar = [
+            0 => new Concatenation([1, 2]),
+            1 => new Predicate(3, isExpected: false),
+            2 => new Alternation([3, 4]),
+            3 => new Lexeme(ArithmeticLexer::T_PLUS),
+            4 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        Assert::same($analysis->startPrediction[0], [ArithmeticLexer::T_MINUS => true]);
+    }
+
+    public function testNegativePredicateOfASequenceNarrowsNothing(): void
+    {
+        // !(<T_PLUS> <T_MINUS>) (<T_PLUS> | <T_MINUS>)
+        $grammar = [
+            0 => new Concatenation([1, 2]),
+            1 => new Predicate(5, isExpected: false),
+            2 => new Alternation([3, 4]),
+            3 => new Lexeme(ArithmeticLexer::T_PLUS),
+            4 => new Lexeme(ArithmeticLexer::T_MINUS),
+            5 => new Concatenation([3, 4]),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        Assert::same($analysis->startPrediction[0], [
+            ArithmeticLexer::T_PLUS => true,
+            ArithmeticLexer::T_MINUS => true,
+        ]);
     }
 
     public function testEmptyFragmentIsRead(): void

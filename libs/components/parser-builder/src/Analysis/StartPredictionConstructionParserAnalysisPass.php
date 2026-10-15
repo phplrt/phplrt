@@ -20,6 +20,11 @@ use Phplrt\Parser\Grammar\RuleInterface;
  * along the way, and it is the same answer: a rule reading the empty input may
  * begin with anything at all.
  *
+ * A predicate standing in a sequence rules out some of the tokens the
+ * elements after it may begin with: a positive one leaves only the tokens the
+ * rule it looks for may begin with, and a negative one drops the tokens that
+ * rule is recognized by on their own.
+ *
  * TODO Refactor start prediction builder (expand method is sucks)
  *
  * @readonly
@@ -29,12 +34,18 @@ final class StartPredictionConstructionParserAnalysisPass implements
 {
     public function process(ParserResultContext $context): void
     {
+        $grammar = $context->grammar;
         $startTokens = [];
         $matchesEmptyInput = [];
+        $rejectedTokens = [];
 
-        foreach ($context->grammar as $ruleId => $_) {
+        foreach ($grammar as $ruleId => $rule) {
             $startTokens[$ruleId] = [];
             $matchesEmptyInput[$ruleId] = false;
+
+            if ($rule instanceof Predicate && !$rule->isExpected) {
+                $rejectedTokens[$ruleId] = self::calculateRecognizingTokens($grammar, $rule->ruleId);
+            }
         }
 
         // The rules refer to each other, so the sets grow until they stop
@@ -42,10 +53,10 @@ final class StartPredictionConstructionParserAnalysisPass implements
         do {
             $changed = false;
 
-            foreach ($context->grammar as $ruleId => $rule) {
+            foreach ($grammar as $ruleId => $rule) {
                 $before = [\count($startTokens[$ruleId]), $matchesEmptyInput[$ruleId]];
 
-                $this->expand($rule, $startTokens, $matchesEmptyInput, $ruleId);
+                $this->expand($grammar, $rule, $startTokens, $matchesEmptyInput, $rejectedTokens, $ruleId);
 
                 if ($before !== [\count($startTokens[$ruleId]), $matchesEmptyInput[$ruleId]]) {
                     $changed = true;
@@ -61,7 +72,7 @@ final class StartPredictionConstructionParserAnalysisPass implements
          * token that rule may not begin with though, so on its own it is
          * rejected by the very tokens the rule is.
          */
-        foreach ($context->grammar as $ruleId => $rule) {
+        foreach ($grammar as $ruleId => $rule) {
             if ($rule instanceof Predicate && $rule->isExpected) {
                 $prediction[$ruleId] = $prediction[$rule->ruleId];
             }
@@ -114,11 +125,52 @@ final class StartPredictionConstructionParserAnalysisPass implements
     }
 
     /**
+     * Returns the tokens the given rule is recognized by on their own, so that
+     * a rule standing at such a token is there for sure.
+     *
+     * @param array<int, RuleInterface> $grammar
+     * @param array<int, true> $visited
+     * @return array<int, true>
+     */
+    private static function calculateRecognizingTokens(array $grammar, int $rule, array $visited = []): array
+    {
+        $definition = $grammar[$rule] ?? null;
+
+        if ($definition instanceof Lexeme) {
+            return [$definition->tokenId => true];
+        }
+
+        if (!$definition instanceof Alternation || isset($visited[$rule])) {
+            return [];
+        }
+
+        $visited[$rule] = true;
+        $result = [];
+
+        // Note: An alternative tried before the one recognized by the token
+        //       may only read more of the input, so the alternation is there
+        //       either way.
+        foreach ($definition->ruleIds as $inner) {
+            $result += self::calculateRecognizingTokens($grammar, $inner, $visited);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array<int, RuleInterface> $grammar
      * @param array<int, array<int, true>> $startTokens
      * @param array<int, bool> $matchesEmptyInput
+     * @param array<int, array<int, true>> $rejectedTokens
      */
-    private function expand(RuleInterface $definition, array &$startTokens, array &$matchesEmptyInput, int $rule): void
-    {
+    private function expand(
+        array $grammar,
+        RuleInterface $definition,
+        array &$startTokens,
+        array &$matchesEmptyInput,
+        array $rejectedTokens,
+        int $rule,
+    ): void {
         switch (true) {
             case $definition instanceof Lexeme:
                 $startTokens[$rule][$definition->tokenId] = true;
@@ -126,9 +178,30 @@ final class StartPredictionConstructionParserAnalysisPass implements
 
             case $definition instanceof Concatenation:
                 $optional = true;
+                $predicates = [];
 
                 foreach ($definition->ruleIds as $inner) {
-                    $startTokens[$rule] += $startTokens[$inner];
+                    $element = $grammar[$inner] ?? null;
+
+                    if ($element instanceof Predicate) {
+                        $predicates[$inner] = $element->ruleId;
+
+                        continue;
+                    }
+
+                    $tokens = $startTokens[$inner];
+
+                    // Every element read after a predicate begins at the very
+                    // token the predicate has looked at
+                    foreach ($predicates as $predicate => $body) {
+                        if (isset($rejectedTokens[$predicate])) {
+                            $tokens = \array_diff_key($tokens, $rejectedTokens[$predicate]);
+                        } elseif (!$matchesEmptyInput[$body]) {
+                            $tokens = \array_intersect_key($tokens, $startTokens[$body]);
+                        }
+                    }
+
+                    $startTokens[$rule] += $tokens;
 
                     if (!$matchesEmptyInput[$inner]) {
                         $optional = false;
