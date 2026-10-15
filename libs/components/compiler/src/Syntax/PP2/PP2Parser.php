@@ -171,6 +171,7 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
+        false,
     ];
 
     /** @var array<int, array<int, true>|null> */
@@ -340,6 +341,9 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             7 => true,
         ],
+        [
+            7 => true,
+        ],
         null,
         [
             6 => true,
@@ -435,7 +439,11 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
             -13,
             16,
             17,
-            -51,
+            -52,
+        ],
+        17 => [
+            18,
+            -48,
         ],
         19 => [
             20,
@@ -513,7 +521,7 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SKIP, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PRAGMA, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INCLUDE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([8, 10, 11, 16, 17, 49]),
+                new \Phplrt\Parser\Grammar\Concatenation([8, 10, 11, 16, 17, 50]),
                 new \Phplrt\Parser\Grammar\Optional(9),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_HASH, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NAME, true),
@@ -552,10 +560,11 @@ final class PP2Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Concatenation([41, 40]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BRACE_CLOSE, false),
-                new \Phplrt\Parser\Grammar\Repetition(47, 0, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([48, 18]),
+                new \Phplrt\Parser\Grammar\Optional(47),
+                new \Phplrt\Parser\Grammar\Repetition(48, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([49, 18]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(50),
+                new \Phplrt\Parser\Grammar\Optional(51),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
             ],
             initial: 0,
