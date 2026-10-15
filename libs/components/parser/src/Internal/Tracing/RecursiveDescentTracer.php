@@ -150,9 +150,8 @@ final class RecursiveDescentTracer
      * Reads the given tokens against the grammar, starting at the given rule.
      *
      * A tracer belongs to the parser that has built it and writes one trace at
-     * a time: whatever it has read before is given up as soon as the next
-     * reading begins, so the result of a reading is to be taken before the
-     * next one starts.
+     * a time. The trace is handed over to the result and the tracer keeps
+     * nothing of the reading once it is over.
      *
      * @param int<0, max> $initial the identifier of the rule the recognition
      *        starts at
@@ -168,27 +167,34 @@ final class RecursiveDescentTracer
 
         $this->buffer = $buffer;
         $this->error = new ErrorReport($buffer, $this->grammar, $this->startPrediction);
-        $this->entries = [];
         $this->length = 0;
 
-        $isMatched = $this->match($initial);
+        try {
+            $isMatched = $this->match($initial);
 
-        $current = $buffer->current;
+            $current = $buffer->current;
 
-        /**
-         * What no rule has asked for is stepped over here as well: a token of
-         * a channel of its own standing at the end of the source is not a part
-         * of the source left unread.
-         */
-        if (!$current->channel instanceof Channel) {
-            $current = $this->skipTrailing();
+            /**
+             * What no rule has asked for is stepped over here as well: a token
+             * of a channel of its own standing at the end of the source is not
+             * a part of the source left unread.
+             */
+            if (!$current->channel instanceof Channel) {
+                $current = $this->skipTrailing();
+            }
+
+            if ($isMatched && $current->channel === Channel::EndOfInput) {
+                return new SuccessfulTracingResult($this->entries, $this->length);
+            }
+
+            return $this->createFailure($initial, $current, $isMatched);
+        } finally {
+            // Note: The trace is about a hundred bytes per byte of the source,
+            //       so the tracer lets go of it as soon as the result holds it
+            //       rather than keep it until the next reading.
+            $this->entries = [];
+            unset($this->buffer, $this->error);
         }
-
-        if ($isMatched && $current->channel === Channel::EndOfInput) {
-            return new SuccessfulTracingResult($this->entries, $this->length);
-        }
-
-        return $this->createFailure($initial, $current, $isMatched);
     }
 
     /**
