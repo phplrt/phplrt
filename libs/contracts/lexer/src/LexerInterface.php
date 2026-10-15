@@ -25,6 +25,7 @@ interface LexerInterface
      * @throws LexerExceptionInterface if the given source cannot be recognized
      *         or the lexer settings contain errors
      * @throws RuntimeExceptionInterface if the analyzed source contains errors
+     * @throws \Throwable in the case of any other unhandled error occurs
      */
     public function lex(ReadableInterface $source, int $offset = 0): iterable;
 }
