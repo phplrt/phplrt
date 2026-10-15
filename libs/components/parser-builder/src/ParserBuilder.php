@@ -18,6 +18,7 @@ use Phplrt\Parser\Builder\Compiler\InitialRuleParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\LeftRecursionValidationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\NestedConcatenationParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\NestedRepetitionParserCompilerPass;
+use Phplrt\Parser\Builder\Compiler\OptionalRepetitionParserCompilerPass;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
 use Phplrt\Parser\Builder\Compiler\ParserCompilerPassInterface;
 use Phplrt\Parser\Builder\Compiler\ProductionValidationParserCompilerPass;
@@ -160,6 +161,11 @@ final class ParserBuilder implements LoggerAwareInterface
                 new RedundantProductionParserCompilerPass(),
                 new NestedConcatenationParserCompilerPass(),
                 new NestedRepetitionParserCompilerPass(),
+                /**
+                 * A sequence is read in its final shape only once the nested
+                 * ones have been joined with it.
+                 */
+                new OptionalRepetitionParserCompilerPass(),
                 /**
                  * The rules recognizing the same input become the very same
                  * rule here, so the alternatives repeating each other are only
