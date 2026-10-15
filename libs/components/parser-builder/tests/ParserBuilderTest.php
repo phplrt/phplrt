@@ -250,9 +250,10 @@ final class ParserBuilderTest extends TestCase
         Assert::same(self::describe($result), [
             '0: Concatenation(1, 2)',
             '1: Lexeme(1, keep)',
-            '2: Repetition(3, 0, INF)',
-            '3: Concatenation(4, 1)',
-            '4: Lexeme(2, skip)',
+            '2: Optional(3)',
+            '3: Repetition(4, 1, INF)',
+            '4: Concatenation(5, 1)',
+            '5: Lexeme(2, skip)',
         ]);
     }
 

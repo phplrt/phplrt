@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Phplrt\Parser\Builder\Tests;
 
 use Phplrt\Contracts\Lexer\TokenInterface;
+use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Parser\Builder\Compiler\OptionalRepetitionParserCompilerPass;
 use Phplrt\Parser\Builder\ParserBuilder;
 use Phplrt\Parser\Builder\ParserBuilderResult;
 use Phplrt\Parser\Context;
@@ -140,9 +142,10 @@ final class OptimizationTest extends TestCase
         Assert::same(self::describe(self::compile($parser)), [
             '0: Concatenation(1, 2)',
             '1: Lexeme(1, keep)',
-            '2: Repetition(3, 0, INF)',
-            '3: Concatenation(4, 1)',
-            '4: Lexeme(2, skip)',
+            '2: Optional(3)',
+            '3: Repetition(4, 1, INF)',
+            '4: Concatenation(5, 1)',
+            '5: Lexeme(2, skip)',
         ]);
     }
 
@@ -245,6 +248,127 @@ final class OptimizationTest extends TestCase
             '3: Lexeme(1, keep)',
             '4: Lexeme(2, skip)',
         ]);
+    }
+
+    public function testRepetitionOfASequenceElementIsOptional(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addTokenReference('T_PLUS')->skip(),
+                $parser->addTokenReference('T_NUMBER'),
+            ]), max: 3),
+        ]));
+
+        Assert::same(self::describe(self::compile($parser)), [
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Optional(3)',
+            '3: Repetition(4, 1, 3)',
+            '4: Concatenation(5, 1)',
+            '5: Lexeme(2, skip)',
+        ]);
+    }
+
+    public function testRepetitionOfATokenIsNotOptional(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+            $parser->addRepetition($parser->addTokenReference('T_PLUS')),
+        ]));
+
+        Assert::same(self::describe(self::compile($parser)), [
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Repetition(3, 0, INF)',
+            '3: Lexeme(2, keep)',
+        ]);
+    }
+
+    public function testRepetitionOfARuleReadingNothingIsNotOptional(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addTokenReference('T_NUMBER'),
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addOptional($parser->addTokenReference('T_PLUS')),
+                $parser->addOptional($parser->addTokenReference('T_MINUS')),
+            ])),
+        ]));
+
+        Assert::same(self::describe(self::compile($parser)), [
+            '0: Concatenation(1, 2)',
+            '1: Lexeme(1, keep)',
+            '2: Repetition(3, 0, INF)',
+            '3: Concatenation(4, 6)',
+            '4: Optional(5)',
+            '5: Lexeme(2, keep)',
+            '6: Optional(7)',
+            '7: Lexeme(3, keep)',
+        ]);
+    }
+
+    public function testRepetitionOutsideOfASequenceIsNotOptional(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addAlternation([
+            $parser->addTokenReference('T_MINUS'),
+            $parser->addRepetition($parser->addConcatenation([
+                $parser->addTokenReference('T_PLUS')->skip(),
+                $parser->addTokenReference('T_NUMBER'),
+            ])),
+        ]));
+
+        Assert::same(self::describe(self::compile($parser)), [
+            '0: Alternation(1, 2)',
+            '1: Lexeme(3, keep)',
+            '2: Repetition(3, 0, INF)',
+            '3: Concatenation(4, 5)',
+            '4: Lexeme(2, skip)',
+            '5: Lexeme(1, keep)',
+        ]);
+    }
+
+    public function testOptionalRepetitionReadsTheSameSources(): void
+    {
+        $lexer = self::createLexerBuilder();
+        $tokens = $lexer->build();
+
+        $create = static function (bool $optimized) use ($lexer, $tokens): ParserInterface {
+            $parser = new ParserBuilder();
+            $parser->setInitialRule($parser->addConcatenation([
+                $parser->addTokenReference('T_NUMBER'),
+                $parser->addRepetition($parser->addConcatenation([
+                    $parser->addTokenReference('T_PLUS')->skip(),
+                    $parser->addTokenReference('T_NUMBER'),
+                ])),
+                $parser->addTokenReference('T_MINUS')->skip(),
+            ]));
+
+            if (!$optimized) {
+                foreach ($parser->compilerPasses as $priority => $passes) {
+                    $parser->compilerPasses[$priority] = \array_values(\array_filter(
+                        $passes,
+                        static fn(object $pass): bool => !$pass instanceof OptionalRepetitionParserCompilerPass,
+                    ));
+                }
+            }
+
+            return self::createParser(self::createLexer($lexer), $parser->build($tokens));
+        };
+
+        $expected = $create(false);
+        $actual = $create(true);
+
+        foreach (['1 -', '1 + 2 + 3 -', '1', '1 2', '1 + -', '1 + 2 +', '+', ''] as $source) {
+            Assert::same(
+                self::parseOrDescribe($actual, $source),
+                self::parseOrDescribe($expected, $source),
+                \sprintf('Source "%s"', $source),
+            );
+        }
     }
 
     public function testRepeatedAlternative(): void
@@ -610,6 +734,19 @@ final class OptimizationTest extends TestCase
         ]);
 
         Assert::same($result->constants['Number'] ?? null, 2);
+    }
+
+    /**
+     * @return list<string>|string the values read off the source, or the error
+     *         the source is rejected with
+     */
+    private static function parseOrDescribe(ParserInterface $parser, string $source): array|string
+    {
+        try {
+            return self::collectValues($parser->parse(StringSource::createFromString($source)));
+        } catch (\Throwable $e) {
+            return $e::class . ': ' . $e->getMessage();
+        }
     }
 
     private static function compile(ParserBuilder $parser): ParserBuilderResult
