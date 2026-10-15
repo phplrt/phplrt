@@ -227,6 +227,26 @@ final class ChannelTest extends TestCase
         );
     }
 
+    /**
+     * An alternative asking for the token by name is not the only one the
+     * token may stand in front of: the others step over it.
+     */
+    public function testAlternativeIsReachedPastATokenOfAChannelAnotherOneAsksFor(): void
+    {
+        $parser = self::createParserFor(static fn(ParserBuilder $p): RuleDefinition => $p->addAlternation([
+            $p->addConcatenation([
+                $p->addTokenReference('T_COMMENT'),
+                $p->addTokenReference('T_PLUS'),
+            ]),
+            $p->addTokenReference('T_NUMBER'),
+        ], 'Root'));
+
+        Assert::same(
+            self::collectValues($parser->parse(StringSource::createFromString('/* here */ 1'))),
+            ['1'],
+        );
+    }
+
     public function testGrammar(): void
     {
         $lexer = self::createLexerWithChannel();

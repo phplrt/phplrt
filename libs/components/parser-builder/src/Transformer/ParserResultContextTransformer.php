@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Phplrt\Parser\Builder\Transformer;
 
+use Phplrt\Contracts\Lexer\Channel;
 use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Analysis\ParserResultContext;
 use Phplrt\Parser\Builder\Compiler\ParserBuildingContext;
@@ -107,7 +108,24 @@ final class ParserResultContextTransformer
             expectations: $this->createExpectations($lexer),
             messages: $messages,
             logger: $context->logger,
+            steppedOverTokens: $this->createSteppedOverTokens($lexer),
         );
+    }
+
+    /**
+     * @return array<int, true>
+     */
+    private function createSteppedOverTokens(LexerBuilderResult $lexer): array
+    {
+        $result = [];
+
+        foreach ($lexer->tokens as $id => $definition) {
+            if (!$definition->channel instanceof Channel) {
+                $result[$id] = true;
+            }
+        }
+
+        return $result;
     }
 
     /**

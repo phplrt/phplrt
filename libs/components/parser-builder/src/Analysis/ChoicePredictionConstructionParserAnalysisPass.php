@@ -80,6 +80,13 @@ final class ChoicePredictionConstructionParserAnalysisPass implements
         $result = [];
 
         foreach ($tokens as $token => $_) {
+            // Note: The reading may step over a token of a channel of its own
+            //       on the way to any of the alternatives, so such a token
+            //       rules none of them out.
+            if (isset($context->steppedOverTokens[$token])) {
+                continue;
+            }
+
             $candidates = [];
 
             foreach ($rule->ruleIds as $alternative) {

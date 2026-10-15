@@ -96,5 +96,13 @@ final class ParserResultContext
          * Reports what the passes have found out about the grammar.
          */
         public readonly LoggerInterface $logger = new NullLogger(),
+        /**
+         * The tokens emitted to a channel the grammar has declared on its own,
+         * indexed by the token identifiers. The reading may step over such a
+         * token on the way to any rule.
+         *
+         * @var array<int, true>
+         */
+        public readonly array $steppedOverTokens = [],
     ) {}
 }
