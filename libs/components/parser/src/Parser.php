@@ -8,12 +8,16 @@ use Phplrt\Contracts\Lexer\Exception\LexerExceptionInterface;
 use Phplrt\Contracts\Lexer\Exception\RuntimeExceptionInterface as LexerRuntimeExceptionInterface;
 use Phplrt\Contracts\Lexer\LexerInterface;
 use Phplrt\Contracts\Parser\ParserInterface;
+use Phplrt\Contracts\Source\Exception\SourceExceptionInterface;
 use Phplrt\Contracts\Source\ReadableInterface;
 use Phplrt\Parser\Analysis\Mode;
 use Phplrt\Parser\Analysis\Result\FailureResult;
 use Phplrt\Parser\Analysis\Result\PartialResult;
 use Phplrt\Parser\Analysis\Result\SuccessfulResult;
+use Phplrt\Parser\Exception\LexicalErrorException;
+use Phplrt\Parser\Exception\ParserException;
 use Phplrt\Parser\Exception\ParserRuntimeException;
+use Phplrt\Parser\Exception\ParserSourceException;
 use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Exception\UnknownInitialRuleException;
 use Phplrt\Parser\Grammar\RuleInterface;
@@ -161,10 +165,10 @@ class Parser implements ParserInterface
      * @return ($mode is Mode::Tolerant
      *      ? (SuccessfulResult<TResult>|FailureResult)
      *      : (SuccessfulResult<null>|FailureResult))
-     * @throws LexerExceptionInterface in case of the source cannot be read into
-     *         tokens
-     * @throws LexerRuntimeExceptionInterface in case of the source contains
-     *         what no token recognizes
+     * @throws ParserSourceException in case of the source cannot be read
+     * @throws LexicalErrorException in case of the source cannot be split
+     *         into tokens
+     * @throws ParserException in case of the lexer fails for any other reason
      */
     public function analyze(ReadableInterface $source, Mode $mode = Mode::Tolerant): SuccessfulResult|FailureResult
     {
@@ -277,14 +281,28 @@ class Parser implements ParserInterface
      * Which tokens reach the grammar is decided by the lexer: a token it does
      * not report is a token the grammar is not written in terms of.
      *
-     * @throws LexerExceptionInterface in case of the source cannot be read into
-     *         tokens
-     * @throws LexerRuntimeExceptionInterface in case of the source contains
-     *         what no token recognizes
+     * The lexer is a part of the parser, so whatever it fails with is reported
+     * as a failure of the parser.
+     *
+     * @throws ParserSourceException in case of the source cannot be read
+     * @throws LexicalErrorException in case of the source cannot be split
+     *         into tokens
+     * @throws ParserException in case of the lexer fails for any other reason
      */
     private function lex(ReadableInterface $source): BufferInterface
     {
-        // TODO Add lexer's try/catch
-        return new ArrayBuffer($this->lexer->lex($source));
+        try {
+            return new ArrayBuffer($this->lexer->lex($source));
+        } catch (LexerRuntimeExceptionInterface $e) {
+            throw LexicalErrorException::becauseSourceIsNotTokenizable($e);
+        } catch (LexerExceptionInterface $e) {
+            $previous = $e->getPrevious();
+
+            if ($previous instanceof SourceExceptionInterface) {
+                throw ParserSourceException::becauseSourceIsNotReadable($previous);
+            }
+
+            throw new ParserException($e->getMessage(), previous: $e);
+        }
     }
 }
