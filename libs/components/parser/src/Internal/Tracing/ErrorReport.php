@@ -124,6 +124,27 @@ final class ErrorReport
     }
 
     /**
+     * Remembers that the token the input has been read up to could not be read,
+     * while no rule tells what has been expected in its place.
+     */
+    public function recordUnexpected(): void
+    {
+        $buffer = $this->buffer;
+        $position = $buffer->key;
+
+        if ($position <= $this->furthest) {
+            return;
+        }
+
+        $this->furthest = $position;
+        $this->token = $buffer->current;
+        $this->rules = [];
+
+        $this->labelled = null;
+        $this->labelledAt = -1;
+    }
+
+    /**
      * Remembers that the given rule, which describes the failure by a message
      * of its own, could not be recognized.
      *

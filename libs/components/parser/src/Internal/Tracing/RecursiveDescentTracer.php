@@ -493,7 +493,17 @@ final class RecursiveDescentTracer
             // A rule rejected by the very token the reading is at is not
             // there, which decides the predicate without entering the rule
             if ($innerTokens !== null && !isset($innerTokens[$token->id]) && $token->channel instanceof Channel) {
-                $isMatched = false;
+                if ($definition->isExpected) {
+                    // The rule expected here is rejected the way it would have
+                    // rejected itself, so it is the one reported
+                    if ($origin > $this->error->furthest) {
+                        $this->error->record($inner);
+                    }
+
+                    $this->length = $mark;
+
+                    return false;
+                }
             } else {
                 /**
                  * A predicate only looks at what comes next, so neither the
@@ -512,18 +522,20 @@ final class RecursiveDescentTracer
                 if ($buffer->key !== $origin) {
                     $buffer->seek($origin);
                 }
-            }
 
-            if ($isMatched !== $definition->isExpected) {
-                // The predicate is the one that has failed, and it has failed
-                // where it stands rather than where it has looked ahead to
-                if ($origin > $this->error->furthest) {
-                    $this->error->record($rule);
+                /**
+                 * The predicate is the one that has failed, and it has failed
+                 * where it stands rather than where it has looked ahead to.
+                 * The token it stands at may begin the rule it looks for, so
+                 * nothing is said about what has been expected in its place.
+                 */
+                if ($isMatched !== $definition->isExpected) {
+                    $this->error->recordUnexpected();
+
+                    $this->length = $mark;
+
+                    return false;
                 }
-
-                $this->length = $mark;
-
-                return false;
             }
 
             $this->length = $isKept ? $mark + 1 : $mark;

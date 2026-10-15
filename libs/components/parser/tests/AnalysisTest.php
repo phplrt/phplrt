@@ -377,6 +377,55 @@ final class AnalysisTest extends TestCase
         }
     }
 
+    public function testPositivePredicateFailingAheadExpectsNothing(): void
+    {
+        // &(<T_NUMBER> <T_PLUS>) <T_NUMBER> <T_MINUS>
+        $grammar = [
+            0 => new Concatenation([1, 3, 5]),
+            1 => new Predicate(2),
+            2 => new Concatenation([3, 4]),
+            3 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            4 => new Lexeme(ArithmeticLexer::T_PLUS),
+            5 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        foreach (self::createParsersOf($grammar, 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 -'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER)', $name);
+            Assert::same($actual->error->token->offset, 0, $name);
+        }
+    }
+
+    public function testPositivePredicateRejectedByItsRuleExpectsIt(): void
+    {
+        // &(<T_NUMBER> <T_PLUS>) <T_NUMBER> <T_MINUS>
+        $grammar = [
+            0 => new Concatenation([1, 3, 5]),
+            1 => new Predicate(2),
+            2 => new Concatenation([3, 4]),
+            3 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            4 => new Lexeme(ArithmeticLexer::T_PLUS),
+            5 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        // Note: Without the start prediction the rule of the predicate is not
+        //       known to be rejected by the token, so it is looked ahead for
+        //       and nothing is said about what has been expected instead.
+        $expected = [
+            'with tables' => 'Syntax error, unexpected "-" (T_MINUS), T_NUMBER expected',
+            'without tables' => 'Syntax error, unexpected "-" (T_MINUS)',
+        ];
+
+        foreach (self::createParsersOf($grammar, 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('-'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), $expected[$name], $name);
+        }
+    }
+
     public function testPositivePredicateBeginsWithTheTokensOfItsRule(): void
     {
         $grammar = [

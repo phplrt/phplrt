@@ -8,6 +8,7 @@ use Phplrt\Lexer\Builder\LexerBuilderResult;
 use Phplrt\Parser\Builder\Definition\AlternationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\ConcatenationRuleDefinition;
 use Phplrt\Parser\Builder\Definition\OptionalRuleDefinition;
+use Phplrt\Parser\Builder\Definition\PredicateRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RepetitionRuleDefinition;
 use Phplrt\Parser\Builder\Definition\RuleDefinition;
 use Phplrt\Parser\Builder\Definition\TerminalRuleDefinition;
@@ -42,6 +43,14 @@ final class UnreportableMessageParserCompilerPass implements
         . 'very token before it is entered';
 
     /**
+     * Said about a rule read only while a predicate looks ahead.
+     *
+     * @var non-empty-string
+     */
+    private const REASON_LOOKED_AHEAD ='a predicate only looks ahead '
+        . 'and reports nothing it meets on the way';
+
+    /**
      * Said about a rule written where a failure is not an error.
      *
      * @var non-empty-string
@@ -65,7 +74,24 @@ final class UnreportableMessageParserCompilerPass implements
         /** @var \SplObjectStorage<RuleDefinition, non-empty-string> $reasons */
         $reasons = new \SplObjectStorage();
 
+        $reported = self::findRulesReadOutsideOfPredicates($context);
+
         foreach ($context->rules as $parent) {
+            /**
+             * A predicate gives back whatever it has met while looking ahead,
+             * failures included, so a rule read only inside of it reports the
+             * failures of its elements to no one.
+             */
+            if (!$reported->offsetExists($parent)) {
+                foreach ($parent->children as $rule) {
+                    if ($pending->offsetExists($rule) && !$reasons->offsetExists($rule)) {
+                        $reasons->offsetSet($rule, self::REASON_LOOKED_AHEAD);
+                    }
+                }
+
+                continue;
+            }
+
             if ($parent instanceof ConcatenationRuleDefinition) {
                 foreach ($parent->rules as $index => $rule) {
                     self::inspect($rule, $index === 0, $pending, $reasons);
@@ -114,6 +140,36 @@ final class UnreportableMessageParserCompilerPass implements
         foreach ($context->rules as $rule) {
             if ($rule->message !== null && !$context->isEntrypoint($rule)) {
                 $result->offsetSet($rule);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns the rules read by the entrypoints other than through a
+     * predicate.
+     *
+     * @return \SplObjectStorage<RuleDefinition, null>
+     */
+    private static function findRulesReadOutsideOfPredicates(ParserBuildingContext $context): \SplObjectStorage
+    {
+        /** @var \SplObjectStorage<RuleDefinition, null> $result */
+        $result = new \SplObjectStorage();
+
+        $queue = \array_values(\array_filter($context->rules, $context->isEntrypoint(...)));
+
+        while ($queue !== []) {
+            $rule = \array_pop($queue);
+
+            if ($rule instanceof PredicateRuleDefinition || $result->offsetExists($rule)) {
+                continue;
+            }
+
+            $result->offsetSet($rule);
+
+            foreach ($rule->children as $child) {
+                $queue[] = $child;
             }
         }
 

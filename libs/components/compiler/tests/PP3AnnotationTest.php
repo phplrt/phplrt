@@ -237,6 +237,14 @@ final class PP3AnnotationTest extends TestCase
         'Root : ::T_OPEN:: (<T_NAME> @error("nope"))* ::T_CLOSE:: ;',
         'nothing reports the failure of a rule written in this place',
     ], 'inside a repetition')]
+    #[DataSet([
+        'Root : ::T_OPEN:: &(<T_NAME> ::T_COMMA:: @error("nope")) <T_NAME> ::T_CLOSE:: ;',
+        'a predicate only looks ahead and reports nothing it meets on the way',
+    ], 'inside a predicate')]
+    #[DataSet([
+        'Root : ::T_OPEN:: &Ahead() <T_NAME> ::T_CLOSE:: ;' . "\nAhead @error(\"nope\") : <T_NAME> ::T_COMMA:: ;",
+        'a predicate only looks ahead and reports nothing it meets on the way',
+    ], 'rule of a predicate')]
     public function testMessageThatCanNeverBeReportedIsReported(string $body, string $reason): void
     {
         Assert::string(self::compileFailure($body))
@@ -259,6 +267,16 @@ final class PP3AnnotationTest extends TestCase
         $result = self::compile(
             'Root : Head() ::T_COMMA:: Head() ::T_CLOSE:: ;'
                 . "\nHead @error(\"nope\") : <T_NAME> ;",
+        );
+
+        Assert::contains($result->parser->messages, 'nope');
+    }
+
+    public function testMessageOfARuleReadAlsoOutsideOfAPredicateIsReportable(): void
+    {
+        $result = self::compile(
+            'Root : ::T_OPEN:: &Tail() <T_NAME> Tail() ;'
+                . "\nTail : <T_NAME> ::T_COMMA:: @error(\"nope\") ;",
         );
 
         Assert::contains($result->parser->messages, 'nope');
