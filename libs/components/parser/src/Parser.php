@@ -81,8 +81,9 @@ class Parser implements ParserInterface
      *        of every alternation worth trying, indexed by the token the
      *        reading is at
      * @param SequencePredictionTableType $sequencePrediction the elements of
-     *        every sequence that may leave one of them out, such an element
-     *        written as the rule it wraps, negated
+     *        every sequence read in place: an element that may be left out
+     *        written as the rule it wraps, negated, and a negative predicate
+     *        written as itself, negated
      * @param StartPredictionTableType|null $lookahead the former name of
      *        {@see $startPrediction}. Please do not use it anymore.
      */

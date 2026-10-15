@@ -206,7 +206,7 @@ final class GrammarCheckCommand extends Command
         $output->writeln(\sprintf(' Kept:      <info>%d</info>', $this->getKeptTableSize($result)));
         if ($output->isVeryVerbose()) {
             $output->writeln('');
-            $output->writeln(' <fg=gray>// Optional elements of the sequences read in place (more is better)</>');
+            $output->writeln(' <fg=gray>// Optional elements and negative predicates of the sequences read in place (more is better)</>');
         }
         $output->writeln(\sprintf(' Inlined:   <info>%d</info>', $this->getInlinedElementsCount($result)));
         if ($output->isVeryVerbose()) {

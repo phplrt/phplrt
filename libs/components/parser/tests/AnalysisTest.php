@@ -14,6 +14,7 @@ use Phplrt\Parser\Exception\UnexpectedTokenException;
 use Phplrt\Parser\Grammar\Alternation;
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Lexeme;
+use Phplrt\Parser\Grammar\Optional;
 use Phplrt\Parser\Grammar\Predicate;
 use Phplrt\Parser\Grammar\Repetition;
 use Phplrt\Parser\Parser;
@@ -423,6 +424,44 @@ final class AnalysisTest extends TestCase
 
             Assert::instanceOf($actual, FailureResult::class);
             Assert::same($actual->error->getMessage(), $expected[$name], $name);
+        }
+    }
+
+    public function testNegativePredicateIsReadInPlace(): void
+    {
+        $analysis = self::analyze(self::createNegativePredicateGrammar(), 0);
+
+        Assert::same($analysis->sequencePrediction[0], [1, -2 - 1, 3]);
+    }
+
+    public function testNegativePredicateWithReducerIsEntered(): void
+    {
+        $analysis = self::analyze(self::createNegativePredicateGrammar(), 0, [
+            2 => static fn(Context $ctx, mixed $children): string => 'predicate',
+        ]);
+
+        Assert::false(isset($analysis->sequencePrediction[0]));
+    }
+
+    public function testOptionalOfANegativePredicateIsEntered(): void
+    {
+        // <T_NUMBER> (!<T_PLUS>)? <T_MINUS>
+        $grammar = [
+            0 => new Concatenation([1, 2, 3]),
+            1 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            2 => new Optional(4),
+            3 => new Lexeme(ArithmeticLexer::T_MINUS),
+            4 => new Predicate(5, isExpected: false),
+            5 => new Lexeme(ArithmeticLexer::T_PLUS),
+        ];
+
+        Assert::false(isset(self::analyze($grammar, 0)->sequencePrediction[0]));
+
+        foreach (self::createParsersOf($grammar, 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 + -'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "+" (T_PLUS), T_MINUS expected', $name);
         }
     }
 

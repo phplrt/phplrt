@@ -122,8 +122,9 @@ final class RecursiveDescentTracer
          */
         private readonly array $choicePrediction = [],
         /**
-         * The elements of the sequences that may leave one of them out. A
-         * negated identifier names the rule an optional element wraps.
+         * The elements of the sequences read in place. A negated identifier
+         * names either the rule an optional element wraps or a negative
+         * predicate.
          *
          * @var SequencePredictionTableType
          */
@@ -332,6 +333,35 @@ final class RecursiveDescentTracer
 
                         continue;
                     }
+                } elseif ($element instanceof Predicate) {
+                    /**
+                     * A negative predicate holds on every token the rule it
+                     * looks for is rejected by, so it is entered only on the
+                     * other ones, and the sequence is broken along with it.
+                     *
+                     * @var array<int, true> $elementTokens
+                     */
+                    $elementTokens = $this->startPrediction[$element->ruleId];
+
+                    if (!isset($elementTokens[$token->id]) && $token->channel instanceof Channel) {
+                        continue;
+                    }
+
+                    if ($this->match($inner)) {
+                        continue;
+                    }
+
+                    if (isset($this->messages[$inner])) {
+                        $this->error->label($inner);
+                    }
+
+                    if ($buffer->key !== $origin) {
+                        $buffer->seek($origin);
+                    }
+
+                    $this->length = $mark;
+
+                    return false;
                 } else {
                     $elementTokens = $this->startPrediction[$inner];
 

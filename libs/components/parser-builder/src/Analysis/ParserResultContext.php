@@ -84,9 +84,10 @@ final class ParserResultContext
          */
         public array $choicePrediction = [],
         /**
-         * The elements of every sequence that may leave one of them out,
-         * indexed by the rule identifiers, an element that may be left out
-         * written as the rule it wraps, negated ("-id - 1").
+         * The elements of every sequence read in place, indexed by the rule
+         * identifiers: an element that may be left out written as the rule it
+         * wraps, negated ("-id - 1"), and a negative predicate written as
+         * itself, negated.
          *
          * @var array<int, list<int>>
          */

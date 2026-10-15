@@ -6,9 +6,10 @@ namespace Phplrt\Parser\Builder\Analysis;
 
 use Phplrt\Parser\Grammar\Concatenation;
 use Phplrt\Parser\Grammar\Optional;
+use Phplrt\Parser\Grammar\Predicate;
 
 /**
- * Describes which elements of a sequence may be left out.
+ * Describes which elements of a sequence are read in place.
  *
  * An optional element is entered on every reading of the sequence only to be
  * given up at once most of the time, and a rule that is given up before it
@@ -16,8 +17,15 @@ use Phplrt\Parser\Grammar\Optional;
  * the rule it wraps, negated, so the sequence reads the rule itself and goes
  * on either way, without entering the optional at all.
  *
- * An optional that becomes a node of the tree is left as it is: what it
- * leaves behind is exactly the node.
+ * A negative predicate holds on every token the rule it looks for may not
+ * begin with, so it is entered only to be found holding most of the time as
+ * well. Such an element is written down as the predicate itself, negated, so
+ * the sequence asks the rule the predicate looks for before entering it.
+ *
+ * An optional or a predicate that becomes a node of the tree is left as it
+ * is: what it leaves behind is exactly the node. An optional of a predicate is
+ * left as it is too, since the predicate it wraps would be taken for one
+ * standing in the sequence on its own.
  *
  * @readonly
  */
@@ -28,6 +36,7 @@ final class SequencePredictionConstructionParserAnalysisPass implements
     {
         $grammar = $context->grammar;
         $kept = $context->kept;
+        $startPrediction = $context->startPrediction;
 
         $result = [];
         $inlined = 0;
@@ -43,8 +52,25 @@ final class SequencePredictionConstructionParserAnalysisPass implements
             foreach ($rule->ruleIds as $inner) {
                 $definition = $grammar[$inner] ?? null;
 
-                if ($definition instanceof Optional && !($kept[$inner] ?? true)) {
+                if ($definition instanceof Optional
+                    && !($kept[$inner] ?? true)
+                    && !($grammar[$definition->ruleId] ?? null) instanceof Predicate
+                ) {
                     $elements[] = -$definition->ruleId - 1;
+                    $changed = true;
+                    ++$inlined;
+
+                    continue;
+                }
+
+                // A rule that may begin with any token is no help in telling
+                // whether the predicate holds
+                if ($definition instanceof Predicate
+                    && !$definition->isExpected
+                    && !($kept[$inner] ?? true)
+                    && ($startPrediction[$definition->ruleId] ?? null) !== null
+                ) {
+                    $elements[] = -$inner - 1;
                     $changed = true;
                     ++$inlined;
 
@@ -63,7 +89,7 @@ final class SequencePredictionConstructionParserAnalysisPass implements
 
         $context->sequencePrediction = $result;
 
-        $context->logger->info('{elements} optional element(s) of {rules} sequence(s) are read in place', [
+        $context->logger->info('{elements} element(s) of {rules} sequence(s) are read in place', [
             'elements' => $inlined,
             'rules' => \count($result),
         ]);
