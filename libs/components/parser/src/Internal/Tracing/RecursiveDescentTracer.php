@@ -338,12 +338,10 @@ final class RecursiveDescentTracer
                      * A negative predicate holds on every token the rule it
                      * looks for is rejected by, so it is entered only on the
                      * other ones, and the sequence is broken along with it.
-                     *
-                     * @var array<int, true> $elementTokens
                      */
                     $elementTokens = $this->startPrediction[$element->ruleId];
 
-                    if (!isset($elementTokens[$token->id]) && $token->channel instanceof Channel) {
+                    if ($elementTokens !== null && !isset($elementTokens[$token->id]) && $token->channel instanceof Channel) {
                         continue;
                     }
 
@@ -493,8 +491,12 @@ final class RecursiveDescentTracer
                 }
 
                 // A body reading the empty input would be read forever, so the
-                // repetition stops as soon as the reading stalls
+                // repetition stops as soon as the reading stalls. Such a body
+                // reads the empty input on every turn left as well, so all of
+                // them count as read.
                 if ($buffer->key === $before) {
+                    $matched = $definition->min;
+
                     break;
                 }
 

@@ -434,6 +434,44 @@ final class AnalysisTest extends TestCase
         Assert::same($analysis->sequencePrediction[0], [1, -2 - 1, 3]);
     }
 
+    public function testNegativePredicateIsReadWithoutStartPrediction(): void
+    {
+        $analysis = self::analyze(self::createNegativePredicateGrammar(), 0);
+
+        $parser = new Parser(
+            lexer: new ArithmeticLexer(),
+            grammar: $analysis->grammar,
+            initial: $analysis->initial,
+            expectations: self::createExpectations(),
+            sequencePrediction: $analysis->sequencePrediction,
+        );
+
+        $actual = $parser->analyze(StringSource::createFromString('1 + -'), Mode::SyntaxCheck);
+
+        Assert::instanceOf($actual, FailureResult::class);
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "+" (T_PLUS)');
+    }
+
+    public function testRepetitionOfAnEmptyBodyReadsEveryTurn(): void
+    {
+        // (<T_NUMBER>?){2} <T_MINUS>
+        $grammar = [
+            0 => new Concatenation([1, 3]),
+            1 => new Repetition(2, min: 2, max: 2),
+            2 => new Optional(4),
+            3 => new Lexeme(ArithmeticLexer::T_MINUS),
+            4 => new Lexeme(ArithmeticLexer::T_NUMBER),
+        ];
+
+        foreach (self::createParsersOf($grammar, 0) as $name => $parser) {
+            foreach (['-', '1 -', '1 1 -'] as $source) {
+                $actual = $parser->analyze(StringSource::createFromString($source), Mode::SyntaxCheck);
+
+                Assert::instanceOf($actual, SuccessfulResult::class, "$name: $source");
+            }
+        }
+    }
+
     public function testNegativePredicateWithReducerIsEntered(): void
     {
         $analysis = self::analyze(self::createNegativePredicateGrammar(), 0, [
