@@ -210,13 +210,15 @@ final class RecursiveDescentTracer
      * given back; a production that has been read falls through to the end
      * of the method, where it is closed in the trace.
      *
-     * The method reads three kinds of shortcut the tables describe, each of
+     * The method reads four kinds of shortcut the tables describe, each of
      * them worth a call per rule:
      *  - a terminal predicted by the very token the reading is at, which is
      *    read without being entered;
      *  - an optional element of a sequence, which is asked whether it stands
      *    a chance and entered only in case it does;
-     *  - the body of a repetition, asked the very same way before each turn.
+     *  - the body of a repetition, asked the very same way before each turn;
+     *  - the rule a predicate looks for, asked the very same way before the
+     *    predicate looks ahead.
      */
     private function match(int $rule): bool
     {
@@ -485,15 +487,40 @@ final class RecursiveDescentTracer
                 $buffer->seek($origin);
             }
         } elseif ($definition instanceof Predicate) {
-            $isMatched = $this->match($definition->ruleId);
+            $inner = $definition->ruleId;
+            $innerTokens = $this->startPrediction[$inner];
 
-            // A predicate only looks at what comes next, so both the reading
-            // and the trace are given back, no matter what has been recognized
-            if ($buffer->key !== $origin) {
-                $buffer->seek($origin);
+            // A rule rejected by the very token the reading is at is not
+            // there, which decides the predicate without entering the rule
+            if ($innerTokens !== null && !isset($innerTokens[$token->id]) && $token->channel instanceof Channel) {
+                $isMatched = false;
+            } else {
+                /**
+                 * A predicate only looks at what comes next, so neither the
+                 * failures met on the way nor the reading itself are a part of
+                 * what has been read: the failures are written into a report
+                 * of their own, and the reading is given back no matter what
+                 * has been recognized.
+                 */
+                $report = $this->error;
+                $this->error = clone $report;
+
+                $isMatched = $this->match($inner);
+
+                $this->error = $report;
+
+                if ($buffer->key !== $origin) {
+                    $buffer->seek($origin);
+                }
             }
 
             if ($isMatched !== $definition->isExpected) {
+                // The predicate is the one that has failed, and it has failed
+                // where it stands rather than where it has looked ahead to
+                if ($origin > $this->error->furthest) {
+                    $this->error->record($rule);
+                }
+
                 $this->length = $mark;
 
                 return false;

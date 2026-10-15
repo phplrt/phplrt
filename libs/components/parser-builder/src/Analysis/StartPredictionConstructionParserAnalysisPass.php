@@ -53,7 +53,21 @@ final class StartPredictionConstructionParserAnalysisPass implements
             }
         } while ($changed);
 
-        $context->startPrediction = self::merge($startTokens, $matchesEmptyInput);
+        $prediction = self::merge($startTokens, $matchesEmptyInput);
+
+        /**
+         * A predicate reads nothing, so to the rules around it it may begin
+         * with any token at all. A predicate expecting a rule fails on every
+         * token that rule may not begin with though, so on its own it is
+         * rejected by the very tokens the rule is.
+         */
+        foreach ($context->grammar as $ruleId => $rule) {
+            if ($rule instanceof Predicate && $rule->isExpected) {
+                $prediction[$ruleId] = $prediction[$rule->ruleId];
+            }
+        }
+
+        $context->startPrediction = $prediction;
 
         $context->logger->info('Start prediction is known for {rules} rule(s), {empty} of them read an empty input', [
             'rules' => \count($context->startPrediction),

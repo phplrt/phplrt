@@ -295,7 +295,7 @@ final class AnalysisTest extends TestCase
         Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER), T_PLUS or T_MINUS expected');
     }
 
-    public function testExpectedTokensOfAnAlternationRecognizingNothing(): void
+    public function testExpectedTokensOfAFailedNegativePredicate(): void
     {
         $grammar = [
             0 => new Alternation([1, 2]),
@@ -321,7 +321,77 @@ final class AnalysisTest extends TestCase
 
         Assert::instanceOf($actual, FailureResult::class);
 
-        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS), T_PLUS or T_MINUS expected');
+        Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "-" (T_MINUS)');
+    }
+
+    public function testLookingAheadDoesNotMoveTheError(): void
+    {
+        // &(<T_NUMBER> <T_NUMBER> <T_NUMBER>) <T_NUMBER> <T_PLUS> | <T_NUMBER> <T_MINUS>
+        $grammar = [
+            0 => new Alternation([1, 2]),
+            1 => new Concatenation([3, 5, 6]),
+            2 => new Concatenation([5, 7]),
+            3 => new Predicate(4),
+            4 => new Concatenation([5, 5, 5]),
+            5 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            6 => new Lexeme(ArithmeticLexer::T_PLUS),
+            7 => new Lexeme(ArithmeticLexer::T_MINUS),
+        ];
+
+        foreach (self::createParsersOf($grammar, 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 2 -'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "2" (T_NUMBER), T_MINUS expected', $name);
+            Assert::same($actual->error->token->offset, 2, $name);
+        }
+    }
+
+    public function testRuleOfANegativePredicateIsNotExpected(): void
+    {
+        foreach (self::createParsersOf(self::createNegativePredicateGrammar(), 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 1'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "1" (T_NUMBER), T_MINUS expected', $name);
+        }
+    }
+
+    public function testNegativePredicateFailsWhereItStands(): void
+    {
+        foreach (self::createParsersOf(self::createNegativePredicateGrammar(), 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 + -'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, FailureResult::class);
+            Assert::same($actual->error->getMessage(), 'Syntax error, unexpected "+" (T_PLUS)', $name);
+            Assert::same($actual->error->token->offset, 2, $name);
+        }
+    }
+
+    public function testNegativePredicateIsRead(): void
+    {
+        foreach (self::createParsersOf(self::createNegativePredicateGrammar(), 0) as $name => $parser) {
+            $actual = $parser->analyze(StringSource::createFromString('1 -'), Mode::SyntaxCheck);
+
+            Assert::instanceOf($actual, SuccessfulResult::class, $name);
+        }
+    }
+
+    public function testPositivePredicateBeginsWithTheTokensOfItsRule(): void
+    {
+        $grammar = [
+            0 => new Concatenation([1, 2, 3]),
+            1 => new Predicate(4),
+            2 => new Predicate(5, isExpected: false),
+            3 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            4 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            5 => new Lexeme(ArithmeticLexer::T_PLUS),
+        ];
+
+        $analysis = self::analyze($grammar, 0);
+
+        Assert::same($analysis->startPrediction[1], [ArithmeticLexer::T_NUMBER => true]);
+        Assert::null($analysis->startPrediction[2]);
     }
 
     public function testEmptyFragmentIsRead(): void
@@ -391,6 +461,50 @@ final class AnalysisTest extends TestCase
             self::RULE_OPERATOR => new Alternation([5, 6]),
             5 => new Lexeme(ArithmeticLexer::T_PLUS, false),
             6 => new Lexeme(ArithmeticLexer::T_MINUS, false),
+        ];
+    }
+
+    /**
+     * <T_NUMBER> !<T_PLUS> <T_MINUS>
+     */
+    private static function createNegativePredicateGrammar(): array
+    {
+        return [
+            0 => new Concatenation([1, 2, 3]),
+            1 => new Lexeme(ArithmeticLexer::T_NUMBER),
+            2 => new Predicate(4, isExpected: false),
+            3 => new Lexeme(ArithmeticLexer::T_MINUS),
+            4 => new Lexeme(ArithmeticLexer::T_PLUS),
+        ];
+    }
+
+    /**
+     * The very same grammar recognized with the tables the analysis has
+     * built and without them.
+     *
+     * @return array<non-empty-string, Parser>
+     */
+    private static function createParsersOf(array $grammar, int $initial): array
+    {
+        $analysis = self::analyze($grammar, $initial);
+
+        return [
+            'with tables' => new Parser(
+                lexer: new ArithmeticLexer(),
+                grammar: $analysis->grammar,
+                initial: $analysis->initial,
+                startPrediction: $analysis->startPrediction,
+                kept: $analysis->kept,
+                choicePrediction: $analysis->choicePrediction,
+                sequencePrediction: $analysis->sequencePrediction,
+                expectations: self::createExpectations(),
+            ),
+            'without tables' => new Parser(
+                lexer: new ArithmeticLexer(),
+                grammar: $grammar,
+                initial: $initial,
+                expectations: self::createExpectations(),
+            ),
         ];
     }
 
