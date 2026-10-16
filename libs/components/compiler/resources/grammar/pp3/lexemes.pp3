@@ -92,13 +92,18 @@
  * -----------------------------------------------------------------------------
  */
 
+// An expression may start with a pair of slashes, so a comment is the one
+// written apart from what it follows; the name takes the space after it, so
+// the space before a pair of slashes only ever follows an expression or an
+// action
+%skip  declaration:T_COMMENT           \h++//[^\r\n]*+
 %skip  declaration:T_HORIZONTAL_SPACE  \h++
 
 %token declaration:T_ACTIONS   ->\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\)(?:\h*+,\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\(\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\h*+\))*+
 
 %token declaration:T_STATE     (?:[a-zA-Z_][a-zA-Z0-9_]*+|\*):
 
-%token declaration:T_NAME      [a-zA-Z_][a-zA-Z0-9_]*+(?=\h++(?!->\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\()(?![\r\n])(?!$))
+%token declaration:T_NAME      ([a-zA-Z_][a-zA-Z0-9_]*+)\h++(?!->\h*+[a-zA-Z_][a-zA-Z0-9_]*+\h*+\()(?![\r\n])(?!$)
 
 %token declaration:T_PATTERN   \S++
 

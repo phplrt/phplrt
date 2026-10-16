@@ -35,6 +35,19 @@ final class PP3FragmentTest extends TestCase
         Assert::same(self::regexOf($result, 'T_NUMBER'), '(?:[0-9])++(\.(?:[0-9])++)?(?:[eE][+-]?(?:[0-9])++)?');
     }
 
+    public function testCommentAfterAFragmentIsSkipped(): void
+    {
+        $result = $this->compile(<<<'PP3'
+            %fragment DIGIT  [0-9]  // a comment
+
+            %token T_NUMBER  (?&DIGIT)++
+
+            Number : <T_NUMBER> ;
+            PP3);
+
+        Assert::same(self::regexOf($result, 'T_NUMBER'), '(?:[0-9])++');
+    }
+
     public function testFragmentIsDeclaredAfterUse(): void
     {
         $result = $this->compile(<<<'PP3'

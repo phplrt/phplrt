@@ -345,6 +345,39 @@ final class PP3LoaderTest extends TestCase
         Assert::true($whitespace->isHidden);
     }
 
+    public function testCommentAfterAnExpressionIsSkipped(): void
+    {
+        $this->load("%token T_POW \\*\\*   // a comment\n%skip T_WHITESPACE \\s++ // another one");
+
+        [$pow, $whitespace] = \array_values($this->lexer->tokens);
+
+        Assert::instanceOf($pow, RegexTokenDefinition::class);
+        Assert::instanceOf($whitespace, RegexTokenDefinition::class);
+        Assert::same($pow->regex, '\*\*');
+        Assert::same($whitespace->regex, '\s++');
+    }
+
+    public function testCommentAfterAnActionIsSkipped(): void
+    {
+        $this->load('%token T_A a -> channel(comments)  // a comment');
+
+        [$token] = \array_values($this->lexer->tokens);
+
+        Assert::instanceOf($token, RegexTokenDefinition::class);
+        Assert::same($token->regex, 'a');
+        Assert::equals($token->channel, new UserDefinedChannel('comments'));
+    }
+
+    public function testExpressionStartingWithSlashesIsNoComment(): void
+    {
+        $this->load('%skip T_COMMENT  //[^\n]*+  // a comment');
+
+        [$comment] = \array_values($this->lexer->tokens);
+
+        Assert::instanceOf($comment, RegexTokenDefinition::class);
+        Assert::same($comment->regex, '//[^\n]*+');
+    }
+
     public function testUnknownActionIsReported(): void
     {
         Expect::exception(UnsupportedTokenActionException::class)

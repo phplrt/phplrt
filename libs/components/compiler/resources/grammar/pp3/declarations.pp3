@@ -44,7 +44,10 @@ TokenDeclaration -> {
                     throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
-                $name = $part->value;
+                \assert($part instanceof \Phplrt\Lexer\Token\Token);
+
+                // The name is read along with the space after it
+                $name = $part->captures[0] ?? '';
 
                 break;
 
@@ -125,7 +128,10 @@ FragmentDeclaration -> {
                     throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                 }
 
-                $name = $part->value;
+                \assert($part instanceof \Phplrt\Lexer\Token\Token);
+
+                // The name is read along with the space after it
+                $name = $part->captures[0] ?? '';
 
                 break;
 

@@ -652,12 +652,14 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
     {
         $state_php = new \Phplrt\Compiler\Syntax\Common\PhpBlockLexer();
         $state_declaration = new \Phplrt\Lexer\Lexer(
-            pattern: '/\\G(?|(?:(?:\\h++)(*MARK:0))|(?:(?:->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\)(?:\\h*+,\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\))*+)(*MARK:1))|(?:(?:(?:[a-zA-Z_][a-zA-Z0-9_]*+|\\*):)(*MARK:2))|(?:(?:[a-zA-Z_][a-zA-Z0-9_]*+(?=\\h++(?!->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\()(?![\\r\\n])(?!$)))(*MARK:3))|(?:(?:\\S++)(*MARK:4))|(?:(?:\\R)(*MARK:5))|(?:(?:[^\\s]++)(*MARK:6)))/Ssum',
+            pattern: '/\\G(?|(?:(?:\\h++\\/\\/[^\\r\\n]*+)(*MARK:0))|(?:(?:\\h++)(*MARK:1))|(?:(?:->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\)(?:\\h*+,\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\(\\h*+(?:[a-zA-Z_][a-zA-Z0-9_]*+)?\\h*+\\))*+)(*MARK:2))|(?:(?:(?:[a-zA-Z_][a-zA-Z0-9_]*+|\\*):)(*MARK:3))|(?:(?:([a-zA-Z_][a-zA-Z0-9_]*+)\\h++(?!->\\h*+[a-zA-Z_][a-zA-Z0-9_]*+\\h*+\\()(?![\\r\\n])(?!$))(*MARK:4))|(?:(?:\\S++)(*MARK:5))|(?:(?:\\R)(*MARK:6))|(?:(?:[^\\s]++)(*MARK:7)))/Ssum',
             channels: [
                 'Hidden',
-                6 => 'Unknown',
+                'Hidden',
+                7 => 'Unknown',
             ],
             names: [
+                'T_COMMENT',
                 'T_HORIZONTAL_SPACE',
                 'T_ACTIONS',
                 'T_STATE',
@@ -666,7 +668,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                 'T_END',
             ],
             transitions: [
-                5 => null,
+                6 => null,
+            ],
+            subgroups: [
+                4 => 1,
             ],
         );
 
@@ -875,7 +880,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                     }
 
-                    $name = $part->value;
+                    \assert($part instanceof \Phplrt\Lexer\Token\Token);
+
+                    // The name is read along with the space after it
+                    $name = $part->captures[0] ?? '';
 
                     break;
 
@@ -950,7 +958,10 @@ final class PP3Parser implements \Phplrt\Contracts\Parser\ParserInterface
                         throw \Phplrt\Parser\Exception\UnexpectedTokenException::becauseUnexpectedTokenProduced($ctx->source, $part);
                     }
 
-                    $name = $part->value;
+                    \assert($part instanceof \Phplrt\Lexer\Token\Token);
+
+                    // The name is read along with the space after it
+                    $name = $part->captures[0] ?? '';
 
                     break;
 
