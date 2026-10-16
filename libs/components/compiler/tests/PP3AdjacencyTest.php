@@ -95,6 +95,22 @@ final class PP3AdjacencyTest extends TestCase
         $parser->parse(StringSource::createFromString('a/* here */.b'));
     }
 
+    public function testATokenWrittenApartIsReported(): void
+    {
+        $parser = self::compile(<<<'PP3'
+            %skip  T_WHITESPACE  \s++
+            %token T_NAME        \w++
+            %token T_DOT         \.
+
+            Pair : <T_NAME> ~ ::T_DOT:: ~ <T_NAME> ;
+            PP3);
+
+        Expect::exception(UnexpectedTokenException::class)
+            ->withMessage('Syntax error, unexpected "." (T_DOT)');
+
+        $parser->parse(StringSource::createFromString('a .b'));
+    }
+
     private const CHANNEL_COMMENT = <<<'PP3'
         %token T_COMMENT  /\*.*?\*/  -> channel(comment)
         %token T_NAME     \w++

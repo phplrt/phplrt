@@ -113,6 +113,17 @@ final class PP3AnnotationTest extends TestCase
         Assert::same($actual, 'a name is expected');
     }
 
+    public function testMessageOfAStatementBrokenByAnAdjacencyIsReported(): void
+    {
+        $actual = self::read(
+            'Root : ::T_OPEN:: Pair() @error("a pair of names is expected") ;'
+                . "\nPair : <T_NAME> ~ ::T_COMMA:: ~ <T_NAME> ;",
+            '(abc ,def',
+        );
+
+        Assert::same($actual, 'a pair of names is expected');
+    }
+
     public function testPlaceholderIsFilledIn(): void
     {
         $actual = self::read(

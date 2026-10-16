@@ -581,7 +581,11 @@ final class RecursiveDescentTracer
             $isAdjacent = $token->channel instanceof Channel
                 && $previous->offset + $previous->size === $token->offset;
 
+            // Note: The token the reading stands at is the one written too
+            //       close or too far, whatever the rule after it expects.
             if ($isAdjacent !== $definition->isExpected) {
+                $this->error->recordUnexpected();
+
                 $this->length = $mark;
 
                 return false;
