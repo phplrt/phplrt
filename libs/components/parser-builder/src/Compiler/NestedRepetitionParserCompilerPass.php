@@ -34,11 +34,17 @@ final class NestedRepetitionParserCompilerPass implements
                 }
 
                 \assert($rule instanceof RepetitionRuleDefinition);
+                \assert($rule->rule instanceof RepetitionRuleDefinition);
 
                 $context->logger->info('Repetition {rule} has absorbed the repetition nested into it', [
                     'rule' => $rule->printReference(),
                 ]);
 
+                /**
+                 * Either repetition reading nothing lets the two of them
+                 * together read nothing.
+                 */
+                $rule->setMin(\min($rule->min, $rule->rule->min));
                 $rule->setRule($child);
 
                 $joined = true;

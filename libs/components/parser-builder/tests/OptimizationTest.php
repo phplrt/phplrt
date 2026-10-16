@@ -230,6 +230,25 @@ final class OptimizationTest extends TestCase
         ]);
     }
 
+    public function testNestedOptionalRepetition(): void
+    {
+        $parser = new ParserBuilder();
+        $parser->setInitialRule($parser->addConcatenation([
+            $parser->addRepetition(
+                $parser->addRepetition($parser->addTokenReference('T_NUMBER')),
+                min: 1,
+            ),
+            $parser->addTokenReference('T_PLUS')->skip(),
+        ]));
+
+        Assert::same(self::describe(self::compile($parser)), [
+            '0: Concatenation(1, 3)',
+            '1: Repetition(2, 0, INF)',
+            '2: Lexeme(1, keep)',
+            '3: Lexeme(2, skip)',
+        ]);
+    }
+
     public function testNestedRepetitionOfSeveralOccurrences(): void
     {
         $parser = new ParserBuilder();
