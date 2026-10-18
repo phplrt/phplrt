@@ -14,7 +14,7 @@ A set of interfaces for abstraction over source position factories.
 
 ### Resources
 
-- [Documentation](https://github.com/phplrt/phplrt/blob/master/README.md)
+- [Documentation](https://github.com/phplrt/phplrt/blob/4.x/README.md)
 - [Repository](https://github.com/phplrt/phplrt)
     - [Issues](https://github.com/phplrt/phplrt/issues)
     - [Pull Requests](https://github.com/phplrt/phplrt/pulls)

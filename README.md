@@ -14,10 +14,13 @@
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/version?style=for-the-badge" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
     <a href="https://packagist.org/packages/phplrt/phplrt"><img src="https://poser.pugx.org/phplrt/phplrt/downloads?style=for-the-badge" alt="Total Downloads"></a>
-    <a href="https://raw.githubusercontent.com/phplrt/phplrt/master/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license?style=for-the-badge" alt="License MIT"></a>
+    <a href="https://github.com/phplrt/phplrt/blob/4.x/LICENSE.md"><img src="https://poser.pugx.org/phplrt/phplrt/license?style=for-the-badge" alt="License MIT"></a>
 </p>
 <p align="center">
-    <a href="https://github.com/phplrt/phplrt/actions"><img src="https://github.com/phplrt/phplrt/workflows/build/badge.svg?branch=4.x&event=push"></a>
+    <a href="https://github.com/phplrt/phplrt/actions/workflows/tests.yml?query=branch%3A4.x"><img src="https://github.com/phplrt/phplrt/actions/workflows/tests.yml/badge.svg?branch=4.x" alt="Tests"></a>
+    <a href="https://github.com/phplrt/phplrt/actions/workflows/static-analysis.yml?query=branch%3A4.x"><img src="https://github.com/phplrt/phplrt/actions/workflows/static-analysis.yml/badge.svg?branch=4.x" alt="Static Analysis"></a>
+    <a href="https://github.com/phplrt/phplrt/actions/workflows/codestyle.yml?query=branch%3A4.x"><img src="https://github.com/phplrt/phplrt/actions/workflows/codestyle.yml/badge.svg?branch=4.x" alt="CodeStyle"></a>
+    <a href="https://github.com/phplrt/phplrt/actions/workflows/syntax-check.yml?query=branch%3A4.x"><img src="https://github.com/phplrt/phplrt/actions/workflows/syntax-check.yml/badge.svg?branch=4.x" alt="Syntax Check"></a>
 </p>
 
 ## Introduction
