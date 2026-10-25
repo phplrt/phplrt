@@ -106,7 +106,7 @@ final class EmbeddedLexerTest extends TestCase
         $lexer = self::createStringLexer();
         $source = '"hello"';
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString($source)));
         $embedding = $tokens[0];
 
         Assert::instanceOf($embedding, TokenEmbedding::class);
@@ -119,7 +119,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $lexer = self::createStringLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('"hello"')), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString('"hello"')));
         $embedding = $tokens[0];
 
         Assert::instanceOf($embedding, TokenEmbedding::class);
@@ -183,7 +183,7 @@ final class EmbeddedLexerTest extends TestCase
     {
         $lexer = self::createStringLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('"hello" ')), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString('"hello" ')));
         $embedding = $tokens[0];
 
         Assert::instanceOf($embedding, TokenEmbedding::class);

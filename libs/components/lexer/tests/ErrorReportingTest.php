@@ -31,7 +31,7 @@ final class ErrorReportingTest extends TestCase
 
         Expect::exception(RuntimeExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
+        self::toArray($lexer->lex(StringSource::createFromString('first second')));
     }
 
     public function testReportedExceptionIsALexerException(): void
@@ -40,7 +40,7 @@ final class ErrorReportingTest extends TestCase
 
         Expect::exception(LexerExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
+        self::toArray($lexer->lex(StringSource::createFromString('first second')));
     }
 
     public function testReportedTokenPointsAtTheUnreadableFragment(): void
@@ -48,7 +48,7 @@ final class ErrorReportingTest extends TestCase
         $lexer = self::createIncompleteLexer();
 
         try {
-            \iterator_to_array($lexer->lex(StringSource::createFromString('first second')), false);
+            self::toArray($lexer->lex(StringSource::createFromString('first second')));
         } catch (RuntimeExceptionInterface $e) {
             Assert::same($e->token->offset, 5);
 
@@ -62,7 +62,7 @@ final class ErrorReportingTest extends TestCase
     {
         $lexer = self::createIncompleteLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('word')), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString('word')));
 
         Assert::count($tokens, 2);
     }
@@ -91,6 +91,6 @@ final class ErrorReportingTest extends TestCase
 
         Expect::exception(RuntimeExceptionInterface::class);
 
-        \iterator_to_array($lexer->lex(StringSource::createFromString('"abc def"')), false);
+        self::toArray($lexer->lex(StringSource::createFromString('"abc def"')));
     }
 }

@@ -95,7 +95,7 @@ final class TokenStreamTest extends TestCase
     {
         $lexer = self::createExpressionLexer();
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createEmpty()), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createEmpty()));
 
         Assert::count($tokens, 1);
         Assert::same($tokens[0]->channel, Channel::EndOfInput);
@@ -109,7 +109,7 @@ final class TokenStreamTest extends TestCase
         });
         $source = '"  spaced  "';
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString($source)), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString($source)));
 
         Assert::same($tokens[0]->value, '"  spaced  "');
     }
@@ -138,7 +138,7 @@ final class TokenStreamTest extends TestCase
             $lexer->addPattern('\d++');
         });
 
-        $tokens = \iterator_to_array($lexer->lex(StringSource::createFromString('42')), false);
+        $tokens = self::toArray($lexer->lex(StringSource::createFromString('42')));
 
         Assert::null($tokens[0]->name);
     }
